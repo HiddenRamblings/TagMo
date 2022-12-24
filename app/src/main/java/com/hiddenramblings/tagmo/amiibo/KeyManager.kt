@@ -36,7 +36,7 @@ class KeyManager(var context: Context) {
                 return key
             }
         } catch (e: Exception) {
-            Debug.Warn(R.string.key_read_error, e)
+            Debug.warn(R.string.key_read_error, e)
         }
         return null
     }

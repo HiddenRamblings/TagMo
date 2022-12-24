@@ -75,7 +75,7 @@ class PuckGattService : Service() {
     private var readResponse = ByteArray(NfcByte.TAG_FILE_SIZE)
     private fun getCharacteristicValue(characteristic: BluetoothGattCharacteristic, data: ByteArray?) {
         if (data != null && data.isNotEmpty()) {
-            Debug.Verbose(
+            Debug.verbose(
                 this.javaClass, getLogTag(characteristic.uuid) + " " + Arrays.toString(data)
             )
             if (characteristic.uuid.compareTo(PuckRX) == 0) {
@@ -140,7 +140,7 @@ class PuckGattService : Service() {
                 if (Debug.isNewer(Build.VERSION_CODES.LOLLIPOP)) mBluetoothGatt!!.requestMtu(512) // Maximum: 517
                 else listener?.onServicesDiscovered()
             } else {
-                Debug.Warn(this.javaClass, "onServicesDiscovered received: $status")
+                Debug.warn(this.javaClass, "onServicesDiscovered received: $status")
             }
         }
 
@@ -163,7 +163,7 @@ class PuckGattService : Service() {
         override fun onCharacteristicWrite(
             gatt: BluetoothGatt, characteristic: BluetoothGattCharacteristic, status: Int
         ) {
-            Debug.Verbose(
+            Debug.verbose(
                 this.javaClass, getLogTag(characteristic.uuid) + " onCharacteristicWrite " + status
             )
         }
@@ -185,10 +185,10 @@ class PuckGattService : Service() {
 
         override fun onMtuChanged(gatt: BluetoothGatt, mtu: Int, status: Int) {
             if (status == BluetoothGatt.GATT_SUCCESS) {
-                Debug.Verbose(this.javaClass, "onMtuChange complete: $mtu")
+                Debug.verbose(this.javaClass, "onMtuChange complete: $mtu")
                 maxTransmissionUnit = mtu
             } else {
-                Debug.Warn(this.javaClass, "onMtuChange received: $status")
+                Debug.warn(this.javaClass, "onMtuChange received: $status")
             }
             listener?.onServicesDiscovered()
         }
@@ -341,7 +341,7 @@ class PuckGattService : Service() {
                         PuckRX
                     ) == 0
                 ) {
-                    Debug.Verbose(this.javaClass, "GattReadCharacteristic: $customUUID")
+                    Debug.verbose(this.javaClass, "GattReadCharacteristic: $customUUID")
                     mReadCharacteristic = mCustomService.getCharacteristic(customUUID)
                     break
                 }
@@ -362,7 +362,7 @@ class PuckGattService : Service() {
                 throw UnsupportedOperationException()
             }
             for (customService in services) {
-                Debug.Verbose(this.javaClass, "GattReadService: " + customService.uuid.toString())
+                Debug.verbose(this.javaClass, "GattReadService: " + customService.uuid.toString())
                 /*get the read characteristic from the service*/mCharacteristicRX =
                     getCharacteristicRX(customService)
                 break
@@ -380,7 +380,7 @@ class PuckGattService : Service() {
                 val customUUID = customWrite.uuid
                 /*get the write characteristic from the service*/
                 if (customUUID.compareTo(PuckTX) == 0) {
-                    Debug.Verbose(this.javaClass, "GattWriteCharacteristic: $customUUID")
+                    Debug.verbose(this.javaClass, "GattWriteCharacteristic: $customUUID")
                     mWriteCharacteristic = mCustomService.getCharacteristic(customUUID)
                     break
                 }
@@ -401,7 +401,7 @@ class PuckGattService : Service() {
                 throw UnsupportedOperationException()
             }
             for (customService in services) {
-                Debug.Verbose(this.javaClass, "GattWriteService: " + customService.uuid.toString())
+                Debug.verbose(this.javaClass, "GattWriteService: " + customService.uuid.toString())
                 /*get the read characteristic from the service*/mCharacteristicTX =
                     getCharacteristicTX(customService)
             }
@@ -445,7 +445,7 @@ class PuckGattService : Service() {
             try {
                 setPuckCharacteristicTX()
             } catch (e: UnsupportedOperationException) {
-                Debug.Warn(e)
+                Debug.warn(e)
             }
         }
         commandCallbacks.add(index, Runnable { delayedWriteCharacteristic(value) })

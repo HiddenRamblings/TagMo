@@ -46,19 +46,19 @@ object TagWriter {
         try {
             val pages = splitPages(tagData)
             writePages(mifare, 3, 129, pages)
-            Debug.Info(TagWriter::class.java, R.string.data_write)
+            Debug.info(TagWriter::class.java, R.string.data_write)
         } catch (e: Exception) {
             throw Exception(context.getString(R.string.error_data_write), e)
         }
         try {
             writePassword(mifare)
-            Debug.Info(TagWriter::class.java, R.string.password_write)
+            Debug.info(TagWriter::class.java, R.string.password_write)
         } catch (e: Exception) {
             throw Exception(context.getString(R.string.error_password_write), e)
         }
         try {
             writeLockInfo(mifare)
-            Debug.Info(TagWriter::class.java, R.string.lock_write)
+            Debug.info(TagWriter::class.java, R.string.lock_write)
         } catch (e: Exception) {
             throw Exception(context.getString(R.string.error_lock_write), e)
         }
@@ -70,7 +70,7 @@ object TagWriter {
     ) {
         for (i in pagestart..pageend) {
             tag.writePage(i, data[i]!!)
-            Debug.Info(TagWriter::class.java, R.string.write_page, i.toString())
+            Debug.info(TagWriter::class.java, R.string.write_page, i.toString())
         }
     }
 
@@ -90,7 +90,7 @@ object TagWriter {
     private fun writePasswordLockInfo(mifare: NTAG215) {
         try {
             writePassword(mifare)
-            Debug.Info(TagWriter::class.java, R.string.password_write)
+            Debug.info(TagWriter::class.java, R.string.password_write)
         } catch (e: Exception) {
             throw Exception(
                 appContext
@@ -99,7 +99,7 @@ object TagWriter {
         }
         try {
             writeLockInfo(mifare)
-            Debug.Info(TagWriter::class.java, R.string.lock_write)
+            Debug.info(TagWriter::class.java, R.string.lock_write)
         } catch (e: Exception) {
             throw Exception(
                 appContext
@@ -119,7 +119,7 @@ object TagWriter {
                 .getString(R.string.fail_read_size)
         )
         val isPowerTag = isPowerTag(mifare)
-        Debug.Info(TagWriter::class.java, R.string.power_tag_verify, isPowerTag.toString())
+        Debug.info(TagWriter::class.java, R.string.power_tag_verify, isPowerTag.toString())
         writeData = keyManager.decrypt(writeData)
         writeData = if (isPowerTag) {
             // use a pre-determined static id for Power Tag
@@ -128,7 +128,7 @@ object TagWriter {
             patchUid(idPages, writeData)
         }
         writeData = keyManager.encrypt(writeData)
-        Debug.Info(TagWriter::class.java, bytesToHex(writeData))
+        Debug.info(TagWriter::class.java, bytesToHex(writeData))
         if (!isPowerTag) {
             validateNtag(mifare, writeData, validateNtag)
             try {
@@ -143,14 +143,14 @@ object TagWriter {
                 appContext
                     .getString(R.string.fail_read_uid)
             )
-            Debug.Info(TagWriter::class.java, R.string.old_uid, bytesToHex(oldid))
+            Debug.info(TagWriter::class.java, R.string.old_uid, bytesToHex(oldid))
             val page10 = mifare.readPages(0x10)
-            Debug.Info(TagWriter::class.java, R.string.page_ten, bytesToHex(page10))
+            Debug.info(TagWriter::class.java, R.string.page_ten, bytesToHex(page10))
             val page10bytes = bytesToHex(byteArrayOf(page10?.get(0) ?: 0, page10?.get(3) ?: 0))
             val ptagKeySuffix = getPowerTagKey(oldid, page10bytes)
             val ptagKey = hexToByteArray(NfcByte.POWERTAG_KEY)
             System.arraycopy(ptagKeySuffix, 0, ptagKey, 8, 8)
-            Debug.Info(TagWriter::class.java, R.string.ptag_key, bytesToHex(ptagKey))
+            Debug.info(TagWriter::class.java, R.string.ptag_key, bytesToHex(ptagKey))
             mifare.transceive(NfcByte.POWERTAG_WRITE)
             mifare.transceive(ptagKey)
             if (!(idPages[0] == 0xFF.toByte() && idPages[1] == 0xFF.toByte())) doAuth(mifare)
@@ -166,7 +166,7 @@ object TagWriter {
         } else {
             try {
                 writePages(mifare, 3, 129, pages)
-                Debug.Info(TagWriter::class.java, R.string.data_write)
+                Debug.info(TagWriter::class.java, R.string.data_write)
             } catch (e: Exception) {
                 throw Exception(appContext.getString(R.string.error_data_write), e)
             }
@@ -263,7 +263,7 @@ object TagWriter {
         )
         val uid = uidFromPages(pages01)
         val password = keygen(uid)
-        Debug.Info(
+        Debug.info(
             TagWriter::class.java, R.string.password, bytesToHex(
                 password!!
             )
@@ -278,7 +278,7 @@ object TagWriter {
         val response = tag.transceive(auth)
             ?: throw Exception(appContext.getString(R.string.error_auth_null))
         val respStr = bytesToHex(response)
-        Debug.Info(TagWriter::class.java, R.string.auth_response, respStr)
+        Debug.info(TagWriter::class.java, R.string.auth_response, respStr)
         if ("8080" != respStr) {
             throw Exception(appContext.getString(R.string.fail_auth))
         }
@@ -312,14 +312,14 @@ object TagWriter {
         )
         val uid = uidFromPages(pages01)
         val password = keygen(uid)
-        Debug.Info(
+        Debug.info(
             TagWriter::class.java, R.string.password, bytesToHex(
                 password!!
             )
         )
-        Debug.Info(TagWriter::class.java, R.string.write_pack)
+        Debug.info(TagWriter::class.java, R.string.write_pack)
         tag.writePage(0x86, byteArrayOf(0x80.toByte(), 0x80.toByte(), 0.toByte(), 0.toByte()))
-        Debug.Info(TagWriter::class.java, R.string.write_pwd)
+        Debug.info(TagWriter::class.java, R.string.write_pwd)
         tag.writePage(0x85, password)
     }
 
@@ -359,7 +359,7 @@ object TagWriter {
             if (write) {
                 val result = ByteArray(8)
                 System.arraycopy(tagData, 84, result, 0, result.size)
-                Debug.Info(TagWriter::class.java, bytesToHex(result))
+                Debug.info(TagWriter::class.java, bytesToHex(result))
             } else {
                 throw Exception(
                     appContext

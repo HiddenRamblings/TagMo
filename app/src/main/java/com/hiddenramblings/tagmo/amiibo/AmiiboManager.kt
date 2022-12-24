@@ -271,7 +271,7 @@ class AmiiboManager {
                     try {
                         streamWriter.close()
                     } catch (e: IOException) {
-                        Debug.Info(e)
+                        Debug.info(e)
                     }
                 }
                 outputStream!!.flush()
@@ -289,7 +289,7 @@ class AmiiboManager {
                     try {
                         outputStream.close()
                     } catch (e: IOException) {
-                        Debug.Info(e)
+                        Debug.info(e)
                     }
                 }
             }
@@ -313,14 +313,14 @@ class AmiiboManager {
                     try {
                         reader.close()
                     } catch (e: IOException) {
-                        Debug.Info(e)
+                        Debug.info(e)
                     }
                 }
                 if (null != inputStream) {
                     try {
                         inputStream.close()
                     } catch (e: IOException) {
-                        Debug.Info(e)
+                        Debug.info(e)
                     }
                 }
             }
@@ -340,13 +340,13 @@ class AmiiboManager {
                     amiiboManager = parse(context.openFileInput(AMIIBO_DATABASE_FILE))
                 } catch (e: IOException) {
                     amiiboManager = null
-                    Debug.Warn(R.string.error_amiibo_parse, e)
+                    Debug.warn(R.string.error_amiibo_parse, e)
                 } catch (e: JSONException) {
                     amiiboManager = null
-                    Debug.Warn(R.string.error_amiibo_parse, e)
+                    Debug.warn(R.string.error_amiibo_parse, e)
                 } catch (e: ParseException) {
                     amiiboManager = null
-                    Debug.Warn(R.string.error_amiibo_parse, e)
+                    Debug.warn(R.string.error_amiibo_parse, e)
                 }
             } else {
                 val database = readDatabase(context)
@@ -382,7 +382,7 @@ class AmiiboManager {
                         if (null != data)
                             amiiboFiles.add(AmiiboFile(it, Amiibo.dataToId(data), data))
                     } catch (e: Exception) {
-                        Debug.Info(e)
+                        Debug.info(e)
                     }
                 }
             } else if (recursiveFiles) {
@@ -417,7 +417,7 @@ class AmiiboManager {
                         )
                     }
                 } catch (e: Exception) {
-                    Debug.Info(e)
+                    Debug.info(e)
                 }
             }
             return amiiboFiles

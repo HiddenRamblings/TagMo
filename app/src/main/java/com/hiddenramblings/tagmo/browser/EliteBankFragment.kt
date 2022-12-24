@@ -316,13 +316,13 @@ class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
             try {
                 amiiboManager = getAmiiboManager(requireContext().applicationContext)
             } catch (e: IOException) {
-                Debug.Warn(e)
+                Debug.warn(e)
                 Toasty(requireActivity()).Short(R.string.amiibo_info_parse_error)
             } catch (e: JSONException) {
-                Debug.Warn(e)
+                Debug.warn(e)
                 Toasty(requireActivity()).Short(R.string.amiibo_info_parse_error)
             } catch (e: ParseException) {
-                Debug.Warn(e)
+                Debug.warn(e)
                 Toasty(requireActivity()).Short(R.string.amiibo_info_parse_error)
             }
             val uiAmiiboManager = amiiboManager
@@ -534,7 +534,7 @@ class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
                 else null
                 args.putByteArray(NFCIntent.EXTRA_TAG_DATA, data)
             } catch (e: Exception) {
-                Debug.Warn(e)
+                Debug.warn(e)
             }
         } else {
             try {
@@ -545,7 +545,7 @@ class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
                 else null
                 args.putByteArray(NFCIntent.EXTRA_TAG_DATA, data)
             } catch (e: Exception) {
-                Debug.Warn(e)
+                Debug.warn(e)
             }
         }
         val intent = Intent(requireContext(), NfcActivity::class.java)
@@ -751,7 +751,7 @@ class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
                 try {
                     Amiibo.dataToId(tagData)
                 } catch (e: Exception) {
-                    Debug.Info(e)
+                    Debug.info(e)
                     amiiboId
                 }
             }

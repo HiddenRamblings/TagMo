@@ -53,7 +53,7 @@ class ScanTag {
                     try {
                         mifare.connect()
                     } catch (ex: Exception) {
-                        Debug.Info(ex)
+                        Debug.info(ex)
                     }
                     if (TagReader.needsFirmware(mifare)) {
                         if (TagWriter.updateFirmware(mifare)) Toasty(activity).Short(R.string.firmware_update)
@@ -103,13 +103,8 @@ class ScanTag {
                 mifare.close()
             }
         } catch (e: Exception) {
-            Debug.Warn(e)
-            var error: String? = when {
-                null != e.message && null != e.cause -> e.message + "\n" + e.cause.toString()
-                null != e.message -> e.message
-                null != e.cause -> e.cause.toString()
-                else -> null
-            }
+            Debug.warn(e)
+            var error: String? = Debug.getExceptionDetails(e)
             if (null != error) {
                 if (prefs.eliteEnabled()) {
                     val finalMifare = mifare

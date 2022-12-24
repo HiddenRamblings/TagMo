@@ -173,7 +173,7 @@ class TagDataEditor : AppCompatActivity() {
                 tagData = TagArray.getValidatedData(keyManager, tagData)
                 amiiboData = AmiiboData(tagData as ByteArray)
             } catch (ex: Exception) {
-                Debug.Warn(e)
+                Debug.warn(e)
                 showErrorDialog(R.string.fail_display)
                 return
             }
@@ -228,13 +228,13 @@ class TagDataEditor : AppCompatActivity() {
             try {
                 amiiboManager = AmiiboManager.getAmiiboManager(applicationContext)
             } catch (e: IOException) {
-                Debug.Warn(e)
+                Debug.warn(e)
                 Toasty(this).Short(getString(R.string.amiibo_info_parse_error))
             } catch (e: JSONException) {
-                Debug.Warn(e)
+                Debug.warn(e)
                 Toasty(this).Short(getString(R.string.amiibo_info_parse_error))
             } catch (e: ParseException) {
-                Debug.Warn(e)
+                Debug.warn(e)
                 Toasty(this).Short(getString(R.string.amiibo_info_parse_error))
             }
             if (Thread.currentThread().isInterrupted) return@execute
@@ -299,7 +299,7 @@ class TagDataEditor : AppCompatActivity() {
             val amiiboId: Long = try {
                 Amiibo.dataToId(tagData)
             } catch (e: Exception) {
-                Debug.Info(e)
+                Debug.info(e)
                 -1
             }
             if (amiiboId == -1L) {
@@ -397,7 +397,7 @@ class TagDataEditor : AppCompatActivity() {
             newAmiiboData.isUserDataInitialized = isUserDataInitialized
             newAmiiboData.isAppDataInitialized = isUserDataInitialized && isAppDataInitialized
         } catch (e: Exception) {
-            Debug.Warn(e)
+            Debug.warn(e)
             showErrorDialog(R.string.fail_save_data)
             return
         }
@@ -502,7 +502,7 @@ class TagDataEditor : AppCompatActivity() {
         val tagData: ByteArray = try {
             keyManager.encrypt(newAmiiboData.array())
         } catch (e: Exception) {
-            Debug.Warn(e)
+            Debug.warn(e)
             showErrorDialog(R.string.fail_encrypt)
             return
         }

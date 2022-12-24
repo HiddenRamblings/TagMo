@@ -8,7 +8,7 @@ package com.hiddenramblings.tagmo.nfctech
 
 import com.hiddenramblings.tagmo.R
 import com.hiddenramblings.tagmo.TagMo
-import com.hiddenramblings.tagmo.eightbit.io.Debug.Info
+import com.hiddenramblings.tagmo.eightbit.io.Debug
 import java.text.DecimalFormat
 import java.util.*
 
@@ -122,7 +122,7 @@ class Foomiibo {
                 val signature = TagArray.bytesToHex(
                     tagData.copyOfRange(540, NfcByte.TAG_FILE_SIZE)
                 ).substring(0, 32).lowercase()
-                Info(TagMo::class.java, TagArray.hexToString(signature))
+                Debug.info(TagMo::class.java, TagArray.hexToString(signature))
                 if (hexSingature == signature) return signature
             }
             return null

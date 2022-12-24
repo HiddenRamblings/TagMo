@@ -133,11 +133,11 @@ class QRCodeScanner : AppCompatActivity() {
             try {
                 amiiboManager = AmiiboManager.getAmiiboManager(applicationContext)
             } catch (e: IOException) {
-                Debug.Warn(e)
+                Debug.warn(e)
             } catch (e: JSONException) {
-                Debug.Warn(e)
+                Debug.warn(e)
             } catch (e: ParseException) {
-                Debug.Warn(e)
+                Debug.warn(e)
             }
             if (Thread.currentThread().isInterrupted) return@execute
             this.amiiboManager = amiiboManager
@@ -150,23 +150,23 @@ class QRCodeScanner : AppCompatActivity() {
                         scanBarcodes(InputImage.fromBitmap(bitmap, 0))
                     }
                 } catch (ex: Exception) {
-                    Debug.Warn(ex)
+                    Debug.warn(ex)
                 }
             }
         }
     }
 
     private val isDocumentStorage: Boolean
-    get() = if (
-        Debug.isNewer(Build.VERSION_CODES.LOLLIPOP) && null != prefs.browserRootDocument()
-    ) {
-        try {
-            DocumentFile.fromTreeUri(this, Uri.parse(prefs.browserRootDocument()))
-            true
-        } catch (iae: IllegalArgumentException) {
-            false
-        }
-    } else false
+        get() = if (
+            Debug.isNewer(Build.VERSION_CODES.LOLLIPOP) && null != prefs.browserRootDocument()
+        ) {
+            try {
+                DocumentFile.fromTreeUri(this, Uri.parse(prefs.browserRootDocument()))
+                true
+            } catch (iae: IllegalArgumentException) {
+                false
+            }
+        } else false
 
     @Throws(Exception::class)
     private fun decodeAmiibo(qrData: ByteArray?) {
@@ -261,14 +261,14 @@ class QRCodeScanner : AppCompatActivity() {
         try {
             decodeAmiibo(barcode.rawBytes)
         } catch (ex: Exception) {
-            Debug.Warn(ex)
+            Debug.warn(ex)
         }
         if (txtMiiValue.text.isNullOrEmpty()) {
             txtMiiLabel.text = getText(R.string.qr_mii)
             try {
                 decryptMii(barcode.rawBytes)
             } catch (ex: Exception) {
-                Debug.Warn(ex)
+                Debug.warn(ex)
                 runOnUiThread {
 
                     txtMiiValue.text = ex.localizedMessage
@@ -280,7 +280,7 @@ class QRCodeScanner : AppCompatActivity() {
     private fun scanBarcodes(image: InputImage) {
         barcodeScanner?.process(image)!!.addOnSuccessListener { barcodes ->
             barcodes.forEach { processBarcode(it) }
-        }.addOnFailureListener { Debug.Error(it) }
+        }.addOnFailureListener { Debug.error(it) }
     }
 
     private val onPickImage = registerForActivityResult(
@@ -328,33 +328,34 @@ class QRCodeScanner : AppCompatActivity() {
     }
 
     private val screenAspectRatio: Int
-    @RequiresApi(Build.VERSION_CODES.LOLLIPOP) get() {
-        val width: Int
-        val height: Int
-        if (Debug.isNewer(Build.VERSION_CODES.S)) {
-            val bounds: Rect = windowManager.currentWindowMetrics.bounds
-            width = bounds.width()
-            height = bounds.height()
-        } else {
-            if (Debug.isNewer(Build.VERSION_CODES.R))
-                @Suppress("DEPRECATION")
-                display?.getRealMetrics(metrics)
-                    ?: windowManager.defaultDisplay.getRealMetrics(metrics)
-            else if (Debug.isNewer(Build.VERSION_CODES.JELLY_BEAN_MR1))
-                @Suppress("DEPRECATION")
-                windowManager.defaultDisplay.getRealMetrics(metrics)
-            else
-                @Suppress("DEPRECATION")
-                windowManager.defaultDisplay.getMetrics(metrics)
-            width = metrics.widthPixels
-            height = metrics.heightPixels
+        @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
+        get() {
+            val width: Int
+            val height: Int
+            if (Debug.isNewer(Build.VERSION_CODES.S)) {
+                val bounds: Rect = windowManager.currentWindowMetrics.bounds
+                width = bounds.width()
+                height = bounds.height()
+            } else {
+                if (Debug.isNewer(Build.VERSION_CODES.R))
+                    @Suppress("DEPRECATION")
+                    display?.getRealMetrics(metrics)
+                        ?: windowManager.defaultDisplay.getRealMetrics(metrics)
+                else if (Debug.isNewer(Build.VERSION_CODES.JELLY_BEAN_MR1))
+                    @Suppress("DEPRECATION")
+                    windowManager.defaultDisplay.getRealMetrics(metrics)
+                else
+                    @Suppress("DEPRECATION")
+                    windowManager.defaultDisplay.getMetrics(metrics)
+                width = metrics.widthPixels
+                height = metrics.heightPixels
+            }
+            val previewRatio = width.coerceAtLeast(height).toDouble() / width.coerceAtMost(height)
+            if (abs(previewRatio - (4.0 / 3.0)) <= abs(previewRatio - (16.0 / 9.0))) {
+                return AspectRatio.RATIO_4_3
+            }
+            return AspectRatio.RATIO_16_9
         }
-        val previewRatio = width.coerceAtLeast(height).toDouble() / width.coerceAtMost(height)
-        if (abs(previewRatio - (4.0 / 3.0)) <= abs(previewRatio - (16.0 / 9.0))) {
-            return AspectRatio.RATIO_4_3
-        }
-        return AspectRatio.RATIO_16_9
-    }
 
     @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
     private fun bindPreviewUseCase() {
@@ -372,9 +373,9 @@ class QRCodeScanner : AppCompatActivity() {
                 /* lifecycleOwner = */this, cameraSelector!!, previewUseCase
             )
         } catch (illegalStateException: IllegalStateException) {
-            Debug.Error(illegalStateException)
+            Debug.error(illegalStateException)
         } catch (illegalArgumentException: IllegalArgumentException) {
-            Debug.Error(illegalArgumentException)
+            Debug.error(illegalArgumentException)
         }
     }
 
@@ -397,9 +398,9 @@ class QRCodeScanner : AppCompatActivity() {
                 /* lifecycleOwner = */this, cameraSelector!!, analysisUseCase
             )
         } catch (illegalStateException: IllegalStateException) {
-            Debug.Error(illegalStateException)
+            Debug.error(illegalStateException)
         } catch (illegalArgumentException: IllegalArgumentException) {
-            Debug.Error(illegalArgumentException)
+            Debug.error(illegalArgumentException)
         }
     }
 
@@ -430,7 +431,7 @@ class QRCodeScanner : AppCompatActivity() {
         )
         barcodeScanner?.process(image)!!.addOnSuccessListener { barcodes ->
             barcodes.forEach { processBarcode(it) }
-        }.addOnFailureListener { Debug.Error(it) }.addOnCompleteListener { imageProxy.close() }
+        }.addOnFailureListener { Debug.error(it) }.addOnCompleteListener { imageProxy.close() }
     }
 
     @Throws(Exception::class)
@@ -529,7 +530,7 @@ class QRCodeScanner : AppCompatActivity() {
                         scanBarcodes(InputImage.fromBitmap(bitmap, 0))
                     }
                 } catch (ex: Exception) {
-                    Debug.Warn(ex)
+                    Debug.warn(ex)
                     runOnUiThread {
                         qrTypeSpinner.setSelection(0)
                         txtRawValue.setText("", TextView.BufferType.EDITABLE)

@@ -151,9 +151,9 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
                                         )
                                         flaskAmiibos.add(amiibo)
                                     } catch (ex: JSONException) {
-                                        Debug.Warn(ex)
+                                        Debug.warn(ex)
                                     } catch (ex: NullPointerException) {
-                                        Debug.Warn(ex)
+                                        Debug.warn(ex)
                                     }
                                 }
                                 val adapter = FlaskSlotAdapter(
@@ -186,9 +186,9 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
                                         )
                                         flaskAmiibos.add(amiibo)
                                     } catch (ex: JSONException) {
-                                        Debug.Warn(ex)
+                                        Debug.warn(ex)
                                     } catch (ex: NullPointerException) {
-                                        Debug.Warn(ex)
+                                        Debug.warn(ex)
                                     }
                                 }
                                 val adapter = flaskContent!!.adapter as FlaskSlotAdapter?
@@ -225,9 +225,9 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
                                 }
                                 flaskButtonState
                             } catch (ex: JSONException) {
-                                Debug.Warn(ex)
+                                Debug.warn(ex)
                             } catch (ex: NullPointerException) {
-                                Debug.Warn(ex)
+                                Debug.warn(ex)
                             }
                         }
 
@@ -329,7 +329,7 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
                                         val amiibo = getAmiiboFromHead(slotData[i])
                                         flaskAmiibos.add(amiibo)
                                     } catch (ex: NullPointerException) {
-                                        Debug.Warn(ex)
+                                        Debug.warn(ex)
                                         flaskAmiibos.add(null)
                                     }
                                 }
@@ -764,15 +764,15 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
         try {
             amiiboManager = getAmiiboManager(requireContext().applicationContext)
         } catch (e: IOException) {
-            Debug.Warn(e)
+            Debug.warn(e)
             amiiboManager = null
             Toasty(requireActivity()).Short(R.string.amiibo_info_parse_error)
         } catch (e: JSONException) {
-            Debug.Warn(e)
+            Debug.warn(e)
             amiiboManager = null
             Toasty(requireActivity()).Short(R.string.amiibo_info_parse_error)
         } catch (e: ParseException) {
-            Debug.Warn(e)
+            Debug.warn(e)
             amiiboManager = null
             Toasty(requireActivity()).Short(R.string.amiibo_info_parse_error)
         }
@@ -795,15 +795,15 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
         try {
             amiiboManager = getAmiiboManager(requireContext().applicationContext)
         } catch (e: IOException) {
-            Debug.Warn(e)
+            Debug.warn(e)
             amiiboManager = null
             Toasty(requireActivity()).Short(R.string.amiibo_info_parse_error)
         } catch (e: JSONException) {
-            Debug.Warn(e)
+            Debug.warn(e)
             amiiboManager = null
             Toasty(requireActivity()).Short(R.string.amiibo_info_parse_error)
         } catch (e: ParseException) {
-            Debug.Warn(e)
+            Debug.warn(e)
             amiiboManager = null
             Toasty(requireActivity()).Short(R.string.amiibo_info_parse_error)
         }
@@ -815,7 +815,7 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
                 val amiiboId = headData.getLong(0x28)
                 selectedAmiibo = amiiboManager.amiibos[amiiboId]
             } catch (e: Exception) {
-                Debug.Info(e)
+                Debug.info(e)
             }
         }
         return selectedAmiibo
@@ -989,7 +989,7 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
                     amiibo = amiiboManager.amiibos[amiiboId]
                     if (null == amiibo) amiibo = Amiibo(amiiboManager, amiiboId, null, null)
                 } catch (e: Exception) {
-                    Debug.Warn(e)
+                    Debug.warn(e)
                 }
             }
             if (null != amiibo && null != amiiboFile.data) {

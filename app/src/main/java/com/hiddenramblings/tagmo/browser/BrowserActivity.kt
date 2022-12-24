@@ -498,7 +498,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                 }
             }
         } catch (e: Exception) {
-            Debug.Warn(e)
+            Debug.warn(e)
         }
         popup.menuInflater.inflate(R.menu.action_menu, popup.menu)
         nfcFab!!.setOnClickListener { showPopupMenu(popup) }
@@ -1017,7 +1017,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                 Amiibo.dataToId(tagData)
             } catch (e: Exception) {
                 available = false
-                Debug.Info(e)
+                Debug.info(e)
             }
         }
         toolbar.menu.findItem(R.id.mnu_write).isEnabled = available
@@ -1258,7 +1258,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                     val usage = gamesManager.getGamesCompatibility(amiiboId)
                     txtUsage.post { txtUsage.text = usage }
                 } catch (ex: Exception) {
-                    Debug.Warn(ex)
+                    Debug.warn(ex)
                 }
             }
         } else {
@@ -1277,16 +1277,16 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
     }
 
     val isDocumentStorage: Boolean
-    get() = if (
-        Debug.isNewer(Build.VERSION_CODES.LOLLIPOP) && null != settings!!.browserRootDocument
-    ) {
-        try {
-            DocumentFile.fromTreeUri(this, settings!!.browserRootDocument!!)
-            true
-        } catch (iae: IllegalArgumentException) {
-            false
-        }
-    } else false
+        get() = if (
+            Debug.isNewer(Build.VERSION_CODES.LOLLIPOP) && null != settings!!.browserRootDocument
+        ) {
+            try {
+                DocumentFile.fromTreeUri(this, settings!!.browserRootDocument!!)
+                true
+            } catch (iae: IllegalArgumentException) {
+                false
+            }
+        } else false
 
     @Throws(ActivityNotFoundException::class)
     private fun onDocumentRequested() {
@@ -1624,7 +1624,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                 updateAmiiboView(tagData, amiiboFile)
             }
         } catch (e: Exception) {
-            Debug.Warn(e)
+            Debug.warn(e)
         }
     }
 
@@ -1645,7 +1645,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                 updateAmiiboView(tagData, amiiboFile)
             }
         } catch (e: Exception) {
-            Debug.Warn(e)
+            Debug.warn(e)
         }
     }
 
@@ -1663,7 +1663,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                 try {
                     powerTagManager
                 } catch (e: Exception) {
-                    Debug.Warn(e)
+                    Debug.warn(e)
                     Toasty(this).Short(R.string.fail_powertag_keys)
                 }
             }
@@ -1676,28 +1676,28 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
             try {
                 amiiboManager = getAmiiboManager(applicationContext)
             } catch (e: IOException) {
-                Debug.Warn(e)
+                Debug.warn(e)
                 amiiboManager = null
                 Toasty(this).Short(R.string.amiibo_info_parse_error)
             } catch (e: JSONException) {
-                Debug.Warn(e)
+                Debug.warn(e)
                 amiiboManager = null
                 Toasty(this).Short(R.string.amiibo_info_parse_error)
             } catch (e: ParseException) {
-                Debug.Warn(e)
+                Debug.warn(e)
                 amiiboManager = null
                 Toasty(this).Short(R.string.amiibo_info_parse_error)
             }
             val gamesManager: GamesManager? = try {
                 getGamesManager(this)
             } catch (e: IOException) {
-                Debug.Warn(e)
+                Debug.warn(e)
                 null
             } catch (e: JSONException) {
-                Debug.Warn(e)
+                Debug.warn(e)
                 null
             } catch (e: ParseException) {
-                Debug.Warn(e)
+                Debug.warn(e)
                 null
             }
             if (Thread.currentThread().isInterrupted) return@execute
@@ -2130,7 +2130,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                 try {
                     amiiboId = Amiibo.dataToId(tagData)
                 } catch (e: Exception) {
-                    Debug.Info(e)
+                    Debug.info(e)
                 }
             }
             if (amiiboId == -1L) {
@@ -2189,7 +2189,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                     }
                 }
             } catch (ex: Exception) {
-                Debug.Warn(ex)
+                Debug.warn(ex)
             }
             if (hasSpoofData(amiiboHexId) && null != txtTagId) txtTagId!!.isEnabled = false
             if (null != imageAmiibo) {
@@ -2547,7 +2547,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                         hideFakeSnackbar()
                     }
                 } catch (e: Exception) {
-                    Debug.Warn(e)
+                    Debug.warn(e)
                 }
             }
         } else {
@@ -2575,7 +2575,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                             hideFakeSnackbar()
                         }
                     } catch (e: Exception) {
-                        Debug.Warn(e)
+                        Debug.warn(e)
                     }
                 }
             } else {

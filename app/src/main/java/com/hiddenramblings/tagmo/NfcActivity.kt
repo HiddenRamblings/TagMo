@@ -514,13 +514,8 @@ class NfcActivity : AppCompatActivity() {
             }
             finish()
         } catch (e: Exception) {
-            Debug.Warn(e)
-            var error: String? = when {
-                null != e.message && null != e.cause -> e.message + "\n" + e.cause.toString()
-                null != e.message -> e.message
-                null != e.cause -> e.cause.toString()
-                else -> null
-            }
+            Debug.warn(e)
+            var error: String? = Debug.getExceptionDetails(e)
             if (null != error) {
                 if (getString(R.string.error_tag_rewrite) == error) {
                     args.putByteArray(NFCIntent.EXTRA_TAG_DATA, update)
@@ -663,7 +658,7 @@ class NfcActivity : AppCompatActivity() {
                 nfcTechList
             )
         } catch (ex: RuntimeException) {
-            Debug.Warn(ex)
+            Debug.warn(ex)
             cancelAction()
         }
     }

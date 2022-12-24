@@ -138,7 +138,7 @@ class JSONExecutor(activity: Activity, server: String, path: String) {
                 `in`.close()
                 conn.disconnect()
             } catch (e: IOException) {
-                Debug.Warn(e)
+                Debug.warn(e)
             }
         }
     }

@@ -42,7 +42,7 @@ class NTAG215 : TagTechnology {
                 return tagNfcA.transceive(data)
             }
         } catch (e: IOException) {
-            Debug.Warn(e)
+            Debug.warn(e)
         }
         return null
     }

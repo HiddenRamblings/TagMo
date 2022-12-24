@@ -30,9 +30,9 @@ class CameraXViewModel(application: Application) : AndroidViewModel(application)
                             cameraProviderLiveData!!.setValue(cameraProviderFuture.get())
                         } catch (e: ExecutionException) {
                             // Handle any errors (including cancellation) here.
-                            Debug.Error(e)
+                            Debug.error(e)
                         } catch (e: InterruptedException) {
-                            Debug.Error(e)
+                            Debug.error(e)
                         }
                     },
                     ContextCompat.getMainExecutor(getApplication())

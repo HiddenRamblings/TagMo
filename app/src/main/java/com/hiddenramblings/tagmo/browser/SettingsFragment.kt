@@ -284,7 +284,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
                     }
                 }
             } catch (e: Exception) {
-                Debug.Info(e)
+                Debug.info(e)
             }
         }
         val disclaimerTagMo = findPreference<Preference>(getString(R.string.disclaimer_tagmo))
@@ -301,7 +301,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
                     }
                 }
             } catch (e: Exception) {
-                Debug.Info(e)
+                Debug.info(e)
             }
         }
     }
@@ -337,7 +337,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
                     }
                 }
             } catch (e: Exception) {
-                Debug.Info(e)
+                Debug.info(e)
             }
         }
     }
@@ -415,15 +415,15 @@ class SettingsFragment : PreferenceFragmentCompat() {
             val amiiboManager: AmiiboManager = try {
                 parse(requireContext(), data)
             } catch (e: JSONException) {
-                Debug.Warn(e)
+                Debug.warn(e)
                 Toasty(requireActivity()).Short(R.string.amiibo_failure_parse)
                 return@execute
             } catch (e: ParseException) {
-                Debug.Warn(e)
+                Debug.warn(e)
                 Toasty(requireActivity()).Short(R.string.amiibo_failure_parse)
                 return@execute
             } catch (e: IOException) {
-                Debug.Warn(e)
+                Debug.warn(e)
                 Toasty(requireActivity()).Short(R.string.amiibo_failure_parse)
                 return@execute
             }
@@ -431,11 +431,11 @@ class SettingsFragment : PreferenceFragmentCompat() {
             try {
                 saveDatabase(amiiboManager, requireContext().applicationContext)
             } catch (e: JSONException) {
-                Debug.Warn(e)
+                Debug.warn(e)
                 Toasty(requireActivity()).Short(R.string.amiibo_failure_update)
                 return@execute
             } catch (e: IOException) {
-                Debug.Warn(e)
+                Debug.warn(e)
                 Toasty(requireActivity()).Short(R.string.amiibo_failure_update)
                 return@execute
             }
@@ -525,7 +525,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
                             try {
                                 reader.close()
                             } catch (e: IOException) {
-                                Debug.Info(e)
+                                Debug.info(e)
                             }
                         }
                         conn.disconnect()
@@ -549,7 +549,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
                     throw Exception(statusCode.toString())
                 }
             } catch (e: Exception) {
-                Debug.Warn(e)
+                Debug.warn(e)
                 activity.runOnUiThread {
                     if (syncMessage.isShown) syncMessage.dismiss()
                     buildSnackbar(
@@ -595,7 +595,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
                     requireActivity().runOnUiThread { keyEntryDialog(hexString) }
                     scanner.close()
                 } catch (e: IOException) {
-                    Debug.Warn(e)
+                    Debug.warn(e)
                 }
             }
         } else if (null != result.data!!.clipData) {
@@ -641,7 +641,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
                         )
                     )
                 } catch (ex: ActivityNotFoundException) {
-                    Debug.Info(ex)
+                    Debug.info(ex)
                 }
             }
             RESULT_IMPORT_AMIIBO_DATABASE -> try {
@@ -657,7 +657,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
                     )
                 )
             } catch (ex: ActivityNotFoundException) {
-                Debug.Info(ex)
+                Debug.info(ex)
             }
         }
     }
@@ -691,7 +691,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
                 }
             }
         } catch (e: Exception) {
-            Debug.Warn(e)
+            Debug.warn(e)
         }
     }
 
@@ -715,7 +715,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
                 }
             }
         } catch (e: Exception) {
-            Debug.Warn(e)
+            Debug.warn(e)
         }
     }
 

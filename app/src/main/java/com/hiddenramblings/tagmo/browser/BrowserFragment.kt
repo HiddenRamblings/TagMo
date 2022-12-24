@@ -274,7 +274,7 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
                 directory, TagArray.decipherFilename(amiibo, tagData, false), tagData
             )
         } catch (e: Exception) {
-            Debug.Warn(e)
+            Debug.warn(e)
         }
     }
 
@@ -293,7 +293,7 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
                 getString(R.string.wrote_foomiibo, amiibo.name), Snackbar.LENGTH_SHORT
             ).show()
         } catch (e: Exception) {
-            Debug.Warn(e)
+            Debug.warn(e)
         }
     }
 
@@ -332,7 +332,7 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
                 val usage = gamesManager.getGamesCompatibility(amiiboId)
                 txtUsage.post { txtUsage.text = usage }
             } catch (ex: Exception) {
-                Debug.Warn(ex)
+                Debug.warn(ex)
             }
         }
     }

@@ -69,7 +69,7 @@ class JoyConFragment : DialogFragment(), BluetoothListener {
         var hasProController = false
         val gamepads = InputDevice.getDeviceIds()
         for (gamepad in gamepads) {
-            Debug.Verbose(
+            Debug.verbose(
                 JoyConFragment::class.java, "ID: " + gamepad + ", Name: "
                         + InputDevice.getDevice(gamepad).name + ", Descriptor: "
                         + InputDevice.getDevice(gamepad).descriptor

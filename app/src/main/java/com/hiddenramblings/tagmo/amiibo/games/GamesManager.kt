@@ -166,13 +166,13 @@ class GamesManager {
                     gamesManager = parse(context.openFileInput(GAMES_DATABASE_FILE))
                 } catch (e: IOException) {
                     gamesManager = null
-                    Debug.Warn(R.string.error_amiibo_parse, e)
+                    Debug.warn(R.string.error_amiibo_parse, e)
                 } catch (e: JSONException) {
                     gamesManager = null
-                    Debug.Warn(R.string.error_amiibo_parse, e)
+                    Debug.warn(R.string.error_amiibo_parse, e)
                 } catch (e: ParseException) {
                     gamesManager = null
-                    Debug.Warn(R.string.error_amiibo_parse, e)
+                    Debug.warn(R.string.error_amiibo_parse, e)
                 }
             } else {
                 gamesManager = null

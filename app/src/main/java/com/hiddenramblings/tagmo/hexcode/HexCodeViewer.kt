@@ -57,7 +57,7 @@ class HexCodeViewer : AppCompatActivity() {
                 listView.layoutManager = LinearLayoutManager(this)
                 listView.adapter = adapter
             } catch (ex: Exception) {
-                Debug.Warn(e)
+                Debug.warn(e)
                 showErrorDialog(R.string.fail_display)
             }
         }
@@ -155,7 +155,7 @@ class HexCodeViewer : AppCompatActivity() {
                 )
             }
         } catch (e: IOException) {
-            Debug.Warn(e)
+            Debug.warn(e)
         }
     }
 

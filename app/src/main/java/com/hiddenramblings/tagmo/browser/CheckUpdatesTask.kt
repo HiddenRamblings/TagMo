@@ -160,9 +160,9 @@ class CheckUpdatesTask internal constructor(activity: BrowserActivity) {
                     }
                 }
             } catch (ex: SecurityException) {
-                Debug.Warn(ex)
+                Debug.warn(ex)
             } catch (ex: IOException) {
-                Debug.Warn(ex)
+                Debug.warn(ex)
             }
         }
     }
@@ -198,7 +198,7 @@ class CheckUpdatesTask internal constructor(activity: BrowserActivity) {
             isUpdateAvailable = BuildConfig.COMMIT != lastCommit
             if (isUpdateAvailable && null != listener) listener!!.onUpdateFound(downloadUrl)
         } catch (e: JSONException) {
-            Debug.Warn(e)
+            Debug.warn(e)
         }
     }
 
@@ -211,7 +211,7 @@ class CheckUpdatesTask internal constructor(activity: BrowserActivity) {
                 8675309
             )
         } catch (ex: SendIntentException) {
-            Debug.Warn(ex)
+            Debug.warn(ex)
         }
     }
 

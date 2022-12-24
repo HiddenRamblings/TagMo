@@ -13,7 +13,7 @@ class GameTitles(val manager: GamesManager, val name: String, jsonArray: JSONArr
                 val gameId = jsonArray.getString(i)
                 gameIds.add(java.lang.Long.decode("0x$gameId"))
             } catch (e: JSONException) {
-                Debug.Warn(e)
+                Debug.warn(e)
             }
         }
     }

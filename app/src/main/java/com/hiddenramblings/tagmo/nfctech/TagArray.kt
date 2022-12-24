@@ -21,8 +21,6 @@ import com.hiddenramblings.tagmo.amiibo.AmiiboManager
 import com.hiddenramblings.tagmo.amiibo.KeyManager
 import com.hiddenramblings.tagmo.browser.Preferences
 import com.hiddenramblings.tagmo.eightbit.io.Debug
-import com.hiddenramblings.tagmo.eightbit.io.Debug.Info
-import com.hiddenramblings.tagmo.eightbit.io.Debug.Warn
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
@@ -126,17 +124,15 @@ object TagArray {
                 Integer.parseInt(s, it * 2, (it + 1) * 2, 16).toByte()
             }
         } catch (e: NumberFormatException) {
-            val byteIterator = s.chunkedSequence(2).map { it.toInt(16).toByte() }.iterator()
-            ByteArray(s.length / 2) { byteIterator.next() }
+            val byterator = s.chunkedSequence(2).map { it.toInt(16).toByte() }.iterator()
+            ByteArray(s.length / 2) { byterator.next() }
         }
     }
 
     fun longToBytes(x: Long): ByteArray {
-        val buffer = ByteBuffer.allocate(
+        return ByteBuffer.allocate(
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) java.lang.Long.BYTES else 8
-        )
-        buffer.putLong(x)
-        return buffer.array()
+        ).putLong(x).array()
     }
 
     fun bytesToLong(bytes: ByteArray?): Long {
@@ -234,7 +230,7 @@ object TagArray {
                     context.getString(R.string.error_tag_specs)
                 )
             } catch (e: Exception) {
-                Warn(R.string.error_version, e)
+                Debug.warn(R.string.error_version, e)
                 throw e
             }
         }
@@ -245,7 +241,7 @@ object TagArray {
             ))
         if (!compareRange(pages, tagData, 9))
             throw Exception(context.getString(R.string.fail_mismatch_uid))
-        Info(TagWriter::class.java, R.string.validation_success)
+        Debug.info(TagWriter::class.java, R.string.validation_success)
     }
 
     @JvmStatic
@@ -256,8 +252,8 @@ object TagArray {
                 validateData(tagData)
                 "Validated"
             } catch (e: Exception) {
-                Warn(e)
-                e.message.toString()
+                Debug.warn(e)
+                Debug.getExceptionSummary(e)
             }
         }
         try {
@@ -269,7 +265,7 @@ object TagArray {
                 Locale.ROOT, "%1\$s[%2\$s].bin", name, uidHex
             )
         } catch (ex: Exception) {
-            Warn(ex)
+            Debug.warn(ex)
         }
         return ""
     }
@@ -284,7 +280,7 @@ object TagArray {
                 return decipherFilename(amiiboManager.amiibos[amiiboId]!!, tagData, verified)
             }
         } catch (ex: Exception) {
-            Warn(ex)
+            Debug.warn(ex)
         }
         return ""
     }
@@ -341,7 +337,7 @@ object TagArray {
                 TagMo.appContext, arrayOf(binFile.absolutePath), null, null
             )
         } catch (e: Exception) {
-            Info(e)
+            Debug.info(e)
         }
         return binFile.absolutePath
     }

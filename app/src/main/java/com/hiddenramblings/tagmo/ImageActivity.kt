@@ -104,11 +104,11 @@ class ImageActivity : AppCompatActivity() {
             try {
                 amiiboManager = AmiiboManager.getAmiiboManager(applicationContext)
             } catch (e: IOException) {
-                Debug.Warn(e)
+                Debug.warn(e)
             } catch (e: JSONException) {
-                Debug.Warn(e)
+                Debug.warn(e)
             } catch (e: ParseException) {
-                Debug.Warn(e)
+                Debug.warn(e)
             }
             if (Thread.currentThread().isInterrupted) return@execute
             this.amiiboManager = amiiboManager
@@ -234,7 +234,7 @@ class ImageActivity : AppCompatActivity() {
                 )
             }
         } catch (e: IOException) {
-            Debug.Warn(e)
+            Debug.warn(e)
         }
     }
 }

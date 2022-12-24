@@ -44,7 +44,7 @@ class AmiiboDocument(context: Context) {
                 while (docCursor!!.moveToNext()) {
                     val displayName = docCursor.getString(0)
                     val mimeType = docCursor.getString(1)
-                    Debug.Verbose(
+                    Debug.verbose(
                         this.javaClass, "Primary doc=$displayName, mime=$mimeType"
                     )
                 }
@@ -101,7 +101,7 @@ class AmiiboDocument(context: Context) {
                 val displayName = cursor.getString(0)
                 val mimeType = cursor.getString(1)
                 val childDocumentId = cursor.getString(2)
-                Debug.Verbose(
+                Debug.verbose(
                     this.javaClass, "Child doc=$displayName, parent=$documentId, mime=$mimeType"
                 )
                 if (DocumentsContract.Document.MIME_TYPE_DIR == mimeType && recursiveFiles) {

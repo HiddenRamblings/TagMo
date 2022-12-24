@@ -3,8 +3,7 @@ package com.hiddenramblings.tagmo.nfctech
 import android.net.Uri
 import com.hiddenramblings.tagmo.R
 import com.hiddenramblings.tagmo.TagMo.Companion.appContext
-import com.hiddenramblings.tagmo.eightbit.io.Debug.Info
-import com.hiddenramblings.tagmo.eightbit.io.Debug.Warn
+import com.hiddenramblings.tagmo.eightbit.io.Debug
 import com.hiddenramblings.tagmo.nfctech.Foomiibo.Companion.getDataSignature
 import com.hiddenramblings.tagmo.nfctech.TagArray.bytesToHex
 import java.io.*
@@ -15,11 +14,11 @@ object TagReader {
     @Throws(IOException::class)
     fun validateBlankTag(mifare: NTAG215) {
         val lockPage = mifare.readPages(0x02)
-        Info(TagWriter::class.java, bytesToHex(lockPage!!))
+        Debug.info(TagWriter::class.java, bytesToHex(lockPage!!))
         if (lockPage[2] == 0x0F.toByte() && lockPage[3] == 0xE0.toByte()) {
             throw IOException(appContext.getString(R.string.error_tag_rewrite))
         }
-        Info(TagWriter::class.java, R.string.validation_success)
+        Debug.info(TagWriter::class.java, R.string.validation_success)
     }
 
     @Throws(Exception::class)
@@ -74,7 +73,7 @@ object TagReader {
             System.arraycopy(pages, 0, tagData, dstIndex, dstCount)
             i += BULK_READ_PAGE_COUNT
         }
-        Info(TagReader::class.java, bytesToHex(tagData))
+        Debug.info(TagReader::class.java, bytesToHex(tagData))
         return tagData
     }
 
@@ -95,9 +94,7 @@ object TagReader {
                 tags.add(bytesToHex(tagData))
                 i++
             } catch (e: Exception) {
-                Warn(
-                    TagReader::class.java, appContext.getString(R.string.fail_parse_banks)
-                )
+                Debug.warn(TagReader::class.java, appContext.getString(R.string.fail_parse_banks))
             }
         }
         return tags
@@ -136,7 +133,7 @@ object TagReader {
             val data = tag.amiiboFastRead(0x00, 0x86, bank)
                 ?: throw NullPointerException(context.getString(R.string.fail_read_amiibo))
             System.arraycopy(data, 0, tagData, 0, NfcByte.TAG_DATA_SIZE)
-            Info(TagReader::class.java, bytesToHex(tagData))
+            Debug.info(TagReader::class.java, bytesToHex(tagData))
             tagData
         } catch (e: IllegalStateException) {
             throw IllegalStateException(context.getString(R.string.fail_early_remove))

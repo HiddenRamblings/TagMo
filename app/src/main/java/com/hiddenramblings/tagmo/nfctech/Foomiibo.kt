@@ -31,14 +31,11 @@ class Foomiibo {
     @Suppress("UNUSED")
     private fun randomizeSerial(serial: String): String {
         val random = Random()
-        val week = DecimalFormat("00").format(
-            (random.nextInt(52 - 1 + 1) + 1).toLong()
-        )
+        val week = DecimalFormat("00").format((random.nextInt(52) + 1))
         val year = random.nextInt(9 + 1).toString()
         val identifier = serial.substring(3, 7)
-        val facility = TagMo.appContext.resources.getStringArray(
-            R.array.production_factory
-        )[random.nextInt(3 + 1)]
+        val facility = TagMo.appContext.resources
+            .getStringArray(R.array.production_factory)[random.nextInt(3 + 1)]
         return week + year + "000" + identifier + facility
     }
 

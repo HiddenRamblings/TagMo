@@ -1753,8 +1753,8 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
             val foomiibo = File(filesDir, "Foomiibo")
             amiiboFiles.addAll(listAmiibos(keyManager, foomiibo, true))
             if (Thread.currentThread().isInterrupted) return@execute
+            hideFakeSnackbar()
             runOnUiThread {
-                hideFakeSnackbar()
                 settings!!.amiiboFiles = amiiboFiles
                 settings!!.notifyChanges()
             }
@@ -1774,8 +1774,8 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
             val foomiibo = File(filesDir, "Foomiibo")
             amiiboFiles.addAll(listAmiibos(keyManager, foomiibo, true))
             if (Thread.currentThread().isInterrupted) return@execute
+            hideFakeSnackbar()
             runOnUiThread {
-                hideFakeSnackbar()
                 settings!!.amiiboFiles = amiiboFiles
                 settings!!.notifyChanges()
             }
@@ -2419,7 +2419,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
     }
 
     private fun showFakeSnackbar(msg: String) {
-        fakeSnackbar!!.post {
+        fakeSnackbar?.post {
             fakeSnackbarItem!!.visibility = View.INVISIBLE
             fakeSnackbarText!!.text = msg
             fakeSnackbar!!.visibility = View.VISIBLE
@@ -2427,21 +2427,23 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
     }
 
     private fun hideFakeSnackbar() {
-        if (fakeSnackbar!!.visibility == View.VISIBLE) {
-            val animate = TranslateAnimation(
-                0f, 0f, 0f, (-fakeSnackbar!!.height).toFloat()
-            )
-            animate.duration = 150
-            animate.fillAfter = false
-            fakeSnackbar!!.setAnimationListener(object : AnimatedLinearLayout.AnimationListener {
-                override fun onAnimationStart(layout: AnimatedLinearLayout?) {}
-                override fun onAnimationEnd(layout: AnimatedLinearLayout?) {
-                    fakeSnackbar!!.clearAnimation()
-                    layout!!.setAnimationListener(null)
-                    fakeSnackbar!!.visibility = View.GONE
-                }
-            })
-            fakeSnackbar!!.startAnimation(animate)
+        runOnUiThread {
+            if (fakeSnackbar?.visibility == View.VISIBLE) {
+                val animate = TranslateAnimation(
+                    0f, 0f, 0f, (-fakeSnackbar!!.height).toFloat()
+                )
+                animate.duration = 150
+                animate.fillAfter = false
+                fakeSnackbar!!.setAnimationListener(object : AnimatedLinearLayout.AnimationListener {
+                    override fun onAnimationStart(layout: AnimatedLinearLayout?) {}
+                    override fun onAnimationEnd(layout: AnimatedLinearLayout?) {
+                        fakeSnackbar!!.clearAnimation()
+                        layout!!.setAnimationListener(null)
+                        fakeSnackbar!!.visibility = View.GONE
+                    }
+                })
+                fakeSnackbar!!.startAnimation(animate)
+            }
         }
     }
 

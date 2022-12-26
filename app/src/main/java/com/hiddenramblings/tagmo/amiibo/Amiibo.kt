@@ -36,23 +36,23 @@ open class Amiibo : Comparable<Amiibo>, Parcelable {
     val characterId: Long
         get() = id and Character.MASK
     val character: Character?
-        get() = manager!!.characters[characterId]
+        get() = manager?.characters?.get(characterId)
     val gameSeriesId: Long
         get() = id and GameSeries.MASK
     val gameSeries: GameSeries?
-        get() = manager!!.gameSeries[gameSeriesId]
+        get() = manager?.gameSeries?.get(gameSeriesId)
     val variantId: Long
         get() = id and VARIANT_MASK
     val amiiboTypeId: Long
         get() = id and AmiiboType.MASK
     val amiiboType: AmiiboType?
-        get() = manager!!.amiiboTypes[amiiboTypeId]
+        get() = manager?.amiiboTypes?.get(amiiboTypeId)
     val amiiboModelId: Long
         get() = id and AMIIBO_MODEL_MASK
     val amiiboSeriesId: Long
         get() = id and AmiiboSeries.MASK
     val amiiboSeries: AmiiboSeries?
-        get() = manager!!.amiiboSeries[amiiboSeriesId]
+        get() = manager?.amiiboSeries?.get(amiiboSeriesId)
     val unknownId: Long
         get() = id and UNKNOWN_MASK
     val imageUrl: String

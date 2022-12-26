@@ -51,36 +51,24 @@ class Foomiibo {
         arr[0] = uid[0x8]
 
         // Set Internal, Static Lock, and CC
-        val CC = byteArrayOf(
-            0x48,
-            0x0F,
-            0xE0.toByte(),
-            0xF1.toByte(),
-            0x10,
-            0xFF.toByte(),
-            0xEE.toByte()
-        )
-        System.arraycopy(CC, 0, arr, 0x1, CC.size)
+        System.arraycopy(byteArrayOf(
+            0x48, 0x0F, 0xE0.toByte(), 0xF1.toByte(), 0x10, 0xFF.toByte(), 0xEE.toByte()
+        ), 0, arr, 0x1, 7)
 
         // Set 0xA5, Write Counter, and Unknown
-        val OxA5 = byteArrayOf(0xA5.toByte(), 0x00, 0x00, 0x00)
-        System.arraycopy(OxA5, 0, arr, 0x28, OxA5.size)
+        System.arraycopy(byteArrayOf(0xA5.toByte(), 0x00, 0x00, 0x00), 0, arr, 0x28, 4)
 
         // Set Dynamic Lock, and RFUI
-        val RFUI = byteArrayOf(0x01, 0x00, 0x0F, 0xBD.toByte())
-        System.arraycopy(RFUI, 0, arr, 0x208, RFUI.size)
+        System.arraycopy(byteArrayOf(0x01, 0x00, 0x0F, 0xBD.toByte()), 0, arr, 0x208, 4)
 
         // Set CFG0
-        val CFG0 = byteArrayOf(0x00, 0x00, 0x00, 0x04)
-        System.arraycopy(CFG0, 0, arr, 0x20C, CFG0.size)
+        System.arraycopy(byteArrayOf(0x00, 0x00, 0x00, 0x04), 0, arr, 0x20C, 4)
 
         // Set CFG1
-        val CFG1 = byteArrayOf(0x5F, 0x00, 0x00, 0x00)
-        System.arraycopy(CFG1, 0, arr, 0x210, CFG1.size)
+        System.arraycopy(byteArrayOf(0x5F, 0x00, 0x00, 0x00), 0, arr, 0x210, 4)
 
         // Set Keygen Salt
-        val salt = getRandomBytes(32)
-        System.arraycopy(salt, 0, arr, 0x1E8, salt.size)
+        System.arraycopy(getRandomBytes(32), 0, arr, 0x1E8, 32)
         var off1 = 0x54
         var off2 = 0x1DC
         // Write Identification Block

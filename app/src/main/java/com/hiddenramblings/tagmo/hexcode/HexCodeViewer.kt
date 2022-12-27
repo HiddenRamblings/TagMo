@@ -158,9 +158,10 @@ class HexCodeViewer : AppCompatActivity() {
                     )
                 )
             }
-            viewBitmap.recycle()
         } catch (e: IOException) {
             Debug.warn(e)
+        } finally {
+            viewBitmap.recycle()
         }
     }
 

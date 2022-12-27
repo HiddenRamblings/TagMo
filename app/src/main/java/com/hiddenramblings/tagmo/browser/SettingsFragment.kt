@@ -521,12 +521,10 @@ class SettingsFragment : PreferenceFragmentCompat() {
                             response.append(line)
                         }
                     } finally {
-                        if (null != reader) {
-                            try {
-                                reader.close()
-                            } catch (e: IOException) {
-                                Debug.info(e)
-                            }
+                        try {
+                            reader?.close()
+                        } catch (e: IOException) {
+                            Debug.info(e)
                         }
                         conn.disconnect()
                     }
@@ -582,20 +580,20 @@ class SettingsFragment : PreferenceFragmentCompat() {
     ) { result: ActivityResult ->
         if (result.resultCode != Activity.RESULT_OK || result.data == null) {
             Executors.newSingleThreadExecutor().execute {
+                var scanner: Scanner? = null
                 try {
-                    val scanner = Scanner(
-                        URL(
+                    scanner = Scanner(URL(
                             "https://pastebin.com/raw/aV23ha3X"
-                        ).openStream()
-                    )
+                    ).openStream())
                     for (i in 0..3) {
                         if (scanner.hasNextLine()) scanner.nextLine()
                     }
                     val hexString = scanner.nextLine()
                     requireActivity().runOnUiThread { keyEntryDialog(hexString) }
-                    scanner.close()
                 } catch (e: IOException) {
                     Debug.warn(e)
+                } finally {
+                    scanner?.close()
                 }
             }
         } else if (null != result.data!!.clipData) {

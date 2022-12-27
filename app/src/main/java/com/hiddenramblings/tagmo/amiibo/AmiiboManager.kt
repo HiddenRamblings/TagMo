@@ -267,14 +267,12 @@ class AmiiboManager {
                 streamWriter = OutputStreamWriter(outputStream)
                 streamWriter.write(amiiboManager.toJSON().toString())
             } finally {
-                if (null != streamWriter) {
-                    try {
-                        streamWriter.close()
-                    } catch (e: IOException) {
-                        Debug.info(e)
-                    }
+                try {
+                    streamWriter?.close()
+                } catch (e: IOException) {
+                    Debug.info(e)
                 }
-                outputStream!!.flush()
+                outputStream?.flush()
             }
         }
 
@@ -285,12 +283,10 @@ class AmiiboManager {
                 outputStream = context.openFileOutput(AMIIBO_DATABASE_FILE, Context.MODE_PRIVATE)
                 saveDatabase(amiiboManager, outputStream)
             } finally {
-                if (null != outputStream) {
-                    try {
-                        outputStream.close()
-                    } catch (e: IOException) {
-                        Debug.info(e)
-                    }
+                try {
+                    outputStream?.close()
+                } catch (e: IOException) {
+                    Debug.info(e)
                 }
             }
         }
@@ -309,19 +305,15 @@ class AmiiboManager {
             } catch (ex: IOException) {
                 return null
             } finally {
-                if (null != reader) {
-                    try {
-                        reader.close()
-                    } catch (e: IOException) {
-                        Debug.info(e)
-                    }
+                try {
+                    reader?.close()
+                } catch (e: IOException) {
+                    Debug.info(e)
                 }
-                if (null != inputStream) {
-                    try {
-                        inputStream.close()
-                    } catch (e: IOException) {
-                        Debug.info(e)
-                    }
+                try {
+                    inputStream?.close()
+                } catch (e: IOException) {
+                    Debug.info(e)
                 }
             }
             return if (database.isNotEmpty()) database.toString() else null

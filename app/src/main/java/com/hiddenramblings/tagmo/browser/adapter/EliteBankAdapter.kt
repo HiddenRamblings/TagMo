@@ -43,7 +43,7 @@ class EliteBankAdapter     // setHasStableIds(true);
     }
 
     override fun getItemId(i: Int): Long {
-        return amiibos[i]?.id!!.toLong()
+        return (amiibos[i]?.id ?: 0).toLong()
     }
 
     private fun getItem(i: Int): EliteTag? {

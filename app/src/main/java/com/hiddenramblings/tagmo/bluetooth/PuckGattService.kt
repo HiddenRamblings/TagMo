@@ -210,7 +210,7 @@ class PuckGattService : Service() {
         if (mBluetoothGatt == null) {
             return super.onUnbind(intent)
         }
-        mBluetoothGatt!!.close()
+        mBluetoothGatt?.close()
         mBluetoothGatt = null
         return super.onUnbind(intent)
     }

@@ -33,11 +33,9 @@ class ScanTag {
     private var hasTestedElite = false
     private var isEliteDevice = false
     private fun closeTagSilently(mifare: NTAG215?) {
-        if (null != mifare) {
-            try {
-                mifare.close()
-            } catch (ignored: Exception) { }
-        }
+        try {
+            mifare?.close()
+        } catch (ignored: Exception) { }
     }
 
     fun onTagDiscovered(activity: BrowserActivity, intent: Intent) {

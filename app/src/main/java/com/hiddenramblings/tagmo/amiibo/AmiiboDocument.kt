@@ -116,14 +116,11 @@ class AmiiboDocument(context: Context) {
     }
 
     private fun closeQuietly(closeable: AutoCloseable?) {
-        if (null != closeable) {
-            try {
-                closeable.close()
-            } catch (runtime: RuntimeException) {
-                throw runtime
-            } catch (ignored: Exception) {
-            }
-        }
+        try {
+            closeable?.close()
+        } catch (runtime: RuntimeException) {
+            throw runtime
+        } catch (ignored: Exception) { }
     }
 
     class MutableInteger(private var value: Int) {

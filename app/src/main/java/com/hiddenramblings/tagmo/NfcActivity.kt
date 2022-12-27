@@ -224,12 +224,9 @@ class NfcActivity : AppCompatActivity() {
     }
 
     private fun closeTagSilently(mifare: NTAG215?) {
-        if (null != mifare) {
-            try {
-                mifare.close()
-            } catch (ignored: Exception) {
-            }
-        }
+        try {
+            mifare?.close()
+        } catch (ignored: Exception) { }
     }
 
     private fun onTagDiscovered(intent: Intent) {

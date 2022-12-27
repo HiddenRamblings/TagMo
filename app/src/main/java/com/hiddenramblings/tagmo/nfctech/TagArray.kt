@@ -346,8 +346,8 @@ object TagArray {
         )
         if (null != newFile) {
             val docWriter = context.contentResolver.openOutputStream(newFile.uri)
-            docWriter!!.write(tagData)
-            docWriter.close()
+            docWriter?.write(tagData)
+            docWriter?.close()
         }
         return newFile?.name
     }

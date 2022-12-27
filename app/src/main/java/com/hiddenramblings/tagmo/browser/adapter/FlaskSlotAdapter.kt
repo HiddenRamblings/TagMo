@@ -47,7 +47,7 @@ class FlaskSlotAdapter(
     }
 
     override fun getItemId(i: Int): Long {
-        return flaskAmiibo[i]?.flaskTail!!.toLong()
+        return (flaskAmiibo[i]?.flaskTail ?: "").toLong()
     }
 
     fun getItem(i: Int): Amiibo? {

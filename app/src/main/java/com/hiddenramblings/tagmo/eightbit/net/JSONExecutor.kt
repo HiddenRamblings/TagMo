@@ -75,11 +75,11 @@ class JSONExecutor(activity: Activity, server: String, path: String) {
     init {
         SecurityHandler(activity, object : SecurityHandler.ProviderInstallListener {
             override fun onProviderInstalled() {
-                RetrieveJSON(server, path)
+                retrieveJSON(server, path)
             }
 
             override fun onProviderInstallException() {
-                RetrieveJSON(server, path)
+                retrieveJSON(server, path)
             }
 
             override fun onProviderInstallFailed() {
@@ -102,7 +102,7 @@ class JSONExecutor(activity: Activity, server: String, path: String) {
         return urlConnection
     }
 
-    fun RetrieveJSON(server: String, path: String) {
+    fun retrieveJSON(server: String, path: String) {
         Executors.newSingleThreadExecutor().execute {
             try {
                 var conn = URL(server + path).openConnection() as HttpsURLConnection
@@ -124,18 +124,18 @@ class JSONExecutor(activity: Activity, server: String, path: String) {
                     conn.disconnect()
                     return@execute
                 }
-                val `in` = conn.inputStream
+                val inStream = conn.inputStream
                 val streamReader = BufferedReader(
-                    InputStreamReader(`in`, CharsetCompat.UTF_8)
+                    InputStreamReader(inStream, CharsetCompat.UTF_8)
                 )
                 val responseStrBuilder = StringBuilder()
                 var inputStr: String?
                 while (null != streamReader.readLine()
                         .also { inputStr = it }
                 ) responseStrBuilder.append(inputStr)
-                listener!!.onResults(responseStrBuilder.toString())
+                listener?.onResults(responseStrBuilder.toString())
                 streamReader.close()
-                `in`.close()
+                inStream.close()
                 conn.disconnect()
             } catch (e: IOException) {
                 Debug.warn(e)

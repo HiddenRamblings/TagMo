@@ -166,8 +166,8 @@ class WebsiteFragment : Fragment() {
         Runnable {
         @Throws(IOException::class)
         private fun decompress() {
-            val zipIn = ZipFile(archive)
-            val entries = zipIn.entries()
+            val zipFile = ZipFile(archive)
+            val entries = zipFile.entries()
             while (entries.hasMoreElements()) {
                 // get the zip entry
                 val finalEntry = entries.nextElement()
@@ -182,26 +182,26 @@ class WebsiteFragment : Fragment() {
                         getString(R.string.mkdir_failed, dir.name)
                     )
                 } else {
-                    val `is` = zipIn.getInputStream(finalEntry)
+                    val zipInStream = zipFile.getInputStream(finalEntry)
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                        Files.copy(`is`, Paths.get(outputDir.absolutePath, finalEntry.name))
+                        Files.copy(zipInStream, Paths.get(outputDir.absolutePath, finalEntry.name))
                     } else {
                         val fileOut = FileOutputStream(
                             File(outputDir, finalEntry.name)
                         )
                         val buffer = ByteArray(8192)
                         var len: Int
-                        while (`is`.read(buffer).also { len = it } != -1) fileOut.write(
+                        while (zipInStream.read(buffer).also { len = it } != -1) fileOut.write(
                             buffer,
                             0,
                             len
                         )
                         fileOut.close()
                     }
-                    `is`.close()
+                    zipInStream.close()
                 }
             }
-            zipIn.close()
+            zipFile.close()
         }
 
         override fun run() {

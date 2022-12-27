@@ -403,12 +403,11 @@ object TagWriter {
         response!![0] = 0xFFFF.toByte()
         tag.initFirmware()
         tag.getVersion(true)
+        var br: BufferedReader? = null
         return try {
-            val br = BufferedReader(
-                InputStreamReader(
+            br = BufferedReader(InputStreamReader(
                     context.resources.openRawResource(R.raw.firmware)
-                )
-            )
+            ))
             while (true) {
                 val strLine = br.readLine() ?: break
                 val parts =
@@ -465,10 +464,11 @@ object TagWriter {
                     }
                 } /* else if (!parts[0].equals("RESET") && parts[0].equals("LOGIN")) { } */
             }
-            br.close()
             true
         } catch (e: IOException) {
             throw Exception(context.getString(R.string.firmware_failed, 4))
+        } finally {
+            br?.close()
         }
     }
 }

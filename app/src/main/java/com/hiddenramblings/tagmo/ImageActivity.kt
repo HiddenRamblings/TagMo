@@ -235,6 +235,8 @@ class ImageActivity : AppCompatActivity() {
             }
         } catch (e: IOException) {
             Debug.warn(e)
+        } finally {
+            resource.recycle()
         }
     }
 }

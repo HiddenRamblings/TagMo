@@ -162,7 +162,7 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
     @SuppressLint("InflateParams")
     fun addFilterItemView(text: String?, tag: String?, listener: OnCloseClickListener?) {
         if (null == chipList) return
-        var chipContainer = chipList!!.findViewWithTag<FrameLayout>(tag)
+        var chipContainer = chipList?.findViewWithTag<FrameLayout>(tag)
         if (null != chipContainer) chipList!!.removeView(chipContainer)
         if (!TextUtils.isEmpty(text)) {
             chipContainer = layoutInflater.inflate(R.layout.chip_view, null) as FrameLayout
@@ -208,7 +208,7 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
 
     private fun deleteDir(handler: Handler?, dialog: ProgressDialog?, dir: File?) {
         if (!directory.exists()) return
-        val files = dir!!.listFiles()
+        val files = dir?.listFiles()
         if (null != files && files.isNotEmpty()) {
             files.forEach {
                 if (it.isDirectory) {
@@ -221,7 +221,7 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
                 }
             }
         }
-        dir.delete()
+        dir?.delete()
     }
 
     fun deleteFoomiiboFile(tagData: ByteArray?) {
@@ -298,8 +298,8 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
     }
 
     fun buildFoomiiboSet(handler: Handler) {
-        val amiiboManager = if (null != settings!!.amiiboManager)
-            settings!!.amiiboManager
+        val amiiboManager = if (null != settings?.amiiboManager)
+            settings?.amiiboManager
         else null
         if (null == amiiboManager) {
             Toasty(requireActivity()).Short(R.string.amiibo_failure_read)
@@ -354,7 +354,7 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
             tagData = TagArray.getValidatedData(keyManager, tagData)!!
         } catch (ignored: Exception) { }
         val activity = requireActivity() as BrowserActivity
-        val menuOptions = itemView!!.findViewById<LinearLayout>(R.id.menu_options)
+        val menuOptions = itemView?.findViewById<LinearLayout>(R.id.menu_options)
         if (null != menuOptions) {
             val toolbar = menuOptions.findViewById<Toolbar>(R.id.toolbar)
             if (settings!!.amiiboView != BrowserSettings.VIEW.IMAGE.value) {

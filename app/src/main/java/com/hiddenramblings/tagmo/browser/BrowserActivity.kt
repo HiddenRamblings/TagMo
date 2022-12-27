@@ -103,7 +103,7 @@ import java.util.concurrent.Executors
 
 class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
     BrowserAdapter.OnAmiiboClickListener {
-    private var prefs: Preferences? = null
+    private lateinit var prefs: Preferences
     private lateinit var keyManager: KeyManager
     private var filteredCount = 0
     private var clickedAmiibo: AmiiboFile? = null
@@ -207,7 +207,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
             requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
         }
         if (null == settings) settings = BrowserSettings().initialize()
-        settings!!.addChangeListener(this)
+        settings?.addChangeListener(this)
         val intent = intent
         if (null != intent) {
             if (componentName == FilterComponent) {
@@ -218,19 +218,19 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                 startActivity(browser)
             }
         }
-        layout!!.keepScreenOn = BuildConfig.WEAR_OS
-        layout!!.adapter = pagerAdapter
+        layout?.keepScreenOn = BuildConfig.WEAR_OS
+        layout?.adapter = pagerAdapter
         val cardFlipPageTransformer = CardFlipPageTransformer2()
         cardFlipPageTransformer.isScalable = true
-        layout!!.setPageTransformer(cardFlipPageTransformer)
+        layout?.setPageTransformer(cardFlipPageTransformer)
         setViewPagerSensitivity(layout, 4)
         fragmentBrowser = pagerAdapter.browser
         if (BuildConfig.WEAR_OS) fragmentSettings = pagerAdapter.settings
         fragmentElite = pagerAdapter.eliteBanks
-        amiibosView = fragmentBrowser!!.browserContent
-        foomiiboView = fragmentBrowser!!.foomiiboView
+        amiibosView = fragmentBrowser?.browserContent
+        foomiiboView = fragmentBrowser?.foomiiboView
         bottomSheet = bottomSheetBehavior
-        layout!!.registerOnPageChangeCallback(object : OnPageChangeCallback() {
+        layout?.registerOnPageChangeCallback(object : OnPageChangeCallback() {
             @SuppressLint("NewApi")
             override fun onPageSelected(position: Int) {
                 super.onPageSelected(position)
@@ -238,7 +238,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                     BrowserAdapter.resetVisible()
                     FoomiiboAdapter.resetVisible()
                 }
-                val hasFlaskEnabled = prefs!!.flaskEnabled()
+                val hasFlaskEnabled = prefs.flaskEnabled()
                 if (BuildConfig.WEAR_OS) {
                     when (position) {
                         1 -> if (hasFlaskEnabled) {
@@ -258,17 +258,15 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                             foomiiboView = fragmentBrowser!!.foomiiboView
                             bottomSheet = bottomSheetBehavior
                             if (null != foomiiboView) {
-                                foomiiboView!!.layoutManager = if (settings!!.amiiboView
-                                    == VIEW.IMAGE.value
-                                ) GridLayoutManager(
-                                    this@BrowserActivity,
-                                    columnCount
-                                ) else LinearLayoutManager(this@BrowserActivity)
+                                foomiiboView?.layoutManager =
+                                    if (settings!!.amiiboView == VIEW.IMAGE.value)
+                                        GridLayoutManager(this@BrowserActivity, columnCount)
+                                    else LinearLayoutManager(this@BrowserActivity)
                             }
                         }
                     }
                 } else {
-                    val hasEliteEnabled = prefs!!.eliteEnabled()
+                    val hasEliteEnabled = prefs.eliteEnabled()
                     when (position) {
                         1 -> if (hasEliteEnabled) {
                             showActionButton()
@@ -311,22 +309,18 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                             foomiiboView = fragmentBrowser!!.foomiiboView
                             bottomSheet = bottomSheetBehavior
                             if (null != foomiiboView) {
-                                foomiiboView!!.layoutManager = if (settings!!.amiiboView
-                                    == VIEW.IMAGE.value
-                                ) GridLayoutManager(
-                                    this@BrowserActivity,
-                                    columnCount
-                                ) else LinearLayoutManager(this@BrowserActivity)
+                                foomiiboView?.layoutManager =
+                                    if (settings!!.amiiboView == VIEW.IMAGE.value)
+                                        GridLayoutManager(this@BrowserActivity, columnCount)
+                                    else LinearLayoutManager(this@BrowserActivity)
                             }
                         }
                     }
                 }
                 if (null != amiibosView) {
-                    amiibosView!!.layoutManager = if (settings!!.amiiboView
-                        == VIEW.IMAGE.value
-                    ) GridLayoutManager(this@BrowserActivity, columnCount) else LinearLayoutManager(
-                        this@BrowserActivity
-                    )
+                    amiibosView?.layoutManager = if (settings!!.amiiboView == VIEW.IMAGE.value)
+                        GridLayoutManager(this@BrowserActivity, columnCount)
+                    else LinearLayoutManager(this@BrowserActivity)
                 }
                 if (BuildConfig.WEAR_OS) onCreateWearOptionsMenu() else invalidateOptionsMenu()
             }
@@ -334,7 +328,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
         TabLayoutMediator(findViewById(R.id.navigation_tabs), layout!!, true,
             Debug.isNewer(Build.VERSION_CODES.JELLY_BEAN_MR2)
         ) { tab: TabLayout.Tab, position: Int ->
-            val hasFlaskEnabled = prefs!!.flaskEnabled()
+            val hasFlaskEnabled = prefs.flaskEnabled()
             if (BuildConfig.WEAR_OS) {
                 when (position) {
                     1 -> if (hasFlaskEnabled) {
@@ -347,7 +341,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                     else -> tab.setText(R.string.browser)
                 }
             } else {
-                val hasEliteEnabled = prefs!!.eliteEnabled()
+                val hasEliteEnabled = prefs.eliteEnabled()
                 when (position) {
                     1 -> if (hasEliteEnabled) {
                         tab.setText(R.string.elite_n2)
@@ -382,8 +376,8 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
         }
         val toggle = findViewById<AppCompatImageView>(R.id.toggle)
         bottomSheetBehavior = BottomSheetBehavior.from(findViewById(R.id.bottom_sheet))
-        bottomSheetBehavior!!.state = BottomSheetBehavior.STATE_COLLAPSED
-        bottomSheetBehavior!!.addBottomSheetCallback(object : BottomSheetCallback() {
+        bottomSheetBehavior?.state = BottomSheetBehavior.STATE_COLLAPSED
+        bottomSheetBehavior?.addBottomSheetCallback(object : BottomSheetCallback() {
             override fun onStateChanged(bottomSheet: View, newState: Int) {
                 if (newState == BottomSheetBehavior.STATE_COLLAPSED) {
                     toggle.setImageResource(R.drawable.ic_expand_less_white_24dp)
@@ -410,7 +404,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
             buildText.movementMethod = LinkMovementMethod.getInstance()
             buildText.text = TagMo.getVersionLabel(false)
             prefsDrawer = findViewById(R.id.drawer_layout)
-            prefsDrawer!!.addDrawerListener(object : SimpleDrawerListener() {
+            prefsDrawer?.addDrawerListener(object : SimpleDrawerListener() {
                 override fun onDrawerOpened(drawerView: View) {
                     super.onDrawerOpened(drawerView)
                     findViewById<View>(R.id.build_layout).setOnClickListener {
@@ -478,8 +472,8 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
         }
         val foldersView = findViewById<RecyclerView>(R.id.folders_list)
         foldersView.layoutManager = LinearLayoutManager(this)
-        foldersView.adapter = FoldersAdapter(settings!!)
-        settings!!.addChangeListener(foldersView.adapter as BrowserSettingsListener?)
+        foldersView.adapter = FoldersAdapter(settings)
+        settings?.addChangeListener(foldersView.adapter as BrowserSettingsListener?)
         loadPTagKeyManager()
         val popup = if (Debug.isNewer(Build.VERSION_CODES.LOLLIPOP_MR1)) PopupMenu(
             this, nfcFab!!, Gravity.END, 0, R.style.PopupMenu
@@ -501,9 +495,9 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
             Debug.warn(e)
         }
         popup.menuInflater.inflate(R.menu.action_menu, popup.menu)
-        nfcFab!!.setOnClickListener { showPopupMenu(popup) }
+        nfcFab?.setOnClickListener { showPopupMenu(popup) }
         findViewById<View>(R.id.amiiboContainer).setOnClickListener {
-            amiiboContainer!!.visibility = View.GONE
+            amiiboContainer?.visibility = View.GONE
         }
         if (null != intent && null != intent.action && Intent.ACTION_VIEW == intent.action) {
             try {
@@ -538,8 +532,8 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                 donations.onSendDonationClicked()
             }
         }
-        if (!prefs!!.guidesPrompted()) {
-            prefs!!.guidesPrompted(true)
+        if (!prefs.guidesPrompted()) {
+            prefs.guidesPrompted(true)
             layout!!.setCurrentItem(pagerAdapter.itemCount - 1, false)
         }
     }
@@ -598,15 +592,15 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
         if (NFCIntent.ACTION_NFC_SCANNED != result.data!!.action) return@registerForActivityResult
         if (result.data!!.hasExtra(NFCIntent.EXTRA_SIGNATURE)) {
             val signature = result.data!!.getStringExtra(NFCIntent.EXTRA_SIGNATURE)
-            prefs!!.eliteSignature(signature)
+            prefs.eliteSignature(signature)
             val activeBank = result.data!!.getIntExtra(
-                NFCIntent.EXTRA_ACTIVE_BANK, prefs!!.eliteActiveBank()
+                NFCIntent.EXTRA_ACTIVE_BANK, prefs.eliteActiveBank()
             )
-            prefs!!.eliteActiveBank(activeBank)
+            prefs.eliteActiveBank(activeBank)
             val bankCount = result.data!!.getIntExtra(
-                NFCIntent.EXTRA_BANK_COUNT, prefs!!.eliteBankCount()
+                NFCIntent.EXTRA_BANK_COUNT, prefs.eliteBankCount()
             )
-            prefs!!.eliteBankCount(bankCount)
+            prefs.eliteBankCount(bankCount)
             showElitePage(result.data!!.extras)
         } else {
             layout!!.setCurrentItem(0, true)
@@ -728,8 +722,8 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
 
     private fun onCaptureLogcatClicked() {
         if (updates!!.hasPendingUpdate()) {
-            if (null != appUpdate) updates!!.downloadPlayUpdate(appUpdate)
-            if (null != updateUrl) updates!!.installUpdateCompat(updateUrl!!)
+            if (null != appUpdate) updates?.downloadPlayUpdate(appUpdate)
+            if (null != updateUrl) updates?.installUpdateCompat(updateUrl)
             return
         }
         Executors.newSingleThreadExecutor().execute {
@@ -1032,14 +1026,14 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
         val delete = toolbar.menu.findItem(R.id.mnu_delete)
         if (null != amiiboFile) {
             if (null != amiiboFile.docUri) {
-                val relativeDocument = Storage.getRelativeDocument(amiiboFile.docUri!!.uri)
+                val relativeDocument = Storage.getRelativeDocument(amiiboFile.docUri?.uri)
                 cached = relativeDocument.startsWith("/Foomiibo/")
             } else if (null != amiiboFile.filePath) {
                 var relativeFile = Storage.getRelativePath(
-                    amiiboFile.filePath!!, prefs!!.preferEmulated()
+                    amiiboFile.filePath, prefs.preferEmulated()
                 )
-                if (null != prefs!!.browserRootFolder()) {
-                    relativeFile = relativeFile.replace(prefs!!.browserRootFolder()!!, "")
+                if (null != prefs.browserRootFolder()) {
+                    relativeFile = relativeFile.replace(prefs.browserRootFolder()!!, "")
                 }
                 cached = relativeFile.startsWith("/Foomiibo/")
             }
@@ -1248,7 +1242,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
     }
 
     private fun getGameCompatibility(txtUsage: TextView, tagData: ByteArray?) {
-        val gamesManager = settings!!.gamesManager
+        val gamesManager = settings?.gamesManager
         val label = findViewById<TextView>(R.id.txtUsageLabel)
         if (null != gamesManager) {
             label.visibility = View.VISIBLE
@@ -1278,7 +1272,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
 
     val isDocumentStorage: Boolean
         get() = if (
-            Debug.isNewer(Build.VERSION_CODES.LOLLIPOP) && null != settings!!.browserRootDocument
+            Debug.isNewer(Build.VERSION_CODES.LOLLIPOP) && null != settings?.browserRootDocument
         ) {
             try {
                 DocumentFile.fromTreeUri(this, settings!!.browserRootDocument!!)
@@ -1347,17 +1341,17 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                     onShowSettingsFragment()
                 else onRefresh(true)
             } else {
-                val internal = prefs!!.preferEmulated()
+                val internal = prefs.preferEmulated()
                 val storage = Storage.getFile(internal)
                 if (null != storage && storage.exists() && Storage.hasPhysicalStorage()) {
                     switchStorageRoot!!.visibility = View.VISIBLE
                     switchStorageRoot!!.setText(if (internal) R.string.emulated_storage_root else R.string.physical_storage_root)
                     switchStorageRoot!!.setOnClickListener {
-                        val external = !prefs!!.preferEmulated()
+                        val external = !prefs.preferEmulated()
                         switchStorageRoot!!.setText(if (external) R.string.emulated_storage_root else R.string.physical_storage_root)
                         settings!!.browserRootFolder = Storage.getFile(external)
                         settings!!.notifyChanges()
-                        prefs!!.preferEmulated(external)
+                        prefs.preferEmulated(external)
                     }
                 } else {
                     switchStorageRoot!!.visibility = View.GONE
@@ -1591,11 +1585,11 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (item.itemId == android.R.id.home) {
             if (!closePrefsDrawer()) {
-                prefsDrawer!!.openDrawer(GravityCompat.START)
+                prefsDrawer?.openDrawer(GravityCompat.START)
             }
         } else if (item.itemId == R.id.install_update) {
-            if (null != appUpdate) updates!!.downloadPlayUpdate(appUpdate)
-            if (null != updateUrl) updates!!.installUpdateCompat(updateUrl!!)
+            if (null != appUpdate) updates?.downloadPlayUpdate(appUpdate)
+            if (null != updateUrl) updates?.installUpdateCompat(updateUrl!!)
         }
         return onMenuItemClicked(item)
     }
@@ -1658,7 +1652,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
     }
 
     fun loadPTagKeyManager() {
-        if (prefs!!.powerTagEnabled()) {
+        if (prefs.powerTagEnabled()) {
             Executors.newSingleThreadExecutor().execute {
                 try {
                     powerTagManager
@@ -1767,7 +1761,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
             val amiiboFiles = listAmiiboDocuments(
                 this, keyManager, rootFolder!!, recursiveFiles
             )
-            if (amiiboFiles.isEmpty() && null == prefs!!.browserRootDocument()) {
+            if (amiiboFiles.isEmpty() && null == prefs.browserRootDocument()) {
                 onDocumentRequested()
                 return@execute
             }
@@ -1912,26 +1906,26 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
             }
             newBrowserSettings.lastUpdatedGit = System.currentTimeMillis()
         }
-        prefs?.browserRootFolder(Storage.getRelativePath(
-            newBrowserSettings.browserRootFolder, prefs!!.preferEmulated()
+        prefs.browserRootFolder(Storage.getRelativePath(
+            newBrowserSettings.browserRootFolder, prefs.preferEmulated()
         ))
-        prefs?.browserRootDocument(
+        prefs.browserRootDocument(
             if (null != newBrowserSettings.browserRootDocument)
                 newBrowserSettings.browserRootDocument.toString()
             else null
         )
-        prefs?.query(newBrowserSettings.query)
-        prefs?.sort(newBrowserSettings.sort)
-        prefs?.filterCharacter(newBrowserSettings.getFilter(FILTER.CHARACTER))
-        prefs?.filterGameSeries(newBrowserSettings.getFilter(FILTER.GAME_SERIES))
-        prefs?.filterAmiiboSeries(newBrowserSettings.getFilter(FILTER.AMIIBO_SERIES))
-        prefs?.filterAmiiboType(newBrowserSettings.getFilter(FILTER.AMIIBO_TYPE))
-        prefs?.filterGameTitles(newBrowserSettings.getFilter(FILTER.GAME_TITLES))
-        prefs?.browserAmiiboView(newBrowserSettings.amiiboView)
-        prefs?.imageNetwork(newBrowserSettings.imageNetworkSettings)
-        prefs?.recursiveFolders(newBrowserSettings.isRecursiveEnabled)
-        prefs?.lastUpdatedAPI(newBrowserSettings.lastUpdatedAPI)
-        prefs?.lastUpdatedGit(newBrowserSettings.lastUpdatedGit)
+        prefs.query(newBrowserSettings.query)
+        prefs.sort(newBrowserSettings.sort)
+        prefs.filterCharacter(newBrowserSettings.getFilter(FILTER.CHARACTER))
+        prefs.filterGameSeries(newBrowserSettings.getFilter(FILTER.GAME_SERIES))
+        prefs.filterAmiiboSeries(newBrowserSettings.getFilter(FILTER.AMIIBO_SERIES))
+        prefs.filterAmiiboType(newBrowserSettings.getFilter(FILTER.AMIIBO_TYPE))
+        prefs.filterGameTitles(newBrowserSettings.getFilter(FILTER.GAME_TITLES))
+        prefs.browserAmiiboView(newBrowserSettings.amiiboView)
+        prefs.imageNetwork(newBrowserSettings.imageNetworkSettings)
+        prefs.recursiveFolders(newBrowserSettings.isRecursiveEnabled)
+        prefs.lastUpdatedAPI(newBrowserSettings.lastUpdatedAPI)
+        prefs.lastUpdatedGit(newBrowserSettings.lastUpdatedGit)
     }
 
     private fun onSortChanged() {
@@ -2029,7 +2023,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
 
 
         // If we're supporting, didn't arrive from, but scanned an N2...
-        if (prefs!!.eliteEnabled() && result.data!!.hasExtra(NFCIntent.EXTRA_SIGNATURE)) {
+        if (prefs.eliteEnabled() && result.data!!.hasExtra(NFCIntent.EXTRA_SIGNATURE)) {
             launchEliteActivity(result.data)
         } else {
             updateAmiiboView(result.data?.getByteArrayExtra(NFCIntent.EXTRA_TAG_DATA))
@@ -2040,7 +2034,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
     private fun deleteAmiiboFile(amiiboFile: AmiiboFile?) {
         if (null != amiiboFile?.filePath) {
             val relativeFile = Storage.getRelativePath(
-                amiiboFile.filePath, prefs!!.preferEmulated()
+                amiiboFile.filePath, prefs.preferEmulated()
             )
             AlertDialog.Builder(this)
                 .setMessage(getString(R.string.warn_delete_file, relativeFile))
@@ -2406,12 +2400,12 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
             } else {
                 val rootFolder = textSettings.browserRootFolder
                 val relativeRoot = Storage.getRelativePath(
-                    rootFolder, prefs!!.preferEmulated()
+                    rootFolder, prefs.preferEmulated()
                 )
                 if (relativeRoot.length > 1) relativeRoot else rootFolder!!.absolutePath
             }
-            currentFolderView!!.gravity = Gravity.CENTER_VERTICAL
-            currentFolderView!!.text = relativePath
+            currentFolderView?.gravity = Gravity.CENTER_VERTICAL
+            currentFolderView?.text = relativePath
             statsHandler.postDelayed({ setAmiiboStats() }, 3000)
         } else {
             setAmiiboStats()
@@ -2420,9 +2414,9 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
 
     private fun showFakeSnackbar(msg: String) {
         fakeSnackbar?.post {
-            fakeSnackbarItem!!.visibility = View.INVISIBLE
-            fakeSnackbarText!!.text = msg
-            fakeSnackbar!!.visibility = View.VISIBLE
+            fakeSnackbarItem?.visibility = View.INVISIBLE
+            fakeSnackbarText?.text = msg
+            fakeSnackbar?.visibility = View.VISIBLE
         }
     }
 
@@ -2442,34 +2436,34 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                         fakeSnackbar!!.visibility = View.GONE
                     }
                 })
-                fakeSnackbar!!.startAnimation(animate)
+                fakeSnackbar?.startAnimation(animate)
             }
         }
     }
 
     private fun collapseBottomSheet() {
-        bottomSheetBehavior!!.state = BottomSheetBehavior.STATE_COLLAPSED
+        bottomSheetBehavior?.state = BottomSheetBehavior.STATE_COLLAPSED
     }
 
     private fun hideBottomSheet() {
-        bottomSheetBehavior!!.state = BottomSheetBehavior.STATE_HIDDEN
+        bottomSheetBehavior?.state = BottomSheetBehavior.STATE_HIDDEN
         sheetHandler.postDelayed({
-            bottomSheetBehavior!!.isHideable = true
-            bottomSheetBehavior!!.setState(BottomSheetBehavior.STATE_HIDDEN)
+            bottomSheetBehavior?.isHideable = true
+            bottomSheetBehavior?.setState(BottomSheetBehavior.STATE_HIDDEN)
         }, TagMo.uiDelay.toLong())
     }
 
     private fun hideBrowserInterface() {
-        val params = nfcFab!!.layoutParams as CoordinatorLayout.LayoutParams
+        val params = nfcFab?.layoutParams as CoordinatorLayout.LayoutParams
         val behavior = params.behavior as FloatingActionButton.Behavior?
         if (null != behavior) behavior.isAutoHideEnabled = false
-        nfcFab!!.hide()
+        nfcFab?.hide()
         hideBottomSheet()
     }
 
     private fun showActionButton() {
-        nfcFab!!.show()
-        val params = nfcFab!!.layoutParams as CoordinatorLayout.LayoutParams
+        nfcFab?.show()
+        val params = nfcFab?.layoutParams as CoordinatorLayout.LayoutParams
         val behavior = params.behavior as FloatingActionButton.Behavior?
         if (null != behavior) behavior.isAutoHideEnabled = true
     }
@@ -2479,7 +2473,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
     }
 
     private fun showBrowserInterface() {
-        bottomSheetBehavior!!.state = BottomSheetBehavior.STATE_COLLAPSED
+        bottomSheetBehavior?.state = BottomSheetBehavior.STATE_COLLAPSED
         sheetHandler.postDelayed(
             { bottomSheetBehavior!!.setHideable(false) },
             TagMo.uiDelay.toLong()
@@ -2488,8 +2482,8 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
     }
 
     fun closePrefsDrawer(): Boolean {
-        if (prefsDrawer!!.isDrawerOpen(GravityCompat.START)) {
-            prefsDrawer!!.closeDrawer(GravityCompat.START)
+        if (prefsDrawer?.isDrawerOpen(GravityCompat.START) == true) {
+            prefsDrawer?.closeDrawer(GravityCompat.START)
             return true
         }
         return false
@@ -2508,7 +2502,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
     private fun onShowSettingsFragment() {
         if (BuildConfig.WEAR_OS) {
             layout?.post {
-                layout?.setCurrentItem(if (prefs!!.flaskEnabled()) 2 else 1, false)
+                layout?.setCurrentItem(if (prefs.flaskEnabled()) 2 else 1, false)
             }
         } else {
             prefsDrawer?.openDrawer(GravityCompat.START)
@@ -2516,15 +2510,15 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
     }
 
     fun showElitePage(extras: Bundle?) {
-        if (!prefs!!.eliteEnabled()) return
-        layout!!.post {
+        if (!prefs.eliteEnabled()) return
+        layout?.post {
             fragmentElite!!.arguments = extras
             layout!!.setCurrentItem(1, true)
         }
     }
 
     fun showWebsite(address: String?) {
-        layout!!.setCurrentItem(pagerAdapter.itemCount - 1, true)
+        layout?.setCurrentItem(pagerAdapter.itemCount - 1, true)
         pagerAdapter.website.loadWebsite(address)
     }
 
@@ -2581,7 +2575,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                     }
                 }
             } else {
-                locateKeyFilesRecursive(Storage.getFile(prefs!!.preferEmulated()))
+                locateKeyFilesRecursive(Storage.getFile(prefs.preferEmulated()))
             }
             if (keyManager.isKeyMissing) {
                 hideFakeSnackbar()
@@ -2636,10 +2630,10 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
     val onRequestInstall = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
     ) {
-        if (null != prefs!!.downloadUrl()) {
+        if (null != prefs.downloadUrl()) {
             if (packageManager.canRequestPackageInstalls())
-                updates!!.installUpdateTask(prefs!!.downloadUrl()!!)
-            prefs!!.remove(prefs!!.downloadUrl)
+                updates?.installUpdateTask(prefs.downloadUrl())
+            prefs.remove(prefs.downloadUrl)
         }
     }
 
@@ -2660,27 +2654,27 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
         onBackPressedDispatcher.addCallback(object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
                 if (BuildConfig.WEAR_OS) {
-                    if (null != bottomSheet && BottomSheetBehavior.STATE_EXPANDED == bottomSheet!!.state) {
-                        bottomSheet!!.setState(BottomSheetBehavior.STATE_COLLAPSED)
-                    } else if (View.VISIBLE == amiiboContainer!!.visibility) {
+                    if (null != bottomSheet && BottomSheetBehavior.STATE_EXPANDED == bottomSheet?.state) {
+                        bottomSheet?.setState(BottomSheetBehavior.STATE_COLLAPSED)
+                    } else if (View.VISIBLE == amiiboContainer?.visibility) {
                         amiiboContainer!!.visibility = View.GONE
                     } else if (layout?.currentItem != 0) {
                         if (layout?.currentItem == pagerAdapter.itemCount - 1
                             && pagerAdapter.website.hasGoneBack()) return
-                        else layout!!.setCurrentItem(0, true)
+                        else layout?.setCurrentItem(0, true)
                     } else {
                         finishAffinity()
                     }
                 } else {
                     if (!closePrefsDrawer()) {
-                        if (null != bottomSheet && BottomSheetBehavior.STATE_EXPANDED == bottomSheet!!.state) {
-                            bottomSheet!!.setState(BottomSheetBehavior.STATE_COLLAPSED)
-                        } else if (View.VISIBLE == amiiboContainer!!.visibility) {
-                            amiiboContainer!!.visibility = View.GONE
+                        if (null != bottomSheet && BottomSheetBehavior.STATE_EXPANDED == bottomSheet?.state) {
+                            bottomSheet?.setState(BottomSheetBehavior.STATE_COLLAPSED)
+                        } else if (View.VISIBLE == amiiboContainer?.visibility) {
+                            amiiboContainer?.visibility = View.GONE
                         } else if (layout?.currentItem != 0) {
                             if (layout?.currentItem == pagerAdapter.itemCount - 1
                                 && pagerAdapter.website.hasGoneBack()) return
-                                else layout!!.setCurrentItem(0, true)
+                                else layout?.setCurrentItem(0, true)
                         } else {
                             finishAffinity()
                         }

@@ -89,7 +89,8 @@ class CheckUpdatesTask internal constructor(activity: BrowserActivity) {
         }
     }
 
-    fun installUpdateTask(apkUrl: String) {
+    fun installUpdateTask(apkUrl: String?) {
+        if (null == apkUrl) return
         Executors.newSingleThreadExecutor().execute {
             val apk = File(
                 activity.get()!!.externalCacheDir, apkUrl.substring(
@@ -167,7 +168,8 @@ class CheckUpdatesTask internal constructor(activity: BrowserActivity) {
         }
     }
 
-    fun installUpdateCompat(apkUrl: String) {
+    fun installUpdateCompat(apkUrl: String?) {
+        if (null == apkUrl) return
         if (Debug.isNewer(Build.VERSION_CODES.O)) {
             if (activity.get()!!.packageManager.canRequestPackageInstalls()) {
                 installUpdateTask(apkUrl)

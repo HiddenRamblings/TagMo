@@ -15,7 +15,7 @@ import com.hiddenramblings.tagmo.browser.adapter.FoldersAdapter.FolderViewHolder
 import com.hiddenramblings.tagmo.eightbit.os.Storage
 import java.io.File
 
-class FoldersAdapter(var settings: BrowserSettings) : RecyclerView.Adapter<FolderViewHolder>(),
+class FoldersAdapter(var settings: BrowserSettings?) : RecyclerView.Adapter<FolderViewHolder>(),
     BrowserSettingsListener {
     var mPrefs = Preferences(TagMo.appContext)
     var data: ArrayList<File?>? = null
@@ -115,8 +115,8 @@ class FoldersAdapter(var settings: BrowserSettings) : RecyclerView.Adapter<Folde
 
         init {
             this.itemView.setOnClickListener {
-                settings!!.browserRootFolder = folder
-                settings!!.notifyChanges()
+                settings?.browserRootFolder = folder
+                settings?.notifyChanges()
             }
         }
 
@@ -140,8 +140,8 @@ class FoldersAdapter(var settings: BrowserSettings) : RecyclerView.Adapter<Folde
         init {
             txtFolderName = itemView.findViewById(R.id.text)
             this.itemView.setOnClickListener {
-                settings!!.browserRootFolder = folder
-                settings!!.notifyChanges()
+                settings?.browserRootFolder = folder
+                settings?.notifyChanges()
             }
         }
 

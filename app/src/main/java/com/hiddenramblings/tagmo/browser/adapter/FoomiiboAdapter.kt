@@ -78,15 +78,15 @@ class FoomiiboAdapter(
     }
 
     override fun getItemCount(): Int {
-        return if (null != filteredData) filteredData!!.size else 0
+        return filteredData?.size ?: 0
     }
 
     override fun getItemId(i: Int): Long {
-        return filteredData!![i].id
+        return (filteredData?.get(i)?.id ?: 0).toLong()
     }
 
-    fun getItem(i: Int): Amiibo {
-        return filteredData!![i]
+    private fun getItem(i: Int): Amiibo? {
+        return filteredData?.get(i)
     }
 
     override fun getItemViewType(position: Int): Int {
@@ -175,10 +175,10 @@ class FoomiiboAdapter(
     private fun handleClickEvent(holder: FoomiiboViewHolder) {
         if (null != holder.listener) {
             if (settings.amiiboView != VIEW.IMAGE.value) {
-                if (foomiiboId.contains(holder.foomiibo.id)) {
-                    foomiiboId.remove(holder.foomiibo.id)
+                if (foomiiboId.contains(holder.foomiibo?.id)) {
+                    foomiiboId.remove(holder.foomiibo?.id)
                 } else {
-                    foomiiboId.add(holder.foomiibo.id)
+                    holder.foomiibo?.let { foomiiboId.add(it.id) }
                 }
             } else {
                 foomiiboId.clear()
@@ -275,7 +275,7 @@ class FoomiiboAdapter(
         // public final TextView txtCharacter;
         val txtPath: TextView?
         var imageAmiibo: AppCompatImageView? = null
-        lateinit var foomiibo: Amiibo
+        var foomiibo: Amiibo? = null
         private val boldSpannable = BoldSpannable()
         var target: CustomTarget<Bitmap?> = object : CustomTarget<Bitmap?>() {
             override fun onLoadStarted(placeholder: Drawable?) {
@@ -308,22 +308,23 @@ class FoomiiboAdapter(
             imageAmiibo = itemView.findViewById(R.id.imageAmiibo)
         }
 
-        fun bind(item: Amiibo) {
+        fun bind(item: Amiibo?) {
             foomiibo = item
             var tagInfo: String? = null
-            val amiiboHexId: String
+            var amiiboHexId: String? = ""
             var amiiboName = ""
             var amiiboSeries = ""
             var amiiboType = ""
             var gameSeries = ""
             // String character = "";
-            val amiiboImageUrl: String?
-            val amiiboId = item.id
+            var amiiboImageUrl: String? = null
+            val amiiboId = item?.id
             var amiibo: Amiibo? = null
             val amiiboManager = settings.amiiboManager
             if (null != amiiboManager) {
                 amiibo = amiiboManager.amiibos[amiiboId]
-                if (null == amiibo) amiibo = Amiibo(amiiboManager, amiiboId, null, null)
+                if (null == amiibo && null != amiiboId)
+                    amiibo = Amiibo(amiiboManager, amiiboId, null, null)
             }
             if (null != amiibo) {
                 amiiboHexId = Amiibo.idToHex(amiibo.id)
@@ -332,7 +333,7 @@ class FoomiiboAdapter(
                 if (null != amiibo.amiiboSeries) amiiboSeries = amiibo.amiiboSeries!!.name
                 if (null != amiibo.amiiboType) amiiboType = amiibo.amiiboType!!.name
                 if (null != amiibo.gameSeries) gameSeries = amiibo.gameSeries!!.name
-            } else {
+            } else if (null != amiiboId) {
                 amiiboHexId = Amiibo.idToHex(amiiboId)
                 tagInfo = "ID: $amiiboHexId"
                 amiiboImageUrl = Amiibo.getImageUrl(amiiboId)
@@ -366,7 +367,7 @@ class FoomiiboAdapter(
                 // setAmiiboInfoText(this.txtCharacter,
                 // boldText.Matching(character, query), hasTagInfo);
                 txtPath?.visibility = View.GONE
-                val expanded = foomiiboId.contains(foomiibo.id)
+                val expanded = foomiiboId.contains(foomiibo?.id)
                 itemView.findViewById<View>(R.id.menu_options).visibility =
                     if (expanded) View.VISIBLE else View.GONE
                 itemView.findViewById<View>(R.id.txtUsage).visibility =
@@ -377,7 +378,7 @@ class FoomiiboAdapter(
                 false
             if (null != imageAmiibo) {
                 GlideApp.with(imageAmiibo!!).clear(imageAmiibo!!)
-                if (amiiboImageUrl.isNotEmpty()) {
+                if (!amiiboImageUrl.isNullOrEmpty()) {
                     GlideApp.with(imageAmiibo!!).asBitmap().load(amiiboImageUrl).into(target)
                 }
             }

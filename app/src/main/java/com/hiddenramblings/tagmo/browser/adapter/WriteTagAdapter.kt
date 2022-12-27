@@ -97,19 +97,19 @@ class WriteTagAdapter(private val settings: BrowserSettings?) :
     }
 
     override fun getItemCount(): Int {
-        return filteredData!!.size
+        return filteredData?.size ?: 0
     }
 
     override fun getItemId(i: Int): Long {
-        return filteredData?.get(i)?.id!!.toLong()
+        return (filteredData?.get(i)?.id ?: 0).toLong()
     }
 
-    fun getItem(i: Int): AmiiboFile? {
+    private fun getItem(i: Int): AmiiboFile? {
         return filteredData?.get(i)
     }
 
     override fun getItemViewType(position: Int): Int {
-        return settings!!.amiiboView
+        return settings?.amiiboView ?: 0
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): AmiiboViewHolder {

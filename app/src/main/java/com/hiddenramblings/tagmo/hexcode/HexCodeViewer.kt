@@ -15,6 +15,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.collection.LruCache
+import androidx.core.view.drawToBitmap
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.hiddenramblings.tagmo.NFCIntent
@@ -94,7 +95,7 @@ class HexCodeViewer : AppCompatActivity() {
             val paint = Paint()
             var iHeight = 0
             val cacheSize = (Runtime.getRuntime().maxMemory() / 1024).toInt() / 16
-            val bitmaCache = LruCache<String, Bitmap>(cacheSize)
+            val bitmapCache = LruCache<String, Bitmap>(cacheSize)
             for (i in 0 until size) {
                 val holder = adapter.createViewHolder(
                     view, adapter.getItemViewType(i)
@@ -111,13 +112,14 @@ class HexCodeViewer : AppCompatActivity() {
                     holder.itemView.measuredWidth,
                     holder.itemView.measuredHeight
                 )
-                @Suppress("DEPRECATION")
-                if (Debug.isOlder(Build.VERSION_CODES.P)) {
+                if (Debug.isNewer(Build.VERSION_CODES.P)) {
+                    bitmapCache.put(i.toString(), holder.itemView.drawToBitmap())
+                } else @Suppress("DEPRECATION") {
                     holder.itemView.isDrawingCacheEnabled = true
                     holder.itemView.buildDrawingCache()
                     val drawingCache = holder.itemView.drawingCache
                     if (drawingCache != null)
-                        bitmaCache.put(i.toString(), drawingCache)
+                        bitmapCache.put(i.toString(), drawingCache)
                 }
                 height += holder.itemView.measuredHeight
             }
@@ -127,10 +129,12 @@ class HexCodeViewer : AppCompatActivity() {
             val bigCanvas = Canvas(viewBitmap)
             bigCanvas.drawColor(Color.BLACK)
             for (i in 0 until size) {
-                val bitmap = bitmaCache[i.toString()]
-                bigCanvas.drawBitmap(bitmap!!, 0f, iHeight.toFloat(), paint)
-                iHeight += bitmap.height
-                bitmap.recycle()
+                val bitmap = bitmapCache[i.toString()]
+                if (null != bitmap) {
+                    bigCanvas.drawBitmap(bitmap, 0f, iHeight.toFloat(), paint)
+                    iHeight += bitmap.height
+                    bitmap.recycle()
+                }
             }
         }
         if (null == viewBitmap) {
@@ -154,6 +158,7 @@ class HexCodeViewer : AppCompatActivity() {
                     )
                 )
             }
+            viewBitmap.recycle()
         } catch (e: IOException) {
             Debug.warn(e)
         }

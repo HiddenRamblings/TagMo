@@ -86,14 +86,14 @@ class BrowserAdapter(
     }
 
     override fun getItemCount(): Int {
-        return if (null != filteredData) filteredData!!.size else 0
+        return filteredData?.size ?: 0
     }
 
     override fun getItemId(i: Int): Long {
-        return filteredData?.get(i)?.id!!.toLong()
+        return (filteredData?.get(i)?.id ?: 0).toLong()
     }
 
-    fun getItem(i: Int): AmiiboFile? {
+    private fun getItem(i: Int): AmiiboFile? {
         return filteredData?.get(i)
     }
 
@@ -115,7 +115,7 @@ class BrowserAdapter(
             val amiiboManager = settings.amiiboManager
             if (null != amiiboManager) {
                 var i = 0
-                val size = filteredData!!.size
+                val size = filteredData?.size ?: 0
                 while (i < size) {
                     val amiiboId = filteredData?.get(i)?.id
                     var amiibo = amiiboManager.amiibos[amiiboId]

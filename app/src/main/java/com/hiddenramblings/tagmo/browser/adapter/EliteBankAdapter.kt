@@ -46,7 +46,7 @@ class EliteBankAdapter     // setHasStableIds(true);
         return amiibos[i]?.id!!.toLong()
     }
 
-    fun getItem(i: Int): EliteTag? {
+    private fun getItem(i: Int): EliteTag? {
         return amiibos[i]
     }
 

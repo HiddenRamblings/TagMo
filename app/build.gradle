@@ -11,7 +11,7 @@ android {
         applicationId 'com.hiddenramblings.tagmo'
         minSdkVersion 16
         targetSdkVersion 33
-        versionName "3.5.2"
+        versionName "3.5.3"
         versionCode = versionName.replace(".","").toInteger() * 10
 
         vectorDrawables {

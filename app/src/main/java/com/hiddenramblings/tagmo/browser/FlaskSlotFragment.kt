@@ -864,7 +864,7 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
                 }
             }
             scanner.startScan(listOf(filterPuck), settings, scanCallbackPuckLP)
-        } else {
+        } else @Suppress("DEPRECATION") {
             scanCallbackFlask =
                 LeScanCallback { bluetoothDevice: BluetoothDevice, _: Int, _: ByteArray? ->
                     deviceProfile = bluetoothDevice.name
@@ -873,7 +873,6 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
                     showConnectionNotice()
                     startFlaskService()
                 }
-            @Suppress("DEPRECATION")
             mBluetoothAdapter!!.startLeScan(arrayOf(FlaskGattService.FlaskNUS), scanCallbackFlask)
             scanCallbackPuck =
                 LeScanCallback { bluetoothDevice: BluetoothDevice, _: Int, _: ByteArray? ->
@@ -883,7 +882,6 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
                     showConnectionNotice()
                     startPuckService()
                 }
-            @Suppress("DEPRECATION")
             mBluetoothAdapter!!.startLeScan(arrayOf(PuckGattService.PuckNUS), scanCallbackPuck)
         }
         fragmentHandler.postDelayed({
@@ -1135,10 +1133,8 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
                 if (null != scanCallbackPuckLP) mBluetoothAdapter!!.bluetoothLeScanner.stopScan(
                     scanCallbackPuckLP
                 )
-            } else {
-                @Suppress("DEPRECATION")
+            } else @Suppress("DEPRECATION") {
                 if (null != scanCallbackFlask) mBluetoothAdapter!!.stopLeScan(scanCallbackFlask)
-                @Suppress("DEPRECATION")
                 if (null != scanCallbackPuck) mBluetoothAdapter!!.stopLeScan(scanCallbackPuck)
             }
         }

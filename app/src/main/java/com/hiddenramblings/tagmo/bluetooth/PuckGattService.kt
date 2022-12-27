@@ -281,10 +281,8 @@ class PuckGattService : Service() {
             val value = BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE
             if (Debug.isNewer(Build.VERSION_CODES.TIRAMISU)) {
                 mBluetoothGatt!!.writeDescriptor(descriptorTX, value)
-            } else {
-                @Suppress("DEPRECATION")
+            } else @Suppress("DEPRECATION") {
                 descriptorTX.value = value
-                @Suppress("DEPRECATION")
                 mBluetoothGatt!!.writeDescriptor(descriptorTX)
             }
         } catch (ignored: Exception) {
@@ -296,10 +294,8 @@ class PuckGattService : Service() {
             val value = BluetoothGattDescriptor.ENABLE_INDICATION_VALUE
             if (Debug.isNewer(Build.VERSION_CODES.TIRAMISU)) {
                 mBluetoothGatt!!.writeDescriptor(descriptorTX, value)
-            } else {
-                @Suppress("DEPRECATION")
+            } else @Suppress("DEPRECATION") {
                 descriptorTX.value = value
-                @Suppress("DEPRECATION")
                 mBluetoothGatt!!.writeDescriptor(descriptorTX)
             }
         } catch (ignored: Exception) {
@@ -426,12 +422,10 @@ class PuckGattService : Service() {
                             mCharacteristicTX!!, chunk,
                             BluetoothGattCharacteristic.WRITE_TYPE_NO_RESPONSE
                         )
-                    } else {
-                        @Suppress("DEPRECATION")
+                    } else @Suppress("DEPRECATION") {
                         mCharacteristicTX!!.value = chunk
                         mCharacteristicTX!!.writeType =
                             BluetoothGattCharacteristic.WRITE_TYPE_NO_RESPONSE
-                        @Suppress("DEPRECATION")
                         mBluetoothGatt!!.writeCharacteristic(mCharacteristicTX)
                     }
                 }, (i + 1) * chunkTimeout)

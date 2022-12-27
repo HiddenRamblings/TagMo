@@ -336,16 +336,13 @@ class QRCodeScanner : AppCompatActivity() {
                 val bounds: Rect = windowManager.currentWindowMetrics.bounds
                 width = bounds.width()
                 height = bounds.height()
-            } else {
+            } else @Suppress("DEPRECATION") {
                 if (Debug.isNewer(Build.VERSION_CODES.R))
-                    @Suppress("DEPRECATION")
                     display?.getRealMetrics(metrics)
                         ?: windowManager.defaultDisplay.getRealMetrics(metrics)
                 else if (Debug.isNewer(Build.VERSION_CODES.JELLY_BEAN_MR1))
-                    @Suppress("DEPRECATION")
                     windowManager.defaultDisplay.getRealMetrics(metrics)
                 else
-                    @Suppress("DEPRECATION")
                     windowManager.defaultDisplay.getMetrics(metrics)
                 width = metrics.widthPixels
                 height = metrics.heightPixels
@@ -442,16 +439,13 @@ class QRCodeScanner : AppCompatActivity() {
                 bounds.width()
             else bounds.height()
             ((params * 3 / 4) / (resources.configuration.densityDpi / 160)) + 0.5
-        } else {
+        } else @Suppress("DEPRECATION") {
             if (Debug.isNewer(Build.VERSION_CODES.R))
-                @Suppress("DEPRECATION")
                 display?.getRealMetrics(metrics)
                     ?: windowManager.defaultDisplay.getRealMetrics(metrics)
             else if (Debug.isNewer(Build.VERSION_CODES.JELLY_BEAN_MR1))
-                @Suppress("DEPRECATION")
                 windowManager.defaultDisplay.getRealMetrics(metrics)
             else
-                @Suppress("DEPRECATION")
                 windowManager.defaultDisplay.getMetrics(metrics)
             val params = if (metrics.widthPixels < metrics.heightPixels)
                 metrics.widthPixels

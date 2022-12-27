@@ -2211,12 +2211,10 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
             val columns = if (Debug.isNewer(Build.VERSION_CODES.S)) {
                 val bounds: Rect = mWindowManager.currentWindowMetrics.bounds
                 ((bounds.width() / (resources.configuration.densityDpi / 160)) + 0.5) / 112
-            } else {
+            } else @Suppress("DEPRECATION") {
                 if (Debug.isNewer(Build.VERSION_CODES.JELLY_BEAN_MR1))
-                    @Suppress("DEPRECATION")
                     mWindowManager.defaultDisplay.getRealMetrics(metrics)
                 else
-                    @Suppress("DEPRECATION")
                     mWindowManager.defaultDisplay.getMetrics(metrics)
                 ((metrics.widthPixels / metrics.density) + 0.5) / 112
             }

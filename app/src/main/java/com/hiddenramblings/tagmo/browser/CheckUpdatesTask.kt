@@ -156,8 +156,7 @@ class CheckUpdatesTask internal constructor(activity: BrowserActivity) {
                     } catch (anf: ActivityNotFoundException) {
                         try {
                             activity.get()!!.startActivity(intent.setAction(Intent.ACTION_VIEW))
-                        } catch (ignored: ActivityNotFoundException) {
-                        }
+                        } catch (ignored: ActivityNotFoundException) { }
                     }
                 }
             } catch (ex: SecurityException) {

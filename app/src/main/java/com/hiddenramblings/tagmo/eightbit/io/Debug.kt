@@ -307,7 +307,7 @@ object Debug {
     private fun setEmailParams(action: String, subject: String, text: String): Intent {
         return Intent(action).apply {
             data = Uri.parse("mailto:")
-            putExtra(Intent.EXTRA_EMAIL, arrayOf("samsprungtoo@gmail.com"))
+            putExtra(Intent.EXTRA_EMAIL, arrayOf("tagmo.git@gmail.com"))
             putExtra(Intent.EXTRA_SUBJECT, subject)
             putExtra(Intent.EXTRA_TEXT, text)
         }

@@ -55,7 +55,7 @@ class WebsiteFragment : Fragment() {
         mWebView = view.findViewById(R.id.webview_content)
         SecurityHandler(requireActivity(), object : SecurityHandler.ProviderInstallListener {
             override fun onProviderInstalled() {
-                configureWebView()
+                configureWebView(mWebView)
             }
 
             override fun onProviderInstallException() {
@@ -69,9 +69,10 @@ class WebsiteFragment : Fragment() {
     }
 
     @SuppressLint("AddJavascriptInterface", "SetJavaScriptEnabled")
-    private fun configureWebView() {
-        val webViewSettings = mWebView!!.settings
-        mWebView!!.isScrollbarFadingEnabled = true
+    private fun configureWebView(webView: WebView?) {
+        if (null == webView) return
+        val webViewSettings = webView.settings
+        webView.isScrollbarFadingEnabled = true
         webViewSettings.loadWithOverviewMode = true
         webViewSettings.useWideViewPort = true
         webViewSettings.allowFileAccess = true
@@ -87,7 +88,7 @@ class WebsiteFragment : Fragment() {
                 "/assets/",
                 AssetsPathHandler(requireContext())
             ).build()
-            mWebView!!.webViewClient = object : WebViewClientCompat() {
+            webView.webViewClient = object : WebViewClientCompat() {
                 override fun shouldInterceptRequest(
                     view: WebView, request: WebResourceRequest
                 ): WebResourceResponse? {
@@ -124,11 +125,11 @@ class WebsiteFragment : Fragment() {
         webViewSettings.allowUniversalAccessFromFileURLs =
             Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP
         val download = JavaScriptInterface()
-        mWebView!!.addJavascriptInterface(download, "Android")
-        mWebView!!.setDownloadListener { url: String, _: String?, _: String?, mimeType: String, _: Long ->
+        webView.addJavascriptInterface(download, "Android")
+        webView.setDownloadListener { url: String, _: String?, _: String?, mimeType: String, _: Long ->
             if (url.startsWith("blob") || url.startsWith("data")) {
                 verbose(WebsiteFragment::class.java, url)
-                mWebView!!.loadUrl(download.getBase64StringFromBlob(url, mimeType))
+                webView.loadUrl(download.getBase64StringFromBlob(url, mimeType))
             }
         }
         loadWebsite(null)
@@ -138,15 +139,17 @@ class WebsiteFragment : Fragment() {
         var website = address
         if (null != mWebView) {
             if (null == website) website = NFCIntent.SITE_GITLAB_README
-            val webViewSettings = mWebView!!.settings
-            if (website.startsWith(NFCIntent.SITE_GITLAB_README)) {
-                webViewSettings.userAgentString = webViewSettings.userAgentString.replace(
-                    ("(?i)" + Pattern.quote("android")).toRegex(), "TagMo"
-                )
+            val webViewSettings = mWebView?.settings
+            if (null != webViewSettings) {
+                if (website.startsWith(NFCIntent.SITE_GITLAB_README)) {
+                    webViewSettings.userAgentString = webViewSettings.userAgentString?.replace(
+                        ("(?i)" + Pattern.quote("android")).toRegex(), "TagMo"
+                    )
+                }
+                webViewSettings.setSupportZoom(true)
+                webViewSettings.builtInZoomControls = true
             }
-            webViewSettings.setSupportZoom(true)
-            webViewSettings.builtInZoomControls = true
-            mWebView!!.loadUrl(website)
+            mWebView?.loadUrl(website)
         } else {
             val delayedUrl = website
             webHandler.postDelayed({ loadWebsite(delayedUrl) }, TagMo.uiDelay.toLong())
@@ -154,8 +157,8 @@ class WebsiteFragment : Fragment() {
     }
 
     fun hasGoneBack() : Boolean {
-        return if (mWebView!!.canGoBack()) {
-            mWebView!!.goBack()
+        return if (mWebView?.canGoBack() == true) {
+            mWebView?.goBack()
             true
         } else {
             false
@@ -172,7 +175,7 @@ class WebsiteFragment : Fragment() {
                 // get the zip entry
                 val finalEntry = entries.nextElement()
                 webHandler.post {
-                    dialog!!.setMessage(getString(R.string.unzip_item, finalEntry.name))
+                    dialog?.setMessage(getString(R.string.unzip_item, finalEntry.name))
                 }
                 if (finalEntry.isDirectory) {
                     val dir = File(
@@ -210,7 +213,7 @@ class WebsiteFragment : Fragment() {
             } catch (e: IOException) {
                 warn(e)
             } finally {
-                dialog!!.dismiss()
+                dialog?.dismiss()
                 archive.delete()
             }
         }
@@ -256,6 +259,7 @@ class WebsiteFragment : Fragment() {
         backupDialog.show()
     }
 
+    @Suppress("UNUSED")
     private inner class JavaScriptInterface {
         @JavascriptInterface
         @Throws(IOException::class)

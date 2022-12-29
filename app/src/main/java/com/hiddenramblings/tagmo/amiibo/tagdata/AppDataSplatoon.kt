@@ -5,9 +5,6 @@
  */
 package com.hiddenramblings.tagmo.amiibo.tagdata
 
-import com.hiddenramblings.tagmo.nfctech.TagArray
-import java.util.*
-
 class AppDataSplatoon(appData: ByteArray?) : AppData(appData!!) {
 
     fun checkSaveData(): Boolean {

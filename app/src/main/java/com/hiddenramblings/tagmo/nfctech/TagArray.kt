@@ -28,6 +28,7 @@ import java.nio.BufferUnderflowException
 import java.nio.ByteBuffer
 import java.util.*
 
+
 object TagArray {
     @JvmStatic
     fun getTagTechnology(tag: Tag?): String {
@@ -119,8 +120,15 @@ object TagArray {
 
     @JvmStatic
     fun hexToByteArray(s: String): ByteArray {
-        val byterator = s.chunkedSequence(2).map { it.toInt(16).toByte() }.iterator()
-        return ByteArray(s.length / 2) { byterator.next() }
+        val len: Int = s.length
+        val data = ByteArray(len / 2)
+        var i = 0
+        while (i < len) {
+            data[i / 2] = ((Character.digit(s[i], 16) shl 4)
+                    + Character.digit(s[i + 1], 16)).toByte()
+            i += 2
+        }
+        return data
     }
 
     fun longToBytes(x: Long): ByteArray {

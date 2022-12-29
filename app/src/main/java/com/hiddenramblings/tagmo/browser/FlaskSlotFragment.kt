@@ -1063,8 +1063,8 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
         )
         builder.setView(view)
         processDialog = builder.create()
-        processDialog!!.show()
-        processDialog!!.window!!.decorView.keepScreenOn = true
+        processDialog?.show()
+        processDialog?.window?.decorView?.keepScreenOn = true
     }
 
     private fun showPurchaseNotice() {

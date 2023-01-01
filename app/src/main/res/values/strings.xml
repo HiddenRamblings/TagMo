@@ -342,7 +342,7 @@
     <string name="error_elite_auth">Error while authenticating N2 Elite</string>
     <string name="error_amiitool_init">Failed to initialize amiitool</string>
     <string name="error_auth_null">Auth result was null</string>
-    <string name="error_unknown">An unknown error has occurred.\nPlease submit a support logcat.</string>
+    <string name="error_unknown">An unknown error has occurred.</string>
 
     <string name="fail_ssl_update">OpenSSL security provider obsolete!</string>
     <string name="fail_save_data">Failed to save tag data</string>

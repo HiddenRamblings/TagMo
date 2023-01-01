@@ -77,12 +77,12 @@ object TagReader {
         return tagData
     }
 
-    private fun readBankTitle(tag: NTAG215, bank: Int): ByteArray? {
-        return tag.amiiboFastRead(0x15, 0x16, bank)
+    private fun readBankTitle(tag: NTAG215?, bank: Int): ByteArray? {
+        return tag?.amiiboFastRead(0x15, 0x16, bank)
     }
 
     @Throws(NullPointerException::class)
-    fun readTagTitles(tag: NTAG215, numBanks: Int): ArrayList<String> {
+    fun readTagTitles(tag: NTAG215?, numBanks: Int): ArrayList<String> {
         val tags = ArrayList<String>()
         var i = 0
         while (i < numBanks and 0xFF) {
@@ -104,17 +104,17 @@ object TagReader {
         return tag?.getVersion(false)
     }
 
-    fun getBankSignature(tag: NTAG215): String? {
-        val signature = tag.readSignature(false)
+    fun getBankSignature(tag: NTAG215?): String? {
+        val signature = tag?.readSignature(false)
         return if (null != signature) bytesToHex(signature).substring(0, 22) else null
     }
 
     @Throws(IllegalStateException::class, NullPointerException::class)
-    fun scanTagToBytes(tag: NTAG215, bank: Int): ByteArray {
+    fun scanTagToBytes(tag: NTAG215?, bank: Int): ByteArray {
         val tagData = ByteArray(NfcByte.TAG_DATA_SIZE)
         return try {
-            val data = (if (bank == -1) tag.fastRead(0x00, 0x86)
-            else tag.amiiboFastRead(0x00, 0x86, bank))
+            val data = (if (bank == -1) tag?.fastRead(0x00, 0x86)
+            else tag?.amiiboFastRead(0x00, 0x86, bank))
                 ?: throw NullPointerException(appContext.getString(R.string.fail_read_amiibo))
             System.arraycopy(data, 0, tagData, 0, NfcByte.TAG_DATA_SIZE)
             tagData
@@ -126,11 +126,11 @@ object TagReader {
     }
 
     @Throws(IllegalStateException::class, NullPointerException::class)
-    fun scanBankToBytes(tag: NTAG215, bank: Int): ByteArray {
+    fun scanBankToBytes(tag: NTAG215?, bank: Int): ByteArray {
         val context = appContext
         val tagData = ByteArray(NfcByte.TAG_DATA_SIZE)
         return try {
-            val data = tag.amiiboFastRead(0x00, 0x86, bank)
+            val data = tag?.amiiboFastRead(0x00, 0x86, bank)
                 ?: throw NullPointerException(context.getString(R.string.fail_read_amiibo))
             System.arraycopy(data, 0, tagData, 0, NfcByte.TAG_DATA_SIZE)
             Debug.info(TagReader::class.java, bytesToHex(tagData))

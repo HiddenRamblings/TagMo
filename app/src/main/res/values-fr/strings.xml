@@ -262,7 +262,7 @@
     <string name="error_elite_auth">Erreur lors de l’authentification au N2 Elite</string>
     <string name="error_amiitool_init">Erreur lors de l’initialisation de amiitool</string>
     <string name="error_auth_null">Résultat d’authentification vide</string>
-    <string name="error_unknown">Une erreur inconnue est survenue.\nVeuillez soumettre un problème au support.</string>
+    <string name="error_unknown">Une erreur inconnue est survenue.</string>
 
     <string name="fail_ssl_update">Sécurité OpenSSL obsolète&#160;!</string>
     <string name="fail_save_data">Échec de l’enregistrement des données du Tag</string>

@@ -720,7 +720,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
         }
     }
 
-    private fun onCaptureLogcatClicked() {
+    fun onCaptureLogcatClick() {
         if (updates!!.hasPendingUpdate()) {
             if (null != appUpdate) updates?.downloadPlayUpdate(appUpdate)
             if (null != updateUrl) updates?.installUpdateCompat(updateUrl)
@@ -1451,7 +1451,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                 if (Debug.isNewer(Build.VERSION_CODES.JELLY_BEAN_MR2)) onShowJoyConFragment()
             }
             R.id.capture_logcat -> {
-                onCaptureLogcatClicked()
+                onCaptureLogcatClick()
             }
             R.id.filter_character -> {
                 return onFilterCharacterClick()

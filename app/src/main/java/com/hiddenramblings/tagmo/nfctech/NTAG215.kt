@@ -341,12 +341,12 @@ class NTAG215 : TagTechnology {
         val CONNECT = NTAG215::class.java.name + ".connect()"
         private const val NXP_MANUFACTURER_ID = 0x04
         private const val MAX_PAGE_COUNT = 256
-        operator fun get(tag: Tag): NTAG215? {
+        operator fun get(tag: Tag?): NTAG215? {
             val mifare = MifareUltralight.get(tag)
             if (null != mifare) return NTAG215(mifare)
             val nfcA = NfcA.get(tag)
             return if (null != nfcA)
-                if (nfcA.sak.toInt() == 0x00 && tag.id[0].toInt() == NXP_MANUFACTURER_ID)
+                if (nfcA.sak.toInt() == 0x00 && tag?.id?.get(0)?.toInt()  == NXP_MANUFACTURER_ID)
                     NTAG215(nfcA)
                 else null
             else null

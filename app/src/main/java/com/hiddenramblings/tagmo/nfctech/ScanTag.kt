@@ -43,7 +43,7 @@ class ScanTag {
         var mifare: NTAG215? = null
         try {
             val tag = intent.parcelable<Tag>(NfcAdapter.EXTRA_TAG)
-            mifare = NTAG215[tag!!]
+            mifare = NTAG215[tag]
             val tagTech = getTagTechnology(tag)
             if (mifare == null) {
                 if (prefs.eliteEnabled()) {
@@ -54,9 +54,10 @@ class ScanTag {
                         Debug.info(ex)
                     }
                     if (TagReader.needsFirmware(mifare)) {
-                        if (TagWriter.updateFirmware(mifare)) Toasty(activity).Short(R.string.firmware_update)
+                        if (TagWriter.updateFirmware(mifare))
+                            Toasty(activity).Short(R.string.firmware_update)
                         mifare.close()
-                        activity.finish()
+                        return
                     }
                 }
                 throw Exception(activity.getString(R.string.error_tag_protocol, tagTech))
@@ -68,27 +69,23 @@ class ScanTag {
                     isEliteDevice = isElite(mifare)
                 }
             }
-            val bankParams: ByteArray
-            val bankCount: Int
-            val activeBank: Int
-            if (!isEliteDevice) {
-                bankCount = -1
-                activeBank = -1
-            } else {
-                bankParams = TagReader.getBankParams(mifare)!!
-                bankCount = bankParams[1].toInt() and 0xFF
-                activeBank = bankParams[0].toInt() and 0xFF
+            var banksCount = -1
+            var activeBank = -1
+            if (isEliteDevice) {
+                val bankParams = TagReader.getBankParams(mifare)
+                banksCount = bankParams?.get(1)?.toInt()?.and(0xFF) ?: banksCount
+                activeBank = bankParams?.get(0)?.toInt()?.and(0xFF) ?: activeBank
             }
             try {
                 if (isEliteDevice) {
                     val signature = TagReader.getBankSignature(mifare)
                     prefs.eliteSignature(signature)
                     prefs.eliteActiveBank(activeBank)
-                    prefs.eliteBankCount(bankCount)
+                    prefs.eliteBankCount(banksCount)
                     val args = Bundle()
-                    val titles = TagReader.readTagTitles(mifare, bankCount)
+                    val titles = TagReader.readTagTitles(mifare, banksCount)
                     args.putString(NFCIntent.EXTRA_SIGNATURE, signature)
-                    args.putInt(NFCIntent.EXTRA_BANK_COUNT, bankCount)
+                    args.putInt(NFCIntent.EXTRA_BANK_COUNT, banksCount)
                     args.putInt(NFCIntent.EXTRA_ACTIVE_BANK, activeBank)
                     args.putStringArrayList(NFCIntent.EXTRA_AMIIBO_LIST, titles)
                     activity.showElitePage(args)
@@ -98,7 +95,7 @@ class ScanTag {
                 hasTestedElite = false
                 isEliteDevice = false
             } finally {
-                mifare.close()
+                closeTagSilently(mifare)
             }
         } catch (e: Exception) {
             Debug.warn(e)
@@ -151,18 +148,19 @@ class ScanTag {
                                         ).setAction(NFCIntent.ACTION_BLIND_SCAN)
                                     )
                                 }
-                                .setNegativeButton(R.string.cancel) { dialog: DialogInterface, _: Int -> dialog.dismiss() }
-                                .show()
+                                .setNegativeButton(R.string.cancel) { dialog: DialogInterface, _: Int ->
+                                    dialog.dismiss()
+                                }.show()
                         }
                     }
                 } else {
-                    if (e is NullPointerException && error.contains(NTAG215.CONNECT)) {
+                    if (e is NullPointerException && error.contains(NTAG215.CONNECT))
                         error = activity.getString(R.string.error_tag_faulty)
-                    }
                     Toasty(activity).Short(error)
                 }
             } else {
                 Toasty(activity).Short(R.string.error_unknown)
+                activity.onCaptureLogcatClick()
             }
         }
     }

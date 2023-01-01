@@ -342,7 +342,7 @@
     <string name="error_elite_auth">驗證N2 Elite時發生錯誤</string>
     <string name="error_amiitool_init">無法初始化amiitool</string>
     <string name="error_auth_null">驗證內容為空值</string>
-    <string name="error_unknown">發生了未知的錯誤\n請回傳操作日誌協助我們改善</string>
+    <string name="error_unknown">發生了未知的錯誤</string>
 
     <string name="fail_ssl_update">OpenSSL 安全性憑證已逾期！</string>
     <string name="fail_save_data">儲存tag數據失敗</string>

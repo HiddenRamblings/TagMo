@@ -176,15 +176,15 @@ object TagWriter {
 
     @Throws(Exception::class)
     fun writeEliteAuto(
-        mifare: NTAG215, tagData: ByteArray?, keyManager: KeyManager, active_bank: Int
+        mifare: NTAG215, tagData: ByteArray?, keyManager: KeyManager, bankNumber: Int
     ) {
         var writeData = tagData
         if (doEliteAuth(mifare, mifare.fastRead(0, 0))) {
             writeData = keyManager.decrypt(writeData)
             // tagData = patchUid(mifare.readPages(0), tagData);
             writeData = keyManager.encrypt(writeData)
-            var write = mifare.amiiboFastWrite(0, active_bank, writeData)
-            if (!write) write = mifare.amiiboWrite(0, active_bank, writeData)
+            var write = mifare.amiiboFastWrite(0, bankNumber, writeData)
+            if (!write) write = mifare.amiiboWrite(0, bankNumber, writeData)
             if (!write) throw IOException(
                 appContext
                     .getString(R.string.error_elite_write)
@@ -351,11 +351,11 @@ object TagWriter {
     }
 
     @Throws(Exception::class)
-    fun wipeBankData(mifare: NTAG215, active_bank: Int) {
+    fun wipeBankData(mifare: NTAG215, bankNumber: Int) {
         if (doEliteAuth(mifare, mifare.fastRead(0, 0))) {
             val tagData = hexToByteArray(String(CharArray(1080)).replace("\u0000", "F"))
-            var write = mifare.amiiboFastWrite(0, active_bank, tagData)
-            if (!write) write = mifare.amiiboWrite(0, active_bank, tagData)
+            var write = mifare.amiiboFastWrite(0, bankNumber, tagData)
+            if (!write) write = mifare.amiiboWrite(0, bankNumber, tagData)
             if (write) {
                 val result = ByteArray(8)
                 System.arraycopy(tagData, 84, result, 0, result.size)
@@ -397,7 +397,8 @@ object TagWriter {
     }
 
     @Throws(Exception::class)
-    fun updateFirmware(tag: NTAG215): Boolean {
+    fun updateFirmware(tag: NTAG215?): Boolean {
+        if (null == tag) return false
         val context = appContext
         var response: ByteArray? = ByteArray(1)
         response!![0] = 0xFFFF.toByte()

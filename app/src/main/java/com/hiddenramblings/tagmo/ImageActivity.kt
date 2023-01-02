@@ -201,7 +201,7 @@ class ImageActivity : AppCompatActivity() {
                     saveImageToFile(prefs, resource, input.text.toString())
                 }
 
-                override fun onLoadCleared(placeholder: Drawable?) {}
+                override fun onLoadCleared(placeholder: Drawable?) { }
             }
             GlideApp.with(this@ImageActivity).asBitmap()
                 .load(getImageUrl(amiiboId))
@@ -235,8 +235,6 @@ class ImageActivity : AppCompatActivity() {
             }
         } catch (e: IOException) {
             Debug.warn(e)
-        } finally {
-            resource.recycle()
         }
     }
 }

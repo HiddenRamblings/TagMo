@@ -74,7 +74,7 @@ class PuckGattService : Service() {
     private var puckArray = ArrayList<ByteArray?>()
     private var readResponse = ByteArray(NfcByte.TAG_FILE_SIZE)
     private fun getCharacteristicValue(characteristic: BluetoothGattCharacteristic, data: ByteArray?) {
-        if (data != null && data.isNotEmpty()) {
+        if (null != data && data.isNotEmpty()) {
             Debug.verbose(
                 this.javaClass, getLogTag(characteristic.uuid) + " " + Arrays.toString(data)
             )
@@ -91,10 +91,7 @@ class PuckGattService : Service() {
                             puckArray.add(null)
                         }
                         if (puckArray.size == slotsCount) {
-                            listener?.onPuckListRetrieved(
-                                puckArray,
-                                activeSlot
-                            )
+                            listener?.onPuckListRetrieved(puckArray, activeSlot)
                         }
                     }
                 } else if (data[0] == PUCK.READ.bytes) {

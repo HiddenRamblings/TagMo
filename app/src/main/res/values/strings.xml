@@ -305,8 +305,6 @@
     <string name="fail_permissions">Required permission denied!</string>
     <string name="location_disclosure">Location is required for Bluetooth LE scan. In accordance with Google Play policy, TagMo is required to notify you that location data may be collected in the background.  TagMo does not read, store, or share location data. As such, this notice is strictly a formality.</string>
 
-    <string name="scan_heading">Unpaired Flask or Puck.js Device?</string>
-    <string name="scan_devices">Scan for Bluetooth LE Services</string>
     <string name="device_address">MAC: %1$s</string>
     <string name="connect_flask">Connect Flask</string>
     <string name="connect_puck">Connect Puck.js</string>

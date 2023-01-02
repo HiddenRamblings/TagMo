@@ -822,7 +822,7 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
     }
 
     @SuppressLint("MissingPermission", "NewApi")
-    private fun scanBluetoothServices() {
+    private fun scanBluetoothServices(deviceDialog: AlertDialog) {
         mBluetoothAdapter =
             if (null != mBluetoothAdapter) mBluetoothAdapter else bluetoothHandler!!.getBluetoothAdapter(
                 requireContext()
@@ -834,6 +834,7 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
         }
         showScanningNotice()
         deviceProfile = null
+        val devices = ArrayList<BluetoothDevice>()
         if (Debug.isNewer(Build.VERSION_CODES.LOLLIPOP)) {
             val scanner = mBluetoothAdapter!!.bluetoothLeScanner
             val settings = ScanSettings.Builder()
@@ -843,11 +844,12 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
             scanCallbackFlaskLP = object : ScanCallback() {
                 override fun onScanResult(callbackType: Int, result: ScanResult) {
                     super.onScanResult(callbackType, result)
-                    deviceProfile = result.device.name
-                    deviceAddress = result.device.address
-                    dismissGattDiscovery()
-                    showConnectionNotice()
-                    startFlaskService()
+                    if (!devices.contains(result.device)) {
+                        devices.add(result.device)
+                        val item = displayScanResult(deviceDialog, result.device, true)
+                        deviceDialog.findViewById<LinearLayout>(R.id.bluetooth_devices)
+                            ?.addView(item, devices.indexOf(result.device))
+                    }
                 }
             }
             scanner.startScan(listOf(filterFlask), settings, scanCallbackFlaskLP)
@@ -856,31 +858,34 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
             scanCallbackPuckLP = object : ScanCallback() {
                 override fun onScanResult(callbackType: Int, result: ScanResult) {
                     super.onScanResult(callbackType, result)
-                    deviceProfile = result.device.name
-                    deviceAddress = result.device.address
-                    dismissGattDiscovery()
-                    showConnectionNotice()
-                    startPuckService()
+                    if (!devices.contains(result.device)) {
+                        devices.add(result.device)
+                        val item = displayScanResult(deviceDialog, result.device, false)
+                        deviceDialog.findViewById<LinearLayout>(R.id.bluetooth_devices)
+                            ?.addView(item, devices.indexOf(result.device))
+                    }
                 }
             }
             scanner.startScan(listOf(filterPuck), settings, scanCallbackPuckLP)
         } else @Suppress("DEPRECATION") {
             scanCallbackFlask =
                 LeScanCallback { bluetoothDevice: BluetoothDevice, _: Int, _: ByteArray? ->
-                    deviceProfile = bluetoothDevice.name
-                    deviceAddress = bluetoothDevice.address
-                    dismissGattDiscovery()
-                    showConnectionNotice()
-                    startFlaskService()
+                    if (!devices.contains(bluetoothDevice)) {
+                        devices.add(bluetoothDevice)
+                        val item = displayScanResult(deviceDialog, bluetoothDevice, true)
+                        deviceDialog.findViewById<LinearLayout>(R.id.bluetooth_devices)
+                            ?.addView(item, devices.indexOf(bluetoothDevice))
+                    }
                 }
             mBluetoothAdapter!!.startLeScan(arrayOf(FlaskGattService.FlaskNUS), scanCallbackFlask)
             scanCallbackPuck =
                 LeScanCallback { bluetoothDevice: BluetoothDevice, _: Int, _: ByteArray? ->
-                    deviceProfile = bluetoothDevice.name
-                    deviceAddress = bluetoothDevice.address
-                    dismissGattDiscovery()
-                    showConnectionNotice()
-                    startPuckService()
+                    if (!devices.contains(bluetoothDevice)) {
+                        devices.add(bluetoothDevice)
+                        val item = displayScanResult(deviceDialog, bluetoothDevice, false)
+                        deviceDialog.findViewById<LinearLayout>(R.id.bluetooth_devices)
+                            ?.addView(item, devices.indexOf(bluetoothDevice))
+                    }
                 }
             mBluetoothAdapter!!.startLeScan(arrayOf(PuckGattService.PuckNUS), scanCallbackPuck)
         }
@@ -892,10 +897,38 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
         }, 20000)
     }
 
+    @SuppressLint("InflateParams")
+    private fun displayScanResult(
+        deviceDialog: AlertDialog, device: BluetoothDevice, isFlaskDevice: Boolean
+    ) : View {
+        val item = this.layoutInflater.inflate(R.layout.device_bluetooth, null)
+        (item.findViewById<View>(R.id.device_name) as TextView).text = device.name
+        (item.findViewById<View>(R.id.device_address) as TextView).text =
+            requireActivity().getString(R.string.device_address, device.address)
+        item.findViewById<View>(R.id.connect_flask).setOnClickListener {
+            deviceDialog.dismiss()
+            deviceProfile = device.name
+            deviceAddress = device.address
+            dismissGattDiscovery()
+            showConnectionNotice()
+            startFlaskService()
+        }
+        item.findViewById<View>(R.id.connect_flask).isEnabled = isFlaskDevice
+        item.findViewById<View>(R.id.connect_puck).setOnClickListener {
+            deviceDialog.dismiss()
+            deviceProfile = device.name
+            deviceAddress = device.address
+            dismissGattDiscovery()
+            showConnectionNotice()
+            startPuckService()
+        }
+        item.findViewById<View>(R.id.connect_puck).isEnabled = !isFlaskDevice
+        return item
+    }
+
     @SuppressLint("CutPasteId", "InflateParams")
     private fun displayDevices(devices: ArrayList<BluetoothDevice>) {
-        val view = this.layoutInflater
-            .inflate(R.layout.dialog_devices, null) as LinearLayout
+        val view = this.layoutInflater.inflate(R.layout.dialog_devices, null) as LinearLayout
         val deviceDialog = AlertDialog.Builder(requireActivity()).setView(view).show()
         for (device in devices) {
             val item = this.layoutInflater.inflate(R.layout.device_bluetooth, null)
@@ -906,6 +939,7 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
                 deviceDialog.dismiss()
                 deviceProfile = device.name
                 deviceAddress = device.address
+                dismissGattDiscovery()
                 showConnectionNotice()
                 startFlaskService()
             }
@@ -913,26 +947,13 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
                 deviceDialog.dismiss()
                 deviceProfile = device.name
                 deviceAddress = device.address
+                dismissGattDiscovery()
                 showConnectionNotice()
                 startPuckService()
             }
             view.addView(item)
         }
-        val item = this.layoutInflater.inflate(R.layout.device_bluetooth, null)
-        (item.findViewById<View>(R.id.device_name) as TextView).setText(R.string.scan_heading)
-        item.findViewById<View>(R.id.device_address).visibility = View.GONE
-        val connect = item.findViewById<AppCompatButton>(R.id.connect_flask)
-        connect.setText(R.string.scan_devices)
-        item.findViewById<View>(R.id.connect_puck).visibility = View.GONE
-        item.setOnClickListener {
-            deviceDialog.dismiss()
-            scanBluetoothServices()
-        }
-        connect.setOnClickListener {
-            deviceDialog.dismiss()
-            scanBluetoothServices()
-        }
-        view.addView(item)
+        scanBluetoothServices(deviceDialog)
     }
 
     @SuppressLint("MissingPermission")

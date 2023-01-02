@@ -305,8 +305,6 @@
     <string name="fail_permissions">無法取得執行所需的權限！</string>
     <string name="location_disclosure">特此知會您，使用Bluetooth LE掃描時必須取得定位資訊，依據Google Play商店的政策，本程序會在背景服務收集定位資訊，但絕對不會讀取、儲存或與第三人分享定位資訊。</string>
 
-    <string name="scan_heading">解除與Flask 或 Puck.js 裝置的配對?</string>
-    <string name="scan_devices">掃描Bluetooth LE裝置狀態</string>
     <string name="device_address">MAC: %1$s</string>
     <string name="connect_flask">連接 Flask</string>
     <string name="connect_puck">連接 Puck.js</string>

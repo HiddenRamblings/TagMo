@@ -6,6 +6,9 @@ on:
   pull_request:
     branches: [ conversion ]
 
+permissions:
+  contents: write
+
 jobs:
   build:
 

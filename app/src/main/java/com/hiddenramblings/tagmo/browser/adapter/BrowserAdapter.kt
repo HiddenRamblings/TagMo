@@ -399,7 +399,7 @@ class BrowserAdapter(
                             if (expanded) View.VISIBLE else View.GONE
                         itemView.findViewById<View>(R.id.txtUsage).visibility =
                             if (expanded) View.VISIBLE else View.GONE
-                        if (expanded) listener!!.onAmiiboRebind(itemView, amiiboFile)
+                        if (expanded) listener?.onAmiiboRebind(itemView, amiiboFile)
                         itemView.isEnabled = true
                         txtPath.text = boldSpannable.indexOf(relativeDocument, query)
                         val a = TypedValue()
@@ -420,7 +420,7 @@ class BrowserAdapter(
                             if (expanded) View.VISIBLE else View.GONE
                         itemView.findViewById<View>(R.id.txtUsage).visibility =
                             if (expanded) View.VISIBLE else View.GONE
-                        if (expanded) listener!!.onAmiiboRebind(itemView, amiiboFile)
+                        if (expanded) listener?.onAmiiboRebind(itemView, amiiboFile)
                         var relativeFile = Storage.getRelativePath(
                             item.filePath,
                             mPrefs.preferEmulated()
@@ -520,8 +520,8 @@ class BrowserAdapter(
     )
 
     interface OnAmiiboClickListener {
-        fun onAmiiboClicked(itemView: View?, amiiboFile: AmiiboFile?)
-        fun onAmiiboRebind(itemView: View?, amiiboFile: AmiiboFile?)
+        fun onAmiiboClicked(itemView: View, amiiboFile: AmiiboFile?)
+        fun onAmiiboRebind(itemView: View, amiiboFile: AmiiboFile?)
         fun onAmiiboImageClicked(amiiboFile: AmiiboFile?)
     }
 

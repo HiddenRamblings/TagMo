@@ -821,6 +821,35 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
         return selectedAmiibo
     }
 
+    @SuppressLint("InflateParams")
+    private fun displayScanResult(
+        deviceDialog: AlertDialog, device: BluetoothDevice, deviceType: Int
+    ) : View {
+        val item = this.layoutInflater.inflate(R.layout.device_bluetooth, null)
+        (item.findViewById<View>(R.id.device_name) as TextView).text = device.name
+        (item.findViewById<View>(R.id.device_address) as TextView).text =
+            requireActivity().getString(R.string.device_address, device.address)
+        item.findViewById<View>(R.id.connect_flask).setOnClickListener {
+            deviceDialog.dismiss()
+            deviceProfile = device.name
+            deviceAddress = device.address
+            dismissGattDiscovery()
+            showConnectionNotice()
+            startFlaskService()
+        }
+        item.findViewById<View>(R.id.connect_flask).isEnabled = deviceType != 2
+        item.findViewById<View>(R.id.connect_puck).setOnClickListener {
+            deviceDialog.dismiss()
+            deviceProfile = device.name
+            deviceAddress = device.address
+            dismissGattDiscovery()
+            showConnectionNotice()
+            startPuckService()
+        }
+        item.findViewById<View>(R.id.connect_puck).isEnabled = deviceType != 1
+        return item
+    }
+
     @SuppressLint("MissingPermission", "NewApi")
     private fun scanBluetoothServices(deviceDialog: AlertDialog) {
         mBluetoothAdapter =
@@ -836,45 +865,51 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
         deviceProfile = null
         val devices = ArrayList<BluetoothDevice>()
         if (Debug.isNewer(Build.VERSION_CODES.LOLLIPOP)) {
-            val scanner = mBluetoothAdapter!!.bluetoothLeScanner
-            val settings = ScanSettings.Builder()
-                .setScanMode(ScanSettings.SCAN_MODE_LOW_LATENCY).build()
-            val flaskParcel = ParcelUuid(FlaskGattService.FlaskNUS)
-            val filterFlask = ScanFilter.Builder().setServiceUuid(flaskParcel).build()
+            val scanner = mBluetoothAdapter?.bluetoothLeScanner
+            val settings = ScanSettings.Builder().setScanMode(
+                ScanSettings.SCAN_MODE_LOW_LATENCY
+            ).build()
+            val filterFlask = ScanFilter.Builder().setServiceUuid(
+                ParcelUuid(FlaskGattService.FlaskNUS)
+            ).build()
             scanCallbackFlaskLP = object : ScanCallback() {
                 override fun onScanResult(callbackType: Int, result: ScanResult) {
                     super.onScanResult(callbackType, result)
                     if (!devices.contains(result.device)) {
                         devices.add(result.device)
-                        val item = displayScanResult(deviceDialog, result.device, true)
-                        deviceDialog.findViewById<LinearLayout>(R.id.bluetooth_devices)
-                            ?.addView(item, devices.indexOf(result.device))
+                        deviceDialog.findViewById<LinearLayout>(R.id.bluetooth_devices)?.addView(
+                            displayScanResult(deviceDialog, result.device, 1),
+                            devices.indexOf(result.device)
+                        )
                     }
                 }
             }
-            scanner.startScan(listOf(filterFlask), settings, scanCallbackFlaskLP)
-            val PuckUUID = ParcelUuid(PuckGattService.PuckNUS)
-            val filterPuck = ScanFilter.Builder().setServiceUuid(PuckUUID).build()
+            scanner?.startScan(listOf(filterFlask), settings, scanCallbackFlaskLP)
+            val filterPuck = ScanFilter.Builder().setServiceUuid(
+                ParcelUuid(PuckGattService.PuckNUS)
+            ).build()
             scanCallbackPuckLP = object : ScanCallback() {
                 override fun onScanResult(callbackType: Int, result: ScanResult) {
                     super.onScanResult(callbackType, result)
                     if (!devices.contains(result.device)) {
                         devices.add(result.device)
-                        val item = displayScanResult(deviceDialog, result.device, false)
-                        deviceDialog.findViewById<LinearLayout>(R.id.bluetooth_devices)
-                            ?.addView(item, devices.indexOf(result.device))
+                        deviceDialog.findViewById<LinearLayout>(R.id.bluetooth_devices)?.addView(
+                            displayScanResult(deviceDialog, result.device, 2),
+                            devices.indexOf(result.device)
+                        )
                     }
                 }
             }
-            scanner.startScan(listOf(filterPuck), settings, scanCallbackPuckLP)
+            scanner?.startScan(listOf(filterPuck), settings, scanCallbackPuckLP)
         } else @Suppress("DEPRECATION") {
             scanCallbackFlask =
                 LeScanCallback { bluetoothDevice: BluetoothDevice, _: Int, _: ByteArray? ->
                     if (!devices.contains(bluetoothDevice)) {
                         devices.add(bluetoothDevice)
-                        val item = displayScanResult(deviceDialog, bluetoothDevice, true)
-                        deviceDialog.findViewById<LinearLayout>(R.id.bluetooth_devices)
-                            ?.addView(item, devices.indexOf(bluetoothDevice))
+                        deviceDialog.findViewById<LinearLayout>(R.id.bluetooth_devices)?.addView(
+                            displayScanResult(deviceDialog, bluetoothDevice, 1),
+                            devices.indexOf(bluetoothDevice)
+                        )
                     }
                 }
             mBluetoothAdapter!!.startLeScan(arrayOf(FlaskGattService.FlaskNUS), scanCallbackFlask)
@@ -882,9 +917,10 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
                 LeScanCallback { bluetoothDevice: BluetoothDevice, _: Int, _: ByteArray? ->
                     if (!devices.contains(bluetoothDevice)) {
                         devices.add(bluetoothDevice)
-                        val item = displayScanResult(deviceDialog, bluetoothDevice, false)
-                        deviceDialog.findViewById<LinearLayout>(R.id.bluetooth_devices)
-                            ?.addView(item, devices.indexOf(bluetoothDevice))
+                        deviceDialog.findViewById<LinearLayout>(R.id.bluetooth_devices)?.addView(
+                            displayScanResult(deviceDialog, bluetoothDevice, 2),
+                            devices.indexOf(bluetoothDevice)
+                        )
                     }
                 }
             mBluetoothAdapter!!.startLeScan(arrayOf(PuckGattService.PuckNUS), scanCallbackPuck)
@@ -898,60 +934,11 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
     }
 
     @SuppressLint("InflateParams")
-    private fun displayScanResult(
-        deviceDialog: AlertDialog, device: BluetoothDevice, isFlaskDevice: Boolean
-    ) : View {
-        val item = this.layoutInflater.inflate(R.layout.device_bluetooth, null)
-        (item.findViewById<View>(R.id.device_name) as TextView).text = device.name
-        (item.findViewById<View>(R.id.device_address) as TextView).text =
-            requireActivity().getString(R.string.device_address, device.address)
-        item.findViewById<View>(R.id.connect_flask).setOnClickListener {
-            deviceDialog.dismiss()
-            deviceProfile = device.name
-            deviceAddress = device.address
-            dismissGattDiscovery()
-            showConnectionNotice()
-            startFlaskService()
-        }
-        item.findViewById<View>(R.id.connect_flask).isEnabled = isFlaskDevice
-        item.findViewById<View>(R.id.connect_puck).setOnClickListener {
-            deviceDialog.dismiss()
-            deviceProfile = device.name
-            deviceAddress = device.address
-            dismissGattDiscovery()
-            showConnectionNotice()
-            startPuckService()
-        }
-        item.findViewById<View>(R.id.connect_puck).isEnabled = !isFlaskDevice
-        return item
-    }
-
-    @SuppressLint("CutPasteId", "InflateParams")
     private fun displayDevices(devices: ArrayList<BluetoothDevice>) {
         val view = this.layoutInflater.inflate(R.layout.dialog_devices, null) as LinearLayout
         val deviceDialog = AlertDialog.Builder(requireActivity()).setView(view).show()
         for (device in devices) {
-            val item = this.layoutInflater.inflate(R.layout.device_bluetooth, null)
-            (item.findViewById<View>(R.id.device_name) as TextView).text = device.name
-            (item.findViewById<View>(R.id.device_address) as TextView).text =
-                requireActivity().getString(R.string.device_address, device.address)
-            item.findViewById<View>(R.id.connect_flask).setOnClickListener {
-                deviceDialog.dismiss()
-                deviceProfile = device.name
-                deviceAddress = device.address
-                dismissGattDiscovery()
-                showConnectionNotice()
-                startFlaskService()
-            }
-            item.findViewById<View>(R.id.connect_puck).setOnClickListener {
-                deviceDialog.dismiss()
-                deviceProfile = device.name
-                deviceAddress = device.address
-                dismissGattDiscovery()
-                showConnectionNotice()
-                startPuckService()
-            }
-            view.addView(item)
+            view.addView(displayScanResult(deviceDialog, device, 0))
         }
         scanBluetoothServices(deviceDialog)
     }
@@ -1107,13 +1094,13 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
         }
     }
 
-    fun startFlaskService() {
+    private fun startFlaskService() {
         val service = Intent(requireContext(), FlaskGattService::class.java)
         requireContext().startService(service)
         requireContext().bindService(service, flaskServerConn, Context.BIND_AUTO_CREATE)
     }
 
-    fun startPuckService() {
+    private fun startPuckService() {
         val service = Intent(requireContext(), PuckGattService::class.java)
         requireContext().startService(service)
         requireContext().bindService(service, puckServerConn, Context.BIND_AUTO_CREATE)
@@ -1143,9 +1130,9 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
     @SuppressLint("MissingPermission")
     private fun dismissGattDiscovery() {
         mBluetoothAdapter =
-            if (null != mBluetoothAdapter) mBluetoothAdapter else bluetoothHandler!!.getBluetoothAdapter(
-                requireContext()
-            )
+            if (null != mBluetoothAdapter)
+                mBluetoothAdapter
+            else bluetoothHandler!!.getBluetoothAdapter(requireContext())
         if (null != mBluetoothAdapter) {
             if (Debug.isNewer(Build.VERSION_CODES.LOLLIPOP)) {
                 if (null != scanCallbackFlaskLP) mBluetoothAdapter!!.bluetoothLeScanner.stopScan(
@@ -1175,12 +1162,13 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
         get() {
             if (null != mBluetoothAdapter && mBluetoothAdapter!!.isEnabled) return true
             if (null != context) {
-                bluetoothHandler =
-                    if (null != bluetoothHandler) bluetoothHandler else BluetoothHandler(
-                        requireContext(),
-                        requireActivity().activityResultRegistry,
-                        this@FlaskSlotFragment
-                    )
+                bluetoothHandler = if (null != bluetoothHandler)
+                    bluetoothHandler
+                else BluetoothHandler(
+                    requireContext(),
+                    requireActivity().activityResultRegistry,
+                    this@FlaskSlotFragment
+                )
                 bluetoothHandler!!.requestPermissions(requireActivity())
             } else {
                 fragmentHandler.postDelayed({ isBluetoothEnabled }, 125)

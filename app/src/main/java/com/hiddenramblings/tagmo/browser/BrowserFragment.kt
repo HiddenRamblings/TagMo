@@ -357,12 +357,12 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
         val menuOptions = itemView?.findViewById<LinearLayout>(R.id.menu_options)
         if (null != menuOptions) {
             val toolbar = menuOptions.findViewById<Toolbar>(R.id.toolbar)
-            if (settings!!.amiiboView != BrowserSettings.VIEW.IMAGE.value) {
+            if (settings?.amiiboView != BrowserSettings.VIEW.IMAGE.value) {
                 if (menuOptions.visibility == View.VISIBLE) {
                     menuOptions.visibility = View.GONE
                 } else {
                     menuOptions.visibility = View.VISIBLE
-                    activity.getToolbarOptions(this, toolbar, tagData, itemView)
+                    activity.onCreateToolbarMenu(this, toolbar, tagData, itemView)
                 }
                 val txtUsage = itemView.findViewById<TextView>(R.id.txtUsage)
                 if (txtUsage.visibility == View.VISIBLE) {
@@ -372,7 +372,7 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
                     getGameCompatibility(txtUsage, tagData)
                 }
             } else {
-                activity.getToolbarOptions(this, toolbar, tagData, itemView)
+                activity.onCreateToolbarMenu(this, toolbar, tagData, itemView)
                 activity.updateAmiiboView(tagData, null)
             }
         }
@@ -397,7 +397,7 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
             val activity = requireActivity() as BrowserActivity
             val toolbar =
                 itemView!!.findViewById<View>(R.id.menu_options).findViewById<Toolbar>(R.id.toolbar)
-            activity.getToolbarOptions(this, toolbar, tagData, itemView)
+            activity.onCreateToolbarMenu(this, toolbar, tagData, itemView)
             getGameCompatibility(itemView.findViewById(R.id.txtUsage), tagData)
         }
     }

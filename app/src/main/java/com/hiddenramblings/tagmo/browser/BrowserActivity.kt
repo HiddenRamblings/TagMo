@@ -162,7 +162,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
     private var txtAmiiboType: TextView? = null
     private var txtAmiiboSeries: TextView? = null
     private var imageAmiibo: AppCompatImageView? = null
-    var pagerAdapter = NavPagerAdapter(this)
+    private val pagerAdapter = NavPagerAdapter(this)
     private val tagScanner = ScanTag()
     private val donations = DonationHandler(this)
     private val statsHandler = Handler(Looper.getMainLooper())
@@ -415,13 +415,13 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                     if (null != appUpdate) {
                         findViewById<View>(R.id.build_layout).setOnClickListener {
                             closePrefsDrawer()
-                            updates!!.downloadPlayUpdate(appUpdate)
+                            updates?.downloadPlayUpdate(appUpdate)
                         }
                     }
                     if (null != updateUrl) {
                         findViewById<View>(R.id.build_layout).setOnClickListener {
                             closePrefsDrawer()
-                            updates!!.installUpdateCompat(updateUrl!!)
+                            updates?.installUpdateCompat(updateUrl!!)
                         }
                     }
                 }
@@ -522,8 +522,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                         )
                     )
                 }
-            } catch (ignored: Exception) {
-            }
+            } catch (ignored: Exception) { }
         }
         if (!BuildConfig.WEAR_OS) {
             donations.retrieveDonationMenu()
@@ -534,7 +533,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
         }
         if (!prefs.guidesPrompted()) {
             prefs.guidesPrompted(true)
-            layout!!.setCurrentItem(pagerAdapter.itemCount - 1, false)
+            layout?.setCurrentItem(pagerAdapter.itemCount - 1, false)
         }
     }
 
@@ -721,7 +720,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
     }
 
     fun onCaptureLogcatClick() {
-        if (updates!!.hasPendingUpdate()) {
+        if (updates?.hasPendingUpdate() == true) {
             if (null != appUpdate) updates?.downloadPlayUpdate(appUpdate)
             if (null != updateUrl) updates?.installUpdateCompat(updateUrl)
             return
@@ -836,9 +835,9 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
     }
 
     private fun onFilterCharacterClick(): Boolean {
-        val subMenu = menuFilterCharacter!!.subMenu
-        subMenu!!.clear()
-        settings!!.amiiboManager ?: return true
+        val subMenu = menuFilterCharacter?.subMenu
+        subMenu?.clear() ?: return true
+        settings?.amiiboManager ?: return true
         val items: MutableSet<String> = HashSet()
         settings!!.amiiboManager!!.amiibos.values.forEach {
             val character = it.character
@@ -865,16 +864,16 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
     }
 
     private val onFilterCharacterItemClick = MenuItem.OnMenuItemClickListener { menuItem ->
-        settings!!.setFilter(FILTER.CHARACTER, menuItem.title.toString())
-        settings!!.notifyChanges()
+        settings?.setFilter(FILTER.CHARACTER, menuItem.title.toString())
+        settings?.notifyChanges()
         filteredCount = getFilteredCount(menuItem.title.toString(), FILTER.CHARACTER)
         false
     }
 
     private fun onFilterGameSeriesClick(): Boolean {
         val subMenu = menuFilterGameSeries!!.subMenu
-        subMenu!!.clear()
-        settings!!.amiiboManager ?: return false
+        subMenu?.clear() ?: return true
+        settings?.amiiboManager ?: return false
         val items: MutableSet<String> = HashSet()
         settings!!.amiiboManager!!.amiibos.values.forEach {
             val gameSeries = it.gameSeries
@@ -901,16 +900,16 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
     }
 
     private val onFilterGameSeriesItemClick = MenuItem.OnMenuItemClickListener { menuItem ->
-        settings!!.setFilter(FILTER.GAME_SERIES, menuItem.title.toString())
-        settings!!.notifyChanges()
+        settings?.setFilter(FILTER.GAME_SERIES, menuItem.title.toString())
+        settings?.notifyChanges()
         filteredCount = getFilteredCount(menuItem.title.toString(), FILTER.GAME_SERIES)
         false
     }
 
     private fun onFilterAmiiboSeriesClick(): Boolean {
         val subMenu = menuFilterAmiiboSeries!!.subMenu
-        subMenu!!.clear()
-        val amiiboManager = settings!!.amiiboManager ?: return true
+        subMenu?.clear() ?: return true
+        val amiiboManager = settings?.amiiboManager ?: return true
         val items: MutableSet<String> = HashSet()
         amiiboManager.amiibos.values.forEach {
             val amiiboSeries = it.amiiboSeries
@@ -937,16 +936,16 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
     }
 
     private val onFilterAmiiboSeriesItemClick = MenuItem.OnMenuItemClickListener { menuItem ->
-        settings!!.setFilter(FILTER.AMIIBO_SERIES, menuItem.title.toString())
-        settings!!.notifyChanges()
+        settings?.setFilter(FILTER.AMIIBO_SERIES, menuItem.title.toString())
+        settings?.notifyChanges()
         filteredCount = getFilteredCount(menuItem.title.toString(), FILTER.AMIIBO_SERIES)
         false
     }
 
     private fun onFilterAmiiboTypeClick(): Boolean {
         val subMenu = menuFilterAmiiboType!!.subMenu
-        subMenu!!.clear()
-        val amiiboManager = settings!!.amiiboManager ?: return true
+        subMenu?.clear() ?: return true
+        val amiiboManager = settings?.amiiboManager ?: return true
         val items: MutableSet<AmiiboType> = HashSet()
         amiiboManager.amiibos.values.forEach {
             val amiiboType = it.amiiboType
@@ -973,16 +972,16 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
     }
 
     private val onFilterAmiiboTypeItemClick = MenuItem.OnMenuItemClickListener { menuItem ->
-        settings!!.setFilter(FILTER.AMIIBO_TYPE, menuItem.title.toString())
-        settings!!.notifyChanges()
+        settings?.setFilter(FILTER.AMIIBO_TYPE, menuItem.title.toString())
+        settings?.notifyChanges()
         filteredCount = getFilteredCount(menuItem.title.toString(), FILTER.AMIIBO_TYPE)
         false
     }
 
     private fun onFilterGameTitlesClick() {
         val subMenu = menuFilterGameTitles!!.subMenu
-        subMenu!!.clear()
-        settings!!.amiiboManager ?: return
+        subMenu?.clear() ?: return
+        settings?.amiiboManager ?: return
         val gamesManager = settings!!.gamesManager
         val items: MutableSet<String> = HashSet()
         gamesManager?.gameTitles!!.forEach { items.add(it.name) }
@@ -997,14 +996,15 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
     }
 
     private val onFilterGameTitlesItemClick = MenuItem.OnMenuItemClickListener { menuItem ->
-        settings!!.setFilter(FILTER.GAME_TITLES, menuItem.title.toString())
-        settings!!.notifyChanges()
+        settings?.setFilter(FILTER.GAME_TITLES, menuItem.title.toString())
+        settings?.notifyChanges()
         filteredCount = getFilteredCount(menuItem.title.toString(), FILTER.GAME_TITLES)
         false
     }
 
-    private fun getToolbarOptions(toolbar: Toolbar?, tagData: ByteArray?, amiiboFile: AmiiboFile?) {
-        if (!toolbar!!.menu.hasVisibleItems()) toolbar.inflateMenu(R.menu.amiibo_menu)
+    private fun onCreateToolbarMenu(toolbar: Toolbar?, tagData: ByteArray?, amiiboFile: AmiiboFile?) {
+        if (null == toolbar) return
+        if (!toolbar.menu.hasVisibleItems()) toolbar.inflateMenu(R.menu.amiibo_menu)
         var available = (null != tagData) && tagData.isNotEmpty()
         if (available) {
             try {
@@ -1152,7 +1152,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
         }
     }
 
-    fun getToolbarOptions(
+    fun onCreateToolbarMenu(
         fragment: BrowserFragment, toolbar: Toolbar, tagData: ByteArray?, itemView: View
     ) {
         if (!toolbar.menu.hasVisibleItems()) toolbar.inflateMenu(R.menu.amiibo_menu)
@@ -1168,7 +1168,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                     try {
                         fragment.onUpdateTagResult.launch(scan.putExtras(args))
                     } catch (ex: IllegalStateException) {
-                        layout!!.adapter = pagerAdapter
+                        layout?.adapter = pagerAdapter
                     }
                     return@setOnMenuItemClickListener true
                 }
@@ -1179,7 +1179,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                     try {
                         fragment.onUpdateTagResult.launch(scan.putExtras(args))
                     } catch (ex: IllegalStateException) {
-                        layout!!.adapter = pagerAdapter
+                        layout?.adapter = pagerAdapter
                     }
                     return@setOnMenuItemClickListener true
                 }
@@ -1195,7 +1195,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                     try {
                         fragment.onUpdateTagResult.launch(tagEdit.putExtras(args))
                     } catch (ex: IllegalStateException) {
-                        layout!!.adapter = pagerAdapter
+                        layout?.adapter = pagerAdapter
                     }
                     return@setOnMenuItemClickListener true
                 }
@@ -1219,8 +1219,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                         ).show()
                     } catch (e: Exception) {
                         IconifiedSnackbar(this, layout).buildSnackbar(
-                            e.message,
-                            R.drawable.ic_baseline_bug_report_24dp, Snackbar.LENGTH_LONG
+                            e.message, R.drawable.ic_baseline_bug_report_24dp, Snackbar.LENGTH_LONG
                         ).show()
                     }
                     return@setOnMenuItemClickListener true
@@ -1311,31 +1310,31 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
             else onRefresh(true)
         } else {
             if (isDocumentStorage) {
-                switchStorageRoot!!.visibility = View.VISIBLE
-                switchStorageRoot!!.setText(R.string.document_storage_root)
-                switchStorageRoot!!.setOnClickListener {
+                switchStorageRoot?.visibility = View.VISIBLE
+                switchStorageRoot?.setText(R.string.document_storage_root)
+                switchStorageRoot?.setOnClickListener {
                     try {
                         onDocumentRequested()
                     } catch (anf: ActivityNotFoundException) {
                         Toasty(this).Long(R.string.storage_unavailable)
                     }
-                    bottomSheetBehavior!!.setState(BottomSheetBehavior.STATE_COLLAPSED)
+                    bottomSheetBehavior?.setState(BottomSheetBehavior.STATE_COLLAPSED)
                 }
                 if (Debug.isNewer(Build.VERSION_CODES.R) && !BuildConfig.GOOGLE_PLAY) {
-                    switchStorageType!!.visibility = View.VISIBLE
-                    switchStorageType!!.setText(R.string.grant_file_permission)
-                    switchStorageType!!.setOnClickListener {
-                        bottomSheetBehavior!!.state = BottomSheetBehavior.STATE_COLLAPSED
+                    switchStorageType?.visibility = View.VISIBLE
+                    switchStorageType?.setText(R.string.grant_file_permission)
+                    switchStorageType?.setOnClickListener {
+                        bottomSheetBehavior?.state = BottomSheetBehavior.STATE_COLLAPSED
                         if (Environment.isExternalStorageManager()) {
-                            settings!!.browserRootDocument = null
-                            settings!!.notifyChanges()
+                            settings?.browserRootDocument = null
+                            settings?.notifyChanges()
                             onStorageEnabled()
                         } else {
                             requestScopedStorage()
                         }
                     }
                 } else {
-                    switchStorageType!!.visibility = View.GONE
+                    switchStorageType?.visibility = View.GONE
                 }
                 if (keyManager.isKeyMissing)
                     onShowSettingsFragment()
@@ -1344,23 +1343,23 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                 val internal = prefs.preferEmulated()
                 val storage = Storage.getFile(internal)
                 if (null != storage && storage.exists() && Storage.hasPhysicalStorage()) {
-                    switchStorageRoot!!.visibility = View.VISIBLE
-                    switchStorageRoot!!.setText(if (internal) R.string.emulated_storage_root else R.string.physical_storage_root)
-                    switchStorageRoot!!.setOnClickListener {
+                    switchStorageRoot?.visibility = View.VISIBLE
+                    switchStorageRoot?.setText(if (internal) R.string.emulated_storage_root else R.string.physical_storage_root)
+                    switchStorageRoot?.setOnClickListener {
                         val external = !prefs.preferEmulated()
-                        switchStorageRoot!!.setText(if (external) R.string.emulated_storage_root else R.string.physical_storage_root)
-                        settings!!.browserRootFolder = Storage.getFile(external)
-                        settings!!.notifyChanges()
+                        switchStorageRoot?.setText(if (external) R.string.emulated_storage_root else R.string.physical_storage_root)
+                        settings?.browserRootFolder = Storage.getFile(external)
+                        settings?.notifyChanges()
                         prefs.preferEmulated(external)
                     }
                 } else {
-                    switchStorageRoot!!.visibility = View.GONE
+                    switchStorageRoot?.visibility = View.GONE
                 }
                 if (Debug.isNewer(Build.VERSION_CODES.R)) {
-                    switchStorageType!!.visibility = View.VISIBLE
-                    switchStorageType!!.setText(R.string.force_document_storage)
-                    switchStorageType!!.setOnClickListener {
-                        bottomSheetBehavior!!.state = BottomSheetBehavior.STATE_COLLAPSED
+                    switchStorageType?.visibility = View.VISIBLE
+                    switchStorageType?.setText(R.string.force_document_storage)
+                    switchStorageType?.setOnClickListener {
+                        bottomSheetBehavior?.state = BottomSheetBehavior.STATE_COLLAPSED
                         try {
                             onDocumentRequested()
                         } catch (anf: ActivityNotFoundException) {
@@ -1368,7 +1367,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                         }
                     }
                 } else {
-                    switchStorageType!!.visibility = View.GONE
+                    switchStorageType?.visibility = View.GONE
                 }
                 if (keyManager.isKeyMissing) {
                     hideFakeSnackbar()
@@ -1387,64 +1386,60 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                 onRefresh(true)
             }
             R.id.sort_id -> {
-                settings!!.sort = SORT.ID.value
-                settings!!.notifyChanges()
+                settings?.sort = SORT.ID.value
+                settings?.notifyChanges()
             }
             R.id.sort_name -> {
-                settings!!.sort = SORT.NAME.value
-                settings!!.notifyChanges()
+                settings?.sort = SORT.NAME.value
+                settings?.notifyChanges()
             }
             R.id.sort_character -> {
-                settings!!.sort = SORT.CHARACTER.value
-                settings!!.notifyChanges()
+                settings?.sort = SORT.CHARACTER.value
+                settings?.notifyChanges()
             }
             R.id.sort_game_series -> {
-                settings!!.sort = SORT.GAME_SERIES.value
-                settings!!.notifyChanges()
+                settings?.sort = SORT.GAME_SERIES.value
+                settings?.notifyChanges()
             }
             R.id.sort_amiibo_series -> {
-                settings!!.sort = SORT.AMIIBO_SERIES.value
-                settings!!.notifyChanges()
+                settings?.sort = SORT.AMIIBO_SERIES.value
+                settings?.notifyChanges()
             }
             R.id.sort_amiibo_type -> {
-                settings!!.sort = SORT.AMIIBO_TYPE.value
-                settings!!.notifyChanges()
+                settings?.sort = SORT.AMIIBO_TYPE.value
+                settings?.notifyChanges()
             }
             R.id.sort_file_path -> {
-                settings!!.sort = SORT.FILE_PATH.value
-                settings!!.notifyChanges()
+                settings?.sort = SORT.FILE_PATH.value
+                settings?.notifyChanges()
             }
             R.id.view_simple -> {
-                if (null != amiibosView)
-                    amiibosView!!.layoutManager = LinearLayoutManager(this)
-                foomiiboView!!.layoutManager = LinearLayoutManager(this)
-                settings!!.amiiboView = VIEW.SIMPLE.value
-                settings!!.notifyChanges()
+                amiibosView?.layoutManager = LinearLayoutManager(this)
+                foomiiboView?.layoutManager = LinearLayoutManager(this)
+                settings?.amiiboView = VIEW.SIMPLE.value
+                settings?.notifyChanges()
             }
             R.id.view_compact -> {
-                if (null != amiibosView)
-                    amiibosView!!.layoutManager = LinearLayoutManager(this)
-                foomiiboView!!.layoutManager = LinearLayoutManager(this)
-                settings!!.amiiboView = VIEW.COMPACT.value
-                settings!!.notifyChanges()
+                amiibosView?.layoutManager = LinearLayoutManager(this)
+                foomiiboView?.layoutManager = LinearLayoutManager(this)
+                settings?.amiiboView = VIEW.COMPACT.value
+                settings?.notifyChanges()
             }
             R.id.view_large -> {
-                if (null != amiibosView)
-                    amiibosView!!.layoutManager = LinearLayoutManager(this)
-                foomiiboView!!.layoutManager = LinearLayoutManager(this)
-                settings!!.amiiboView = VIEW.LARGE.value
-                settings!!.notifyChanges()
+                amiibosView?.layoutManager = LinearLayoutManager(this)
+                foomiiboView?.layoutManager = LinearLayoutManager(this)
+                settings?.amiiboView = VIEW.LARGE.value
+                settings?.notifyChanges()
             }
             R.id.view_image -> {
-                if (null != amiibosView)
-                    amiibosView!!.layoutManager = GridLayoutManager(this, columnCount)
-                foomiiboView!!.layoutManager = GridLayoutManager(this, columnCount)
-                settings!!.amiiboView = VIEW.IMAGE.value
-                settings!!.notifyChanges()
+                amiibosView?.layoutManager = GridLayoutManager(this, columnCount)
+                foomiiboView?.layoutManager = GridLayoutManager(this, columnCount)
+                settings?.amiiboView = VIEW.IMAGE.value
+                settings?.notifyChanges()
             }
             R.id.recursive -> {
-                settings!!.isRecursiveEnabled = !settings!!.isRecursiveEnabled
-                settings!!.notifyChanges()
+                settings?.isRecursiveEnabled = !settings!!.isRecursiveEnabled
+                settings?.notifyChanges()
             }
             R.id.mnu_joy_con -> {
                 Toasty(this).Short(R.string.notice_incomplete)
@@ -1548,8 +1543,8 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
             }
 
             override fun onMenuItemActionCollapse(menuItem: MenuItem): Boolean {
-                return if (BottomSheetBehavior.STATE_EXPANDED == bottomSheet!!.state
-                    || View.VISIBLE == amiiboContainer!!.visibility
+                return if (BottomSheetBehavior.STATE_EXPANDED == bottomSheet?.state
+                    || View.VISIBLE == amiiboContainer?.visibility
                     || supportFragmentManager.backStackEntryCount > 0) {
                     onBackPressedDispatcher.onBackPressed()
                     false
@@ -1562,14 +1557,14 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
             override fun onQueryTextSubmit(query: String): Boolean {
                 settings?.query = query
                 settings?.notifyChanges()
-                if (layout!!.currentItem == 0) setAmiiboStats()
+                if (layout?.currentItem == 0) setAmiiboStats()
                 return false
             }
 
             override fun onQueryTextChange(query: String): Boolean {
                 settings?.query = query
                 settings?.notifyChanges()
-                if (layout!!.currentItem == 0 && query.isEmpty()) setAmiiboStats()
+                if (layout?.currentItem == 0 && query.isEmpty()) setAmiiboStats()
                 return true
             }
         })
@@ -1589,23 +1584,23 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
             }
         } else if (item.itemId == R.id.install_update) {
             if (null != appUpdate) updates?.downloadPlayUpdate(appUpdate)
-            if (null != updateUrl) updates?.installUpdateCompat(updateUrl!!)
+            if (null != updateUrl) updates?.installUpdateCompat(updateUrl)
         }
         return onMenuItemClicked(item)
     }
 
-    override fun onAmiiboClicked(itemView: View?, amiiboFile: AmiiboFile?) {
+    override fun onAmiiboClicked(itemView: View, amiiboFile: AmiiboFile?) {
         if (null == amiiboFile!!.docUri && null == amiiboFile.filePath) return
         try {
             val tagData = getValidatedData(keyManager, amiiboFile)
-            if (settings!!.amiiboView != VIEW.IMAGE.value) {
-                val menuOptions = itemView!!.findViewById<LinearLayout>(R.id.menu_options)
+            if (settings?.amiiboView != VIEW.IMAGE.value) {
+                val menuOptions = itemView.findViewById<LinearLayout>(R.id.menu_options)
                 val toolbar = menuOptions.findViewById<Toolbar>(R.id.toolbar)
                 if (menuOptions.visibility == View.VISIBLE) {
                     menuOptions.visibility = View.GONE
                 } else {
                     menuOptions.visibility = View.VISIBLE
-                    getToolbarOptions(toolbar, tagData, amiiboFile)
+                    onCreateToolbarMenu(toolbar, tagData, amiiboFile)
                 }
                 val txtUsage = itemView.findViewById<TextView>(R.id.txtUsage)
                 if (txtUsage.visibility == View.VISIBLE) {
@@ -1622,16 +1617,16 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
         }
     }
 
-    override fun onAmiiboRebind(itemView: View?, amiiboFile: AmiiboFile?) {
+    override fun onAmiiboRebind(itemView: View, amiiboFile: AmiiboFile?) {
         if (amiiboFile?.filePath == null) return
         try {
             val tagData = if (null != amiiboFile.data)
                 amiiboFile.data
             else
                 getValidatedFile(keyManager, amiiboFile.filePath!!)!!
-            if (settings!!.amiiboView != VIEW.IMAGE.value) {
-                getToolbarOptions(
-                    itemView!!.findViewById<View>(R.id.menu_options).findViewById(R.id.toolbar),
+            if (settings?.amiiboView != VIEW.IMAGE.value) {
+                onCreateToolbarMenu(
+                    itemView.findViewById<View>(R.id.menu_options).findViewById(R.id.toolbar),
                     tagData, amiiboFile
                 )
                 getGameCompatibility(itemView.findViewById(R.id.txtUsage), tagData)
@@ -1886,7 +1881,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
         if (System.currentTimeMillis() >= oldBrowserSettings.lastUpdatedGit + 3600000) {
             updates = CheckUpdatesTask(this)
             if (BuildConfig.GOOGLE_PLAY) {
-                updates!!.setPlayUpdateListener(object : CheckPlayUpdateListener {
+                updates?.setPlayUpdateListener(object : CheckPlayUpdateListener {
                     override fun onPlayUpdateFound(appUpdateInfo: AppUpdateInfo?) {
                         appUpdate = appUpdateInfo
                         if (BuildConfig.WEAR_OS)
@@ -1895,7 +1890,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                     }
                 })
             } else {
-                updates!!.setUpdateListener(object : CheckUpdateListener {
+                updates?.setUpdateListener(object : CheckUpdateListener {
                     override fun onUpdateFound(downloadUrl: String?) {
                         updateUrl = downloadUrl
                         if (BuildConfig.WEAR_OS)
@@ -2106,11 +2101,11 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
 
     @JvmOverloads
     fun updateAmiiboView(tagData: ByteArray?, amiiboFile: AmiiboFile? = clickedAmiibo) {
-        amiiboContainer!!.post {
+        amiiboContainer?.post {
             amiiboContainer!!.alpha = 0f
             amiiboContainer!!.visibility = View.VISIBLE
             amiiboContainer!!.animate().alpha(1f).setDuration(150).setListener(null)
-            getToolbarOptions(toolbar, tagData, amiiboFile)
+            onCreateToolbarMenu(toolbar, tagData, amiiboFile)
             var amiiboId: Long = -1
             var tagInfo: String? = null
             var amiiboHexId = ""
@@ -2135,7 +2130,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                 amiiboImageUrl = null
             } else {
                 var amiibo: Amiibo? = null
-                val amiiboManager = settings!!.amiiboManager
+                val amiiboManager = settings?.amiiboManager
                 if (null != amiiboManager) {
                     amiibo = amiiboManager.amiibos[amiiboId]
                     if (null == amiibo)

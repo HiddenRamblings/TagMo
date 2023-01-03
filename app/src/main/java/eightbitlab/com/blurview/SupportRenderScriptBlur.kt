@@ -8,8 +8,7 @@ import androidx.renderscript.RenderScript
 import androidx.renderscript.ScriptIntrinsicBlur
 
 /**
- * Blur using RenderScript, processed on GPU.
- * Uses Renderscript from support library
+ * Blur using RenderScript from support library, processed on GPU.
  */
 
 /**

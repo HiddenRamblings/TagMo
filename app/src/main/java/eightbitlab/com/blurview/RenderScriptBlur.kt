@@ -13,17 +13,13 @@ import androidx.annotation.RequiresApi
 
 /**
  * Blur using RenderScript, processed on GPU when device drivers support it.
- * Requires API 17+
  */
-@Deprecated(
-    """because RenderScript is deprecated and its hardware acceleration is not guaranteed.
-  RenderEffectBlur is the best alternative at the moment."""
-)
 class RenderScriptBlur
+@Deprecated("""RenderScript is deprecated and hardware acceleration is not guaranteed.""")
+@RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
 /**
  * @param context Context to create the [RenderScript]
  */
-@RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
 constructor(context: Context?) : BlurAlgorithm {
     private val paint = Paint(Paint.FILTER_BITMAP_FLAG)
     private val renderScript: RenderScript

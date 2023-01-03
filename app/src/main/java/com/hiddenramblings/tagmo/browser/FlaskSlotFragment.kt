@@ -877,9 +877,8 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
                     super.onScanResult(callbackType, result)
                     if (!devices.contains(result.device)) {
                         devices.add(result.device)
-                        deviceDialog.findViewById<LinearLayout>(R.id.bluetooth_devices)?.addView(
-                            displayScanResult(deviceDialog, result.device, 1),
-                            devices.indexOf(result.device)
+                        deviceDialog.findViewById<LinearLayout>(R.id.bluetooth_result)?.addView(
+                            displayScanResult(deviceDialog, result.device, 1)
                         )
                     }
                 }
@@ -893,9 +892,8 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
                     super.onScanResult(callbackType, result)
                     if (!devices.contains(result.device)) {
                         devices.add(result.device)
-                        deviceDialog.findViewById<LinearLayout>(R.id.bluetooth_devices)?.addView(
-                            displayScanResult(deviceDialog, result.device, 2),
-                            devices.indexOf(result.device)
+                        deviceDialog.findViewById<LinearLayout>(R.id.bluetooth_result)?.addView(
+                            displayScanResult(deviceDialog, result.device, 2)
                         )
                     }
                 }
@@ -906,9 +904,8 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
                 LeScanCallback { bluetoothDevice: BluetoothDevice, _: Int, _: ByteArray? ->
                     if (!devices.contains(bluetoothDevice)) {
                         devices.add(bluetoothDevice)
-                        deviceDialog.findViewById<LinearLayout>(R.id.bluetooth_devices)?.addView(
-                            displayScanResult(deviceDialog, bluetoothDevice, 1),
-                            devices.indexOf(bluetoothDevice)
+                        deviceDialog.findViewById<LinearLayout>(R.id.bluetooth_result)?.addView(
+                            displayScanResult(deviceDialog, bluetoothDevice, 1)
                         )
                     }
                 }
@@ -917,9 +914,8 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
                 LeScanCallback { bluetoothDevice: BluetoothDevice, _: Int, _: ByteArray? ->
                     if (!devices.contains(bluetoothDevice)) {
                         devices.add(bluetoothDevice)
-                        deviceDialog.findViewById<LinearLayout>(R.id.bluetooth_devices)?.addView(
-                            displayScanResult(deviceDialog, bluetoothDevice, 2),
-                            devices.indexOf(bluetoothDevice)
+                        deviceDialog.findViewById<LinearLayout>(R.id.bluetooth_result)?.addView(
+                            displayScanResult(deviceDialog, bluetoothDevice, 2)
                         )
                     }
                 }
@@ -938,7 +934,9 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
         val view = this.layoutInflater.inflate(R.layout.dialog_devices, null) as LinearLayout
         val deviceDialog = AlertDialog.Builder(requireActivity()).setView(view).show()
         for (device in devices) {
-            view.addView(displayScanResult(deviceDialog, device, 0))
+            view.findViewById<LinearLayout>(R.id.bluetooth_paired)?.addView(
+                displayScanResult(deviceDialog, device, 0)
+            )
         }
         scanBluetoothServices(deviceDialog)
     }

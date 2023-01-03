@@ -173,7 +173,7 @@
     <string name="erase_bank">Erase Bank</string>
     <string name="activate_bank">Activate Bank</string>
     <string name="amiibo_backup">Create a Backup</string>
-    <string name="validate_data">NTAG Validation</string>
+    <string name="validate_data">Validate NTAG</string>
     <string name="set_bank_count">Set Bank Count</string>
     <string name="lock_amiibo">Lock N2 Elite</string>
     <string name="write_collection">Write Collection</string>

@@ -401,12 +401,9 @@ class AmiiboManager {
                 try {
                     val data = TagArray.getValidatedDocument(keyManager, it)
                     if (null != data) {
-                        amiiboFiles.add(
-                            AmiiboFile(
-                                DocumentFile.fromSingleUri(context, it),
-                                Amiibo.dataToId(data), data
-                            )
-                        )
+                        amiiboFiles.add(AmiiboFile(
+                            DocumentFile.fromSingleUri(context, it), Amiibo.dataToId(data), data
+                        ))
                     }
                 } catch (e: Exception) {
                     Debug.info(e)

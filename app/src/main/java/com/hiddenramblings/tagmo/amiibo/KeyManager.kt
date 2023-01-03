@@ -122,18 +122,13 @@ class KeyManager(var context: Context) {
         if (!hasFixedKey() || !hasUnFixedKey())
             throw RuntimeException(context.getString(R.string.key_not_present))
         val tool = AmiiTool()
-        if (tool.setKeysFixed(
-                fixedKey, fixedKey!!.size) == 0
-        ) throw RuntimeException(context.getString(R.string.error_amiitool_init))
-        if (tool.setKeysUnfixed(unfixedKey, unfixedKey!!.size) == 0) throw RuntimeException(
-            context.getString(R.string.error_amiitool_init)
-        )
+        if (tool.setKeysFixed(fixedKey, fixedKey!!.size) == 0)
+            throw RuntimeException(context.getString(R.string.error_amiitool_init))
+        if (tool.setKeysUnfixed(unfixedKey, unfixedKey!!.size) == 0)
+            throw RuntimeException(context.getString(R.string.error_amiitool_init))
         val encrypted = ByteArray(NfcByte.TAG_DATA_SIZE)
-        if (tool.pack(
-                tagData, tagData.size, encrypted, encrypted.size) == 0
-        ) throw RuntimeException(
-            context.getString(R.string.fail_encrypt)
-        )
+        if (tool.pack(tagData, tagData.size, encrypted, encrypted.size) == 0)
+            throw RuntimeException(context.getString(R.string.fail_encrypt))
         return encrypted
     }
 

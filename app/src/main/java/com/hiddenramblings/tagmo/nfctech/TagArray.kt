@@ -198,7 +198,8 @@ object TagArray {
             i += NfcByte.PAGE_SIZE
             j++
         }
-        if (pages[0]!![0] != 0x04.toByte()) throw Exception(context.getString(R.string.invalid_tag_prefix))
+        if (pages[0]!![0] != 0x04.toByte())
+            throw Exception(context.getString(R.string.invalid_tag_prefix))
         if (pages[2]!![2] != 0x0F.toByte() || pages[2]!![3] != 0xE0.toByte())
             throw Exception(context.getString(R.string.invalid_tag_lock))
         if (pages[3]!![0] != 0xF1.toByte() || pages[3]!![1] != 0x10.toByte()
@@ -296,9 +297,7 @@ object TagArray {
             validateData(validated)
             validated = keyManager.decrypt(validated)
         } catch (e: Exception) {
-            validated = keyManager.encrypt(validated)
-            validateData(validated)
-            validated = keyManager.decrypt(validated)
+            validateData(keyManager.encrypt(validated))
         }
         return keyManager.encrypt(validated!!)
     }

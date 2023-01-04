@@ -567,11 +567,11 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
             if (BuildConfig.GOOGLE_PLAY) {
                 onDocumentEnabled()
             } else {
-                if (null != settings!!.browserRootDocument && isDocumentStorage) {
+                if (null != settings?.browserRootDocument && isDocumentStorage) {
                     onDocumentEnabled()
                 } else if (Environment.isExternalStorageManager()) {
-                    settings!!.browserRootDocument = null
-                    settings!!.notifyChanges()
+                    settings?.browserRootDocument = null
+                    settings?.notifyChanges()
                     onStorageEnabled()
                 } else {
                     requestScopedStorage()
@@ -617,15 +617,15 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
         )
         val dialog = AlertDialog.Builder(this)
         val input = view.findViewById<EditText>(R.id.save_item_entry)
-        input.setText(decipherFilename(settings!!.amiiboManager, tagData, true))
+        input.setText(decipherFilename(settings?.amiiboManager, tagData, true))
         val backupDialog: Dialog = dialog.setView(view).create()
         view.findViewById<View>(R.id.button_save).setOnClickListener { _: View? ->
             try {
                 var fileName: String? = input.text.toString()
                 fileName = if (isDocumentStorage) {
-                    val rootDocument = DocumentFile.fromTreeUri(
-                        this, settings!!.browserRootDocument!!
-                    ) ?: throw NullPointerException()
+                    val rootDocument = settings?.browserRootDocument?.let {
+                        DocumentFile.fromTreeUri(this, it)
+                    } ?: throw NullPointerException()
                     writeBytesToDocument(
                         this, rootDocument, fileName!!, tagData
                     )
@@ -746,17 +746,17 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
 
     private fun getQueryCount(queryText: String?): Int {
         if (null == queryText) return 0
-        val amiiboManager = settings!!.amiiboManager ?: return 0
+        val amiiboManager = settings?.amiiboManager ?: return 0
         val items: MutableSet<Long> = HashSet()
         for (amiibo in amiiboManager.amiibos.values) {
-            if (settings!!.amiiboContainsQuery(amiibo, queryText)) items.add(amiibo.id)
+            if (settings?.amiiboContainsQuery(amiibo, queryText) == true) items.add(amiibo.id)
         }
         return items.size
     }
 
     private fun getFilteredCount(filter: String, filterType: FILTER): Int {
-        val amiiboManager = settings!!.amiiboManager ?: return 0
-        val gamesManager = settings!!.gamesManager
+        val amiiboManager = settings?.amiiboManager ?: return 0
+        val gamesManager = settings?.gamesManager
         val items: MutableSet<Long> = HashSet()
         for (amiibo in amiiboManager.amiibos.values) {
             when (filterType) {

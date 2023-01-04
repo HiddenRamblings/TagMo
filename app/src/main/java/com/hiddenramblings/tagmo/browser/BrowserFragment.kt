@@ -55,7 +55,7 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
     private lateinit var directory: File
     private lateinit var keyManager: KeyManager
     private val foomiibo = Foomiibo()
-    private var settings: BrowserSettings? = null
+    private lateinit var settings: BrowserSettings
     private val resultData = ArrayList<ByteArray>()
     val onUpdateTagResult = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
@@ -96,36 +96,36 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
         val activity = requireActivity() as BrowserActivity
         prefs = Preferences(activity.applicationContext)
         keyManager = KeyManager(activity)
-        settings = activity.settings
+        settings = activity.settings ?: BrowserSettings().initialize()
         directory = File(requireActivity().filesDir, "Foomiibo")
         directory.mkdirs()
         chipList = view.findViewById(R.id.chip_list)
-        chipList!!.visibility = View.GONE
+        chipList?.visibility = View.GONE
         browserContent = view.findViewById(R.id.browser_content)
         if (browserContent is IndexFastScrollRecyclerView)
                 (browserContent as IndexFastScrollRecyclerView)
                     .setTransientIndexBar(!BuildConfig.WEAR_OS)
         if (prefs.softwareLayer())
-            browserContent!!.setLayerType(View.LAYER_TYPE_SOFTWARE, null)
+            browserContent?.setLayerType(View.LAYER_TYPE_SOFTWARE, null)
         foomiiboView = view.findViewById(R.id.foomiibo_list)
         if (foomiiboView is IndexFastScrollRecyclerView)
                 (foomiiboView as IndexFastScrollRecyclerView)
                     .setTransientIndexBar(!BuildConfig.WEAR_OS)
         if (prefs.softwareLayer())
-            foomiiboView!!.setLayerType(View.LAYER_TYPE_SOFTWARE, null)
-        browserContent!!.layoutManager = if (settings!!.amiiboView == BrowserSettings.VIEW.IMAGE.value)
+            foomiiboView?.setLayerType(View.LAYER_TYPE_SOFTWARE, null)
+        browserContent?.layoutManager = if (settings.amiiboView == BrowserSettings.VIEW.IMAGE.value)
             GridLayoutManager(activity, activity.columnCount)
         else LinearLayoutManager(activity)
-        browserContent!!.adapter = BrowserAdapter(settings!!, activity)
-        settings!!.addChangeListener(browserContent!!.adapter as BrowserSettingsListener?)
-        foomiiboView!!.layoutManager = if (settings!!.amiiboView == BrowserSettings.VIEW.IMAGE.value)
+        browserContent?.adapter = BrowserAdapter(settings, activity)
+        settings.addChangeListener(browserContent?.adapter as BrowserSettingsListener?)
+        foomiiboView?.layoutManager = if (settings.amiiboView == BrowserSettings.VIEW.IMAGE.value)
             GridLayoutManager(activity, activity.columnCount)
         else LinearLayoutManager(activity)
-        foomiiboView!!.adapter = FoomiiboAdapter(settings!!, this)
-        settings!!.addChangeListener(foomiiboView!!.adapter as BrowserSettingsListener?)
+        foomiiboView?.adapter = FoomiiboAdapter(settings, this)
+        settings.addChangeListener(foomiiboView?.adapter as BrowserSettingsListener?)
         view.findViewById<View>(R.id.list_divider).visibility = View.GONE
-        if (BuildConfig.WEAR_OS) browserContent!!.layoutParams.height =
-            browserContent!!.layoutParams.height / 3
+        if (BuildConfig.WEAR_OS && null != browserContent?.layoutParams)
+            browserContent!!.layoutParams.height = browserContent!!.layoutParams.height / 3
         view.findViewById<View>(R.id.list_divider)
             .setOnTouchListener { v: View, event: MotionEvent ->
                 if (browserContent is IndexFastScrollRecyclerView) {
@@ -226,7 +226,7 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
 
     fun deleteFoomiiboFile(tagData: ByteArray?) {
         try {
-            val amiibo = settings!!.amiiboManager!!.amiibos[Amiibo.dataToId(tagData)]
+            val amiibo = settings.amiiboManager!!.amiibos[Amiibo.dataToId(tagData)]
                 ?: throw Exception()
             val directory = File(directory, amiibo.amiiboSeries!!.name)
             val amiiboFile = File(
@@ -280,7 +280,7 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
 
     fun buildFoomiiboFile(tagData: ByteArray?) {
         try {
-            val amiibo = settings?.amiiboManager!!.amiibos[Amiibo.dataToId(tagData)] ?: return
+            val amiibo = settings.amiiboManager!!.amiibos[Amiibo.dataToId(tagData)] ?: return
             val directory = File(directory, amiibo.amiiboSeries!!.name)
             directory.mkdirs()
             val foomiiboData = foomiibo.getSignedData(tagData!!)
@@ -298,8 +298,8 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
     }
 
     fun buildFoomiiboSet(handler: Handler) {
-        val amiiboManager = if (null != settings?.amiiboManager)
-            settings?.amiiboManager
+        val amiiboManager = if (null != settings.amiiboManager)
+            settings.amiiboManager
         else null
         if (null == amiiboManager) {
             Toasty(requireActivity()).Short(R.string.amiibo_failure_read)
@@ -357,7 +357,7 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
         val menuOptions = itemView?.findViewById<LinearLayout>(R.id.menu_options)
         if (null != menuOptions) {
             val toolbar = menuOptions.findViewById<Toolbar>(R.id.toolbar)
-            if (settings?.amiiboView != BrowserSettings.VIEW.IMAGE.value) {
+            if (settings.amiiboView != BrowserSettings.VIEW.IMAGE.value) {
                 if (menuOptions.visibility == View.VISIBLE) {
                     menuOptions.visibility = View.GONE
                 } else {
@@ -393,7 +393,7 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
         try {
             tagData = TagArray.getValidatedData(keyManager, tagData)!!
         } catch (ignored: Exception) { }
-        if (settings!!.amiiboView != BrowserSettings.VIEW.IMAGE.value) {
+        if (settings.amiiboView != BrowserSettings.VIEW.IMAGE.value) {
             val activity = requireActivity() as BrowserActivity
             val toolbar =
                 itemView!!.findViewById<View>(R.id.menu_options).findViewById<Toolbar>(R.id.toolbar)

@@ -52,7 +52,7 @@ import java.text.ParseException
 import java.util.*
 
 class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
-    private var prefs: Preferences? = null
+    private lateinit var prefs: Preferences
     private lateinit var rootLayout: CoordinatorLayout
     var eliteContent: RecyclerView? = null
         private set
@@ -68,15 +68,15 @@ class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
     private lateinit var amiiboTileTarget: CustomTarget<Bitmap?>
     private lateinit var amiiboCardTarget: CustomTarget<Bitmap?>
     private var bankStats: TextView? = null
-    private var eliteBankCount: NumberPicker? = null
+    private lateinit var eliteBankCount: NumberPicker
     private var writeOpenBanks: AppCompatButton? = null
     private var eraseOpenBanks: AppCompatButton? = null
     private var securityOptions: LinearLayout? = null
     private var searchView: SearchView? = null
-    private var settings: BrowserSettings? = null
+    private lateinit var settings: BrowserSettings
     var bottomSheet: BottomSheetBehavior<View>? = null
         private set
-    private var keyManager: KeyManager? = null
+    private lateinit var keyManager: KeyManager
     private var amiibos: ArrayList<EliteTag?> = ArrayList()
     private var clickedPosition = 0
 
@@ -105,17 +105,17 @@ class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
         prefs = Preferences(activity.applicationContext)
         keyManager = KeyManager(activity)
         eliteContent = rootLayout.findViewById(R.id.elite_content)
-        if (prefs!!.softwareLayer())
-            eliteContent!!.setLayerType(View.LAYER_TYPE_SOFTWARE, null)
-        eliteContent!!.setHasFixedSize(true)
+        if (prefs.softwareLayer())
+            eliteContent?.setLayerType(View.LAYER_TYPE_SOFTWARE, null)
+        eliteContent?.setHasFixedSize(true)
         switchMenuOptions = rootLayout.findViewById(R.id.switch_menu_btn)
         bankOptionsMenu = rootLayout.findViewById(R.id.bank_options_menu)
         writeBankLayout = rootLayout.findViewById(R.id.write_list_layout)
-        if (prefs!!.softwareLayer())
-            writeBankLayout!!.setLayerType(View.LAYER_TYPE_SOFTWARE, null)
+        if (prefs.softwareLayer())
+            writeBankLayout?.setLayerType(View.LAYER_TYPE_SOFTWARE, null)
         amiiboFilesView = rootLayout.findViewById(R.id.amiibo_files_list)
-        if (prefs!!.softwareLayer())
-            amiiboFilesView!!.setLayerType(View.LAYER_TYPE_SOFTWARE, null)
+        if (prefs.softwareLayer())
+            amiiboFilesView?.setLayerType(View.LAYER_TYPE_SOFTWARE, null)
         // amiiboFilesView!!.setHasFixedSize(true);
         securityOptions = rootLayout.findViewById(R.id.security_options)
         amiiboTile = rootLayout.findViewById(R.id.active_tile_layout)
@@ -159,14 +159,15 @@ class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
         eliteBankCount = rootLayout.findViewById(R.id.number_picker)
         writeOpenBanks = rootLayout.findViewById(R.id.write_open_banks)
         eraseOpenBanks = rootLayout.findViewById(R.id.erase_open_banks)
-        settings = activity.settings
+        settings = activity.settings ?: BrowserSettings().initialize()
         val toggle = rootLayout.findViewById<AppCompatImageView>(R.id.toggle)
         bottomSheet = BottomSheetBehavior.from(rootLayout.findViewById(R.id.bottom_sheet))
-        bottomSheet!!.state = BottomSheetBehavior.STATE_COLLAPSED
-        bottomSheet!!.addBottomSheetCallback(object : BottomSheetCallback() {
+        bottomSheet?.state = BottomSheetBehavior.STATE_COLLAPSED
+        bottomSheet?.addBottomSheetCallback(object : BottomSheetCallback() {
             override fun onStateChanged(view: View, newState: Int) {
                 if (newState == BottomSheetBehavior.STATE_COLLAPSED) {
-                    if (writeBankLayout!!.visibility == View.VISIBLE) onBottomSheetChanged(SHEET.MENU)
+                    if (writeBankLayout?.visibility == View.VISIBLE)
+                        onBottomSheetChanged(SHEET.MENU)
                     toggle.setImageResource(R.drawable.ic_expand_less_white_24dp)
                 } else if (newState == BottomSheetBehavior.STATE_EXPANDED) {
                     toggle.setImageResource(R.drawable.ic_expand_more_white_24dp)
@@ -188,89 +189,93 @@ class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
             }
         })
         toggle.setOnClickListener {
-            if (bottomSheet!!.state == BottomSheetBehavior.STATE_COLLAPSED) {
-                bottomSheet!!.setState(BottomSheetBehavior.STATE_EXPANDED)
+            if (bottomSheet?.state == BottomSheetBehavior.STATE_COLLAPSED) {
+                bottomSheet?.setState(BottomSheetBehavior.STATE_EXPANDED)
             } else {
-                bottomSheet!!.setState(BottomSheetBehavior.STATE_COLLAPSED)
+                bottomSheet?.setState(BottomSheetBehavior.STATE_COLLAPSED)
             }
         }
-        toolbar!!.inflateMenu(R.menu.bank_menu)
-        if (settings?.amiiboView == BrowserSettings.VIEW.IMAGE.value)
-            eliteContent!!.layoutManager = GridLayoutManager(activity, activity.columnCount)
-        else eliteContent!!.layoutManager = LinearLayoutManager(activity)
-        bankAdapter = EliteBankAdapter(settings!!, this)
-        eliteContent!!.adapter = bankAdapter
-        settings?.addChangeListener(bankAdapter)
-        eliteBankCount!!.setOnValueChangedListener { _: NumberPicker?, _: Int, valueNew: Int ->
-            writeOpenBanks!!.text = getString(R.string.write_open_banks, valueNew)
-            eraseOpenBanks!!.text = getString(R.string.erase_open_banks, valueNew)
+        toolbar?.inflateMenu(R.menu.bank_menu)
+        if (settings.amiiboView == BrowserSettings.VIEW.IMAGE.value)
+            eliteContent?.layoutManager = GridLayoutManager(activity, activity.columnCount)
+        else eliteContent?.layoutManager = LinearLayoutManager(activity)
+        bankAdapter = EliteBankAdapter(settings, this)
+        eliteContent?.adapter = bankAdapter
+        settings.addChangeListener(bankAdapter)
+        eliteBankCount.setOnValueChangedListener { _: NumberPicker?, _: Int, valueNew: Int ->
+            writeOpenBanks?.text = getString(R.string.write_open_banks, valueNew)
+            eraseOpenBanks?.text = getString(R.string.erase_open_banks, valueNew)
         }
-        if (settings?.amiiboView == BrowserSettings.VIEW.IMAGE.value)
-            amiiboFilesView!!.layoutManager = GridLayoutManager(activity, activity.columnCount)
+        if (settings.amiiboView == BrowserSettings.VIEW.IMAGE.value)
+            amiiboFilesView?.layoutManager = GridLayoutManager(activity, activity.columnCount)
         else
-            amiiboFilesView!!.layoutManager = LinearLayoutManager(activity)
+            amiiboFilesView?.layoutManager = LinearLayoutManager(activity)
         writeTagAdapter = WriteTagAdapter(settings)
-        amiiboFilesView!!.adapter = writeTagAdapter
-        settings?.addChangeListener(writeTagAdapter)
+        amiiboFilesView?.adapter = writeTagAdapter
+        settings.addChangeListener(writeTagAdapter)
         switchMenuOptions?.setOnClickListener {
-            if (bankOptionsMenu!!.isShown) {
+            if (bankOptionsMenu?.isShown == true) {
                 onBottomSheetChanged(SHEET.AMIIBO)
             } else {
                 onBottomSheetChanged(SHEET.MENU)
             }
-            bottomSheet!!.setState(BottomSheetBehavior.STATE_EXPANDED)
+            bottomSheet?.setState(BottomSheetBehavior.STATE_EXPANDED)
         }
         searchView = rootLayout.findViewById(R.id.amiibo_search)
-        val searchManager = activity.getSystemService(Context.SEARCH_SERVICE) as SearchManager
-        searchView!!.setSearchableInfo(
-            searchManager.getSearchableInfo(activity.componentName)
-        )
-        searchView!!.isSubmitButtonEnabled = false
-        searchView!!.setIconifiedByDefault(false)
-        searchView!!.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
-            override fun onQueryTextSubmit(query: String): Boolean {
-                settings?.query = query
-                settings?.notifyChanges()
-                return false
-            }
-
-            override fun onQueryTextChange(query: String): Boolean {
-                settings?.query = query
-                settings?.notifyChanges()
-                return true
-            }
-        })
-        writeOpenBanks!!.setOnClickListener {
-            onBottomSheetChanged(SHEET.WRITE)
-            searchView!!.setQuery(settings?.query, true)
-            searchView!!.clearFocus()
-            writeTagAdapter!!.setListener(object : WriteTagAdapter.OnAmiiboClickListener {
-                override fun onAmiiboClicked(amiiboFile: AmiiboFile?) {}
-                override fun onAmiiboImageClicked(amiiboFile: AmiiboFile?) {}
-                override fun onAmiiboListClicked(amiiboList: ArrayList<AmiiboFile?>?) {
-                    writeAmiiboCollection(amiiboList)
+        if (null != searchView) {
+            val searchManager = activity.getSystemService(Context.SEARCH_SERVICE) as SearchManager
+            searchView!!.setSearchableInfo(
+                searchManager.getSearchableInfo(activity.componentName)
+            )
+            searchView!!.isSubmitButtonEnabled = false
+            searchView!!.setIconifiedByDefault(false)
+            searchView!!.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+                override fun onQueryTextSubmit(query: String): Boolean {
+                    settings.query = query
+                    settings.notifyChanges()
+                    return false
                 }
-            }, eliteBankCount!!.value)
-            bottomSheet!!.setState(BottomSheetBehavior.STATE_EXPANDED)
+
+                override fun onQueryTextChange(query: String): Boolean {
+                    settings.query = query
+                    settings.notifyChanges()
+                    return true
+                }
+            })
         }
-        eraseOpenBanks!!.setOnClickListener {
+        writeOpenBanks?.setOnClickListener {
+            onBottomSheetChanged(SHEET.WRITE)
+            searchView?.setQuery(settings.query, true)
+            searchView?.clearFocus()
+            eliteBankCount.value.let { count ->
+                writeTagAdapter?.setListener(object : WriteTagAdapter.OnAmiiboClickListener {
+                    override fun onAmiiboClicked(amiiboFile: AmiiboFile?) {}
+                    override fun onAmiiboImageClicked(amiiboFile: AmiiboFile?) {}
+                    override fun onAmiiboListClicked(amiiboList: ArrayList<AmiiboFile?>?) {
+                        if (!amiiboList.isNullOrEmpty()) writeAmiiboCollection(amiiboList)
+                    }
+                }, count)
+            }
+            bottomSheet?.setState(BottomSheetBehavior.STATE_EXPANDED)
+        }
+        eraseOpenBanks?.setOnClickListener {
             AlertDialog.Builder(requireContext())
                 .setMessage(R.string.elite_erase_confirm)
                 .setPositiveButton(R.string.proceed) { _: DialogInterface?, _: Int ->
                     val collection = Intent(requireActivity(), NfcActivity::class.java)
                     collection.putExtra(
                         NFCIntent.EXTRA_SIGNATURE,
-                        prefs!!.eliteSignature()
+                        prefs.eliteSignature()
                     )
                     collection.action = NFCIntent.ACTION_ERASE_ALL_TAGS
-                    collection.putExtra(NFCIntent.EXTRA_BANK_COUNT, eliteBankCount!!.value)
+                    collection.putExtra(NFCIntent.EXTRA_BANK_COUNT, eliteBankCount.value)
                     onOpenBanksActivity.launch(collection)
                 }
                 .setNegativeButton(R.string.cancel) { dialog: DialogInterface, _: Int -> dialog.dismiss() }
                 .show()
         }
         rootLayout.findViewById<View>(R.id.edit_bank_count).setOnClickListener {
-            if (prefs!!.eliteActiveBank() >= eliteBankCount!!.value) {
+            if (prefs.eliteActiveBank() >= eliteBankCount.value) {
                 Toasty(activity).Short(R.string.fail_active_oob)
                 onBottomSheetChanged(SHEET.MENU)
                 return@setOnClickListener
@@ -278,10 +283,10 @@ class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
             val configure = Intent(activity, NfcActivity::class.java)
             configure.putExtra(
                 NFCIntent.EXTRA_SIGNATURE,
-                prefs!!.eliteSignature()
+                prefs.eliteSignature()
             )
             configure.action = NFCIntent.ACTION_SET_BANK_COUNT
-            configure.putExtra(NFCIntent.EXTRA_BANK_COUNT, eliteBankCount!!.value)
+            configure.putExtra(NFCIntent.EXTRA_BANK_COUNT, eliteBankCount.value)
             onOpenBanksActivity.launch(configure)
         }
         view.findViewById<View>(R.id.lock_elite).setOnClickListener {
@@ -311,7 +316,7 @@ class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
     }
 
     private fun updateEliteAdapter(amiiboList: ArrayList<String>?) {
-        var amiiboManager = settings?.amiiboManager
+        var amiiboManager = settings.amiiboManager
         if (null == amiiboManager) {
             try {
                 amiiboManager = getAmiiboManager(requireContext().applicationContext)
@@ -327,8 +332,8 @@ class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
             }
             val uiAmiiboManager = amiiboManager
             requireActivity().runOnUiThread {
-                settings!!.amiiboManager = uiAmiiboManager
-                settings!!.notifyChanges()
+                settings.amiiboManager = uiAmiiboManager
+                settings.notifyChanges()
             }
         }
         if (null == amiiboManager) {
@@ -409,15 +414,15 @@ class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
             return@registerForActivityResult
         val activeBank = result.data!!.getIntExtra(
             NFCIntent.EXTRA_ACTIVE_BANK,
-            prefs!!.eliteActiveBank()
+            prefs.eliteActiveBank()
         )
-        bankAdapter!!.notifyItemChanged(prefs!!.eliteActiveBank())
+        bankAdapter!!.notifyItemChanged(prefs.eliteActiveBank())
         bankAdapter!!.notifyItemChanged(activeBank)
-        prefs!!.eliteActiveBank(activeBank)
+        prefs.eliteActiveBank(activeBank)
         updateAmiiboView(amiiboTile, null, amiibos[activeBank]!!.id, activeBank)
-        val bankCount = prefs!!.eliteBankCount()
+        val bankCount = prefs.eliteBankCount()
         bankStats!!.text = getString(
-            R.string.bank_stats, getValueForPosition(eliteBankCount!!, activeBank), bankCount
+            R.string.bank_stats, getValueForPosition(eliteBankCount, activeBank), bankCount
         )
         writeOpenBanks!!.text = getString(R.string.write_open_banks, bankCount)
         eraseOpenBanks!!.text = getString(R.string.erase_open_banks, bankCount)
@@ -446,10 +451,10 @@ class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
         }
         updateAmiiboView(amiiboCard, tagData, -1, clickedPosition)
         bottomSheet!!.state = BottomSheetBehavior.STATE_EXPANDED
-        var activeBank = prefs!!.eliteActiveBank()
+        var activeBank = prefs.eliteActiveBank()
         if (result.data!!.hasExtra(NFCIntent.EXTRA_ACTIVE_BANK)) {
             activeBank = result.data!!.getIntExtra(NFCIntent.EXTRA_ACTIVE_BANK, activeBank)
-            prefs!!.eliteActiveBank(activeBank)
+            prefs.eliteActiveBank(activeBank)
         }
         updateAmiiboView(amiiboTile, null, amiibos[activeBank]!!.id, activeBank)
         if (status == CLICKED.ERASE_BANK) {
@@ -475,7 +480,7 @@ class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
                 val modify = Intent(requireContext(), NfcActivity::class.java)
                 modify.putExtra(
                     NFCIntent.EXTRA_SIGNATURE,
-                    prefs!!.eliteSignature()
+                    prefs.eliteSignature()
                 )
                 modify.action = NFCIntent.ACTION_WRITE_TAG_FULL
                 modify.putExtra(NFCIntent.EXTRA_CURRENT_BANK, clickedPosition)
@@ -505,7 +510,7 @@ class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
         val scan = Intent(requireContext(), NfcActivity::class.java)
         scan.putExtra(
             NFCIntent.EXTRA_SIGNATURE,
-            prefs!!.eliteSignature()
+            prefs.eliteSignature()
         )
         scan.action = NFCIntent.ACTION_SCAN_TAG
         scan.putExtra(NFCIntent.EXTRA_CURRENT_BANK, current_bank)
@@ -516,7 +521,7 @@ class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
         val amiiboIntent = Intent(requireContext(), NfcActivity::class.java)
         amiiboIntent.putExtra(
             NFCIntent.EXTRA_SIGNATURE,
-            prefs!!.eliteSignature()
+            prefs.eliteSignature()
         )
         amiiboIntent.putExtra(NFCIntent.EXTRA_CURRENT_BANK, position)
         amiiboIntent.action = NFCIntent.ACTION_SCAN_TAG
@@ -551,7 +556,7 @@ class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
         val intent = Intent(requireContext(), NfcActivity::class.java)
         intent.putExtra(
             NFCIntent.EXTRA_SIGNATURE,
-            prefs!!.eliteSignature()
+            prefs.eliteSignature()
         )
         intent.action = NFCIntent.ACTION_WRITE_TAG_FULL
         intent.putExtra(NFCIntent.EXTRA_CURRENT_BANK, position)
@@ -561,7 +566,7 @@ class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
 
     private fun displayWriteDialog(position: Int) {
         onBottomSheetChanged(SHEET.WRITE)
-        searchView!!.setQuery(settings?.query, true)
+        searchView!!.setQuery(settings.query, true)
         searchView!!.clearFocus()
         writeTagAdapter!!.setListener(object : WriteTagAdapter.OnAmiiboClickListener {
             override fun onAmiiboClicked(amiiboFile: AmiiboFile?) {
@@ -584,7 +589,7 @@ class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
         val view = layoutInflater.inflate(R.layout.dialog_save_item, null)
         val dialog = AlertDialog.Builder(requireContext())
         val input = view.findViewById<EditText>(R.id.save_item_entry)
-        input.setText(TagArray.decipherFilename(settings!!.amiiboManager, tagData, true))
+        input.setText(TagArray.decipherFilename(settings.amiiboManager, tagData, true))
         val backupDialog: Dialog = dialog.setView(view).create()
         view.findViewById<View>(R.id.button_save).setOnClickListener {
             try {
@@ -593,7 +598,7 @@ class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
                 fileName = if (activity.isDocumentStorage) ({
                     val rootDocument = DocumentFile.fromTreeUri(
                         requireContext(),
-                        settings!!.browserRootDocument!!
+                        settings.browserRootDocument!!
                     ) ?: throw NullPointerException()
                     TagArray.writeBytesToDocument(
                         requireContext(), rootDocument, input.text.toString(), tagData
@@ -635,7 +640,7 @@ class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
             val notice = Toasty(requireActivity())
             val scan = Intent(requireContext(), NfcActivity::class.java)
             scan.putExtra(
-                NFCIntent.EXTRA_SIGNATURE, prefs!!.eliteSignature()
+                NFCIntent.EXTRA_SIGNATURE, prefs.eliteSignature()
             )
             scan.putExtra(NFCIntent.EXTRA_CURRENT_BANK, current_bank)
             when (item.itemId) {
@@ -660,7 +665,7 @@ class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
                     return@setOnMenuItemClickListener true
                 }
                 R.id.mnu_erase_bank -> {
-                    if (prefs!!.eliteActiveBank() == current_bank) {
+                    if (prefs.eliteActiveBank() == current_bank) {
                         notice.Short(R.string.erase_active)
                     } else {
                         scan.action = NFCIntent.ACTION_ERASE_BANK
@@ -759,7 +764,7 @@ class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
                 amiiboId
             }
         }
-        val amiiboManager = settings?.amiiboManager
+        val amiiboManager = settings.amiiboManager
         if (amiiboLongId == -1L) {
             tagInfo = getString(R.string.read_error)
         } else if (amiiboLongId == 0L) {
@@ -792,7 +797,7 @@ class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
         }
         if (null != txtBank)
             setAmiiboInfoText(txtBank, getString(
-                R.string.bank_number, getValueForPosition(eliteBankCount!!, current_bank)
+                R.string.bank_number, getValueForPosition(eliteBankCount, current_bank)
             ), hasTagInfo)
         setAmiiboInfoText(txtName, amiiboName, hasTagInfo)
         setAmiiboInfoText(txtTagId, amiiboHexId, hasTagInfo)
@@ -829,28 +834,30 @@ class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
         if (NFCIntent.ACTION_NFC_SCANNED != result.data!!.action) return@registerForActivityResult
         val bankCount = result.data!!.getIntExtra(
             NFCIntent.EXTRA_BANK_COUNT,
-            prefs!!.eliteBankCount()
+            prefs.eliteBankCount()
         )
-        prefs!!.eliteBankCount(bankCount)
-        eliteBankCount!!.value = bankCount
+        prefs.eliteBankCount(bankCount)
+        eliteBankCount.value = bankCount
         updateEliteAdapter(result.data!!.getStringArrayListExtra(NFCIntent.EXTRA_AMIIBO_LIST))
-        bankStats!!.text = getString(
+        bankStats?.text = getString(
             R.string.bank_stats, getValueForPosition(
-                eliteBankCount!!, prefs!!.eliteActiveBank()
+                eliteBankCount, prefs.eliteActiveBank()
             ), bankCount
         )
-        writeOpenBanks!!.text = getString(R.string.write_open_banks, bankCount)
-        eraseOpenBanks!!.text = getString(R.string.erase_open_banks, bankCount)
-        val activeBank = prefs!!.eliteActiveBank()
+        writeOpenBanks?.text = getString(R.string.write_open_banks, bankCount)
+        eraseOpenBanks?.text = getString(R.string.erase_open_banks, bankCount)
+        val activeBank = prefs.eliteActiveBank()
         updateAmiiboView(amiiboTile, null, amiibos[activeBank]!!.id, activeBank)
     }
 
-    private fun writeAmiiboCollection(amiiboList: ArrayList<AmiiboFile?>?) {
-        for (i in amiiboList!!.indices) {
+    private fun writeAmiiboCollection(amiiboList: ArrayList<AmiiboFile?>) {
+        for (i in amiiboList.indices) {
             try {
                 val amiiboFile = amiiboList[i]
-                amiiboFile!!.data = TagArray.getValidatedData(keyManager, amiiboFile)
-                amiiboList[i] = amiiboFile
+                if (null != amiiboFile) {
+                    amiiboFile.data = TagArray.getValidatedData(keyManager, amiiboFile)
+                    amiiboList[i] = amiiboFile
+                }
             } catch (ignored: Exception) {
             }
         }
@@ -859,9 +866,9 @@ class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
             .setPositiveButton(R.string.proceed) { dialog: DialogInterface, _: Int ->
                 val collection = Intent(requireContext(), NfcActivity::class.java)
                 collection.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-                collection.putExtra(NFCIntent.EXTRA_SIGNATURE, prefs!!.eliteSignature())
+                collection.putExtra(NFCIntent.EXTRA_SIGNATURE, prefs.eliteSignature())
                 collection.action = NFCIntent.ACTION_WRITE_ALL_TAGS
-                collection.putExtra(NFCIntent.EXTRA_BANK_COUNT, eliteBankCount!!.value)
+                collection.putExtra(NFCIntent.EXTRA_BANK_COUNT, eliteBankCount.value)
                 collection.putExtra(NFCIntent.EXTRA_AMIIBO_FILES, amiiboList)
                 onOpenBanksActivity.launch(collection)
                 onBottomSheetChanged(SHEET.MENU)
@@ -883,20 +890,20 @@ class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
         try {
             val bankCount = requireArguments().getInt(
                 NFCIntent.EXTRA_BANK_COUNT,
-                prefs!!.eliteBankCount()
+                prefs.eliteBankCount()
             )
             val activeBank = requireArguments().getInt(
                 NFCIntent.EXTRA_ACTIVE_BANK,
-                prefs!!.eliteActiveBank()
+                prefs.eliteActiveBank()
             )
             (rootLayout.findViewById<View>(R.id.hardware_info) as TextView).text = getString(
                 R.string.elite_signature, requireArguments().getString(NFCIntent.EXTRA_SIGNATURE)
             )
-            eliteBankCount!!.value = bankCount
+            eliteBankCount.value = bankCount
             updateEliteAdapter(requireArguments().getStringArrayList(NFCIntent.EXTRA_AMIIBO_LIST))
             bankStats!!.text = getString(
                 R.string.bank_stats,
-                getValueForPosition(eliteBankCount!!, activeBank), bankCount
+                getValueForPosition(eliteBankCount, activeBank), bankCount
             )
             writeOpenBanks!!.text = getString(R.string.write_open_banks, bankCount)
             eraseOpenBanks!!.text = getString(R.string.erase_open_banks, bankCount)

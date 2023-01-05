@@ -1,4 +1,4 @@
-package com.hiddenramblings.tagmo.browser
+package com.hiddenramblings.tagmo.browser.fragment
 
 import android.app.Activity
 import android.app.Dialog
@@ -23,17 +23,15 @@ import androidx.preference.ListPreference
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
 import com.google.android.material.snackbar.Snackbar
-import com.hiddenramblings.tagmo.GlideApp
-import com.hiddenramblings.tagmo.GlideTagModule
+import com.hiddenramblings.tagmo.*
 import com.hiddenramblings.tagmo.NFCIntent.FilterComponent
 import com.hiddenramblings.tagmo.NFCIntent.getIntent
-import com.hiddenramblings.tagmo.R
-import com.hiddenramblings.tagmo.TagMo
 import com.hiddenramblings.tagmo.amiibo.AmiiboManager
 import com.hiddenramblings.tagmo.amiibo.AmiiboManager.Companion.parse
 import com.hiddenramblings.tagmo.amiibo.AmiiboManager.Companion.parseAmiiboAPI
 import com.hiddenramblings.tagmo.amiibo.AmiiboManager.Companion.saveDatabase
 import com.hiddenramblings.tagmo.amiibo.KeyManager
+import com.hiddenramblings.tagmo.browser.BrowserActivity
 import com.hiddenramblings.tagmo.eightbit.io.Debug
 import com.hiddenramblings.tagmo.eightbit.material.IconifiedSnackbar
 import com.hiddenramblings.tagmo.eightbit.net.JSONExecutor

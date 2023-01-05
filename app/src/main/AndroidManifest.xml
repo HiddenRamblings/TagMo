@@ -94,7 +94,7 @@
             </intent-filter-->
         </activity-alias>
         <activity
-            android:name=".NfcActivity"
+            android:name=".nfctech.NfcActivity"
             android:permission="android.permission.BIND_NFC_SERVICE"
             android:configChanges="orientation|screenLayout|screenSize|smallestScreenSize"
             android:launchMode="singleTop">
@@ -103,7 +103,7 @@
             android:name=".hexcode.HexCodeViewer"
             android:theme="@style/DialogTheme.NoActionBar" />
         <activity
-            android:name=".ImageActivity"
+            android:name=".browser.ImageActivity"
             android:theme="@style/DialogTheme.NoActionBar" />
         <activity
             android:name=".amiibo.tagdata.TagDataEditor"

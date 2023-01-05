@@ -5,6 +5,7 @@ import android.os.Build
 import android.os.Parcel
 import android.os.Parcelable
 import android.text.TextUtils
+import com.hiddenramblings.tagmo.Preferences
 import com.hiddenramblings.tagmo.TagMo.Companion.appContext
 import com.hiddenramblings.tagmo.amiibo.Amiibo
 import com.hiddenramblings.tagmo.amiibo.AmiiboFile

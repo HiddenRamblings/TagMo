@@ -12,10 +12,10 @@ import android.os.Parcelable
 import androidx.appcompat.app.AlertDialog
 import com.google.android.material.snackbar.Snackbar
 import com.hiddenramblings.tagmo.NFCIntent
-import com.hiddenramblings.tagmo.NfcActivity
+import com.hiddenramblings.tagmo.nfctech.NfcActivity
 import com.hiddenramblings.tagmo.R
 import com.hiddenramblings.tagmo.browser.BrowserActivity
-import com.hiddenramblings.tagmo.browser.Preferences
+import com.hiddenramblings.tagmo.Preferences
 import com.hiddenramblings.tagmo.eightbit.io.Debug
 import com.hiddenramblings.tagmo.eightbit.material.IconifiedSnackbar
 import com.hiddenramblings.tagmo.nfctech.TagArray.getTagTechnology

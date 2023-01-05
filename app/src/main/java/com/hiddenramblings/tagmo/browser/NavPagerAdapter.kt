@@ -5,7 +5,9 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import com.hiddenramblings.tagmo.BuildConfig
+import com.hiddenramblings.tagmo.Preferences
 import com.hiddenramblings.tagmo.TagMo
+import com.hiddenramblings.tagmo.browser.fragment.*
 
 class NavPagerAdapter(fa: FragmentActivity?) : FragmentStateAdapter(fa!!) {
     var mPrefs = Preferences(TagMo.appContext)

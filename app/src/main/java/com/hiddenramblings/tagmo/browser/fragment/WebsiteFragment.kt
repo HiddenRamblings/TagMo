@@ -1,4 +1,4 @@
-package com.hiddenramblings.tagmo.browser
+package com.hiddenramblings.tagmo.browser.fragment
 
 import android.annotation.SuppressLint
 import android.app.Dialog
@@ -21,6 +21,7 @@ import com.hiddenramblings.tagmo.NFCIntent
 import com.hiddenramblings.tagmo.R
 import com.hiddenramblings.tagmo.TagMo
 import com.hiddenramblings.tagmo.amiibo.AmiiboManager.Companion.getAmiiboManager
+import com.hiddenramblings.tagmo.browser.BrowserActivity
 import com.hiddenramblings.tagmo.eightbit.io.Debug.verbose
 import com.hiddenramblings.tagmo.eightbit.io.Debug.warn
 import com.hiddenramblings.tagmo.eightbit.io.Debug.isNewer

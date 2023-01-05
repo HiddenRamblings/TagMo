@@ -19,7 +19,7 @@ import com.hiddenramblings.tagmo.amiibo.FlaskTag
 import com.hiddenramblings.tagmo.browser.BrowserSettings
 import com.hiddenramblings.tagmo.browser.BrowserSettings.BrowserSettingsListener
 import com.hiddenramblings.tagmo.browser.BrowserSettings.VIEW
-import com.hiddenramblings.tagmo.browser.Preferences
+import com.hiddenramblings.tagmo.Preferences
 import com.hiddenramblings.tagmo.browser.adapter.FlaskSlotAdapter.FlaskViewHolder
 
 class FlaskSlotAdapter(

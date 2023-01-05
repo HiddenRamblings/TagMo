@@ -1,4 +1,4 @@
-package com.hiddenramblings.tagmo.browser
+package com.hiddenramblings.tagmo.browser.fragment
 
 import android.annotation.SuppressLint
 import android.app.Dialog
@@ -40,6 +40,9 @@ import com.hiddenramblings.tagmo.bluetooth.BluetoothHandler
 import com.hiddenramblings.tagmo.bluetooth.BluetoothHandler.BluetoothListener
 import com.hiddenramblings.tagmo.bluetooth.FlaskGattService
 import com.hiddenramblings.tagmo.bluetooth.PuckGattService
+import com.hiddenramblings.tagmo.browser.BrowserActivity
+import com.hiddenramblings.tagmo.browser.BrowserSettings
+import com.hiddenramblings.tagmo.browser.ImageActivity
 import com.hiddenramblings.tagmo.browser.adapter.FlaskSlotAdapter
 import com.hiddenramblings.tagmo.browser.adapter.WriteTagAdapter
 import com.hiddenramblings.tagmo.eightbit.io.Debug

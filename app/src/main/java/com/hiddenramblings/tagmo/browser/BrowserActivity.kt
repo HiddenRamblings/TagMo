@@ -67,17 +67,21 @@ import com.hiddenramblings.tagmo.amiibo.games.GamesManager
 import com.hiddenramblings.tagmo.amiibo.games.GamesManager.Companion.getGamesManager
 import com.hiddenramblings.tagmo.amiibo.tagdata.TagDataEditor
 import com.hiddenramblings.tagmo.browser.BrowserSettings.*
-import com.hiddenramblings.tagmo.browser.CheckUpdatesTask.CheckPlayUpdateListener
-import com.hiddenramblings.tagmo.browser.CheckUpdatesTask.CheckUpdateListener
-import com.hiddenramblings.tagmo.browser.JoyConFragment.Companion.newInstance
+import com.hiddenramblings.tagmo.browser.UpdatesHandler.CheckPlayUpdateListener
+import com.hiddenramblings.tagmo.browser.UpdatesHandler.CheckUpdateListener
+import com.hiddenramblings.tagmo.browser.fragment.JoyConFragment.Companion.newInstance
 import com.hiddenramblings.tagmo.browser.adapter.BrowserAdapter
 import com.hiddenramblings.tagmo.browser.adapter.FoldersAdapter
 import com.hiddenramblings.tagmo.browser.adapter.FoomiiboAdapter
+import com.hiddenramblings.tagmo.browser.fragment.BrowserFragment
+import com.hiddenramblings.tagmo.browser.fragment.EliteBankFragment
+import com.hiddenramblings.tagmo.browser.fragment.SettingsFragment
 import com.hiddenramblings.tagmo.eightbit.io.Debug
 import com.hiddenramblings.tagmo.eightbit.material.IconifiedSnackbar
 import com.hiddenramblings.tagmo.eightbit.os.Storage
 import com.hiddenramblings.tagmo.eightbit.view.AnimatedLinearLayout
 import com.hiddenramblings.tagmo.hexcode.HexCodeViewer
+import com.hiddenramblings.tagmo.nfctech.NfcActivity
 import com.hiddenramblings.tagmo.nfctech.ScanTag
 import com.hiddenramblings.tagmo.nfctech.TagArray.decipherFilename
 import com.hiddenramblings.tagmo.nfctech.TagArray.getValidatedData
@@ -110,7 +114,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
     var settings: BrowserSettings? = null
         private set
     private var ignoreTagId = false
-    private var updates: CheckUpdatesTask? = null
+    private var updates: UpdatesHandler? = null
     private var updateUrl: String? = null
     private var appUpdate: AppUpdateInfo? = null
     private var fragmentSettings: SettingsFragment? = null
@@ -209,14 +213,12 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
         if (null == settings) settings = BrowserSettings().initialize()
         settings?.addChangeListener(this)
         val intent = intent
-        if (null != intent) {
-            if (componentName == FilterComponent) {
-                val browser = Intent(this, BrowserActivity::class.java)
-                browser.action = intent.action
-                browser.putExtras(intent.extras!!)
-                browser.data = intent.data
-                startActivity(browser)
-            }
+        if (null != intent && componentName == FilterComponent) {
+            val browser = Intent(this, BrowserActivity::class.java)
+            intent.action?.let { browser.action = it}
+            intent.extras?.let { browser.putExtras(it) }
+            intent.data?.let { browser.data = it }
+            startActivity(browser)
         }
         layout?.keepScreenOn = BuildConfig.WEAR_OS
         layout?.adapter = pagerAdapter
@@ -1879,7 +1881,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
             onViewChanged()
         }
         if (System.currentTimeMillis() >= oldBrowserSettings.lastUpdatedGit + 3600000) {
-            updates = CheckUpdatesTask(this)
+            updates = UpdatesHandler(this)
             if (BuildConfig.GOOGLE_PLAY) {
                 updates?.setPlayUpdateListener(object : CheckPlayUpdateListener {
                     override fun onPlayUpdateFound(appUpdateInfo: AppUpdateInfo?) {

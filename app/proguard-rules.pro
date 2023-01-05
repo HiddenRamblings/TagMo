@@ -11,7 +11,7 @@
 # If your project uses WebView with JS, uncomment the following
 # and specify the fully qualified class name to the JavaScript interface
 # class:
--keepclassmembers class com.hiddenramblings.tagmo.browser.WebsiteFragment {
+-keepclassmembers class com.hiddenramblings.tagmo.browser.fragment.WebsiteFragment {
    public *;
 }
 

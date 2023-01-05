@@ -14,10 +14,7 @@ import com.google.android.play.core.appupdate.AppUpdateManager
 import com.google.android.play.core.appupdate.AppUpdateManagerFactory
 import com.google.android.play.core.install.model.AppUpdateType
 import com.google.android.play.core.install.model.UpdateAvailability
-import com.hiddenramblings.tagmo.BuildConfig
-import com.hiddenramblings.tagmo.NFCIntent
-import com.hiddenramblings.tagmo.R
-import com.hiddenramblings.tagmo.UpdateReceiver
+import com.hiddenramblings.tagmo.*
 import com.hiddenramblings.tagmo.eightbit.io.Debug
 import com.hiddenramblings.tagmo.eightbit.net.JSONExecutor
 import com.hiddenramblings.tagmo.eightbit.net.JSONExecutor.ResultListener
@@ -35,7 +32,7 @@ import java.net.URL
 import java.util.concurrent.Executors
 
 
-class CheckUpdatesTask internal constructor(activity: BrowserActivity) {
+class UpdatesHandler internal constructor(activity: BrowserActivity) {
     private var listener: CheckUpdateListener? = null
     private var listenerPlay: CheckPlayUpdateListener? = null
     private var appUpdateManager: AppUpdateManager? = null
@@ -90,10 +87,10 @@ class CheckUpdatesTask internal constructor(activity: BrowserActivity) {
     }
 
     fun installUpdateTask(apkUrl: String?) {
-        if (null == apkUrl) return
+        if (null == apkUrl || null == activity.get()) return
         Executors.newSingleThreadExecutor().execute {
             val apk = File(
-                activity.get()!!.externalCacheDir, apkUrl.substring(
+                activity.get()?.externalCacheDir, apkUrl.substring(
                     apkUrl.lastIndexOf(File.separator) + 1
                 )
             )
@@ -120,7 +117,7 @@ class CheckUpdatesTask internal constructor(activity: BrowserActivity) {
                     val sessionId = installer.createSession(params)
                     val session = installer.openSession(sessionId)
                     val document = DocumentFile.fromSingleUri(applicationContext, apkUri)
-                        ?: throw IOException(activity.get()!!.getString(R.string.fail_invalid_size))
+                        ?: throw IOException(activity.get()?.getString(R.string.fail_invalid_size))
                     val sessionStream = session.openWrite(
                         "NAME", 0, document.length()
                     )
@@ -144,7 +141,7 @@ class CheckUpdatesTask internal constructor(activity: BrowserActivity) {
                     val intent = Intent(Intent.ACTION_INSTALL_PACKAGE)
                     intent.setDataAndType(
                         Storage.getFileUri(apk),
-                        activity.get()!!.getString(R.string.mimetype_apk)
+                        activity.get()?.getString(R.string.mimetype_apk)
                     )
                     intent.putExtra(Intent.EXTRA_NOT_UNKNOWN_SOURCE, true)
                     intent.putExtra(
@@ -152,10 +149,10 @@ class CheckUpdatesTask internal constructor(activity: BrowserActivity) {
                         activity.get()!!.applicationInfo.packageName
                     )
                     try {
-                        activity.get()!!.startActivity(NFCIntent.getIntent(intent))
+                        activity.get()?.startActivity(NFCIntent.getIntent(intent))
                     } catch (anf: ActivityNotFoundException) {
                         try {
-                            activity.get()!!.startActivity(intent.setAction(Intent.ACTION_VIEW))
+                            activity.get()?.startActivity(intent.setAction(Intent.ACTION_VIEW))
                         } catch (ignored: ActivityNotFoundException) { }
                     }
                 }
@@ -168,19 +165,16 @@ class CheckUpdatesTask internal constructor(activity: BrowserActivity) {
     }
 
     fun installUpdateCompat(apkUrl: String?) {
-        if (null == apkUrl) return
+        if (null == apkUrl || null == activity.get()) return
         if (Debug.isNewer(Build.VERSION_CODES.O)) {
             if (activity.get()!!.packageManager.canRequestPackageInstalls()) {
                 installUpdateTask(apkUrl)
             } else {
-                Preferences(activity.get()!!.applicationContext).downloadUrl(apkUrl)
+                Preferences(activity.get()?.applicationContext).downloadUrl(apkUrl)
                 val intent = Intent(Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES)
-                intent.data = Uri.parse(
-                    String.format(
-                        "package:%s", activity.get()!!
-                            .packageName
-                    )
-                )
+                intent.data = Uri.parse(String.format(
+                        "package:%s", activity.get()!!.packageName
+                ))
                 activity.get()!!.onRequestInstall.launch(intent)
             }
         } else {

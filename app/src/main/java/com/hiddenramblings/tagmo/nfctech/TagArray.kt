@@ -19,7 +19,7 @@ import com.hiddenramblings.tagmo.amiibo.Amiibo
 import com.hiddenramblings.tagmo.amiibo.AmiiboFile
 import com.hiddenramblings.tagmo.amiibo.AmiiboManager
 import com.hiddenramblings.tagmo.amiibo.KeyManager
-import com.hiddenramblings.tagmo.browser.Preferences
+import com.hiddenramblings.tagmo.Preferences
 import com.hiddenramblings.tagmo.eightbit.io.Debug
 import java.io.File
 import java.io.FileOutputStream

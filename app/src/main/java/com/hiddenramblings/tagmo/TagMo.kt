@@ -9,7 +9,6 @@ import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.text.HtmlCompat
 import com.github.anrwatchdog.ANRError
 import com.github.anrwatchdog.ANRWatchDog
-import com.hiddenramblings.tagmo.browser.Preferences
 import com.hiddenramblings.tagmo.eightbit.content.ScaledContext
 import com.hiddenramblings.tagmo.eightbit.io.Debug.isNewer
 import com.hiddenramblings.tagmo.eightbit.io.Debug.processException

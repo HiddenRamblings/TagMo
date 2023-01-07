@@ -295,11 +295,12 @@ object TagArray {
         var validated = data
         try {
             validateData(validated)
-            validated = keyManager.decrypt(validated)
         } catch (e: Exception) {
-            validateData(keyManager.encrypt(validated))
+            validated = keyManager.encrypt(validated)
+            validateData(validated)
         }
-        return keyManager.encrypt(validated!!)
+        validated = keyManager.decrypt(validated)
+        return keyManager.encrypt(validated)
     }
 
     @JvmStatic

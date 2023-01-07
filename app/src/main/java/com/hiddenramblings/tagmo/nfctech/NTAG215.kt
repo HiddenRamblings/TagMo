@@ -43,8 +43,7 @@ class NTAG215 : TagTechnology {
 
     @Throws(IOException::class)
     fun readPages(pageOffset: Int): ByteArray? {
-        return tagMifare?.readPages(pageOffset) ?:
-        if (null != tagNfcA) {
+        return tagMifare?.readPages(pageOffset) ?: if (null != tagNfcA) {
             validatePageIndex(pageOffset)
             //checkConnected();
             val cmd = byteArrayOf(

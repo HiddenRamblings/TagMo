@@ -35,8 +35,11 @@ import com.bumptech.glide.request.transition.Transition
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetBehavior.BottomSheetCallback
 import com.hiddenramblings.tagmo.*
-import com.hiddenramblings.tagmo.amiibo.*
+import com.hiddenramblings.tagmo.amiibo.Amiibo
+import com.hiddenramblings.tagmo.amiibo.AmiiboFile
 import com.hiddenramblings.tagmo.amiibo.AmiiboManager.Companion.getAmiiboManager
+import com.hiddenramblings.tagmo.amiibo.EliteTag
+import com.hiddenramblings.tagmo.amiibo.KeyManager
 import com.hiddenramblings.tagmo.amiibo.tagdata.TagDataEditor
 import com.hiddenramblings.tagmo.browser.BrowserActivity
 import com.hiddenramblings.tagmo.browser.BrowserSettings
@@ -53,7 +56,6 @@ import com.shawnlin.numberpicker.NumberPicker
 import org.json.JSONException
 import java.io.IOException
 import java.text.ParseException
-import java.util.*
 
 class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
     private lateinit var prefs: Preferences

@@ -15,8 +15,7 @@ class UpdateReceiver : BroadcastReceiver() {
     private inline fun <reified T : Parcelable> Intent.parcelable(key: String): T? = when {
         isNewer(Build.VERSION_CODES.TIRAMISU) ->
             getParcelableExtra(key, T::class.java)
-        else ->
-            @Suppress("DEPRECATION") getParcelableExtra(key) as? T
+        else -> @Suppress("DEPRECATION") getParcelableExtra(key) as? T
     }
 
     override fun onReceive(context: Context, intent: Intent) {

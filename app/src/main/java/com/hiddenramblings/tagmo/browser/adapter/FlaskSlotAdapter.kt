@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
 import com.hiddenramblings.tagmo.GlideApp
+import com.hiddenramblings.tagmo.Preferences
 import com.hiddenramblings.tagmo.R
 import com.hiddenramblings.tagmo.TagMo
 import com.hiddenramblings.tagmo.amiibo.Amiibo
@@ -19,7 +20,6 @@ import com.hiddenramblings.tagmo.amiibo.FlaskTag
 import com.hiddenramblings.tagmo.browser.BrowserSettings
 import com.hiddenramblings.tagmo.browser.BrowserSettings.BrowserSettingsListener
 import com.hiddenramblings.tagmo.browser.BrowserSettings.VIEW
-import com.hiddenramblings.tagmo.Preferences
 import com.hiddenramblings.tagmo.browser.adapter.FlaskSlotAdapter.FlaskViewHolder
 
 class FlaskSlotAdapter(

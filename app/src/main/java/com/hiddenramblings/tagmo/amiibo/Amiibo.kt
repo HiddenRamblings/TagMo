@@ -1,14 +1,12 @@
 package com.hiddenramblings.tagmo.amiibo
 
 import android.os.Build
-import android.os.Parcelable
 import android.os.Parcel
-import kotlin.Throws
-import com.hiddenramblings.tagmo.amiibo.tagdata.AmiiboData
+import android.os.Parcelable
 import android.text.TextUtils
+import com.hiddenramblings.tagmo.amiibo.tagdata.AmiiboData
 import com.hiddenramblings.tagmo.eightbit.io.Debug
 import java.io.IOException
-import java.lang.NumberFormatException
 
 open class Amiibo : Comparable<Amiibo>, Parcelable {
     var manager: AmiiboManager? = null

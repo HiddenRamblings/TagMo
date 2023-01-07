@@ -22,10 +22,10 @@ import com.hiddenramblings.tagmo.R
 import com.hiddenramblings.tagmo.TagMo
 import com.hiddenramblings.tagmo.amiibo.AmiiboManager.Companion.getAmiiboManager
 import com.hiddenramblings.tagmo.browser.BrowserActivity
-import com.hiddenramblings.tagmo.eightbit.io.Debug.verbose
-import com.hiddenramblings.tagmo.eightbit.io.Debug.warn
 import com.hiddenramblings.tagmo.eightbit.io.Debug.isNewer
 import com.hiddenramblings.tagmo.eightbit.io.Debug.isOlder
+import com.hiddenramblings.tagmo.eightbit.io.Debug.verbose
+import com.hiddenramblings.tagmo.eightbit.io.Debug.warn
 import com.hiddenramblings.tagmo.eightbit.os.Storage
 import com.hiddenramblings.tagmo.nfctech.TagArray
 import com.hiddenramblings.tagmo.security.SecurityHandler

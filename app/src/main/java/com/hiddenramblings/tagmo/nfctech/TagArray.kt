@@ -13,13 +13,13 @@ import android.nfc.Tag
 import android.nfc.tech.*
 import android.os.Build
 import androidx.documentfile.provider.DocumentFile
+import com.hiddenramblings.tagmo.Preferences
 import com.hiddenramblings.tagmo.R
 import com.hiddenramblings.tagmo.TagMo
 import com.hiddenramblings.tagmo.amiibo.Amiibo
 import com.hiddenramblings.tagmo.amiibo.AmiiboFile
 import com.hiddenramblings.tagmo.amiibo.AmiiboManager
 import com.hiddenramblings.tagmo.amiibo.KeyManager
-import com.hiddenramblings.tagmo.Preferences
 import com.hiddenramblings.tagmo.eightbit.io.Debug
 import java.io.File
 import java.io.FileOutputStream

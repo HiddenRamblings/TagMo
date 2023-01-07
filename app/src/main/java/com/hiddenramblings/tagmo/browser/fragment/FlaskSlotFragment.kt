@@ -1237,14 +1237,14 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
                 }
                 false
             }
-        } else {
+        } else if (null != amiibo) {
             toolbar!!.menu.findItem(R.id.mnu_backup).isVisible = true
             toolbar!!.setOnMenuItemClickListener { item: MenuItem ->
                 when (item.itemId) {
                     R.id.mnu_activate -> {
                         if (null != serviceFlask) {
                             serviceFlask!!.setActiveAmiibo(
-                                amiibo!!.name, amiibo.flaskTail
+                                amiibo.name, amiibo.flaskTail
                             )
                         }
                         if (null != servicePuck) {
@@ -1254,14 +1254,14 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
                     }
                     R.id.mnu_delete -> {
                         serviceFlask!!.deleteAmiibo(
-                            amiibo!!.name, amiibo.flaskTail
+                            amiibo.name, amiibo.flaskTail
                         )
                         bottomSheet!!.state = BottomSheetBehavior.STATE_COLLAPSED
                         return@setOnMenuItemClickListener true
                     }
                     R.id.mnu_backup -> {
                         serviceFlask!!.downloadAmiibo(
-                            amiibo!!.name, amiibo.flaskTail
+                            amiibo.name, amiibo.flaskTail
                         )
                         bottomSheet!!.state = BottomSheetBehavior.STATE_COLLAPSED
                         return@setOnMenuItemClickListener true

@@ -63,9 +63,9 @@ import android.os.Build.VERSION_CODES
 import android.util.Log
 import com.heinrichreimersoftware.androidissuereporter.IssueReporterLauncher
 import com.hiddenramblings.tagmo.BuildConfig
+import com.hiddenramblings.tagmo.Preferences
 import com.hiddenramblings.tagmo.R
 import com.hiddenramblings.tagmo.TagMo
-import com.hiddenramblings.tagmo.Preferences
 import java.io.*
 import java.util.*
 

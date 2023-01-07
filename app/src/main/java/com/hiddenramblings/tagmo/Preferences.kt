@@ -3,7 +3,6 @@ package com.hiddenramblings.tagmo
 import android.content.Context
 import android.content.SharedPreferences
 import androidx.preference.PreferenceManager
-import com.hiddenramblings.tagmo.GlideTagModule
 import com.hiddenramblings.tagmo.eightbit.io.Debug
 
 class Preferences(context: Context?) {

@@ -41,15 +41,13 @@ class NfcActivity : AppCompatActivity() {
     private inline fun <reified T : Parcelable> Intent.parcelable(key: String): T? = when {
         Debug.isNewer(Build.VERSION_CODES.TIRAMISU) ->
             getParcelableExtra(key, T::class.java)
-        else ->
-            @Suppress("DEPRECATION") getParcelableExtra(key) as? T
+        else -> @Suppress("DEPRECATION") getParcelableExtra(key) as? T
     }
     private inline fun <reified T : Parcelable>
             Intent.parcelableArrayList(key: String): ArrayList<T>? = when {
         Debug.isNewer(Build.VERSION_CODES.TIRAMISU) ->
             getParcelableArrayListExtra(key, T::class.java)
-        else ->
-            @Suppress("DEPRECATION") getParcelableArrayListExtra(key)
+        else -> @Suppress("DEPRECATION") getParcelableArrayListExtra(key)
     }
 
     private var prefs: Preferences? = null

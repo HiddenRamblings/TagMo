@@ -69,12 +69,12 @@ import com.hiddenramblings.tagmo.amiibo.tagdata.TagDataEditor
 import com.hiddenramblings.tagmo.browser.BrowserSettings.*
 import com.hiddenramblings.tagmo.browser.UpdatesHandler.CheckPlayUpdateListener
 import com.hiddenramblings.tagmo.browser.UpdatesHandler.CheckUpdateListener
-import com.hiddenramblings.tagmo.browser.fragment.JoyConFragment.Companion.newInstance
 import com.hiddenramblings.tagmo.browser.adapter.BrowserAdapter
 import com.hiddenramblings.tagmo.browser.adapter.FoldersAdapter
 import com.hiddenramblings.tagmo.browser.adapter.FoomiiboAdapter
 import com.hiddenramblings.tagmo.browser.fragment.BrowserFragment
 import com.hiddenramblings.tagmo.browser.fragment.EliteBankFragment
+import com.hiddenramblings.tagmo.browser.fragment.JoyConFragment.Companion.newInstance
 import com.hiddenramblings.tagmo.browser.fragment.SettingsFragment
 import com.hiddenramblings.tagmo.eightbit.io.Debug
 import com.hiddenramblings.tagmo.eightbit.material.IconifiedSnackbar

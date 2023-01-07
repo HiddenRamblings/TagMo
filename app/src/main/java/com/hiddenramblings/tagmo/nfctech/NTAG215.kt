@@ -26,38 +26,34 @@ class NTAG215 : TagTechnology {
 
     @Suppress("UNUSED")
     var timeout: Int
-        get() = tagMifare?.timeout ?: (tagNfcA?.timeout ?: 0)
+        get() = tagMifare?.timeout ?: tagNfcA?.timeout ?: 0
         set(timeout) {
-            if (null != tagMifare) tagMifare.timeout = timeout
-            if (null != tagNfcA) {
-                tagNfcA.timeout = timeout
-            }
+            tagMifare?.timeout = timeout
+            tagNfcA?.timeout = timeout
         }
 
     fun transceive(data: ByteArray?): ByteArray? {
-        try {
-            if (null != tagMifare) {
-                return tagMifare.transceive(data)
-            } else if (null != tagNfcA) {
-                return tagNfcA.transceive(data)
-            }
+        return try {
+            tagMifare?.transceive(data) ?: tagNfcA?.transceive(data)
         } catch (e: IOException) {
             Debug.warn(e)
+            null
         }
-        return null
     }
 
     @Throws(IOException::class)
     fun readPages(pageOffset: Int): ByteArray? {
-        if (null != tagMifare) return tagMifare.readPages(pageOffset) else if (null != tagNfcA) {
+        return tagMifare?.readPages(pageOffset) ?:
+        if (null != tagNfcA) {
             validatePageIndex(pageOffset)
             //checkConnected();
             val cmd = byteArrayOf(
                 NfcByte.CMD_READ.toByte(), pageOffset.toByte()
             )
-            return tagNfcA.transceive(cmd)
+            tagNfcA.transceive(cmd)
+        } else {
+            null
         }
-        return null
     }
 
     @Throws(IOException::class)
@@ -77,21 +73,18 @@ class NTAG215 : TagTechnology {
 
     @Throws(IOException::class)
     override fun connect() {
-        tagMifare?.connect() ?: tagNfcA?.connect()
+        tagMifare?.connect()
+        tagNfcA?.connect()
     }
 
     @Throws(IOException::class)
     override fun close() {
-        tagMifare?.close() ?: tagNfcA?.close()
+        tagMifare?.close()
+        tagNfcA?.close()
     }
 
     override fun getTag(): Tag? {
-        if (null != tagMifare) {
-            return tagMifare.tag
-        } else if (null != tagNfcA) {
-            return tagNfcA.tag
-        }
-        return null
+        return tagMifare?.tag ?: tagNfcA?.tag
     }
 
     /*

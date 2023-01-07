@@ -1,6 +1,8 @@
 package eightbitlab.com.blurview
 
-import android.graphics.*
+import android.graphics.Bitmap
+import android.graphics.Canvas
+import android.graphics.Color
 import android.graphics.drawable.Drawable
 import android.view.ViewGroup
 import android.view.ViewTreeObserver

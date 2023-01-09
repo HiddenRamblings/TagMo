@@ -97,6 +97,7 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
     private var deviceAddress: String? = null
     private var maxSlotCount = 85
     private var currentCount = 0
+    private var deviceDialog: AlertDialog? = null
 
     private enum class STATE {
         NONE, SCANNING, CONNECT, MISSING, PURCHASE
@@ -934,32 +935,24 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
     @SuppressLint("InflateParams")
     private fun displayDevices(devices: ArrayList<BluetoothDevice>) {
         val view = this.layoutInflater.inflate(R.layout.dialog_devices, null) as LinearLayout
-        val deviceDialog = AlertDialog.Builder(requireActivity()).setView(view).show()
+        deviceDialog = AlertDialog.Builder(requireActivity()).setView(view).show()
         for (device in devices) {
+            val deviceType = if (device.name.lowercase().startsWith("flask")) 1 else 0
             view.findViewById<LinearLayout>(R.id.bluetooth_paired)?.addView(
-                displayScanResult(deviceDialog, device, 0)
+                displayScanResult(deviceDialog!!, device, deviceType)
             )
         }
-        scanBluetoothServices(deviceDialog)
+        scanBluetoothServices(deviceDialog!!)
     }
 
     @SuppressLint("MissingPermission")
     private fun selectBluetoothDevice() {
-        val devices = ArrayList(
-            mBluetoothAdapter!!.bondedDevices
-        )
-        var isFlaskPaired = false
-        for (device in mBluetoothAdapter!!.bondedDevices) {
-            if (device.name.lowercase().startsWith("flask")) {
-                isFlaskPaired = true
-                deviceProfile = device.name
-                deviceAddress = device.address
-                showConnectionNotice()
-                startFlaskService()
-                break
-            }
+        if (mBluetoothAdapter == null) {
+            Toasty(requireActivity()).Long(R.string.fail_bluetooth_adapter)
+            return
         }
-        if (!isFlaskPaired) displayDevices(devices)
+        if (null != deviceDialog && deviceDialog!!.isShowing) return
+        displayDevices(ArrayList(mBluetoothAdapter!!.bondedDevices))
     }
 
     private fun writeAmiiboCollection(amiiboList: ArrayList<AmiiboFile?>) {
@@ -1181,6 +1174,7 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
     override fun onPause() {
         isFragmentVisible = false
         dismissSnackbarNotice()
+        if (noticeState == STATE.SCANNING) dismissGattDiscovery()
         super.onPause()
     }
 
@@ -1199,7 +1193,10 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
         if (null != statusBar && statusBar!!.isShown) return
         fragmentHandler.postDelayed({
             when (noticeState) {
-                STATE.SCANNING -> showScanningNotice()
+                STATE.SCANNING -> {
+                    showScanningNotice()
+                    selectBluetoothDevice()
+                }
                 STATE.CONNECT -> showConnectionNotice()
                 STATE.MISSING -> showDisconnectNotice()
                 STATE.PURCHASE -> showPurchaseNotice()

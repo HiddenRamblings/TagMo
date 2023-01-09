@@ -929,20 +929,7 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
                 dismissGattDiscovery()
                 showPurchaseNotice()
             }
-        }, 20000)
-    }
-
-    @SuppressLint("InflateParams")
-    private fun displayDevices(devices: ArrayList<BluetoothDevice>) {
-        val view = this.layoutInflater.inflate(R.layout.dialog_devices, null) as LinearLayout
-        deviceDialog = AlertDialog.Builder(requireActivity()).setView(view).show()
-        for (device in devices) {
-            val deviceType = if (device.name.lowercase().startsWith("flask")) 1 else 0
-            view.findViewById<LinearLayout>(R.id.bluetooth_paired)?.addView(
-                displayScanResult(deviceDialog!!, device, deviceType)
-            )
-        }
-        scanBluetoothServices(deviceDialog!!)
+        }, 30000)
     }
 
     @SuppressLint("MissingPermission")
@@ -952,7 +939,15 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
             return
         }
         if (null != deviceDialog && deviceDialog!!.isShowing) return
-        displayDevices(ArrayList(mBluetoothAdapter!!.bondedDevices))
+        val view = this.layoutInflater.inflate(R.layout.dialog_devices, null) as LinearLayout
+        deviceDialog = AlertDialog.Builder(requireActivity()).setView(view).show()
+        for (device in mBluetoothAdapter!!.bondedDevices) {
+            val deviceType = if (device.name.lowercase().startsWith("flask")) 1 else 0
+            view.findViewById<LinearLayout>(R.id.bluetooth_paired)?.addView(
+                displayScanResult(deviceDialog!!, device, deviceType)
+            )
+        }
+        scanBluetoothServices(deviceDialog!!)
     }
 
     private fun writeAmiiboCollection(amiiboList: ArrayList<AmiiboFile?>) {
@@ -1193,13 +1188,12 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
         if (null != statusBar && statusBar!!.isShown) return
         fragmentHandler.postDelayed({
             when (noticeState) {
-                STATE.SCANNING -> {
+                STATE.SCANNING, STATE.PURCHASE -> {
                     showScanningNotice()
                     selectBluetoothDevice()
                 }
                 STATE.CONNECT -> showConnectionNotice()
                 STATE.MISSING -> showDisconnectNotice()
-                STATE.PURCHASE -> showPurchaseNotice()
                 else -> {}
             }
         }, TagMo.uiDelay.toLong())

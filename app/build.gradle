@@ -17,9 +17,6 @@ android {
         vectorDrawables {
             useSupportLibrary = true
         }
-        dexOptions {
-            javaMaxHeapSize "4g"
-        }
         renderscriptTargetApi 31
         renderscriptSupportModeEnabled true
 

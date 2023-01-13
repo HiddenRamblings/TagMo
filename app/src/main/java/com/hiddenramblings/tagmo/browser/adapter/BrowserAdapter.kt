@@ -15,6 +15,8 @@ import android.widget.SectionIndexer
 import android.widget.TextView
 import androidx.appcompat.widget.AppCompatImageView
 import androidx.core.content.ContextCompat
+import androidx.core.view.isGone
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
@@ -372,7 +374,7 @@ class BrowserAdapter(
                 if (hasTagInfo) {
                     setAmiiboInfoText(txtError, tagInfo, false)
                 } else {
-                    txtError?.visibility = View.GONE
+                    txtError?.isGone = true
                 }
                 setAmiiboInfoText(
                     txtTagId,
@@ -451,7 +453,7 @@ class BrowserAdapter(
                             ContextCompat.getColor(txtPath.context, R.color.tag_text)
                         )
                     }
-                    txtPath.visibility = View.VISIBLE
+                    txtPath.isVisible = true
                 }
             }
             if (hasSpoofData(amiiboHexId) && null != txtTagId) txtTagId.isEnabled = false
@@ -464,10 +466,8 @@ class BrowserAdapter(
         }
 
         fun setAmiiboInfoText(textView: TextView?, text: CharSequence?, hasTagInfo: Boolean) {
-            if (hasTagInfo) {
-                textView?.visibility = View.GONE
-            } else {
-                textView?.visibility = View.VISIBLE
+            textView?.isGone = hasTagInfo
+            if (!hasTagInfo) {
                  if (!text.isNullOrEmpty()) {
                     textView?.text = text
                     textView?.isEnabled = true

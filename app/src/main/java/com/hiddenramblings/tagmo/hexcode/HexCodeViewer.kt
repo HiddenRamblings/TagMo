@@ -152,11 +152,9 @@ class HexCodeViewer : AppCompatActivity() {
         try {
             FileOutputStream(file).use { fos ->
                 viewBitmap.compress(Bitmap.CompressFormat.PNG, 100, fos)
-                Toasty(this@HexCodeViewer).Short(
-                    getString(
+                Toasty(this@HexCodeViewer).Short(getString(
                         R.string.wrote_file, Storage.getRelativePath(file, prefs.preferEmulated())
-                    )
-                )
+                ))
             }
         } catch (e: IOException) {
             Debug.warn(e)

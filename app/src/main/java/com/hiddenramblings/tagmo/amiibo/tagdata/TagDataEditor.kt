@@ -21,6 +21,8 @@ import androidx.appcompat.widget.AppCompatButton
 import androidx.appcompat.widget.AppCompatImageView
 import androidx.appcompat.widget.SwitchCompat
 import androidx.appcompat.widget.Toolbar
+import androidx.core.view.isGone
+import androidx.core.view.isVisible
 import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
 import com.hiddenramblings.tagmo.GlideApp
@@ -35,13 +37,13 @@ import com.hiddenramblings.tagmo.nfctech.Foomiibo
 import com.hiddenramblings.tagmo.nfctech.TagArray
 import com.hiddenramblings.tagmo.widget.Toasty
 import com.vicmikhailau.maskededittext.MaskedEditText
+import kotlinx.coroutines.*
 import org.json.JSONException
 import java.io.IOException
 import java.io.UnsupportedEncodingException
 import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.*
-import java.util.concurrent.Executors
 
 class TagDataEditor : AppCompatActivity() {
     private lateinit var txtError: TextView
@@ -124,6 +126,9 @@ class TagDataEditor : AppCompatActivity() {
     private var txtStatAttackU: EditText? = null
     private var txtStatDefenseU: EditText? = null
     private var appDataSSBU: AppDataSSBU? = null
+
+    private val loadingScope = CoroutineScope(Dispatchers.Main + Job())
+
     public override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_tag_data)
@@ -223,25 +228,26 @@ class TagDataEditor : AppCompatActivity() {
             )
             datePickerDialog.show()
         }
-        Executors.newSingleThreadExecutor().execute {
-            var amiiboManager: AmiiboManager? = null
-            try {
-                amiiboManager = AmiiboManager.getAmiiboManager(applicationContext)
-            } catch (e: IOException) {
-                Debug.warn(e)
-                Toasty(this).Short(getString(R.string.amiibo_info_parse_error))
-            } catch (e: JSONException) {
-                Debug.warn(e)
-                Toasty(this).Short(getString(R.string.amiibo_info_parse_error))
-            } catch (e: ParseException) {
-                Debug.warn(e)
-                Toasty(this).Short(getString(R.string.amiibo_info_parse_error))
-            }
-            if (Thread.currentThread().isInterrupted) return@execute
-            this.amiiboManager = amiiboManager
-            runOnUiThread { updateAmiiboView(tagData) }
-        }
         updateAmiiboView(tagData)
+        loadingScope.launch {
+            withContext(Dispatchers.IO) {
+                var amiiboManager: AmiiboManager? = null
+                try {
+                    amiiboManager = AmiiboManager.getAmiiboManager(applicationContext)
+                } catch (e: IOException) {
+                    Debug.warn(e)
+                    Toasty(this@TagDataEditor).Short(getString(R.string.amiibo_info_parse_error))
+                } catch (e: JSONException) {
+                    Debug.warn(e)
+                    Toasty(this@TagDataEditor).Short(getString(R.string.amiibo_info_parse_error))
+                } catch (e: ParseException) {
+                    Debug.warn(e)
+                    Toasty(this@TagDataEditor).Short(getString(R.string.amiibo_info_parse_error))
+                }
+                this@TagDataEditor.amiiboManager = amiiboManager
+                withContext(Dispatchers.Main) { updateAmiiboView(tagData) }
+            }
+        }
         countryCodeAdapter = CountryCodesAdapter(AmiiboData.countryCodes)
         txtCountryCode.adapter = countryCodeAdapter
         appIdAdapter = AppIdAdapter(appIds)
@@ -274,13 +280,13 @@ class TagDataEditor : AppCompatActivity() {
 
     private val imageTarget: CustomTarget<Bitmap?> = object : CustomTarget<Bitmap?>() {
         override fun onLoadFailed(errorDrawable: Drawable?) {
-            imageAmiibo.visibility = View.GONE
+            imageAmiibo.isGone = true
         }
 
         override fun onLoadCleared(placeholder: Drawable?) {}
         override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap?>?) {
             imageAmiibo.setImageBitmap(resource)
-            imageAmiibo.visibility = View.VISIBLE
+            imageAmiibo.isVisible = true
         }
     }
 
@@ -326,7 +332,7 @@ class TagDataEditor : AppCompatActivity() {
             }
         }
         if (null == tagInfo) {
-            txtError.visibility = View.GONE
+            txtError.isGone = true
         } else {
             setAmiiboInfoText(txtError, tagInfo, false)
         }
@@ -337,7 +343,7 @@ class TagDataEditor : AppCompatActivity() {
         setAmiiboInfoText(txtAmiiboType, amiiboType, hasTagInfo)
         setAmiiboInfoText(txtGameSeries, gameSeries, hasTagInfo)
         // setAmiiboInfoText(txtCharacter, character, hasTagInfo);
-        imageAmiibo.visibility = View.GONE
+        imageAmiibo.isGone = true
         GlideApp.with(imageAmiibo).clear(imageAmiibo)
         if (!amiiboImageUrl.isNullOrEmpty()) {
             GlideApp.with(imageAmiibo).asBitmap().load(amiiboImageUrl).into(imageTarget)
@@ -345,10 +351,8 @@ class TagDataEditor : AppCompatActivity() {
     }
 
     private fun setAmiiboInfoText(textView: TextView, text: CharSequence?, hasTagInfo: Boolean) {
-        if (hasTagInfo) {
-            textView.visibility = View.GONE
-        } else {
-            textView.visibility = View.VISIBLE
+        textView.isGone = hasTagInfo
+        if (!hasTagInfo) {
              if (!text.isNullOrEmpty()) {
                 textView.text = text
                 textView.isEnabled = true
@@ -749,36 +753,36 @@ class TagDataEditor : AppCompatActivity() {
     }
 
     private fun updateAppDataView(appId: Int?) {
-        appDataViewZeldaTP.visibility = View.GONE
+        appDataViewZeldaTP.isGone = true
         appDataZeldaTP = null
-        appDataViewSplatoon.visibility = View.GONE
+        appDataViewSplatoon.isGone = true
         appDataSplatoon = null
-        appDataViewSplatoon3.visibility = View.GONE
+        appDataViewSplatoon3.isGone = true
         appDataSplatoon3 = null
-        appDataViewSSB.visibility = View.GONE
+        appDataViewSSB.isGone = true
         appDataSSB = null
-        appDataViewSSBU.visibility = View.GONE
+        appDataViewSSBU.isGone = true
         appDataSSBU = null
         if (null != appId) {
             when (appId) {
                 AppId_ZeldaTP -> {
-                    appDataViewZeldaTP.visibility = View.VISIBLE
+                    appDataViewZeldaTP.isVisible = true
                     enableAppDataZeldaTP(amiiboData.appData)
                 }
                 AppId_Splatoon -> {
-                    appDataViewSplatoon.visibility = View.VISIBLE
+                    appDataViewSplatoon.isVisible = true
                     enableAppDataSplatoon(amiiboData.appData)
                 }
                 AppId_Splatoon3 -> {
-                    appDataViewSplatoon3.visibility = View.VISIBLE
+                    appDataViewSplatoon3.isVisible = true
                     enableAppDataSplatoon3(amiiboData.appData)
                 }
                 AppId_SSB -> {
-                    appDataViewSSB.visibility = View.VISIBLE
+                    appDataViewSSB.isVisible = true
                     enableAppDataSSB(amiiboData.appData)
                 }
                 AppId_SSBU -> {
-                    appDataViewSSBU.visibility = View.VISIBLE
+                    appDataViewSSBU.isVisible = true
                     enableAppDataSSBU(amiiboData.appData)
                 }
             }
@@ -956,7 +960,7 @@ class TagDataEditor : AppCompatActivity() {
         try {
             appDataZeldaTP = AppDataZeldaTP(appData)
         } catch (e: Exception) {
-            appDataViewZeldaTP.visibility = View.GONE
+            appDataViewZeldaTP.isGone = true
             return
         }
         txtHearts1 = findViewById(R.id.txtHearts1)
@@ -1017,7 +1021,7 @@ class TagDataEditor : AppCompatActivity() {
         try {
             appDataSplatoon = AppDataSplatoon(appData)
         } catch (e: Exception) {
-            appDataViewSplatoon.visibility = View.GONE
+            appDataViewSplatoon.isGone = true
             return
         }
         buttonInject = findViewById(R.id.inject_game_data)
@@ -1032,7 +1036,7 @@ class TagDataEditor : AppCompatActivity() {
         try {
             appDataSplatoon3 = AppDataSplatoon3(appData)
         } catch (e: Exception) {
-            appDataViewSplatoon3.visibility = View.GONE
+            appDataViewSplatoon3.isGone = true
             return
         }
         buttonInject3 = findViewById(R.id.inject_game_data_3)
@@ -1047,7 +1051,7 @@ class TagDataEditor : AppCompatActivity() {
         try {
             appDataSSB = AppDataSSB(appData)
         } catch (e: Exception) {
-            appDataViewSSB.visibility = View.GONE
+            appDataViewSSB.isGone = true
             return
         }
         spnAppearance = findViewById(R.id.spnAppearance)
@@ -1250,7 +1254,7 @@ class TagDataEditor : AppCompatActivity() {
         try {
             appDataSSBU = AppDataSSBU(appData)
         } catch (e: Exception) {
-            appDataViewSSBU.visibility = View.GONE
+            appDataViewSSBU.isGone = true
             return
         }
         spnAppearanceU = findViewById(R.id.spnAppearanceU)

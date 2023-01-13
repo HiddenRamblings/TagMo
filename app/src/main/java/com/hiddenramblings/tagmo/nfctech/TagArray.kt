@@ -256,7 +256,7 @@ object TagArray {
                 "Validated"
             } catch (e: Exception) {
                 Debug.warn(e)
-                Debug.getExceptionSummary(e)
+                Debug.getExceptionClass(e)
             }
         }
         try {

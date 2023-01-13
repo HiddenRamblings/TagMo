@@ -12,9 +12,9 @@ object GattArray {
         var offset = 0
         while (offset < largeByteArray.size) {
             byteArrayPortions.add(
-                if (largeByteArray.size - offset > sizePerPortion) largeByteArray.copyOfRange(
-                    offset, offset + sizePerPortion
-                ) else largeByteArray.copyOfRange(offset, largeByteArray.size)
+                if (largeByteArray.size - offset > sizePerPortion)
+                    largeByteArray.copyOfRange(offset, offset + sizePerPortion)
+                else largeByteArray.copyOfRange(offset, largeByteArray.size)
             )
             offset += sizePerPortion
         }
@@ -30,11 +30,9 @@ object GattArray {
         } else {
             var index = 0
             while (index < size) {
-                stringPortions.add(
-                    largeString.substring(
+                stringPortions.add(largeString.substring(
                         index, (index + sizePerPortion).coerceAtMost(largeString.length)
-                    )
-                )
+                ))
                 index += sizePerPortion
             }
         }

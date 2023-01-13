@@ -100,7 +100,6 @@ class ScanTag {
             var error: String? = Debug.getExceptionDetails(e)
             if (null != error) {
                 if (prefs.eliteEnabled()) {
-                    val finalMifare = mifare
                     if (e is TagLostException) {
                         if (isEliteDevice) {
                             activity.onNFCActivity.launch(
@@ -113,14 +112,14 @@ class ScanTag {
                                 R.string.speed_scan, Snackbar.LENGTH_SHORT
                             ).show()
                         }
-                        closeTagSilently(finalMifare)
+                        closeTagSilently(mifare)
                     } else if (activity.getString(R.string.nfc_null_array) == error) {
                         activity.runOnUiThread {
                             AlertDialog.Builder(activity)
                                 .setTitle(R.string.possible_lock)
                                 .setMessage(R.string.prepare_unlock)
                                 .setPositiveButton(R.string.unlock) { dialog: DialogInterface, _: Int ->
-                                    closeTagSilently(finalMifare)
+                                    closeTagSilently(mifare)
                                     dialog.dismiss()
                                     activity.onNFCActivity.launch(
                                         Intent(
@@ -129,7 +128,7 @@ class ScanTag {
                                     )
                                 }
                                 .setNegativeButton(R.string.cancel) { dialog: DialogInterface, _: Int ->
-                                    closeTagSilently(finalMifare)
+                                    closeTagSilently(mifare)
                                     dialog.dismiss()
                                 }.show()
                         }

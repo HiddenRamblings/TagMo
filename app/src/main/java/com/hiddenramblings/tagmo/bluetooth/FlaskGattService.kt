@@ -276,7 +276,8 @@ class FlaskGattService : Service() {
 
         override fun onServicesDiscovered(gatt: BluetoothGatt, status: Int) {
             if (status == BluetoothGatt.GATT_SUCCESS) {
-                if (Debug.isNewer(Build.VERSION_CODES.LOLLIPOP)) mBluetoothGatt!!.requestMtu(512) // Maximum: 517
+                if (Debug.isNewer(Build.VERSION_CODES.LOLLIPOP))
+                    mBluetoothGatt!!.requestMtu(512) // Maximum: 517
                 else listener?.onServicesDiscovered()
             } else {
                 Debug.warn(this.javaClass, "onServicesDiscovered received: $status")
@@ -369,7 +370,7 @@ class FlaskGattService : Service() {
                 return false
             }
         }
-        mBluetoothAdapter = mBluetoothManager!!.adapter
+        mBluetoothAdapter = mBluetoothManager?.adapter
         return mBluetoothAdapter != null
     }
 
@@ -424,8 +425,7 @@ class FlaskGattService : Service() {
                 descriptorTX.value = value
                 mBluetoothGatt!!.writeDescriptor(descriptorTX)
             }
-        } catch (ignored: Exception) {
-        }
+        } catch (ignored: Exception) { }
         try {
             val descriptorTX = characteristic!!.getDescriptor(
                 UUID.fromString("00002902-0000-1000-8000-00805f9b34fb")
@@ -437,8 +437,7 @@ class FlaskGattService : Service() {
                 descriptorTX.value = value
                 mBluetoothGatt!!.writeDescriptor(descriptorTX)
             }
-        } catch (ignored: Exception) {
-        }
+        } catch (ignored: Exception) { }
     }
 
     /**
@@ -549,6 +548,7 @@ class FlaskGattService : Service() {
             var i = 0
             while (i < chunks.size) {
                 val chunk = chunks[i]
+                if (null == mCharacteristicTX) continue
                 flaskHandler.postDelayed({
                     try {
                         if (Debug.isNewer(Build.VERSION_CODES.TIRAMISU)) {
@@ -578,6 +578,7 @@ class FlaskGattService : Service() {
             var i = 0
             while (i < chunks.size) {
                 val chunk = chunks[i]
+                if (null == mCharacteristicTX) continue
                 flaskHandler.postDelayed({
                     try {
                         if (Debug.isNewer(Build.VERSION_CODES.TIRAMISU)) {
@@ -728,10 +729,9 @@ class FlaskGattService : Service() {
         } else if (null != name) {
             val reserved = tail.length + 3 // |tail|#
             val nameUnicode = stringToUnicode(name)
-            nameCompat = if (nameUnicode.length + reserved > 28) nameUnicode.substring(
-                0, nameUnicode.length
-                        - (nameUnicode.length + reserved - 28)
-            ) else nameUnicode
+            nameCompat = if (nameUnicode.length + reserved > 28)
+                nameUnicode.substring(0, nameUnicode.length - (nameUnicode.length + reserved - 28))
+            else nameUnicode
             tailCompat = tail
             delayedTagCharacteristic("remove(\"$nameCompat|$tailCompat|0\")")
         }
@@ -740,10 +740,9 @@ class FlaskGattService : Service() {
     fun downloadAmiibo(name: String?, tail: String) {
         val reserved = tail.length + 3 // |tail|#
         val nameUnicode = stringToUnicode(name!!)
-        val amiiboName = if (nameUnicode.length + reserved > 28) nameUnicode.substring(
-            0, nameUnicode.length
-                    - (nameUnicode.length + reserved - 28)
-        ) else nameUnicode
+        val amiiboName = if (nameUnicode.length + reserved > 28)
+            nameUnicode.substring(0, nameUnicode.length - (nameUnicode.length + reserved - 28))
+        else nameUnicode
         delayedTagCharacteristic("download(\"$amiiboName|$tail|0\")")
     }
 

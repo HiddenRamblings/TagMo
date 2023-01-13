@@ -130,6 +130,7 @@
     <string name="google_link">Donate with Google Play</string>
     <string name="sponsor_link">Sponsor on GitHub</string>
     <string name="paypal_link">Donate with PayPal</string>
+    <string name="cancel_link">Cancel Subscription</string>
     <string name="clear_foomiibo_set">Clear Foomiibo</string>
     <string name="build_foomiibo_set">Build Foomiibo</string>
     <string name="foomiibo_progress">Building %1$s&#8230;</string>
@@ -413,7 +414,7 @@
     <string name="mkdir_failed">Mkdir &#8217;%1$s&#8217; failed!</string>
     <string name="downloads_hidden">Downloads are currently hidden!</string>
 
-    <string name="sub_button">%1$s Monthly Donations</string>
+    <string name="sub_button">%1$s Monthly Donation</string>
     <string name="iap_button">%1$s One-Time Donation</string>
     <string name="donation_thanks">Thanks for supporting TagMo!</string>
 

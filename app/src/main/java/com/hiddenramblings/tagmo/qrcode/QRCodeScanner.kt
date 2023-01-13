@@ -38,6 +38,7 @@ import androidx.appcompat.widget.AppCompatImageView
 import androidx.camera.core.*
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
+import androidx.core.view.isGone
 import androidx.core.view.isVisible
 import androidx.documentfile.provider.DocumentFile
 import androidx.lifecycle.ViewModelProvider
@@ -50,10 +51,12 @@ import com.hiddenramblings.tagmo.*
 import com.hiddenramblings.tagmo.R
 import com.hiddenramblings.tagmo.amiibo.Amiibo
 import com.hiddenramblings.tagmo.amiibo.AmiiboManager
+import com.hiddenramblings.tagmo.browser.BrowserActivity
 import com.hiddenramblings.tagmo.eightbit.io.Debug
 import com.hiddenramblings.tagmo.eightbit.os.Storage
 import com.hiddenramblings.tagmo.nfctech.TagArray
 import com.hiddenramblings.tagmo.widget.Toasty
+import kotlinx.coroutines.*
 import org.json.JSONException
 import java.io.IOException
 import java.text.ParseException
@@ -91,6 +94,8 @@ class QRCodeScanner : AppCompatActivity() {
 
     private val metrics = DisplayMetrics()
 
+    private val loadingScope = CoroutineScope(Dispatchers.Main + Job())
+
     public override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         prefs = Preferences(applicationContext)
@@ -125,29 +130,32 @@ class QRCodeScanner : AppCompatActivity() {
         txtMiiLabel = findViewById(R.id.txtMiiLabel)
         txtMiiValue = findViewById(R.id.txtMiiValue)
 
-        Executors.newSingleThreadExecutor().execute {
-            var amiiboManager: AmiiboManager? = null
-            try {
-                amiiboManager = AmiiboManager.getAmiiboManager(applicationContext)
-            } catch (e: IOException) {
-                Debug.warn(e)
-            } catch (e: JSONException) {
-                Debug.warn(e)
-            } catch (e: ParseException) {
-                Debug.warn(e)
-            }
-            if (Thread.currentThread().isInterrupted) return@execute
-            this.amiiboManager = amiiboManager
-            if (intent.hasExtra(NFCIntent.EXTRA_TAG_DATA)) {
-                val data = intent.getByteArrayExtra(NFCIntent.EXTRA_TAG_DATA)
+        loadingScope.launch {
+            withContext(Dispatchers.IO) {
+                var amiiboManager: AmiiboManager? = null
                 try {
-                    val bitmap = encodeQR(TagArray.bytesToString(data), Barcode.TYPE_TEXT)
-                    if (null != bitmap) {
-                        runOnUiThread { barcodePreview.setImageBitmap(bitmap) }
-                        scanBarcodes(InputImage.fromBitmap(bitmap, 0))
+                    amiiboManager = AmiiboManager.getAmiiboManager(applicationContext)
+                } catch (e: IOException) {
+                    Debug.warn(e)
+                } catch (e: JSONException) {
+                    Debug.warn(e)
+                } catch (e: ParseException) {
+                    Debug.warn(e)
+                }
+                this@QRCodeScanner.amiiboManager = amiiboManager
+                if (intent.hasExtra(NFCIntent.EXTRA_TAG_DATA)) {
+                    val data = intent.getByteArrayExtra(NFCIntent.EXTRA_TAG_DATA)
+                    try {
+                        val bitmap = encodeQR(TagArray.bytesToString(data), Barcode.TYPE_TEXT)
+                        if (null != bitmap) {
+                            withContext(Dispatchers.Main) {
+                                barcodePreview.setImageBitmap(bitmap)
+                            }
+                            scanBarcodes(InputImage.fromBitmap(bitmap, 0))
+                        }
+                    } catch (ex: Exception) {
+                        Debug.warn(ex)
                     }
-                } catch (ex: Exception) {
-                    Debug.warn(ex)
                 }
             }
         }
@@ -293,32 +301,34 @@ class QRCodeScanner : AppCompatActivity() {
             }
             captureUri = null
             if (null != photoUri) {
-                Executors.newSingleThreadExecutor().execute {
-                    var rotation = 0
-                    val bitmap: Bitmap? = if (Debug.isNewer(Build.VERSION_CODES.P)) {
-                        val source: ImageDecoder.Source = ImageDecoder.createSource(
-                            this.contentResolver, photoUri
-                        )
-                        ImageDecoder.decodeBitmap(source)
-                    } else {
-                        @Suppress("DEPRECATION")
-                        MediaStore.Images.Media.getBitmap(contentResolver, photoUri)
-                    }
-                    val cursor: Cursor? = contentResolver.query(
-                        photoUri, arrayOf(MediaStore.Images.ImageColumns.ORIENTATION),
-                        null, null, null
-                    )
-                    if (cursor?.count == 1) {
-                        cursor.moveToFirst()
-                        rotation = cursor.getInt(0)
-                    }
-                    if (null != bitmap) {
-                        runOnUiThread {
-                            barcodePreview.setImageBitmap(bitmap)
+                loadingScope.launch {
+                    withContext(Dispatchers.IO) {
+                        var rotation = 0
+                        val bitmap: Bitmap? = if (Debug.isNewer(Build.VERSION_CODES.P)) {
+                            val source: ImageDecoder.Source = ImageDecoder.createSource(
+                                this@QRCodeScanner.contentResolver, photoUri
+                            )
+                            ImageDecoder.decodeBitmap(source)
+                        } else {
+                            @Suppress("DEPRECATION")
+                            MediaStore.Images.Media.getBitmap(contentResolver, photoUri)
                         }
-                        scanBarcodes(InputImage.fromBitmap(bitmap, rotation))
+                        val cursor: Cursor? = contentResolver.query(
+                            photoUri, arrayOf(MediaStore.Images.ImageColumns.ORIENTATION),
+                            null, null, null
+                        )
+                        if (cursor?.count == 1) {
+                            cursor.moveToFirst()
+                            rotation = cursor.getInt(0)
+                        }
+                        if (null != bitmap) {
+                            withContext(Dispatchers.Main) {
+                                barcodePreview.setImageBitmap(bitmap)
+                            }
+                            scanBarcodes(InputImage.fromBitmap(bitmap, rotation))
+                        }
+                        cursor?.close()
                     }
-                    cursor?.close()
                 }
             }
         }
@@ -492,7 +502,7 @@ class QRCodeScanner : AppCompatActivity() {
                 if (Debug.isNewer(Build.VERSION_CODES.LOLLIPOP) && null != cameraProvider) {
                     if (null != previewUseCase) cameraProvider!!.unbind(previewUseCase)
                     if (null != analysisUseCase) cameraProvider!!.unbind(analysisUseCase)
-                    cameraPreview?.isVisible = false
+                    cameraPreview?.isGone = true
                 }
                 onPickImage.launch(
                     Intent.createChooser(Intent(if (Debug.isNewer(Build.VERSION_CODES.KITKAT))
@@ -508,7 +518,7 @@ class QRCodeScanner : AppCompatActivity() {
                 if (Debug.isNewer(Build.VERSION_CODES.LOLLIPOP) && null != cameraProvider) {
                     if (null != previewUseCase) cameraProvider!!.unbind(previewUseCase)
                     if (null != analysisUseCase) cameraProvider!!.unbind(analysisUseCase)
-                    cameraPreview?.isVisible = false
+                    cameraPreview?.isGone = true
                 }
                 val text = if (!txtRawBytes.text.isNullOrEmpty())
                     TagArray.hexToString(txtRawBytes.text.toString())

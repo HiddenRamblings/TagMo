@@ -28,8 +28,7 @@ class UpdateReceiver : BroadcastReceiver() {
             try {
                 mainIntent = context.packageManager
                     .getLaunchIntentForPackage(BuildConfig.APPLICATION_ID)
-            } catch (ignored: Exception) {
-            }
+            } catch (ignored: Exception) { }
             startLauncherActivity(context, mainIntent!!.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
         } else if (!BuildConfig.GOOGLE_PLAY && isNewer(Build.VERSION_CODES.LOLLIPOP)) {
             when (intent.getIntExtra(PackageInstaller.EXTRA_STATUS, -1)) {

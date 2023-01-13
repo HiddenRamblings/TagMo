@@ -134,7 +134,8 @@ class PuckGattService : Service() {
 
         override fun onServicesDiscovered(gatt: BluetoothGatt, status: Int) {
             if (status == BluetoothGatt.GATT_SUCCESS) {
-                if (Debug.isNewer(Build.VERSION_CODES.LOLLIPOP)) mBluetoothGatt!!.requestMtu(512) // Maximum: 517
+                if (Debug.isNewer(Build.VERSION_CODES.LOLLIPOP))
+                    mBluetoothGatt!!.requestMtu(512) // Maximum: 517
                 else listener?.onServicesDiscovered()
             } else {
                 Debug.warn(this.javaClass, "onServicesDiscovered received: $status")
@@ -227,7 +228,7 @@ class PuckGattService : Service() {
                 return false
             }
         }
-        mBluetoothAdapter = mBluetoothManager!!.adapter
+        mBluetoothAdapter = mBluetoothManager?.adapter
         return mBluetoothAdapter != null
     }
 
@@ -282,8 +283,7 @@ class PuckGattService : Service() {
                 descriptorTX.value = value
                 mBluetoothGatt!!.writeDescriptor(descriptorTX)
             }
-        } catch (ignored: Exception) {
-        }
+        } catch (ignored: Exception) { }
         try {
             val descriptorTX = characteristic!!.getDescriptor(
                 UUID.fromString("00002902-0000-1000-8000-00805f9b34fb")
@@ -295,8 +295,7 @@ class PuckGattService : Service() {
                 descriptorTX.value = value
                 mBluetoothGatt!!.writeDescriptor(descriptorTX)
             }
-        } catch (ignored: Exception) {
-        }
+        } catch (ignored: Exception) { }
     }
 
     /**
@@ -413,6 +412,7 @@ class PuckGattService : Service() {
             var i = 0
             while (i < chunks.size) {
                 val chunk = chunks[i]
+                if (null == mCharacteristicTX) continue
                 puckHandler.postDelayed({
                     if (Debug.isNewer(Build.VERSION_CODES.TIRAMISU)) {
                         mBluetoothGatt!!.writeCharacteristic(

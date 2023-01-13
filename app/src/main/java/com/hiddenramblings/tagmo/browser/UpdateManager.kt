@@ -32,7 +32,7 @@ import java.net.URL
 import java.util.concurrent.Executors
 
 
-class UpdatesHandler internal constructor(activity: BrowserActivity) {
+class UpdateManager internal constructor(activity: BrowserActivity) {
     private var listener: CheckUpdateListener? = null
     private var listenerPlay: CheckPlayUpdateListener? = null
     private var appUpdateManager: AppUpdateManager? = null

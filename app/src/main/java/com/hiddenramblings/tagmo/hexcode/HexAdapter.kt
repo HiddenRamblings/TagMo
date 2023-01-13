@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import com.hiddenramblings.tagmo.R
 
@@ -95,7 +96,7 @@ class HexAdapter(tagData: ByteArray) : RecyclerView.Adapter<HexAdapter.ViewHolde
                 if (hexItem !is HexHeader) view.setTextColor(Color.BLACK)
                 view.setTypeface(Typeface.MONOSPACE, hexItem.textStyle)
                 view.setBackgroundColor(hexItem.backgroundColor)
-                view.visibility = View.VISIBLE
+                view.isVisible = true
             }
         }
     }

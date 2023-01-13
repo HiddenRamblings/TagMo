@@ -68,6 +68,7 @@ import android.provider.Settings
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.ActivityResultRegistry
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AlertDialog
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -76,9 +77,7 @@ import com.hiddenramblings.tagmo.R
 import com.hiddenramblings.tagmo.eightbit.io.Debug.isNewer
 
 class BluetoothHandler(
-    context: Context,
-    registry: ActivityResultRegistry,
-    listener: BluetoothListener
+    context: Context, registry: ActivityResultRegistry, listener: BluetoothListener
 ) {
     private var mBluetoothAdapter: BluetoothAdapter? = null
     private val listener: BluetoothListener
@@ -168,10 +167,6 @@ class BluetoothHandler(
 
     private fun requestBluetooth(context: Context) {
         if (isNewer(Build.VERSION_CODES.S)) {
-            val PERMISSIONS_BLUETOOTH = arrayOf(
-                Manifest.permission.BLUETOOTH_CONNECT,
-                Manifest.permission.BLUETOOTH_SCAN
-            )
             onRequestBluetoothS.launch(PERMISSIONS_BLUETOOTH)
         } else {
             val mBluetoothAdapter = getBluetoothAdapter(context)
@@ -204,10 +199,6 @@ class BluetoothHandler(
                     .setCancelable(false)
                     .setPositiveButton(R.string.accept) { dialog: DialogInterface, _: Int ->
                         dialog.dismiss()
-                        val PERMISSIONS_LOCATION = arrayOf(
-                            Manifest.permission.ACCESS_FINE_LOCATION,
-                            Manifest.permission.ACCESS_COARSE_LOCATION
-                        )
                         if (isNewer(Build.VERSION_CODES.Q)) {
                             onRequestLocationQ.launch(PERMISSIONS_LOCATION)
                         } else {
@@ -229,10 +220,6 @@ class BluetoothHandler(
                         .setCancelable(false)
                         .setPositiveButton(R.string.accept) { dialog: DialogInterface, _: Int ->
                             dialog.dismiss()
-                            val PERMISSIONS_LOCATION = arrayOf(
-                                Manifest.permission.ACCESS_FINE_LOCATION,
-                                Manifest.permission.ACCESS_COARSE_LOCATION
-                            )
                             if (isNewer(Build.VERSION_CODES.Q)) {
                                 onRequestLocationQ.launch(PERMISSIONS_LOCATION)
                             } else {
@@ -243,10 +230,6 @@ class BluetoothHandler(
                             listener.onPermissionsFailed() }
                         .show()
                 } else {
-                    val PERMISSIONS_LOCATION = arrayOf(
-                        Manifest.permission.ACCESS_FINE_LOCATION,
-                        Manifest.permission.ACCESS_COARSE_LOCATION
-                    )
                     if (isNewer(Build.VERSION_CODES.Q)) {
                         onRequestLocationQ.launch(PERMISSIONS_LOCATION)
                     } else {
@@ -312,6 +295,18 @@ class BluetoothHandler(
             }
         }
         return null
+    }
+
+    companion object {
+        private val PERMISSIONS_LOCATION = arrayOf(
+            Manifest.permission.ACCESS_FINE_LOCATION,
+            Manifest.permission.ACCESS_COARSE_LOCATION
+        )
+        @RequiresApi(Build.VERSION_CODES.S)
+        private val PERMISSIONS_BLUETOOTH = arrayOf(
+            Manifest.permission.BLUETOOTH_CONNECT,
+            Manifest.permission.BLUETOOTH_SCAN
+        )
     }
 
     interface BluetoothListener {

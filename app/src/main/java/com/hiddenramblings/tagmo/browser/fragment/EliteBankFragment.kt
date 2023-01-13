@@ -25,6 +25,8 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.*
 import androidx.cardview.widget.CardView
 import androidx.coordinatorlayout.widget.CoordinatorLayout
+import androidx.core.view.isGone
+import androidx.core.view.isVisible
 import androidx.documentfile.provider.DocumentFile
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
@@ -380,32 +382,32 @@ class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
         bottomSheet!!.state = BottomSheetBehavior.STATE_COLLAPSED
         when (sheet) {
             SHEET.LOCKED -> {
-                amiiboCard!!.visibility = View.GONE
-                switchMenuOptions!!.visibility = View.GONE
-                bankOptionsMenu!!.visibility = View.GONE
-                securityOptions!!.visibility = View.VISIBLE
-                writeBankLayout!!.visibility = View.GONE
+                amiiboCard?.isGone = true
+                switchMenuOptions?.isGone = true
+                bankOptionsMenu?.isGone = true
+                securityOptions?.isVisible = true
+                writeBankLayout?.isGone = true
             }
             SHEET.AMIIBO -> {
-                amiiboCard!!.visibility = View.VISIBLE
-                switchMenuOptions!!.visibility = View.VISIBLE
-                bankOptionsMenu!!.visibility = View.GONE
-                securityOptions!!.visibility = View.GONE
-                writeBankLayout!!.visibility = View.GONE
+                amiiboCard?.isVisible = true
+                switchMenuOptions?.isVisible = true
+                bankOptionsMenu?.isGone = true
+                securityOptions?.isGone = true
+                writeBankLayout?.isGone = true
             }
             SHEET.MENU -> {
-                amiiboCard!!.visibility = View.GONE
-                switchMenuOptions!!.visibility = View.VISIBLE
-                bankOptionsMenu!!.visibility = View.VISIBLE
-                securityOptions!!.visibility = View.VISIBLE
-                writeBankLayout!!.visibility = View.GONE
+                amiiboCard?.isGone = true
+                switchMenuOptions?.isVisible = true
+                bankOptionsMenu?.isVisible = true
+                securityOptions?.isVisible = true
+                writeBankLayout?.isGone = true
             }
             SHEET.WRITE -> {
-                amiiboCard!!.visibility = View.GONE
-                switchMenuOptions!!.visibility = View.GONE
-                bankOptionsMenu!!.visibility = View.GONE
-                securityOptions!!.visibility = View.GONE
-                writeBankLayout!!.visibility = View.VISIBLE
+                amiiboCard?.isGone = true
+                switchMenuOptions?.isGone = true
+                bankOptionsMenu?.isGone = true
+                securityOptions?.isGone = true
+                writeBankLayout?.isVisible = true
             }
         }
         eliteContent!!.requestLayout()
@@ -627,10 +629,8 @@ class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
     }
 
     private fun setAmiiboInfoText(textView: TextView, text: CharSequence?, hasTagInfo: Boolean) {
-        if (hasTagInfo) {
-            textView.visibility = View.GONE
-        } else {
-            textView.visibility = View.VISIBLE
+        textView.isGone = hasTagInfo
+        if (!hasTagInfo) {
             if (!text.isNullOrEmpty()) {
                 textView.text = text
                 textView.isEnabled = true
@@ -782,7 +782,7 @@ class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
             )
         }
         if (null != amiibo) {
-            amiiboView.visibility = View.VISIBLE
+            amiiboView.isVisible = true
             amiiboImageUrl = amiibo.imageUrl
             amiiboHexId = Amiibo.idToHex(amiibo.id)
             if (null != amiibo.name) amiiboName = amiibo.name!!
@@ -794,12 +794,11 @@ class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
             amiiboImageUrl = Amiibo.getImageUrl(amiiboLongId)
         }
         val hasTagInfo = null != tagInfo
+        amiiboInfo.isGone = hasTagInfo
         if (hasTagInfo) {
             setAmiiboInfoText(txtError, tagInfo, false)
-            amiiboInfo.visibility = View.GONE
         } else {
-            txtError.visibility = View.GONE
-            amiiboInfo.visibility = View.VISIBLE
+            txtError.isGone = true
         }
         if (null != txtBank)
             setAmiiboInfoText(txtBank, getString(

@@ -32,33 +32,17 @@ class AmiiboManager {
             val amiiboJSON = JSONObject()
             amiiboJSON.put("name", amiibo.name)
             val releaseJSON = JSONObject()
-            releaseJSON.put(
-                "na",
-                if (null == amiibo.releaseDates?.northAmerica)
-                    null
-                else
-                    iso8601.format(amiibo.releaseDates.northAmerica)
+            releaseJSON.put("na",
+                amiibo.releaseDates?.northAmerica?.let { iso8601.format(it) }
             )
-            releaseJSON.put(
-                "jp",
-                if (null == amiibo.releaseDates?.japan)
-                    null
-                else
-                    iso8601.format(amiibo.releaseDates.japan)
+            releaseJSON.put("jp",
+                amiibo.releaseDates?.japan?.let { iso8601.format(it) }
             )
-            releaseJSON.put(
-                "eu",
-                if (null == amiibo.releaseDates?.europe)
-                    null
-                else
-                    iso8601.format(amiibo.releaseDates.europe)
+            releaseJSON.put("eu",
+                amiibo.releaseDates?.europe?.let { iso8601.format(it) }
             )
-            releaseJSON.put(
-                "au",
-                if (null == amiibo.releaseDates?.australia)
-                    null
-                else
-                    iso8601.format(amiibo.releaseDates.australia)
+            releaseJSON.put("au",
+                amiibo.releaseDates?.australia?.let { iso8601.format(it) }
             )
             amiiboJSON.put("release", releaseJSON)
             amiibosJSON.put(String.format("0x%016X", amiibo.id), amiiboJSON)
@@ -67,36 +51,28 @@ class AmiiboManager {
         val gameSeriesJSON = JSONObject()
         for ((_, gameSeries1: GameSeries) in gameSeries) {
             gameSeriesJSON.put(
-                String.format(
-                    "0x%03X", gameSeries1.id shr GameSeries.BITSHIFT
-                ), gameSeries1.name
+                String.format("0x%03X", gameSeries1.id shr GameSeries.BITSHIFT), gameSeries1.name
             )
         }
         outputJSON.put("game_series", gameSeriesJSON)
         val charactersJSON = JSONObject()
         for ((_, character) in characters) {
             charactersJSON.put(
-                String.format(
-                    "0x%04X", character.id shr Character.BITSHIFT
-                ), character.name
+                String.format("0x%04X", character.id shr Character.BITSHIFT), character.name
             )
         }
         outputJSON.put("characters", charactersJSON)
         val amiiboTypesJSON = JSONObject()
         for ((_, amiiboType) in amiiboTypes) {
             amiiboTypesJSON.put(
-                String.format(
-                    "0x%02X", amiiboType.id shr AmiiboType.BITSHIFT
-                ), amiiboType.name
+                String.format("0x%02X", amiiboType.id shr AmiiboType.BITSHIFT), amiiboType.name
             )
         }
         outputJSON.put("types", amiiboTypesJSON)
         val amiiboSeriesJSON = JSONObject()
         for ((_, amiiboSeries1) in amiiboSeries) {
             amiiboSeriesJSON.put(
-                String.format(
-                    "0x%02X", amiiboSeries1.id shr AmiiboSeries.BITSHIFT
-                ), amiiboSeries1.name
+                String.format("0x%02X", amiiboSeries1.id shr AmiiboSeries.BITSHIFT), amiiboSeries1.name
             )
         }
         outputJSON.put("amiibo_series", amiiboSeriesJSON)
@@ -108,12 +84,12 @@ class AmiiboManager {
         const val RENDER_RAW = "https://raw.githubusercontent.com/8bitDream/AmiiboAPI/render/"
         const val AMIIBO_API = "https://amiiboapi.com/api/"
         @Throws(IOException::class, JSONException::class, ParseException::class)
-        fun parse(context: Context, uri: Uri?): AmiiboManager {
-            context.contentResolver.openInputStream(uri!!).use { inputSteam ->
-                return parse(
-                    inputSteam!!
-                )
-            }
+        fun parse(context: Context, uri: Uri?): AmiiboManager? {
+            return if (uri != null) {
+                context.contentResolver.openInputStream(uri).use { inputSteam ->
+                    inputSteam?.let { parse(it) }
+                }
+            } else null
         }
 
         @Throws(JSONException::class, ParseException::class)
@@ -355,7 +331,7 @@ class AmiiboManager {
         }
 
         fun hasSpoofData(amiiboHexId: String?): Boolean {
-            if (amiiboHexId?.length!! < 12) return false
+            if (null == amiiboHexId || amiiboHexId.length < 12) return false
             val spoofRange = amiiboHexId.substring(8, 12).lowercase()
             return (!amiiboHexId.startsWith("00000000")
                     && (spoofRange == "0000" || spoofRange == "ffff"))
@@ -394,8 +370,8 @@ class AmiiboManager {
             rootFolder: DocumentFile, recursiveFiles: Boolean
         ): ArrayList<AmiiboFile?> {
             val amiiboFiles = ArrayList<AmiiboFile?>()
-            val uris = AmiiboDocument(context!!).listFiles(rootFolder.uri, recursiveFiles)
-            if (uris.isEmpty()) return amiiboFiles
+            val uris = context?.let { AmiiboDocument(it).listFiles(rootFolder.uri, recursiveFiles) }
+            if (uris.isNullOrEmpty()) return amiiboFiles
             uris.forEach {
                 if (Thread.currentThread().isInterrupted) return amiiboFiles
                 try {

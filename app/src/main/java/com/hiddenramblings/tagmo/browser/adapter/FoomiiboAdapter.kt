@@ -12,6 +12,8 @@ import android.widget.Filterable
 import android.widget.SectionIndexer
 import android.widget.TextView
 import androidx.appcompat.widget.AppCompatImageView
+import androidx.core.view.isGone
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
@@ -345,7 +347,7 @@ class FoomiiboAdapter(
                 if (hasTagInfo) {
                     setFoomiiboInfoText(txtError, tagInfo, false)
                 } else {
-                    txtError?.visibility = View.GONE
+                    txtError?.isGone = true
                 }
                 setFoomiiboInfoText(
                     txtTagId,
@@ -366,16 +368,14 @@ class FoomiiboAdapter(
                 )
                 // setAmiiboInfoText(this.txtCharacter,
                 // boldText.Matching(character, query), hasTagInfo);
-                txtPath?.visibility = View.GONE
+                txtPath?.isGone = true
                 val expanded = foomiiboId.contains(foomiibo?.id)
-                itemView.findViewById<View>(R.id.menu_options).visibility =
-                    if (expanded) View.VISIBLE else View.GONE
-                itemView.findViewById<View>(R.id.txtUsage).visibility =
-                    if (expanded) View.VISIBLE else View.GONE
+                itemView.findViewById<View>(R.id.menu_options).isVisible = expanded
+                itemView.findViewById<View>(R.id.txtUsage).isVisible = expanded
                 if (expanded) listener!!.onFoomiiboRebind(itemView, foomiibo)
             }
-            if (AmiiboManager.hasSpoofData(amiiboHexId) && null != txtTagId) txtTagId.isEnabled =
-                false
+            if (AmiiboManager.hasSpoofData(amiiboHexId) && null != txtTagId)
+                txtTagId.isEnabled = false
             if (null != imageAmiibo) {
                 GlideApp.with(imageAmiibo!!).clear(imageAmiibo!!)
                 if (!amiiboImageUrl.isNullOrEmpty()) {
@@ -385,10 +385,8 @@ class FoomiiboAdapter(
         }
 
         private fun setFoomiiboInfoText(textView: TextView?, text: CharSequence?, hasTagInfo: Boolean) {
-            if (hasTagInfo) {
-                textView?.visibility = View.GONE
-            } else {
-                textView?.visibility = View.VISIBLE
+            textView?.isGone = hasTagInfo
+            if (!hasTagInfo) {
                 if (!text.isNullOrEmpty()) {
                     textView?.text = text
                     textView?.isEnabled = true

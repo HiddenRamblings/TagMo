@@ -7,6 +7,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.appcompat.widget.AppCompatImageView
+import androidx.core.view.isGone
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
@@ -158,12 +160,12 @@ class FlaskSlotAdapter(
             when (amiibo) {
                 null -> {
                     setAmiiboInfoText(txtName, TagMo.appContext.getString(R.string.empty_tag))
-                    txtError?.visibility = View.GONE
-                    txtPath?.visibility = View.GONE
-                    txtTagId?.visibility = View.GONE
-                    txtAmiiboSeries?.visibility = View.GONE
-                    txtAmiiboType?.visibility = View.GONE
-                    txtGameSeries?.visibility = View.GONE
+                    txtError?.isGone = true
+                    txtPath?.isGone = true
+                    txtTagId?.isGone = true
+                    txtAmiiboSeries?.isGone = true
+                    txtAmiiboType?.isGone = true
+                    txtGameSeries?.isGone = true
                     return
                 }
                 is FlaskTag -> {
@@ -175,22 +177,22 @@ class FlaskSlotAdapter(
                 }
             }
             if (settings.amiiboView != VIEW.IMAGE.value) {
-                txtError?.visibility = View.GONE
-                txtPath?.visibility = View.GONE
+                txtError?.isGone = true
+                txtPath?.isGone = true
                 if (amiibo is FlaskTag) {
-                    txtTagId?.visibility = View.GONE
-                    txtAmiiboSeries?.visibility = View.GONE
-                    txtAmiiboType?.visibility = View.GONE
-                    txtGameSeries?.visibility = View.GONE
+                    txtTagId?.isGone = true
+                    txtAmiiboSeries?.isGone = true
+                    txtAmiiboType?.isGone = true
+                    txtGameSeries?.isGone = true
                 } else {
                     amiiboHexId = Amiibo.idToHex(amiibo!!.id)
                     if (null != amiibo!!.amiiboSeries) amiiboSeries = amiibo!!.amiiboSeries!!.name
                     if (null != amiibo!!.amiiboType) amiiboType = amiibo!!.amiiboType!!.name
                     if (null != amiibo!!.gameSeries) gameSeries = amiibo!!.gameSeries!!.name
-                    txtTagId?.visibility = View.VISIBLE
-                    txtAmiiboSeries?.visibility = View.VISIBLE
-                    txtAmiiboType?.visibility = View.VISIBLE
-                    txtGameSeries?.visibility = View.VISIBLE
+                    txtTagId?.isVisible = true
+                    txtAmiiboSeries?.isVisible = true
+                    txtAmiiboType?.isVisible = true
+                    txtGameSeries?.isVisible = true
                     setAmiiboInfoText(txtTagId, amiiboHexId)
                     setAmiiboInfoText(txtAmiiboSeries, amiiboSeries)
                     setAmiiboInfoText(txtAmiiboType, amiiboType)
@@ -210,7 +212,7 @@ class FlaskSlotAdapter(
         }
 
         fun setAmiiboInfoText(textView: TextView?, text: CharSequence?) {
-            textView?.visibility = View.VISIBLE
+            textView?.isVisible = true
              if (!text.isNullOrEmpty()) {
                 textView?.text = text
                 textView?.isEnabled = true

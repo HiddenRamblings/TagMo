@@ -14,6 +14,8 @@ import android.widget.LinearLayout
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.view.ContextThemeWrapper
 import androidx.core.content.ContextCompat
+import androidx.core.view.isGone
+import androidx.core.view.isVisible
 import com.android.billingclient.api.*
 import com.android.billingclient.api.BillingFlowParams.ProductDetailsParams
 import com.android.billingclient.api.QueryProductDetailsParams.Product
@@ -21,13 +23,16 @@ import com.hiddenramblings.tagmo.BuildConfig
 import com.hiddenramblings.tagmo.R
 import com.hiddenramblings.tagmo.eightbit.io.Debug
 import com.hiddenramblings.tagmo.eightbit.material.IconifiedSnackbar
+import kotlinx.coroutines.*
 import java.util.*
-import java.util.concurrent.Executors
 
-class DonationHandler internal constructor(private val activity: BrowserActivity) {
+class DonationManager internal constructor(private val activity: BrowserActivity) {
     private var billingClient: BillingClient? = null
     private val iapSkuDetails = ArrayList<ProductDetails>()
     private val subSkuDetails = ArrayList<ProductDetails>()
+
+    private val backgroundScope = CoroutineScope(Dispatchers.IO)
+
     private fun getIAP(amount: Int): String {
         return String.format(Locale.ROOT, "subscription_%02d", amount)
     }
@@ -46,7 +51,7 @@ class DonationHandler internal constructor(private val activity: BrowserActivity
     private fun handlePurchaseIAP(purchase: Purchase) {
         val consumeParams = ConsumeParams.newBuilder()
             .setPurchaseToken(purchase.purchaseToken)
-        billingClient!!.consumeAsync(consumeParams.build(), consumeResponseListener)
+        billingClient?.consumeAsync(consumeParams.build(), consumeResponseListener)
     }
 
     private val acknowledgePurchaseResponseListener =
@@ -57,7 +62,7 @@ class DonationHandler internal constructor(private val activity: BrowserActivity
     private fun handlePurchaseSub(purchase: Purchase) {
         val acknowledgePurchaseParams = AcknowledgePurchaseParams
             .newBuilder().setPurchaseToken(purchase.purchaseToken)
-        billingClient!!.acknowledgePurchase(
+        billingClient?.acknowledgePurchase(
             acknowledgePurchaseParams.build(),
             acknowledgePurchaseResponseListener
         )
@@ -85,8 +90,8 @@ class DonationHandler internal constructor(private val activity: BrowserActivity
             }
         }
     private val subsPurchased = ArrayList<String>()
-    private val subsOwnedListener =
-        PurchasesResponseListener { billingResult: BillingResult, purchases: List<Purchase> ->
+    private val subsOwnedListener = PurchasesResponseListener {
+            billingResult: BillingResult, purchases: List<Purchase> ->
             if (billingResult.responseCode == BillingClient.BillingResponseCode.OK) {
                 for (purchase in purchases) {
                     for (sku in purchase.products) {
@@ -97,18 +102,18 @@ class DonationHandler internal constructor(private val activity: BrowserActivity
                 }
             }
         }
-    private val subHistoryListener =
-        PurchaseHistoryResponseListener { billingResult: BillingResult, purchases: List<PurchaseHistoryRecord>? ->
+    private val subHistoryListener = PurchaseHistoryResponseListener {
+            billingResult: BillingResult, purchases: List<PurchaseHistoryRecord>? ->
             if (billingResult.responseCode == BillingClient.BillingResponseCode.OK && null != purchases) {
                 for (purchase in purchases) subsPurchased.addAll(purchase.products)
-                billingClient!!.queryPurchasesAsync(
+                billingClient?.queryPurchasesAsync(
                     QueryPurchasesParams.newBuilder()
                         .setProductType(BillingClient.ProductType.SUBS).build(), subsOwnedListener
                 )
             }
         }
-    private val iapHistoryListener =
-        PurchaseHistoryResponseListener { billingResult: BillingResult, purchases: List<PurchaseHistoryRecord>? ->
+    private val iapHistoryListener = PurchaseHistoryResponseListener {
+            billingResult: BillingResult, purchases: List<PurchaseHistoryRecord>? ->
             if (billingResult.responseCode == BillingClient.BillingResponseCode.OK && null != purchases) {
                 for (purchase in purchases) {
                     for (sku in purchase.products) {
@@ -121,14 +126,14 @@ class DonationHandler internal constructor(private val activity: BrowserActivity
         }
 
     fun retrieveDonationMenu() {
-        Executors.newSingleThreadExecutor().execute {
-            billingClient = BillingClient.newBuilder(activity)
-                .setListener(purchasesUpdatedListener).enablePendingPurchases().build()
-            iapSkuDetails.clear()
-            subSkuDetails.clear()
-            billingClient!!.startConnection(object : BillingClientStateListener {
-                override fun onBillingServiceDisconnected() {}
-                override fun onBillingSetupFinished(billingResult: BillingResult) {
+        billingClient = BillingClient.newBuilder(activity)
+            .setListener(purchasesUpdatedListener).enablePendingPurchases().build()
+        iapSkuDetails.clear()
+        subSkuDetails.clear()
+        billingClient?.startConnection(object : BillingClientStateListener {
+            override fun onBillingServiceDisconnected() {}
+            override fun onBillingSetupFinished(billingResult: BillingResult) {
+                backgroundScope.launch(Dispatchers.IO) {
                     if (billingResult.responseCode == BillingClient.BillingResponseCode.OK) {
                         iapList.add(getIAP(1))
                         iapList.add(getIAP(5))
@@ -154,6 +159,7 @@ class DonationHandler internal constructor(private val activity: BrowserActivity
                             }
                         }
                     }
+                    if (BuildConfig.GOOGLE_PLAY) return@launch
                     subList.add(getSub(1))
                     subList.add(getSub(5))
                     subList.add(getSub(10))
@@ -180,8 +186,8 @@ class DonationHandler internal constructor(private val activity: BrowserActivity
                         }
                     }
                 }
-            })
-        }
+            }
+        })
     }
 
     private fun getDonationButton(skuDetail: ProductDetails): Button {
@@ -218,7 +224,7 @@ class DonationHandler internal constructor(private val activity: BrowserActivity
         button.setOnClickListener {
             val productDetailsParamsList = ProductDetailsParams
                 .newBuilder().setProductDetails(skuDetail).build()
-            billingClient!!.launchBillingFlow(
+            billingClient?.launchBillingFlow(
                 activity, BillingFlowParams.newBuilder()
                     .setProductDetailsParamsList(listOf(productDetailsParamsList))
                     .build()
@@ -263,7 +269,7 @@ class DonationHandler internal constructor(private val activity: BrowserActivity
             val productDetailsParamsList = ProductDetailsParams.newBuilder()
                 .setOfferToken(skuDetail.subscriptionOfferDetails!![0].offerToken)
                 .setProductDetails(skuDetail).build()
-            billingClient!!.launchBillingFlow(
+            billingClient?.launchBillingFlow(
                 activity, BillingFlowParams.newBuilder()
                     .setProductDetailsParamsList(listOf(productDetailsParamsList))
                     .build()
@@ -276,9 +282,7 @@ class DonationHandler internal constructor(private val activity: BrowserActivity
         val layout = activity.layoutInflater
             .inflate(R.layout.donation_layout, null) as LinearLayout
         val dialog = AlertDialog.Builder(
-            ContextThemeWrapper(
-                activity, R.style.DialogTheme_NoActionBar
-            )
+            ContextThemeWrapper(activity, R.style.DialogTheme_NoActionBar)
         )
         val donations = layout.findViewById<LinearLayout>(R.id.donation_layout)
         donations.removeAllViewsInLayout()
@@ -290,34 +294,56 @@ class DonationHandler internal constructor(private val activity: BrowserActivity
             donations.addView(getDonationButton(skuDetail))
         }
         val subscriptions = layout.findViewById<LinearLayout>(R.id.subscription_layout)
-        subscriptions.removeAllViewsInLayout()
-        subSkuDetails.sortWith { obj1: ProductDetails, obj2: ProductDetails ->
-            obj1.productId.compareTo(obj2.productId, ignoreCase = true)
-        }
-        for (skuDetail in subSkuDetails) {
-            if (null == skuDetail.subscriptionOfferDetails) continue
-            subscriptions.addView(getSubscriptionButton(skuDetail))
+        if (BuildConfig.GOOGLE_PLAY) {
+            subscriptions.isGone = true
+        } else {
+            subscriptions.isVisible = true
+            subscriptions.removeAllViewsInLayout()
+            subSkuDetails.sortWith { obj1: ProductDetails, obj2: ProductDetails ->
+                obj1.productId.compareTo(obj2.productId, ignoreCase = true)
+            }
+            for (skuDetail in subSkuDetails) {
+                if (null == skuDetail.subscriptionOfferDetails) continue
+                subscriptions.addView(getSubscriptionButton(skuDetail))
+            }
         }
         dialog.setOnCancelListener {
             donations.removeAllViewsInLayout()
-            subscriptions.removeAllViewsInLayout()
+            if (!BuildConfig.GOOGLE_PLAY) subscriptions.removeAllViewsInLayout()
         }
         dialog.setOnDismissListener {
             donations.removeAllViewsInLayout()
-            subscriptions.removeAllViewsInLayout()
+            if (!BuildConfig.GOOGLE_PLAY) subscriptions.removeAllViewsInLayout()
         }
         val donateDialog: Dialog = dialog.setView(layout).show()
-        if (!BuildConfig.GOOGLE_PLAY) {
-            val padding = TypedValue.applyDimension(
-                TypedValue.COMPLEX_UNIT_DIP,
-                4f,
-                Resources.getSystem().displayMetrics
-            ).toInt()
-            val params = LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT,
-                LinearLayout.LayoutParams.WRAP_CONTENT
+
+        val padding = TypedValue.applyDimension(
+            TypedValue.COMPLEX_UNIT_DIP,
+            4f,
+            Resources.getSystem().displayMetrics
+        ).toInt()
+        val params = LinearLayout.LayoutParams(
+            LinearLayout.LayoutParams.MATCH_PARENT,
+            LinearLayout.LayoutParams.WRAP_CONTENT
+        )
+        params.setMargins(0, padding, 0, padding)
+
+        @SuppressLint("InflateParams") val manage =
+            activity.layoutInflater.inflate(R.layout.button_cancel_sub, null)
+        manage.setOnClickListener {
+            activity.startActivity(
+                Intent(
+                    Intent.ACTION_VIEW, Uri.parse(
+                        "https://support.google.com/googleplay/workflow/9827184"
+                    )
+                )
             )
-            params.setMargins(0, padding, 0, padding)
+            donateDialog.cancel()
+        }
+        manage.layoutParams = params
+        layout.addView(manage)
+
+        if (!BuildConfig.GOOGLE_PLAY) {
             @SuppressLint("InflateParams") val sponsor =
                 activity.layoutInflater.inflate(R.layout.button_sponsor, null)
             sponsor.setOnClickListener {
@@ -332,6 +358,7 @@ class DonationHandler internal constructor(private val activity: BrowserActivity
             }
             sponsor.layoutParams = params
             layout.addView(sponsor)
+
             @SuppressLint("InflateParams") val paypal =
                 activity.layoutInflater.inflate(R.layout.button_paypal, null)
             paypal.setOnClickListener {

@@ -13,6 +13,8 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.AppCompatImageView
 import androidx.appcompat.widget.Toolbar
+import androidx.core.view.isGone
+import androidx.core.view.isVisible
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
@@ -27,12 +29,12 @@ import com.hiddenramblings.tagmo.amiibo.AmiiboManager
 import com.hiddenramblings.tagmo.eightbit.io.Debug
 import com.hiddenramblings.tagmo.eightbit.os.Storage
 import com.hiddenramblings.tagmo.widget.Toasty
+import kotlinx.coroutines.*
 import org.json.JSONException
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
 import java.text.ParseException
-import java.util.concurrent.Executors
 
 class ImageActivity : AppCompatActivity() {
     private lateinit var imageView: AppCompatImageView
@@ -49,6 +51,9 @@ class ImageActivity : AppCompatActivity() {
     private var amiiboId: Long = 0
     private var amiiboManager: AmiiboManager? = null
     private var amiibo: Amiibo? = null
+
+    private val loadingScope = CoroutineScope(Dispatchers.Main + Job())
+
     public override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val prefs = Preferences(applicationContext)
@@ -102,20 +107,22 @@ class ImageActivity : AppCompatActivity() {
                 imageView.paddingRight, imageView.paddingTop + height
             )
         }
-        Executors.newSingleThreadExecutor().execute {
-            var amiiboManager: AmiiboManager? = null
-            try {
-                amiiboManager = AmiiboManager.getAmiiboManager(applicationContext)
-            } catch (e: IOException) {
-                Debug.warn(e)
-            } catch (e: JSONException) {
-                Debug.warn(e)
-            } catch (e: ParseException) {
-                Debug.warn(e)
+
+        loadingScope.launch {
+            withContext(Dispatchers.IO) {
+                var amiiboManager: AmiiboManager? = null
+                try {
+                    amiiboManager = AmiiboManager.getAmiiboManager(applicationContext)
+                } catch (e: IOException) {
+                    Debug.warn(e)
+                } catch (e: JSONException) {
+                    Debug.warn(e)
+                } catch (e: ParseException) {
+                    Debug.warn(e)
+                }
+                this@ImageActivity.amiiboManager = amiiboManager
+                withContext(Dispatchers.Main) { updateView(amiiboId) }
             }
-            if (Thread.currentThread().isInterrupted) return@execute
-            this.amiiboManager = amiiboManager
-            runOnUiThread { updateView(amiiboId) }
         }
         GlideApp.with(imageView).load(getImageUrl(amiiboId)).into(imageView)
         findViewById<View>(R.id.toggle).setOnClickListener {
@@ -168,10 +175,8 @@ class ImageActivity : AppCompatActivity() {
     }
 
     private fun setAmiiboInfoText(textView: TextView, text: CharSequence?, hasTagInfo: Boolean) {
-        if (hasTagInfo) {
-            textView.visibility = View.GONE
-        } else {
-            textView.visibility = View.VISIBLE
+        textView.isGone = hasTagInfo
+        if (!hasTagInfo) {
             if (!text.isNullOrEmpty()) {
                 textView.text = text
                 textView.isEnabled = true
@@ -230,11 +235,9 @@ class ImageActivity : AppCompatActivity() {
         try {
             FileOutputStream(file).use { fos ->
                 resource.compress(Bitmap.CompressFormat.PNG, 100, fos)
-                Toasty(this@ImageActivity).Short(
-                    getString(
+                Toasty(this@ImageActivity).Short(getString(
                         R.string.wrote_file, Storage.getRelativePath(file, prefs.preferEmulated())
-                    )
-                )
+                ))
             }
         } catch (e: IOException) {
             Debug.warn(e)

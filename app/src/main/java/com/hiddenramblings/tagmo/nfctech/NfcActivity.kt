@@ -22,6 +22,8 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.AppCompatImageView
+import androidx.core.view.isGone
+import androidx.core.view.isVisible
 import com.hiddenramblings.tagmo.NFCIntent
 import com.hiddenramblings.tagmo.Preferences
 import com.hiddenramblings.tagmo.R
@@ -69,6 +71,8 @@ class NfcActivity : AppCompatActivity() {
     private var writeCount = 0
     private var tagTech: String? = null
     private var hasTestedElite = false
+
+    private val loadingExecutor = Executors.newSingleThreadExecutor()
 
     private val mReceiver: BroadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
@@ -127,8 +131,8 @@ class NfcActivity : AppCompatActivity() {
         } else if (isEliteIntent) {
             setPosition(bankPicker, prefs!!.eliteActiveBank())
         } else {
-            bankTextView.visibility = View.GONE
-            bankPicker.visibility = View.GONE
+            bankTextView.isGone = true
+            bankPicker.isGone = true
         }
         if (commandIntent.hasExtra(NFCIntent.EXTRA_BANK_COUNT)) {
             writeCount = commandIntent.getIntExtra(NFCIntent.EXTRA_BANK_COUNT, 200)
@@ -138,9 +142,9 @@ class NfcActivity : AppCompatActivity() {
             NFCIntent.ACTION_WRITE_TAG_FULL,
             NFCIntent.ACTION_WRITE_TAG_DATA -> {
                 if (!isEliteIntent || !commandIntent.hasExtra(NFCIntent.EXTRA_CURRENT_BANK)) {
-                    bankPicker.visibility = View.GONE
+                    bankPicker.isGone = true
                     bankPicker.isEnabled = false
-                    bankTextView.visibility = View.GONE
+                    bankTextView.isGone = true
                 }
                 bankPicker.maxValue = prefs!!.eliteBankCount()
             }
@@ -152,16 +156,16 @@ class NfcActivity : AppCompatActivity() {
             NFCIntent.ACTION_LOCK_AMIIBO,
             NFCIntent.ACTION_UNLOCK_UNIT,
             -> {
-                bankPicker.visibility = View.GONE
+                bankPicker.isGone = true
                 bankPicker.isEnabled = false
-                bankTextView.visibility = View.GONE
+                bankTextView.isGone = true
             }
             NFCIntent.ACTION_BACKUP_AMIIBO,
             NFCIntent.ACTION_ERASE_BANK,
             NFCIntent.ACTION_ACTIVATE_BANK ->
                 if (!isEliteIntent || !commandIntent.hasExtra(NFCIntent.EXTRA_CURRENT_BANK)) {
-                    bankPicker.visibility = View.GONE
-                    bankTextView.visibility = View.GONE
+                    bankPicker.isGone = true
+                    bankTextView.isGone = true
                 }
         }
         when (mode) {
@@ -207,19 +211,19 @@ class NfcActivity : AppCompatActivity() {
     private fun showError(msg: String) {
         runOnUiThread {
             txtError.text = msg
-            txtError.visibility = View.VISIBLE
-            txtMessage.visibility = View.GONE
-            imgNfcCircle.visibility = View.GONE
-            imgNfcBar.visibility = View.GONE
+            txtError.isVisible = true
+            txtMessage.isGone = true
+            imgNfcCircle.isGone = true
+            imgNfcBar.isGone = true
             imgNfcBar.clearAnimation()
         }
     }
 
     private fun clearError() {
-        txtError.visibility = View.GONE
-        txtMessage.visibility = View.VISIBLE
-        imgNfcCircle.visibility = View.VISIBLE
-        imgNfcBar.visibility = View.VISIBLE
+        txtError.isGone = true
+        txtMessage.isVisible = true
+        imgNfcCircle.isVisible = true
+        imgNfcBar.isVisible = true
         imgNfcBar.animation = nfcAnimation
     }
 
@@ -294,12 +298,12 @@ class NfcActivity : AppCompatActivity() {
                         setResult(RESULT_OK)
                     }
                     NFCIntent.ACTION_WRITE_TAG_FULL -> if (isEliteDevice) {
-                        if (bankPicker.visibility == View.GONE) {
+                        if (bankPicker.isGone) {
                             showMessage(R.string.bank_select)
                             runOnUiThread {
-                                bankPicker.visibility = View.VISIBLE
+                                bankPicker.isVisible = true
                                 bankPicker.isEnabled = true
-                                bankTextView.visibility = View.VISIBLE
+                                bankTextView.isVisible = true
                             }
                             setIntent(commandIntent)
                             hasTestedElite = false
@@ -698,7 +702,7 @@ class NfcActivity : AppCompatActivity() {
             || NfcAdapter.ACTION_TAG_DISCOVERED == intent.action) {
             val tech = if (null != tagTech) tagTech!! else getString(R.string.nfc_tag)
             showMessage(R.string.tag_detected, tech)
-            Executors.newSingleThreadExecutor().execute { onTagDiscovered(intent) }
+            loadingExecutor.execute { onTagDiscovered(intent) }
         }
     }
 

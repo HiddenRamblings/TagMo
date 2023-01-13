@@ -101,16 +101,18 @@ object Debug {
     }
     
     fun getExceptionDetails(e: Exception): String? {
-        return when {
-            null != e.message && null != e.cause -> e.message + "\n" + e.cause.toString()
+        val description =  when {
             null != e.message -> e.message
             null != e.cause -> e.cause.toString()
             else -> null
         }
+        return if (null != description && description.contains(" : "))
+            description.substring(description.indexOf(":") + 2)
+        else description
     }
     
-    fun getExceptionSummary(e: Exception) : String {
-        return e.message ?: if (null != e.cause) e.cause!!.javaClass.name else "UnknownException"
+    fun getExceptionClass(e: Exception) : String {
+        return e.cause?.javaClass?.name ?: "UnknownException"
     }
 
     @JvmStatic

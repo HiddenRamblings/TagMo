@@ -7,7 +7,6 @@ import android.content.DialogInterface
 import android.content.Intent
 import android.content.res.Configuration
 import android.os.Bundle
-import android.os.Handler
 import android.text.TextUtils
 import android.view.LayoutInflater
 import android.view.MotionEvent
@@ -20,6 +19,8 @@ import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.Toolbar
+import androidx.core.view.isGone
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -44,9 +45,9 @@ import com.hiddenramblings.tagmo.nfctech.TagArray
 import com.hiddenramblings.tagmo.widget.Toasty
 import com.robertlevonyan.views.chip.Chip
 import com.robertlevonyan.views.chip.OnCloseClickListener
+import kotlinx.coroutines.*
 import myinnos.indexfastscrollrecycler.IndexFastScrollRecyclerView
 import java.io.File
-import java.util.concurrent.Executors
 
 class BrowserFragment : Fragment(), OnFoomiiboClickListener {
     private lateinit var prefs: Preferences
@@ -60,6 +61,9 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
     private val foomiibo = Foomiibo()
     private lateinit var settings: BrowserSettings
     private val resultData = ArrayList<ByteArray>()
+
+    private val loadingScope = CoroutineScope(Dispatchers.Main + Job())
+
     val onUpdateTagResult = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
     ) { result: ActivityResult ->
@@ -79,8 +83,7 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
                         resultData[resultData.indexOf(data)] = tagData
                         break
                     }
-                } catch (ignored: Exception) {
-                }
+                } catch (ignored: Exception) { }
             }
             if (!updated) resultData.add(tagData)
         }
@@ -100,35 +103,39 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
         prefs = Preferences(activity.applicationContext)
         keyManager = KeyManager(activity)
         settings = activity.settings ?: BrowserSettings().initialize()
-        directory = File(requireActivity().filesDir, "Foomiibo")
+        directory = File(activity.filesDir, "Foomiibo")
         directory.mkdirs()
         chipList = view.findViewById(R.id.chip_list)
-        chipList?.visibility = View.GONE
+        chipList?.isGone = true
+
         browserContent = view.findViewById(R.id.browser_content)
         if (browserContent is IndexFastScrollRecyclerView)
                 (browserContent as IndexFastScrollRecyclerView)
                     .setTransientIndexBar(!BuildConfig.WEAR_OS)
         if (prefs.softwareLayer())
             browserContent?.setLayerType(View.LAYER_TYPE_SOFTWARE, null)
-        foomiiboView = view.findViewById(R.id.foomiibo_list)
-        if (foomiiboView is IndexFastScrollRecyclerView)
-                (foomiiboView as IndexFastScrollRecyclerView)
-                    .setTransientIndexBar(!BuildConfig.WEAR_OS)
-        if (prefs.softwareLayer())
-            foomiiboView?.setLayerType(View.LAYER_TYPE_SOFTWARE, null)
         browserContent?.layoutManager = if (settings.amiiboView == BrowserSettings.VIEW.IMAGE.value)
             GridLayoutManager(activity, activity.columnCount)
         else LinearLayoutManager(activity)
         browserContent?.adapter = BrowserAdapter(settings, activity)
         settings.addChangeListener(browserContent?.adapter as BrowserSettingsListener?)
+
+        foomiiboView = view.findViewById(R.id.foomiibo_list)
+        if (foomiiboView is IndexFastScrollRecyclerView)
+            (foomiiboView as IndexFastScrollRecyclerView)
+                .setTransientIndexBar(!BuildConfig.WEAR_OS)
+        if (prefs.softwareLayer())
+            foomiiboView?.setLayerType(View.LAYER_TYPE_SOFTWARE, null)
         foomiiboView?.layoutManager = if (settings.amiiboView == BrowserSettings.VIEW.IMAGE.value)
             GridLayoutManager(activity, activity.columnCount)
         else LinearLayoutManager(activity)
         foomiiboView?.adapter = FoomiiboAdapter(settings, this)
         settings.addChangeListener(foomiiboView?.adapter as BrowserSettingsListener?)
-        view.findViewById<View>(R.id.list_divider).visibility = View.GONE
-        if (BuildConfig.WEAR_OS && null != browserContent?.layoutParams)
-            browserContent!!.layoutParams.height = browserContent!!.layoutParams.height / 3
+
+        view.findViewById<View>(R.id.list_divider).isGone = true
+        val browserParams = browserContent?.layoutParams
+        if (BuildConfig.WEAR_OS && null != browserParams)
+            browserParams.height = browserParams.height / 3
         view.findViewById<View>(R.id.list_divider)
             .setOnTouchListener { v: View, event: MotionEvent ->
                 if (browserContent is IndexFastScrollRecyclerView) {
@@ -137,25 +144,30 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
                 if (foomiiboView is IndexFastScrollRecyclerView) {
                     (foomiiboView as IndexFastScrollRecyclerView).setIndexBarVisibility(false)
                 }
-                val srcHeight = browserContent!!.layoutParams.height
-                val y = event.y.toInt()
-                if (browserContent!!.layoutParams.height + y >= -0.5f) {
-                    if (event.action == MotionEvent.ACTION_MOVE) {
-                        browserContent!!.layoutParams.height += y
-                        if (srcHeight != browserContent!!.layoutParams.height)
-                            browserContent!!.requestLayout()
-                    } else if (event.action == MotionEvent.ACTION_UP) {
-                        if (browserContent!!.layoutParams.height + y < 0f) {
-                            browserContent!!.layoutParams.height = 0
-                        } else {
-                            val minHeight = activity.bottomSheetBehavior!!.peekHeight + v.height + requireContext().resources.getDimension(R.dimen.sliding_bar_margin)
-                            if (browserContent!!.layoutParams.height > view.height - minHeight.toInt())
-                                browserContent!!.layoutParams.height = view.height - minHeight.toInt()
+                val layoutParams = browserContent?.layoutParams
+                if (null != layoutParams) {
+                    val srcHeight = layoutParams.height
+                    val y = event.y.toInt()
+                    if (layoutParams.height + y >= -0.5f) {
+                        if (event.action == MotionEvent.ACTION_MOVE) {
+                            layoutParams.height += y
+                            if (srcHeight != layoutParams.height)
+                                browserContent!!.requestLayout()
+                        } else if (event.action == MotionEvent.ACTION_UP) {
+                            if (layoutParams.height + y < 0f) {
+                                layoutParams.height = 0
+                            } else {
+                                val peekHeight = activity.bottomSheetBehavior?.peekHeight ?: 0
+                                val minHeight = peekHeight + v.height + requireContext().resources
+                                    .getDimension(R.dimen.sliding_bar_margin)
+                                if (layoutParams.height > view.height - minHeight.toInt())
+                                    layoutParams.height = view.height - minHeight.toInt()
+                            }
+                            if (srcHeight != layoutParams.height)
+                                browserContent!!.requestLayout()
                         }
-                        if (srcHeight != browserContent!!.layoutParams.height)
-                            browserContent!!.requestLayout()
+                        prefs.foomiiboOffset(browserContent!!.layoutParams.height)
                     }
-                    prefs.foomiiboOffset(browserContent!!.layoutParams.height)
                 }
                 true
             }
@@ -166,7 +178,7 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
     fun addFilterItemView(text: String?, tag: String?, listener: OnCloseClickListener?) {
         if (null == chipList) return
         var chipContainer = chipList?.findViewWithTag<FrameLayout>(tag)
-        if (null != chipContainer) chipList!!.removeView(chipContainer)
+        if (null != chipContainer) chipList?.removeView(chipContainer)
         if (!TextUtils.isEmpty(text)) {
             chipContainer = layoutInflater.inflate(R.layout.chip_view, null) as FrameLayout
             chipContainer.tag = tag
@@ -174,10 +186,10 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
             chip.setText(text)
             chip.closable = true
             chip.onCloseClickListener = listener
-            chipList!!.addView(chipContainer)
-            chipList!!.visibility = View.VISIBLE
-        } else if (chipList!!.childCount == 0) {
-            chipList!!.visibility = View.GONE
+            chipList?.addView(chipContainer)
+            chipList?.isVisible = true
+        } else if (chipList?.childCount == 0) {
+            chipList?.isGone = true
         }
     }
 
@@ -185,20 +197,23 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
         if (null == view) return
         val activity = requireActivity() as BrowserActivity
         val divider = requireView().findViewById<View>(R.id.list_divider)
-        val minHeight = (activity.bottomSheetBehavior!!.peekHeight + divider.height + requireContext()
-            .resources.getDimension(R.dimen.sliding_bar_margin))
-        if (browserContent!!.layoutParams.height > requireView().height - minHeight.toInt()) {
-            browserContent!!.layoutParams.height = requireView().height - minHeight.toInt()
-        } else {
-            val valueY = prefs.foomiiboOffset()
-            browserContent!!.layoutParams.height =
-                if (valueY != -1) valueY else browserContent!!.layoutParams.height
+        val peekHeight = activity.bottomSheetBehavior?.peekHeight ?: 0
+        val minHeight = (peekHeight + divider.height + requireContext().resources
+            .getDimension(R.dimen.sliding_bar_margin))
+        val layoutParams = browserContent?.layoutParams
+        if (null != layoutParams) {
+            if (layoutParams.height > requireView().height - minHeight.toInt()) {
+                layoutParams.height = requireView().height - minHeight.toInt()
+            } else {
+                val valueY = prefs.foomiiboOffset()
+                layoutParams.height = if (valueY != -1) valueY else layoutParams.height
+            }
         }
         if (prefs.foomiiboDisabled()) {
-            divider.visibility = View.GONE
-            browserContent!!.layoutParams.height = requireView().height
+            divider.isGone = true
+            layoutParams?.height = requireView().height
         } else {
-            divider.visibility = View.VISIBLE
+            divider.isVisible = true
         }
         browserContent!!.requestLayout()
     }
@@ -206,19 +221,19 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
     override fun onResume() {
         super.onResume()
         (requireActivity() as BrowserActivity).onRootFolderChanged(false)
-        browserContent!!.postDelayed({ setFoomiiboVisibility() }, TagMo.uiDelay.toLong())
+        browserContent?.postDelayed({ setFoomiiboVisibility() }, TagMo.uiDelay.toLong())
     }
 
-    private fun deleteDir(handler: Handler?, dialog: ProgressDialog?, dir: File?) {
+    private suspend fun deleteDir(dialog: ProgressDialog?, dir: File?) {
         if (!directory.exists()) return
         val files = dir?.listFiles()
         if (null != files && files.isNotEmpty()) {
             files.forEach {
                 if (it.isDirectory) {
-                    handler?.post {
-                        dialog!!.setMessage(getString(R.string.foomiibo_removing, it.name))
+                    withContext(Dispatchers.Main) {
+                        dialog?.setMessage(getString(R.string.foomiibo_removing, it.name))
                     }
-                    deleteDir(handler, dialog, it)
+                    deleteDir(dialog, it)
                 } else {
                     it.delete()
                 }
@@ -229,7 +244,7 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
 
     fun deleteFoomiiboFile(tagData: ByteArray?) {
         try {
-            val amiibo = settings.amiiboManager!!.amiibos[Amiibo.dataToId(tagData)]
+            val amiibo = settings.amiiboManager?.amiibos?.get(Amiibo.dataToId(tagData))
                 ?: throw Exception()
             val directory = File(directory, amiibo.amiiboSeries!!.name)
             val amiiboFile = File(
@@ -255,15 +270,17 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
         }
     }
 
-    fun clearFoomiiboSet(handler: Handler) {
+    fun clearFoomiiboSet() {
         val dialog = ProgressDialog.show(
             requireActivity(), "", "", true
         )
-        Executors.newSingleThreadExecutor().execute {
-            deleteDir(handler, dialog, directory)
-            handler.post {
-                dialog.dismiss()
-                (requireActivity() as BrowserActivity).onRefresh(false)
+        loadingScope.launch {
+            withContext(Dispatchers.IO) {
+                deleteDir(dialog, directory)
+                withContext(Dispatchers.Main) {
+                    dialog.dismiss()
+                    (requireActivity() as BrowserActivity).onRefresh(false)
+                }
             }
         }
     }
@@ -281,12 +298,12 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
         }
     }
 
-    fun buildFoomiiboFile(tagData: ByteArray?) {
+    fun buildFoomiiboFile(tagData: ByteArray) {
         try {
-            val amiibo = settings.amiiboManager!!.amiibos[Amiibo.dataToId(tagData)] ?: return
+            val amiibo = settings.amiiboManager?.amiibos?.get(Amiibo.dataToId(tagData)) ?: return
             val directory = File(directory, amiibo.amiiboSeries!!.name)
             directory.mkdirs()
-            val foomiiboData = foomiibo.getSignedData(tagData!!)
+            val foomiiboData = foomiibo.getSignedData(tagData)
             TagArray.writeBytesToFile(
                 directory, TagArray.decipherFilename(
                     amiibo, foomiiboData, false
@@ -300,7 +317,7 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
         }
     }
 
-    fun buildFoomiiboSet(handler: Handler) {
+    fun buildFoomiiboSet() {
         val amiiboManager = if (null != settings.amiiboManager)
             settings.amiiboManager
         else null
@@ -311,31 +328,38 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
         val dialog = ProgressDialog.show(
             requireActivity(), "", "", true
         )
-        Executors.newSingleThreadExecutor().execute {
-            deleteDir(null, null, directory)
-            directory.mkdirs()
-            amiiboManager.amiibos.values.forEach {
-                buildFoomiiboFile(it)
-                handler.post {
-                    dialog.setMessage(getString(R.string.foomiibo_progress, it.character!!.name))
+        loadingScope.launch {
+            withContext(Dispatchers.IO) {
+                deleteDir(null, directory)
+                directory.mkdirs()
+                amiiboManager.amiibos.values.forEach {
+                    buildFoomiiboFile(it)
+                    withContext(Dispatchers.Main) {
+                        dialog.setMessage(getString(R.string.foomiibo_progress, it.character!!.name))
+                    }
                 }
-            }
-            handler.post {
-                dialog.dismiss()
-                (requireActivity() as BrowserActivity).onRefresh(false)
+                withContext(Dispatchers.Main) {
+                    dialog.dismiss()
+                    (requireActivity() as BrowserActivity).onRefresh(false)
+                }
             }
         }
     }
 
     private fun getGameCompatibility(txtUsage: TextView, tagData: ByteArray) {
-        Executors.newSingleThreadExecutor().execute {
-            try {
-                val amiiboId = Amiibo.dataToId(tagData)
-                val gamesManager = getGamesManager(requireContext())
-                val usage = gamesManager.getGamesCompatibility(amiiboId)
-                txtUsage.post { txtUsage.text = usage }
-            } catch (ex: Exception) {
-                Debug.warn(ex)
+        loadingScope.launch {
+            withContext(Dispatchers.IO) {
+                val usage: String? = try {
+                    val amiiboId = Amiibo.dataToId(tagData)
+                    val gamesManager = getGamesManager(requireContext())
+                    gamesManager.getGamesCompatibility(amiiboId)
+                } catch (ex: Exception) {
+                    Debug.warn(ex)
+                    null
+                }
+                withContext(Dispatchers.Main) {
+                    txtUsage.text = usage
+                }
             }
         }
     }
@@ -348,8 +372,7 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
                     tagData = data
                     break
                 }
-            } catch (ignored: Exception) {
-            }
+            } catch (ignored: Exception) { }
         }
         if (tagData.isEmpty())
             tagData = foomiibo.generateData(Amiibo.idToHex(amiibo!!.id))
@@ -361,19 +384,12 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
         if (null != menuOptions) {
             val toolbar = menuOptions.findViewById<Toolbar>(R.id.toolbar)
             if (settings.amiiboView != BrowserSettings.VIEW.IMAGE.value) {
-                if (menuOptions.visibility == View.VISIBLE) {
-                    menuOptions.visibility = View.GONE
-                } else {
-                    menuOptions.visibility = View.VISIBLE
+                if (!menuOptions.isVisible)
                     activity.onCreateToolbarMenu(this, toolbar, tagData, itemView)
-                }
+                menuOptions.isGone = menuOptions.isVisible
                 val txtUsage = itemView.findViewById<TextView>(R.id.txtUsage)
-                if (txtUsage.visibility == View.VISIBLE) {
-                    txtUsage.visibility = View.GONE
-                } else {
-                    txtUsage.visibility = View.VISIBLE
-                    getGameCompatibility(txtUsage, tagData)
-                }
+                if (!txtUsage.isVisible) getGameCompatibility(txtUsage, tagData)
+                txtUsage.isGone = txtUsage.isVisible
             } else {
                 activity.onCreateToolbarMenu(this, toolbar, tagData, itemView)
                 activity.updateAmiiboView(tagData, null)
@@ -389,8 +405,7 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
                     tagData = data
                     break
                 }
-            } catch (ignored: Exception) {
-            }
+            } catch (ignored: Exception) { }
         }
         if (tagData.isEmpty()) tagData = foomiibo.generateData(Amiibo.idToHex(amiibo!!.id))
         try {

@@ -271,8 +271,8 @@ class SettingsFragment : PreferenceFragmentCompat() {
         val disclaimerFoomiibo = findPreference<Preference>(getString(R.string.disclaimer_foomiibo))
         if (null != disclaimerFoomiibo) {
             try {
-                resources.openRawResource(R.raw.tos_foomiibo).use { `in` ->
-                    BufferedReader(InputStreamReader(`in`)).use { r ->
+                resources.openRawResource(R.raw.tos_foomiibo).use { tos ->
+                    BufferedReader(InputStreamReader(tos)).use { r ->
                         val total = StringBuilder()
                         var line: String?
                         while (null != r.readLine().also { line = it }) {
@@ -288,8 +288,8 @@ class SettingsFragment : PreferenceFragmentCompat() {
         val disclaimerTagMo = findPreference<Preference>(getString(R.string.disclaimer_tagmo))
         if (null != disclaimerTagMo) {
             try {
-                resources.openRawResource(R.raw.tos_tagmo).use { `in` ->
-                    BufferedReader(InputStreamReader(`in`)).use { r ->
+                resources.openRawResource(R.raw.tos_tagmo).use { tos ->
+                    BufferedReader(InputStreamReader(tos)).use { r ->
                         val total = StringBuilder()
                         var line: String?
                         while (null != r.readLine().also { line = it }) {
@@ -410,7 +410,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
     private fun updateAmiiboDatabase(data: Uri?) {
         resetAmiiboDatabase(false)
         Executors.newSingleThreadExecutor().execute {
-            val amiiboManager: AmiiboManager = try {
+            val amiiboManager: AmiiboManager? = try {
                 parse(requireContext(), data)
             } catch (e: JSONException) {
                 Debug.warn(e)
@@ -427,7 +427,11 @@ class SettingsFragment : PreferenceFragmentCompat() {
             }
             if (Thread.currentThread().isInterrupted) return@execute
             try {
-                saveDatabase(amiiboManager, requireContext().applicationContext)
+                if (null != amiiboManager) {
+                    saveDatabase(amiiboManager, requireContext().applicationContext)
+                } else {
+                    Toasty(requireActivity()).Short(R.string.amiibo_failure_update)
+                }
             } catch (e: JSONException) {
                 Debug.warn(e)
                 Toasty(requireActivity()).Short(R.string.amiibo_failure_update)

@@ -509,9 +509,10 @@ class NfcActivity : AppCompatActivity() {
             finish()
         } catch (e: Exception) {
             Debug.warn(e)
-            var error: String? = Debug.getExceptionDetails(e)
+            val cause: String? = Debug.getExceptionCause(e)
+            var error: String? = Debug.getExceptionError(e)
             if (null != error) {
-                if (getString(R.string.error_tag_rewrite) == error) {
+                if (getString(R.string.error_tag_rewrite) == cause) {
                     args.putByteArray(NFCIntent.EXTRA_TAG_DATA, update)
                     setResult(
                         RESULT_OK, Intent(
@@ -533,7 +534,7 @@ class NfcActivity : AppCompatActivity() {
                     if (e is TagLostException) {
                         showMessage(R.string.speed_scan)
                         closeTagSilently(mifare)
-                    } else if (getString(R.string.nfc_null_array) == error) {
+                    } else if (getString(R.string.nfc_null_array) == cause) {
                         runOnUiThread {
                             AlertDialog.Builder(this@NfcActivity)
                                 .setTitle(R.string.possible_lock)
@@ -567,7 +568,7 @@ class NfcActivity : AppCompatActivity() {
                     }
                 } else {
                     if (e is NullPointerException && error.contains(NTAG215.CONNECT))
-                        error = getString(R.string.error_tag_faulty)
+                        error = getString(R.string.error_tag_faulty) + "\n" + error
                     showError(error)
                 }
             } else {

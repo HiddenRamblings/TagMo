@@ -97,7 +97,8 @@ class ScanTag {
             }
         } catch (e: Exception) {
             Debug.warn(e)
-            var error: String? = Debug.getExceptionDetails(e)
+            val cause: String? = Debug.getExceptionCause(e)
+            var error: String? = Debug.getExceptionError(e)
             if (null != error) {
                 if (prefs.eliteEnabled()) {
                     if (e is TagLostException) {
@@ -113,7 +114,7 @@ class ScanTag {
                             ).show()
                         }
                         closeTagSilently(mifare)
-                    } else if (activity.getString(R.string.nfc_null_array) == error) {
+                    } else if (activity.getString(R.string.nfc_null_array) == cause) {
                         activity.runOnUiThread {
                             AlertDialog.Builder(activity)
                                 .setTitle(R.string.possible_lock)
@@ -152,7 +153,7 @@ class ScanTag {
                     }
                 } else {
                     if (e is NullPointerException && error.contains(NTAG215.CONNECT))
-                        error = activity.getString(R.string.error_tag_faulty)
+                        error = activity.getString(R.string.error_tag_faulty) + "\n" + error
                     Toasty(activity).Short(error)
                 }
             } else {

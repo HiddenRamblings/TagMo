@@ -40,6 +40,14 @@
                 android:layout_gravity="center_vertical"
                 android:text="@string/format_app_data"
                 android:enabled="false"/>
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/transfer_app_data"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:text="@string/transfer_app_data"
+                android:enabled="false"/>
         </LinearLayout>
     </LinearLayout>
 </merge>

@@ -75,6 +75,7 @@ class TagDataEditor : AppCompatActivity() {
     private lateinit var appDataViewSSB: LinearLayout
     private lateinit var appDataViewSSBU: LinearLayout
     private lateinit var appDataFormat: AppCompatButton
+    private lateinit var appDataTransfer: AppCompatButton
     private var countryCodeAdapter: CountryCodesAdapter? = null
     private var appIdAdapter: AppIdAdapter? = null
     private var ignoreAppNameSelected = false
@@ -169,6 +170,7 @@ class TagDataEditor : AppCompatActivity() {
         appDataViewSSB = findViewById(R.id.appDataSSB)
         appDataViewSSBU = findViewById(R.id.appDataSSBU)
         appDataFormat = findViewById(R.id.format_app_data)
+        appDataTransfer = findViewById(R.id.transfer_app_data)
 
         tagData = intent.getByteArrayExtra(NFCIntent.EXTRA_TAG_DATA)
         try {
@@ -275,6 +277,9 @@ class TagDataEditor : AppCompatActivity() {
             amiiboData.appId = 0
             amiiboData.appData = ByteArray(amiiboData.appData.size)
             loadData()
+        }
+        appDataTransfer.setOnClickListener {
+            Toasty(this).Short(R.string.notice_incomplete)
         }
     }
 
@@ -530,6 +535,7 @@ class TagDataEditor : AppCompatActivity() {
         txtAppId.isEnabled = isUserDataInitialized
         appDataSwitch.isEnabled = isUserDataInitialized
         appDataFormat.isEnabled = isUserDataInitialized
+        appDataTransfer.isEnabled = isUserDataInitialized
         updateAppDataEnabled(isUserDataInitialized && isAppDataInitialized)
     }
 

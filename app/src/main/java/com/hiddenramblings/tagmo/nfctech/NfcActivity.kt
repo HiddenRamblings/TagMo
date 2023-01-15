@@ -12,7 +12,6 @@ import android.os.Parcelable
 import android.provider.Settings
 import android.view.Menu
 import android.view.MenuItem
-import android.view.View
 import android.view.ViewTreeObserver.OnGlobalLayoutListener
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
@@ -509,16 +508,11 @@ class NfcActivity : AppCompatActivity() {
             finish()
         } catch (e: Exception) {
             Debug.warn(e)
-            val cause: String? = Debug.getExceptionCause(e)
             var error: String? = Debug.getExceptionError(e)
             if (null != error) {
-                if (getString(R.string.error_tag_rewrite) == cause) {
+                if (getString(R.string.error_tag_rewrite) == error) {
                     args.putByteArray(NFCIntent.EXTRA_TAG_DATA, update)
-                    setResult(
-                        RESULT_OK, Intent(
-                            NFCIntent.ACTION_UPDATE_TAG
-                        ).putExtras(args)
-                    )
+                    setResult(RESULT_OK, Intent(NFCIntent.ACTION_UPDATE_TAG).putExtras(args))
                     runOnUiThread {
                         AlertDialog.Builder(this@NfcActivity)
                             .setTitle(R.string.error_tag_rewrite)
@@ -534,7 +528,7 @@ class NfcActivity : AppCompatActivity() {
                     if (e is TagLostException) {
                         showMessage(R.string.speed_scan)
                         closeTagSilently(mifare)
-                    } else if (getString(R.string.nfc_null_array) == cause) {
+                    } else if (getString(R.string.nfc_null_array) == error) {
                         runOnUiThread {
                             AlertDialog.Builder(this@NfcActivity)
                                 .setTitle(R.string.possible_lock)
@@ -551,7 +545,7 @@ class NfcActivity : AppCompatActivity() {
                                     finish()
                                 }.show()
                         }
-                    } else if (e is NullPointerException && error.contains(NTAG215.CONNECT)) {
+                    } else if (e is NullPointerException && Debug.hasExceptionCause(e, NTAG215.CONNECT)) {
                         runOnUiThread {
                             AlertDialog.Builder(this@NfcActivity)
                                 .setTitle(R.string.possible_blank)
@@ -567,7 +561,7 @@ class NfcActivity : AppCompatActivity() {
                         }
                     }
                 } else {
-                    if (e is NullPointerException && error.contains(NTAG215.CONNECT))
+                    if (e is NullPointerException && Debug.hasExceptionCause(e, NTAG215.CONNECT))
                         error = getString(R.string.error_tag_faulty) + "\n" + error
                     showError(error)
                 }

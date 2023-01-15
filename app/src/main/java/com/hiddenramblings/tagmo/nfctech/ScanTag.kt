@@ -97,24 +97,21 @@ class ScanTag {
             }
         } catch (e: Exception) {
             Debug.warn(e)
-            val cause: String? = Debug.getExceptionCause(e)
             var error: String? = Debug.getExceptionError(e)
             if (null != error) {
                 if (prefs.eliteEnabled()) {
                     if (e is TagLostException) {
                         if (isEliteDevice) {
-                            activity.onNFCActivity.launch(
-                                Intent(
+                            activity.onNFCActivity.launch(Intent(
                                     activity, NfcActivity::class.java
-                                ).setAction(NFCIntent.ACTION_BLIND_SCAN)
-                            )
+                            ).setAction(NFCIntent.ACTION_BLIND_SCAN))
                         } else {
                             IconifiedSnackbar(activity, activity.layout).buildSnackbar(
                                 R.string.speed_scan, Snackbar.LENGTH_SHORT
                             ).show()
                         }
                         closeTagSilently(mifare)
-                    } else if (activity.getString(R.string.nfc_null_array) == cause) {
+                    } else if (activity.getString(R.string.nfc_null_array) == error) {
                         activity.runOnUiThread {
                             AlertDialog.Builder(activity)
                                 .setTitle(R.string.possible_lock)
@@ -133,18 +130,16 @@ class ScanTag {
                                     dialog.dismiss()
                                 }.show()
                         }
-                    } else if (e is NullPointerException && error.contains(NTAG215.CONNECT)) {
+                    } else if (e is NullPointerException && Debug.hasExceptionCause(e, NTAG215.CONNECT)) {
                         activity.runOnUiThread {
                             AlertDialog.Builder(activity)
                                 .setTitle(R.string.possible_blank)
                                 .setMessage(R.string.prepare_blank)
                                 .setPositiveButton(R.string.scan) { dialog: DialogInterface, _: Int ->
                                     dialog.dismiss()
-                                    activity.onNFCActivity.launch(
-                                        Intent(
+                                    activity.onNFCActivity.launch(Intent(
                                             activity, NfcActivity::class.java
-                                        ).setAction(NFCIntent.ACTION_BLIND_SCAN)
-                                    )
+                                    ).setAction(NFCIntent.ACTION_BLIND_SCAN))
                                 }
                                 .setNegativeButton(R.string.cancel) { dialog: DialogInterface, _: Int ->
                                     dialog.dismiss()
@@ -152,7 +147,7 @@ class ScanTag {
                         }
                     }
                 } else {
-                    if (e is NullPointerException && error.contains(NTAG215.CONNECT))
+                    if (e is NullPointerException && Debug.hasExceptionCause(e, NTAG215.CONNECT))
                         error = activity.getString(R.string.error_tag_faulty) + "\n" + error
                     Toasty(activity).Short(error)
                 }

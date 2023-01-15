@@ -99,17 +99,8 @@ object Debug {
     private fun hasDebugging(): Boolean {
         return !mPrefs.disableDebug()
     }
-    
-    fun getExceptionError(e: Exception): String? {
-        return when {
-            null != e.message && null != e.cause -> e.message + "\n" + e.cause.toString()
-            null != e.message -> e.message
-            null != e.cause -> e.cause.toString()
-            else -> null
-        }
-    }
 
-    fun getExceptionCause(e: Exception): String? {
+    fun getExceptionError(e: Exception): String? {
         val description =  when {
             null != e.message -> e.message
             null != e.cause -> e.cause.toString()
@@ -122,6 +113,15 @@ object Debug {
     
     fun getExceptionClass(e: Exception) : String {
         return e.cause?.javaClass?.name ?: "UnknownException"
+    }
+
+    fun hasExceptionCause(e: Exception, target: String): Boolean {
+        if (e.stackTrace.isNullOrEmpty()) return false
+        for (i in e.stackTrace.indices) {
+            val line = e.stackTrace.getOrNull(i)
+            if (null != line && (line.className + line.methodName) == target) return true
+        }
+        return false
     }
 
     @JvmStatic

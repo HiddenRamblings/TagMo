@@ -328,22 +328,23 @@ class DonationManager internal constructor(private val activity: BrowserActivity
         )
         params.setMargins(0, padding, 0, padding)
 
-        @SuppressLint("InflateParams") val manage =
-            activity.layoutInflater.inflate(R.layout.button_cancel_sub, null)
-        manage.setOnClickListener {
-            activity.startActivity(
-                Intent(
-                    Intent.ACTION_VIEW, Uri.parse(
-                        "https://support.google.com/googleplay/workflow/9827184"
+        if (!BuildConfig.GOOGLE_PLAY) {
+            @SuppressLint("InflateParams") val manage =
+                activity.layoutInflater.inflate(R.layout.button_cancel_sub, null)
+            manage.setOnClickListener {
+                activity.startActivity(
+                    Intent(
+                        Intent.ACTION_VIEW, Uri.parse(
+                            "https://support.google.com/googleplay/workflow/9827184"
+                        )
                     )
                 )
-            )
-            donateDialog.cancel()
-        }
-        manage.layoutParams = params
-        layout.addView(manage)
+                donateDialog.cancel()
+            }
+            manage.layoutParams = params
+            layout.addView(manage)
 
-        if (!BuildConfig.GOOGLE_PLAY) {
+//        if (!BuildConfig.GOOGLE_PLAY) {
             @SuppressLint("InflateParams") val sponsor =
                 activity.layoutInflater.inflate(R.layout.button_sponsor, null)
             sponsor.setOnClickListener {

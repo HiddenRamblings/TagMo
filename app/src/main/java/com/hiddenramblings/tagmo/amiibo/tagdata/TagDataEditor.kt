@@ -280,6 +280,7 @@ class TagDataEditor : AppCompatActivity() {
         }
         appDataTransfer.setOnClickListener {
             Toasty(this).Short(R.string.notice_incomplete)
+            amiiboData.appData
         }
     }
 

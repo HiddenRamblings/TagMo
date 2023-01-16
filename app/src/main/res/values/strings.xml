@@ -86,7 +86,7 @@
     <string name="init_date">Initialized Date</string>
     <string name="mod_date">Modified Date</string>
     <string name="nickname">Nickname</string>
-    <string name="write_count">Write Counter</string>
+    <string name="write_count">Write Count</string>
     <string name="mod_serial">Serial Number</string>
     <string name="view_hex">View Hex Code</string>
     <string name="hex_code">Hex Code</string>

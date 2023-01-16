@@ -302,7 +302,10 @@
 
                     <TextView
                         style="@style/TagEditor.InputHint"
-                        android:text="@string/write_count"/>
+                        android:text="@string/write_count"
+                        android:ellipsize="marquee"
+                        android:marqueeRepeatLimit="3"
+                        android:singleLine="true"/>
 
                     <EditText
                         android:id="@+id/txtWriteCounter"

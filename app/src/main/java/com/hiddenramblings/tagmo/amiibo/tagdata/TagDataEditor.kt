@@ -279,8 +279,13 @@ class TagDataEditor : AppCompatActivity() {
             loadData()
         }
         appDataTransfer.setOnClickListener {
-            Toasty(this).Short(R.string.notice_incomplete)
-            amiiboData.appData
+            if (null != AppData.transferData) {
+                transferData()
+            } else {
+                AppData.transferId = amiiboData.appId
+                AppData.transferData = amiiboData.appData
+                finish()
+            }
         }
     }
 
@@ -388,6 +393,38 @@ class TagDataEditor : AppCompatActivity() {
         loadWriteCounter()
         loadSerialNumber()
         loadAppId()
+    }
+
+    private fun transferData() {
+        val backupData = amiiboData
+        amiiboData.appId = AppData.transferId
+        amiiboData.appData = AppData.transferData!!
+        amiiboData.uID = backupData.uID
+        amiiboData.amiiboID = backupData.amiiboID
+        if (backupData.isUserDataInitialized) {
+            amiiboData.countryCode = backupData.countryCode
+            amiiboData.initializedDate = backupData.initializedDate
+            amiiboData.modifiedDate = backupData.modifiedDate
+            amiiboData.nickname = backupData.nickname
+            amiiboData.miiName = backupData.miiAuthor
+            amiiboData.miiAuthor = backupData.miiAuthor
+            amiiboData.titleID = backupData.titleID
+            amiiboData.writeCount = backupData.writeCount
+        } else {
+            amiiboData.countryCode = 0
+            amiiboData.initializedDate = Date()
+            amiiboData.modifiedDate = Date()
+            amiiboData.nickname = ""
+            amiiboData.miiName = ""
+            amiiboData.miiAuthor = ""
+            amiiboData.titleID = 0
+            amiiboData.writeCount = 0
+        }
+        amiiboData.isUserDataInitialized = true
+        amiiboData.isAppDataInitialized = true
+        loadData()
+        AppData.transferId = 0
+        AppData.transferData = null
     }
 
     private fun onUserDataSwitchClicked(isUserDataInitialized: Boolean) {

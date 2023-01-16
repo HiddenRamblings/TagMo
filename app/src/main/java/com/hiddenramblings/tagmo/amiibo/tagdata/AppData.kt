@@ -35,6 +35,9 @@ open class AppData(appData: ByteArray) {
             get() = TagMo.appContext
         val appIds = HashMap<Int, String>()
 
+        var transferId = 0
+        var transferData: ByteArray? = null
+
         init {
             appIds[TagDataEditor.AppId_ChibiRobo] =
                 context.getString(R.string.chibi_robo)

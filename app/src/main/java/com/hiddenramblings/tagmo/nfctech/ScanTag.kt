@@ -97,57 +97,55 @@ class ScanTag {
             }
         } catch (e: Exception) {
             Debug.warn(e)
-            var error: String? = Debug.getExceptionError(e)
+            var error: String? = Debug.getExceptionCause(e)
             if (null != error) {
                 if (prefs.eliteEnabled()) {
-                    if (e is TagLostException) {
-                        if (isEliteDevice) {
-                            activity.onNFCActivity.launch(Intent(
+                    when {
+                        e is TagLostException -> {
+                            if (isEliteDevice) {
+                                activity.onNFCActivity.launch(Intent(
                                     activity, NfcActivity::class.java
-                            ).setAction(NFCIntent.ACTION_BLIND_SCAN))
-                        } else {
-                            IconifiedSnackbar(activity, activity.layout).buildSnackbar(
-                                R.string.speed_scan, Snackbar.LENGTH_SHORT
-                            ).show()
+                                ).setAction(NFCIntent.ACTION_BLIND_SCAN))
+                            } else {
+                                IconifiedSnackbar(activity, activity.layout).buildSnackbar(
+                                    R.string.speed_scan, Snackbar.LENGTH_SHORT
+                                ).show()
+                            }
+                            closeTagSilently(mifare)
                         }
-                        closeTagSilently(mifare)
-                    } else if (activity.getString(R.string.nfc_null_array) == error) {
-                        activity.runOnUiThread {
-                            AlertDialog.Builder(activity)
-                                .setTitle(R.string.possible_lock)
-                                .setMessage(R.string.prepare_unlock)
-                                .setPositiveButton(R.string.unlock) { dialog: DialogInterface, _: Int ->
+                        activity.getString(R.string.nfc_null_array) == error -> {
+                            activity.runOnUiThread {
+                                getErrorDialog(activity,
+                                    R.string.possible_lock, R.string.prepare_unlock
+                                ).setPositiveButton(R.string.unlock) { dialog: DialogInterface, _: Int ->
                                     closeTagSilently(mifare)
-                                    dialog.dismiss()
-                                    activity.onNFCActivity.launch(
-                                        Intent(
-                                            activity, NfcActivity::class.java
-                                        ).setAction(NFCIntent.ACTION_UNLOCK_UNIT)
-                                    )
-                                }
-                                .setNegativeButton(R.string.cancel) { dialog: DialogInterface, _: Int ->
-                                    closeTagSilently(mifare)
-                                    dialog.dismiss()
-                                }.show()
-                        }
-                    } else if (e is NullPointerException && Debug.hasExceptionCause(e, NTAG215.CONNECT)) {
-                        activity.runOnUiThread {
-                            AlertDialog.Builder(activity)
-                                .setTitle(R.string.possible_blank)
-                                .setMessage(R.string.prepare_blank)
-                                .setPositiveButton(R.string.scan) { dialog: DialogInterface, _: Int ->
                                     dialog.dismiss()
                                     activity.onNFCActivity.launch(Intent(
-                                            activity, NfcActivity::class.java
-                                    ).setAction(NFCIntent.ACTION_BLIND_SCAN))
-                                }
-                                .setNegativeButton(R.string.cancel) { dialog: DialogInterface, _: Int ->
+                                        activity, NfcActivity::class.java
+                                    ).setAction(NFCIntent.ACTION_UNLOCK_UNIT))
+                                }.setNegativeButton(R.string.cancel) { dialog: DialogInterface, _: Int ->
+                                    closeTagSilently(mifare)
                                     dialog.dismiss()
                                 }.show()
+                            }
+                        }
+                        e is NullPointerException && Debug.hasException(e, NTAG215.CONNECT) -> {
+                            activity.runOnUiThread {
+                                getErrorDialog(activity,
+                                    R.string.possible_blank, R.string.prepare_blank
+                                ).setPositiveButton(R.string.scan) { dialog: DialogInterface, _: Int ->
+                                    dialog.dismiss()
+                                    activity.onNFCActivity.launch(Intent(
+                                        activity, NfcActivity::class.java
+                                    ).setAction(NFCIntent.ACTION_BLIND_SCAN))
+                                }.setNegativeButton(R.string.cancel) { dialog: DialogInterface, _: Int ->
+                                    dialog.dismiss()
+                                }.show()
+                            }
                         }
                     }
                 } else {
-                    if (e is NullPointerException && Debug.hasExceptionCause(e, NTAG215.CONNECT))
+                    if (e is NullPointerException && Debug.hasException(e, NTAG215.CONNECT))
                         error = activity.getString(R.string.error_tag_faulty) + "\n" + error
                     Toasty(activity).Short(error)
                 }
@@ -156,5 +154,11 @@ class ScanTag {
                 activity.onCaptureLogcatClick()
             }
         }
+    }
+
+    private fun getErrorDialog(
+        activity: BrowserActivity, title: Int, message: Int
+    ) : AlertDialog.Builder {
+        return AlertDialog.Builder(activity).setTitle(title).setMessage(message)
     }
 }

@@ -100,7 +100,7 @@ object Debug {
         return !mPrefs.disableDebug()
     }
 
-    fun getExceptionError(e: Exception): String? {
+    fun getExceptionCause(e: Exception): String? {
         val description =  when {
             null != e.message -> e.message
             null != e.cause -> e.cause.toString()
@@ -115,7 +115,7 @@ object Debug {
         return e.cause?.javaClass?.name ?: "UnknownException"
     }
 
-    fun hasExceptionCause(e: Exception, target: String): Boolean {
+    fun hasException(e: Exception, target: String): Boolean {
         if (e.stackTrace.isNullOrEmpty()) return false
         for (i in e.stackTrace.indices) {
             val line = e.stackTrace.getOrNull(i)

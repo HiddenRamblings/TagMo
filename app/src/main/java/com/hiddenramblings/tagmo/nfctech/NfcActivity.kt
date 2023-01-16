@@ -508,62 +508,64 @@ class NfcActivity : AppCompatActivity() {
             finish()
         } catch (e: Exception) {
             Debug.warn(e)
-            var error: String? = Debug.getExceptionError(e)
+            var error: String? = Debug.getExceptionCause(e)
             if (null != error) {
-                if (getString(R.string.error_tag_rewrite) == error) {
-                    args.putByteArray(NFCIntent.EXTRA_TAG_DATA, update)
-                    setResult(RESULT_OK, Intent(NFCIntent.ACTION_UPDATE_TAG).putExtras(args))
-                    runOnUiThread {
-                        AlertDialog.Builder(this@NfcActivity)
-                            .setTitle(R.string.error_tag_rewrite)
-                            .setMessage(R.string.tag_update_only)
-                            .setPositiveButton(R.string.proceed) { dialog: DialogInterface, _: Int ->
+                when {
+                    getString(R.string.error_tag_rewrite) == error -> {
+                        args.putByteArray(NFCIntent.EXTRA_TAG_DATA, update)
+                        setResult(RESULT_OK, Intent(NFCIntent.ACTION_UPDATE_TAG).putExtras(args))
+                        runOnUiThread {
+                            getErrorDialog(this@NfcActivity,
+                                R.string.error_tag_rewrite, R.string.tag_update_only
+                            ).setPositiveButton(R.string.proceed) { dialog: DialogInterface, _: Int ->
                                 closeTagSilently(mifare)
                                 dialog.dismiss()
                                 finish()
+                            }.show()
+                        }
+                    }
+                    prefs!!.eliteEnabled() -> {
+                        when {
+                            e is TagLostException -> {
+                                showMessage(R.string.speed_scan)
+                                closeTagSilently(mifare)
                             }
-                            .show()
-                    }
-                } else if (prefs!!.eliteEnabled()) {
-                    if (e is TagLostException) {
-                        showMessage(R.string.speed_scan)
-                        closeTagSilently(mifare)
-                    } else if (getString(R.string.nfc_null_array) == error) {
-                        runOnUiThread {
-                            AlertDialog.Builder(this@NfcActivity)
-                                .setTitle(R.string.possible_lock)
-                                .setMessage(R.string.prepare_unlock)
-                                .setPositiveButton(R.string.unlock) { dialog: DialogInterface, _: Int ->
-                                    closeTagSilently(mifare)
-                                    dialog.dismiss()
-                                    getIntent().action = NFCIntent.ACTION_UNLOCK_UNIT
-                                    recreate()
+                            getString(R.string.nfc_null_array) == error -> {
+                                runOnUiThread {
+                                    getErrorDialog(this@NfcActivity,
+                                        R.string.possible_lock, R.string.prepare_unlock
+                                    ).setPositiveButton(R.string.unlock) { dialog: DialogInterface, _: Int ->
+                                        closeTagSilently(mifare)
+                                        dialog.dismiss()
+                                        getIntent().action = NFCIntent.ACTION_UNLOCK_UNIT
+                                        recreate()
+                                    }.setNegativeButton(R.string.cancel) { dialog: DialogInterface, _: Int ->
+                                        closeTagSilently(mifare)
+                                        dialog.dismiss()
+                                        finish()
+                                    }.show()
                                 }
-                                .setNegativeButton(R.string.cancel) { dialog: DialogInterface, _: Int ->
-                                    closeTagSilently(mifare)
-                                    dialog.dismiss()
-                                    finish()
-                                }.show()
-                        }
-                    } else if (e is NullPointerException && Debug.hasExceptionCause(e, NTAG215.CONNECT)) {
-                        runOnUiThread {
-                            AlertDialog.Builder(this@NfcActivity)
-                                .setTitle(R.string.possible_blank)
-                                .setMessage(R.string.prepare_blank)
-                                .setPositiveButton(R.string.scan) { dialog: DialogInterface, _: Int ->
-                                    dialog.dismiss()
-                                    getIntent().action = NFCIntent.ACTION_BLIND_SCAN
-                                    recreate()
+                            }
+                            e is NullPointerException && Debug.hasException(e, NTAG215.CONNECT) -> {
+                                runOnUiThread {
+                                    getErrorDialog(this@NfcActivity,
+                                        R.string.possible_blank, R.string.prepare_blank
+                                    ).setPositiveButton(R.string.scan) { dialog: DialogInterface, _: Int ->
+                                        dialog.dismiss()
+                                        getIntent().action = NFCIntent.ACTION_BLIND_SCAN
+                                        recreate()
+                                    }.setNegativeButton(R.string.cancel) { dialog: DialogInterface, _: Int ->
+                                        dialog.dismiss()
+                                    }.show()
                                 }
-                                .setNegativeButton(R.string.cancel) { dialog: DialogInterface, _: Int ->
-                                    dialog.dismiss() }
-                                .show()
+                            }
                         }
                     }
-                } else {
-                    if (e is NullPointerException && Debug.hasExceptionCause(e, NTAG215.CONNECT))
-                        error = getString(R.string.error_tag_faulty) + "\n" + error
-                    showError(error)
+                    else -> {
+                        if (e is NullPointerException && Debug.hasException(e, NTAG215.CONNECT))
+                            error = getString(R.string.error_tag_faulty) + "\n" + error
+                        showError(error)
+                    }
                 }
             } else {
                 showError(getString(R.string.error_unknown))
@@ -572,6 +574,12 @@ class NfcActivity : AppCompatActivity() {
                 } catch (ignored: IOException) { }
             }
         }
+    }
+
+    private fun getErrorDialog(
+        activity: Activity, title: Int, message: Int
+    ) : AlertDialog.Builder {
+        return AlertDialog.Builder(activity).setTitle(title).setMessage(message)
     }
 
     private var onNFCActivity = registerForActivityResult(

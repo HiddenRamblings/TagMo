@@ -23,4 +23,5 @@
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
 
+-keep class com.google.android.material.R$drawable { *; }
 -keepclassmembers class com.hiddenramblings.tagmo.JoyCon { *; }

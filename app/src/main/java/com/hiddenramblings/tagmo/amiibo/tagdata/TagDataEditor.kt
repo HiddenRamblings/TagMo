@@ -486,7 +486,7 @@ class TagDataEditor : AppCompatActivity() {
                     return
                 }
             }
-            if (appDataSwitch.isChecked && null != appDataSplatoon) {
+            if (appDataSwitch.isChecked && null != appDataSplatoon3) {
                 try {
                     newAmiiboData.appData = onAppDataSplatoon3Saved()
                 } catch (e: Exception) {

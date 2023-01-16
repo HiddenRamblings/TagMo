@@ -33,6 +33,20 @@
             android:textSize="14sp" />
     </LinearLayout>
 
+    <TextView
+        android:id="@+id/donation_banner"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginEnd="8dp"
+        android:gravity="center"
+        android:textColor="?android:textColorPrimary"
+        android:textSize="14sp"
+        android:text="@string/settings_banner"
+        android:visibility="gone"/>
+
     <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:id="@+id/preferences"
         android:layout_width="match_parent"

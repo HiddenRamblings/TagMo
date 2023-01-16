@@ -436,6 +436,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
             prefsDrawer = findViewById(R.id.drawer_layout)
             prefsDrawer?.addDrawerListener(object : SimpleDrawerListener() {
                 override fun onDrawerOpened(drawerView: View) {
+                    findViewById<View>(R.id.donation_banner).isVisible = TagMo.hasSubscription
                     super.onDrawerOpened(drawerView)
                     findViewById<View>(R.id.build_layout).setOnClickListener {
                         closePrefsDrawer()

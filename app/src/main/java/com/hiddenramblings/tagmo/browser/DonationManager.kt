@@ -21,6 +21,7 @@ import com.android.billingclient.api.BillingFlowParams.ProductDetailsParams
 import com.android.billingclient.api.QueryProductDetailsParams.Product
 import com.hiddenramblings.tagmo.BuildConfig
 import com.hiddenramblings.tagmo.R
+import com.hiddenramblings.tagmo.TagMo
 import com.hiddenramblings.tagmo.eightbit.io.Debug
 import com.hiddenramblings.tagmo.eightbit.material.IconifiedSnackbar
 import kotlinx.coroutines.*
@@ -57,6 +58,7 @@ class DonationManager internal constructor(private val activity: BrowserActivity
     private val acknowledgePurchaseResponseListener =
         AcknowledgePurchaseResponseListener {
             IconifiedSnackbar(activity).buildTickerBar(R.string.donation_thanks).show()
+            TagMo.hasSubscription = true
         }
 
     private fun handlePurchaseSub(purchase: Purchase) {
@@ -96,6 +98,7 @@ class DonationManager internal constructor(private val activity: BrowserActivity
                 for (purchase in purchases) {
                     for (sku in purchase.products) {
                         if (subsPurchased.contains(sku)) {
+                            TagMo.hasSubscription = true
                             break
                         }
                     }
@@ -332,13 +335,9 @@ class DonationManager internal constructor(private val activity: BrowserActivity
             @SuppressLint("InflateParams") val manage =
                 activity.layoutInflater.inflate(R.layout.button_cancel_sub, null)
             manage.setOnClickListener {
-                activity.startActivity(
-                    Intent(
-                        Intent.ACTION_VIEW, Uri.parse(
-                            "https://support.google.com/googleplay/workflow/9827184"
-                        )
-                    )
-                )
+                activity.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(
+                    "https://support.google.com/googleplay/workflow/9827184"
+                )))
                 donateDialog.cancel()
             }
             manage.layoutParams = params
@@ -348,13 +347,9 @@ class DonationManager internal constructor(private val activity: BrowserActivity
             @SuppressLint("InflateParams") val sponsor =
                 activity.layoutInflater.inflate(R.layout.button_sponsor, null)
             sponsor.setOnClickListener {
-                activity.startActivity(
-                    Intent(
-                        Intent.ACTION_VIEW, Uri.parse(
-                            "https://github.com/sponsors/AbandonedCart"
-                        )
-                    )
-                )
+                activity.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(
+                    "https://github.com/sponsors/AbandonedCart"
+                )))
                 donateDialog.cancel()
             }
             sponsor.layoutParams = params
@@ -363,13 +358,9 @@ class DonationManager internal constructor(private val activity: BrowserActivity
             @SuppressLint("InflateParams") val paypal =
                 activity.layoutInflater.inflate(R.layout.button_paypal, null)
             paypal.setOnClickListener {
-                activity.startActivity(
-                    Intent(
-                        Intent.ACTION_VIEW, Uri.parse(
-                            "https://www.paypal.com/donate/?hosted_button_id=Q2LFH2SC8RHRN"
-                        )
-                    )
-                )
+                activity.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(
+                    "https://www.paypal.com/donate/?hosted_button_id=Q2LFH2SC8RHRN"
+                )))
                 donateDialog.cancel()
             }
             paypal.layoutParams = params

@@ -12,6 +12,6 @@ class AppDataSplatoon(appData: ByteArray?) : AppData(appData!!) {
     }
 
     fun injectSaveData() {
-        appData.put(SaveDataSplatoon(appData.array()).injectSaveData())
+        appData = SaveDataSplatoon(appData.array()).injectSaveData()
     }
 }

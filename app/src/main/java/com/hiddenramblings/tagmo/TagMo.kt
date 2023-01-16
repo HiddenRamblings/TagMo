@@ -98,5 +98,7 @@ class TagMo : Application() {
                 HtmlCompat.FROM_HTML_MODE_LEGACY
             )
         }
+
+        var hasSubscription = false
     }
 }

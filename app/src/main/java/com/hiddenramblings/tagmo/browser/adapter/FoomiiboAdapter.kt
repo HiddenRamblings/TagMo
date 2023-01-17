@@ -132,7 +132,7 @@ class FoomiiboAdapter(
                     }
                     else -> {}
                 }
-                if (null != heading && heading.isNotEmpty()) {
+                if (heading?.isNotEmpty() == true) {
                     section = heading[0].toString().uppercase(Locale.getDefault())
                 }
                 if (null != section && !sections.contains(section)) {

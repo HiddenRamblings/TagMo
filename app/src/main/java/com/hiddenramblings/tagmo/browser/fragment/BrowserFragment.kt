@@ -74,7 +74,7 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
             && NFCIntent.ACTION_EDIT_COMPLETE != result.data!!.action
         ) return@registerForActivityResult
         val tagData = result.data?.getByteArrayExtra(NFCIntent.EXTRA_TAG_DATA)
-        if (null != tagData && tagData.isNotEmpty()) {
+        if (tagData?.isNotEmpty() == true) {
             var updated = false
             for (data in resultData) {
                 try {
@@ -227,7 +227,7 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
     private suspend fun deleteDir(dialog: ProgressDialog?, dir: File?) {
         if (!directory.exists()) return
         val files = dir?.listFiles()
-        if (null != files && files.isNotEmpty()) {
+        if (!files.isNullOrEmpty()) {
             files.forEach {
                 if (it.isDirectory) {
                     withContext(Dispatchers.Main) {

@@ -660,7 +660,7 @@ class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
                     return@setOnMenuItemClickListener true
                 }
                 R.id.mnu_write -> {
-                    if (null != tagData && tagData.isNotEmpty()) {
+                    if (tagData?.isNotEmpty() == true) {
                         scan.action = NFCIntent.ACTION_WRITE_TAG_FULL
                         scan.putExtra(NFCIntent.EXTRA_TAG_DATA, tagData)
                         onUpdateTagResult.launch(scan)
@@ -681,7 +681,7 @@ class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
                     return@setOnMenuItemClickListener true
                 }
                 R.id.mnu_edit -> {
-                    if (null != tagData && tagData.isNotEmpty()) {
+                    if (tagData?.isNotEmpty() == true) {
                         val editor = Intent(requireContext(), TagDataEditor::class.java)
                         editor.putExtra(NFCIntent.EXTRA_TAG_DATA, tagData)
                         onUpdateTagResult.launch(editor)
@@ -692,7 +692,7 @@ class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
                     return@setOnMenuItemClickListener true
                 }
                 R.id.mnu_view_hex -> {
-                    if (null != tagData && tagData.isNotEmpty()) {
+                    if (tagData?.isNotEmpty() == true) {
                         val viewhex = Intent(requireContext(), HexCodeViewer::class.java)
                         viewhex.putExtra(NFCIntent.EXTRA_TAG_DATA, tagData)
                         startActivity(viewhex)
@@ -703,7 +703,7 @@ class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
                     return@setOnMenuItemClickListener true
                 }
                 R.id.mnu_backup -> {
-                    if (null != tagData && tagData.isNotEmpty()) {
+                    if (tagData?.isNotEmpty() == true) {
                         displayBackupDialog(tagData)
                     } else {
                         status = CLICKED.BANK_BACKUP
@@ -712,7 +712,7 @@ class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
                     return@setOnMenuItemClickListener true
                 }
                 R.id.mnu_validate -> {
-                    if (null != tagData && tagData.isNotEmpty()) {
+                    if (tagData?.isNotEmpty() == true) {
                         try {
                             TagArray.validateData(tagData)
                             notice.Dialog(R.string.validation_success)

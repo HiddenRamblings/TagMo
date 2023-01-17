@@ -151,7 +151,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
         if (null != enableEliteSupport) {
             val isElite = prefs.eliteEnabled()
             enableEliteSupport.isChecked = isElite
-            if (isElite && null != prefs.eliteSignature() && prefs.eliteSignature()!!.isNotEmpty()) {
+            if (isElite && prefs.eliteSignature()?.isNotEmpty() == true) {
                 enableEliteSupport.summary = getString(R.string.elite_signature, prefs.eliteSignature())
             }
             enableEliteSupport.onPreferenceClickListener =

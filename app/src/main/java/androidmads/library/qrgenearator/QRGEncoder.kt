@@ -70,7 +70,7 @@ class QRGEncoder(data: String?, bundle: Bundle?, type: Int, private var dimensio
 
     private fun encodeContents(data: String?, bundle: Bundle?, type: Int): Boolean {
         encodeQRCodeContents(data, bundle, type)
-        return contents != null && contents!!.isNotEmpty()
+        return contents?.isNotEmpty() == true
     }
 
     private fun encodeQRCodeContents(data: String?, bundle: Bundle?, type: Int) {

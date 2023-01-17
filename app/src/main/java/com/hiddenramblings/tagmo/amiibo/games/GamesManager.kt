@@ -23,19 +23,19 @@ class GamesManager {
     fun getGamesCompatibility(amiiboId: Long): String {
         val usage = StringBuilder()
         val amiibo3DS = games3DS[amiiboId]
-        if (null != amiibo3DS && amiibo3DS.games!!.isNotEmpty()) {
+        if (amiibo3DS?.games?.isNotEmpty() == true) {
             usage.append("\n3DS:")
             usage.append(amiibo3DS.stringList)
             usage.append("\n")
         }
         val amiiboWiiU = gamesWiiU[amiiboId]
-        if (null != amiiboWiiU && amiiboWiiU.games!!.isNotEmpty()) {
+        if (amiiboWiiU?.games?.isNotEmpty() == true) {
             usage.append("\nWiiU:")
             usage.append(amiiboWiiU.stringList)
             usage.append("\n")
         }
         val amiiboSwitch = gamesSwitch[amiiboId]
-        if (null != amiiboSwitch && amiiboSwitch.games!!.isNotEmpty()) {
+        if (amiiboSwitch?.games?.isNotEmpty() == true) {
             usage.append("\nSwitch:")
             usage.append(amiiboSwitch.stringList)
             usage.append("\n")

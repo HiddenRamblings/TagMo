@@ -12,6 +12,6 @@ class GamesWiiU(val manager: GamesManager, val id: Long, val games: ArrayList<St
         }
 
     fun hasUsage(name: String?): Boolean {
-        return null != games && games.isNotEmpty() && games.contains(name)
+        return games?.isNotEmpty() == true && games.contains(name)
     }
 }

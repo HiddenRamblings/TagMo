@@ -254,7 +254,7 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
                             fragmentHandler.postDelayed(
                                 { showDisconnectNotice() }, TagMo.uiDelay.toLong()
                             )
-                            requireActivity().runOnUiThread {
+                            activity?.runOnUiThread {
                                 bottomSheet?.setState(BottomSheetBehavior.STATE_COLLAPSED)
                             }
                             stopGattService()
@@ -328,11 +328,10 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
                                 currentCount = slotData.size
                                 val flaskAmiibos = ArrayList<Amiibo?>()
                                 for (i in 0 until currentCount) {
-                                    try {
+                                    if (slotData[i]?.isNotEmpty() == true) {
                                         val amiibo = getAmiiboFromHead(slotData[i])
                                         flaskAmiibos.add(amiibo)
-                                    } catch (ex: NullPointerException) {
-                                        Debug.warn(ex)
+                                    } else {
                                         flaskAmiibos.add(null)
                                     }
                                 }
@@ -366,7 +365,7 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
                             fragmentHandler.postDelayed(
                                 { showDisconnectNotice() }, TagMo.uiDelay.toLong()
                             )
-                            requireActivity().runOnUiThread {
+                            activity?.runOnUiThread {
                                 bottomSheet?.setState(BottomSheetBehavior.STATE_COLLAPSED)
                             }
                             stopGattService()

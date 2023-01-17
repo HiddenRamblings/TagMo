@@ -12,6 +12,6 @@ class GamesSwitch(val manager: GamesManager, val id: Long, val games: ArrayList<
         }
 
     fun hasUsage(name: String?): Boolean {
-        return null != games && games.isNotEmpty() && games.contains(name)
+        return games?.isNotEmpty() == true && games.contains(name)
     }
 }

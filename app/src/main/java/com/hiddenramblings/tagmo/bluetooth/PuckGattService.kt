@@ -74,7 +74,7 @@ class PuckGattService : Service() {
     private var puckArray = ArrayList<ByteArray?>()
     private var readResponse = ByteArray(NfcByte.TAG_FILE_SIZE)
     private fun getCharacteristicValue(characteristic: BluetoothGattCharacteristic, data: ByteArray?) {
-        if (null != data && data.isNotEmpty()) {
+        if (data?.isNotEmpty() == true) {
             Debug.verbose(
                 this.javaClass, getLogTag(characteristic.uuid) + " " + Arrays.toString(data)
             )
@@ -85,11 +85,11 @@ class PuckGattService : Service() {
                         slotsCount = data[2].toInt()
                         getDeviceSlots(slotsCount)
                     } else {
-                        if (data.size > 2) {
-                            puckArray.add(Arrays.copyOfRange(data, 2, data.size))
-                        } else {
-                            puckArray.add(null)
-                        }
+                        puckArray.add(
+                            if (data.size > 2)
+                                Arrays.copyOfRange(data, 2, data.size)
+                            else null
+                        )
                         if (puckArray.size == slotsCount) {
                             listener?.onPuckListRetrieved(puckArray, activeSlot)
                         }
@@ -329,10 +329,8 @@ class PuckGattService : Service() {
         if (!mBluetoothGatt!!.readCharacteristic(mReadCharacteristic)) {
             for (customRead in mCustomService.characteristics) {
                 val customUUID = customRead.uuid
-                /*get the read characteristic from the service*/if (customUUID.compareTo(
-                        PuckRX
-                    ) == 0
-                ) {
+                /*get the read characteristic from the service*/
+                if (customUUID.compareTo(PuckRX) == 0) {
                     Debug.verbose(this.javaClass, "GattReadCharacteristic: $customUUID")
                     mReadCharacteristic = mCustomService.getCharacteristic(customUUID)
                     break
@@ -404,9 +402,7 @@ class PuckGattService : Service() {
     }
 
     private fun delayedWriteCharacteristic(value: ByteArray) {
-        val chunks = byteToPortions(
-            value, maxTransmissionUnit - 3
-        )
+        val chunks = byteToPortions(value, maxTransmissionUnit - 3)
         val commandQueue = commandCallbacks.size + 1 + chunks.size
         puckHandler.postDelayed({
             var i = 0

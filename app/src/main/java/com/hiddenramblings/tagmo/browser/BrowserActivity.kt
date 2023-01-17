@@ -2125,7 +2125,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
             var gameSeries = ""
             // String character = "";
             val amiiboImageUrl: String?
-            if (null != tagData && tagData.isNotEmpty()) {
+            if (tagData?.isNotEmpty() == true) {
                 try {
                     amiiboId = Amiibo.dataToId(tagData)
                 } catch (e: Exception) {

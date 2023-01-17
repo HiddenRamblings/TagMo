@@ -96,7 +96,8 @@
     <string name="ignore_tag_id">Ignore Tag ID #</string>
     <string name="random_serial">Random Serial Number</string>
     <string name="inject_game_data">Inject Save Data</string>
-    <string name="transfer_app_data">Transfer App Data</string>
+    <string name="export_app_data">Export App Data</string>
+    <string name="import_app_data">Import App Data</string>
     <string name="format_app_data">Format App Data</string>
     <string name="game_titles_view">View Compatible Games</string>
     <string name="game_titles_hide">Hide Compatible Games</string>

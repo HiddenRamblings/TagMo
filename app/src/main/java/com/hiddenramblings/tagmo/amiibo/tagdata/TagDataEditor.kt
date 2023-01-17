@@ -278,9 +278,14 @@ class TagDataEditor : AppCompatActivity() {
             amiiboData.appData = ByteArray(amiiboData.appData.size)
             loadData()
         }
+        if (null != AppData.transferData)
+            appDataTransfer.text = getString(R.string.import_app_data)
         appDataTransfer.setOnClickListener {
             if (null != AppData.transferData) {
                 transferData()
+                val button = it as AppCompatButton
+                button.text = getString(R.string.export_app_data)
+                button.isEnabled = false
             } else {
                 AppData.transferId = amiiboData.appId
                 AppData.transferData = amiiboData.appData

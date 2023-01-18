@@ -101,13 +101,13 @@
         </activity>
         <activity
             android:name=".hexcode.HexCodeViewer"
-            android:theme="@style/DialogTheme.NoActionBar" />
+            android:theme="@style/Theme.Overlay.NoActionBar" />
         <activity
             android:name=".browser.ImageActivity"
-            android:theme="@style/DialogTheme.NoActionBar" />
+            android:theme="@style/Theme.Overlay.NoActionBar" />
         <activity
             android:name=".amiibo.tagdata.TagDataEditor"
-            android:theme="@style/DialogTheme.NoActionBar" />
+            android:theme="@style/Theme.Overlay.NoActionBar" />
         <activity
             android:name=".qrcode.QRCodeScanner"
             android:label="@string/qr_code_scanner"

@@ -31,8 +31,8 @@
                     android:minHeight="?attr/actionBarSize"
                     android:gravity="center"
                     android:layout_gravity="center"
-                    android:theme="@style/PopupThemeOverlay"
-                    app:popupTheme="@style/PopupTheme" />
+                    android:theme="@style/ThemeOverlay.Popup"
+                    app:popupTheme="@style/ThemeOverlay.PopupTheme" />
             </LinearLayout>
 
             <com.hiddenramblings.tagmo.eightbit.view.AnimatedLinearLayout

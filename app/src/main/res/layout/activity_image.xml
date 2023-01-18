@@ -10,7 +10,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:theme="@style/PopupThemeOverlay"
+        android:theme="@style/ThemeOverlay.Popup"
         android:orientation="vertical">
 
         <androidx.appcompat.widget.Toolbar
@@ -21,8 +21,8 @@
             app:contentInsetLeft="2dp"
             app:contentInsetStart="2dp"
             android:layout_gravity="center"
-            android:theme="@style/PopupThemeOverlay"
-            app:popupTheme="@style/PopupTheme" />
+            android:theme="@style/ThemeOverlay.Popup"
+            app:popupTheme="@style/ThemeOverlay.PopupTheme" />
     </LinearLayout>
 
     <androidx.appcompat.widget.AppCompatImageView

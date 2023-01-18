@@ -285,7 +285,7 @@ class DonationManager internal constructor(private val activity: BrowserActivity
         val layout = activity.layoutInflater
             .inflate(R.layout.donation_layout, null) as LinearLayout
         val dialog = AlertDialog.Builder(
-            ContextThemeWrapper(activity, R.style.DialogTheme_NoActionBar)
+            ContextThemeWrapper(activity, R.style.Theme_Overlay_NoActionBar)
         )
         val donations = layout.findViewById<LinearLayout>(R.id.donation_layout)
         donations.removeAllViewsInLayout()

@@ -132,8 +132,13 @@
         android:icon="@drawable/ic_joy_cons_24dp"
         android:title="@string/connect_joy_con"/>
     <item
-        android:id="@+id/capture_logcat"
+        android:id="@+id/report_problem"
         android:icon="@drawable/ic_support_required_24dp"
-        android:title="@string/logcat_support"
+        android:title="@string/report_problem"
+        app:showAsAction="never"/>
+    <item
+        android:id="@+id/send_donation"
+        android:icon="@drawable/ic_github_sponsor_24dp"
+        android:title="@string/send_donation"
         app:showAsAction="never"/>
 </menu>

@@ -151,7 +151,7 @@ class ScanTag {
                 }
             } else {
                 Toasty(activity).Short(R.string.error_unknown)
-                activity.onCaptureLogcatClick()
+                activity.onReportProblemClick()
             }
         }
     }

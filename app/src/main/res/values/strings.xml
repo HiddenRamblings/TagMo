@@ -126,13 +126,15 @@
     <string name="bonus_two">Bonus Effect 2</string>
     <string name="bonus_three">Bonus Effect 2</string>
 
-    <string name="logcat_support">Report Problem</string>
+    <string name="report_problem">Report Problem</string>
     <string name="logcat_crash">ERROR! Submit a log?</string>
+    <string name="send_donation">Send a Donation</string>
     <string name="settings_donate">Send a donation to support development</string>
     <string name="google_link">Donate with Google Play</string>
     <string name="sponsor_link">Sponsor on GitHub</string>
     <string name="paypal_link">Donate with PayPal</string>
     <string name="cancel_link">Cancel Subscription</string>
+    <string name="subscription_terms">By subscribing to monthly donations, a special banner will appear in settings for the duration of your subscription.\n\nYou may cancel your subscription at any time by using the button on this donation page or through Google Play.</string>
     <string name="clear_foomiibo_set">Clear Foomiibo</string>
     <string name="build_foomiibo_set">Build Foomiibo</string>
     <string name="foomiibo_progress">Building %1$s&#8230;</string>

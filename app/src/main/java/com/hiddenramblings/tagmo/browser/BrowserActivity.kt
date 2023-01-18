@@ -729,7 +729,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
         }
     }
 
-    fun onCaptureLogcatClick() {
+    fun onReportProblemClick() {
         if (updateManager?.hasPendingUpdate() == true) {
             if (null != appUpdate) updateManager?.downloadPlayUpdate(appUpdate)
             if (null != updateUrl) updateManager?.installUpdateCompat(updateUrl)
@@ -1464,8 +1464,11 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                 Toasty(this).Short(R.string.notice_incomplete)
                 if (Debug.isNewer(Build.VERSION_CODES.JELLY_BEAN_MR2)) onShowJoyConFragment()
             }
-            R.id.capture_logcat -> {
-                onCaptureLogcatClick()
+            R.id.send_donation -> {
+                showDonationPanel()
+            }
+            R.id.report_problem -> {
+                onReportProblemClick()
             }
             R.id.filter_character -> {
                 return onFilterCharacterClick()

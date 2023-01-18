@@ -106,7 +106,7 @@
     <string name="bonus_two">Bonus Efekt 2</string>
     <string name="bonus_three">Bonus Efekt 3</string>
 
-    <string name="logcat_support">Przechw. Logcat</string>
+    <string name="report_problem">Przechw. Logcat</string>
     <string name="clear_foomiibo_set">Wyczyść Foomiibo</string>
     <string name="build_foomiibo_set">Zbuduj Foomiibo</string>
     <string name="foomiibo_progress">Budowanie %1$s&#8230;</string>

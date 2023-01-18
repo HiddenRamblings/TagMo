@@ -124,7 +124,7 @@
     <string name="bonus_two">Bonus Effect 2</string>
     <string name="bonus_three">Bonus Effect 2</string>
 
-    <string name="logcat_support">程式意見反映</string>
+    <string name="report_problem">程式意見反映</string>
     <string name="logcat_crash">出現嚴重錯誤，是否上傳操作日誌?</string>
     <string name="settings_donate">捐款贊助程式開發</string>
     <string name="google_link">透過Google Play捐款</string>

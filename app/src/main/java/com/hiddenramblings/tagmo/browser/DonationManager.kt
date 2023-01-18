@@ -2,6 +2,7 @@ package com.hiddenramblings.tagmo.browser
 
 import android.annotation.SuppressLint
 import android.app.Dialog
+import android.content.DialogInterface
 import android.content.Intent
 import android.content.res.Resources
 import android.graphics.Color
@@ -162,7 +163,6 @@ class DonationManager internal constructor(private val activity: BrowserActivity
                             }
                         }
                     }
-                    if (BuildConfig.GOOGLE_PLAY) return@launch
                     subList.add(getSub(1))
                     subList.add(getSub(5))
                     subList.add(getSub(10))
@@ -216,13 +216,10 @@ class DonationManager internal constructor(private val activity: BrowserActivity
         button.layoutParams = params
         button.setTextColor(ContextCompat.getColor(activity, android.R.color.white))
         button.textSize = TypedValue.applyDimension(
-            TypedValue.COMPLEX_UNIT_DIP,
-            8f,
-            Resources.getSystem().displayMetrics
+            TypedValue.COMPLEX_UNIT_DIP, 8f, Resources.getSystem().displayMetrics
         )
         button.text = activity.getString(
-            R.string.iap_button, skuDetail
-                .oneTimePurchaseOfferDetails!!.formattedPrice
+            R.string.iap_button, skuDetail.oneTimePurchaseOfferDetails!!.formattedPrice
         )
         button.setOnClickListener {
             val productDetailsParamsList = ProductDetailsParams
@@ -259,9 +256,7 @@ class DonationManager internal constructor(private val activity: BrowserActivity
         button.layoutParams = params
         button.setTextColor(ContextCompat.getColor(activity, android.R.color.white))
         button.textSize = TypedValue.applyDimension(
-            TypedValue.COMPLEX_UNIT_DIP,
-            8f,
-            Resources.getSystem().displayMetrics
+            TypedValue.COMPLEX_UNIT_DIP, 8f, Resources.getSystem().displayMetrics
         )
         button.text = activity.getString(
             R.string.sub_button, skuDetail
@@ -269,14 +264,20 @@ class DonationManager internal constructor(private val activity: BrowserActivity
                 .pricingPhaseList[0].formattedPrice
         )
         button.setOnClickListener {
-            val productDetailsParamsList = ProductDetailsParams.newBuilder()
-                .setOfferToken(skuDetail.subscriptionOfferDetails!![0].offerToken)
-                .setProductDetails(skuDetail).build()
-            billingClient?.launchBillingFlow(
-                activity, BillingFlowParams.newBuilder()
-                    .setProductDetailsParamsList(listOf(productDetailsParamsList))
-                    .build()
-            )
+            AlertDialog.Builder(activity)
+                .setMessage(R.string.subscription_terms)
+                .setPositiveButton(R.string.proceed) { _: DialogInterface?, _: Int ->
+                    val productDetailsParamsList = ProductDetailsParams.newBuilder()
+                        .setOfferToken(skuDetail.subscriptionOfferDetails!![0].offerToken)
+                        .setProductDetails(skuDetail).build()
+                    billingClient?.launchBillingFlow(
+                        activity, BillingFlowParams.newBuilder()
+                            .setProductDetailsParamsList(listOf(productDetailsParamsList))
+                            .build()
+                    )
+                }
+                .setNegativeButton(R.string.cancel) { _: DialogInterface?, _: Int -> }
+                .show()
         }
         return button
     }
@@ -297,10 +298,6 @@ class DonationManager internal constructor(private val activity: BrowserActivity
             donations.addView(getDonationButton(skuDetail))
         }
         val subscriptions = layout.findViewById<LinearLayout>(R.id.subscription_layout)
-        if (BuildConfig.GOOGLE_PLAY) {
-            subscriptions.isGone = true
-        } else {
-            subscriptions.isVisible = true
             subscriptions.removeAllViewsInLayout()
             subSkuDetails.sortWith { obj1: ProductDetails, obj2: ProductDetails ->
                 obj1.productId.compareTo(obj2.productId, ignoreCase = true)
@@ -309,7 +306,6 @@ class DonationManager internal constructor(private val activity: BrowserActivity
                 if (null == skuDetail.subscriptionOfferDetails) continue
                 subscriptions.addView(getSubscriptionButton(skuDetail))
             }
-        }
         dialog.setOnCancelListener {
             donations.removeAllViewsInLayout()
             if (!BuildConfig.GOOGLE_PLAY) subscriptions.removeAllViewsInLayout()
@@ -331,7 +327,7 @@ class DonationManager internal constructor(private val activity: BrowserActivity
         )
         params.setMargins(0, padding, 0, padding)
 
-        if (!BuildConfig.GOOGLE_PLAY) {
+        if (TagMo.hasSubscription) {
             @SuppressLint("InflateParams") val manage =
                 activity.layoutInflater.inflate(R.layout.button_cancel_sub, null)
             manage.setOnClickListener {
@@ -342,8 +338,9 @@ class DonationManager internal constructor(private val activity: BrowserActivity
             }
             manage.layoutParams = params
             layout.addView(manage)
+        }
 
-//        if (!BuildConfig.GOOGLE_PLAY) {
+        if (!BuildConfig.GOOGLE_PLAY) {
             @SuppressLint("InflateParams") val sponsor =
                 activity.layoutInflater.inflate(R.layout.button_sponsor, null)
             sponsor.setOnClickListener {

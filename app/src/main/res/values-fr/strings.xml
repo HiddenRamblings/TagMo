@@ -112,7 +112,7 @@
     <string name="bonus_two">Effet bonus 2</string>
     <string name="bonus_three">Effet bonus 3</string>
 
-    <string name="logcat_support">Signaler un problème</string>
+    <string name="report_problem">Signaler un problème</string>
     <string name="clear_foomiibo_set">Vider Foomiibo</string>
     <string name="build_foomiibo_set">Déployer Foomiibo</string>
     <string name="foomiibo_progress">Déploiement %1$s&#8230;</string>

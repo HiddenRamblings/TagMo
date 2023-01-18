@@ -1,6 +1,10 @@
 package com.hiddenramblings.tagmo.browser
 
 import android.Manifest
+import android.animation.Animator
+import android.animation.AnimatorListenerAdapter
+import android.animation.ArgbEvaluator
+import android.animation.ValueAnimator
 import android.annotation.SuppressLint
 import android.app.Dialog
 import android.app.SearchManager
@@ -35,6 +39,7 @@ import androidx.appcompat.widget.PopupMenu
 import androidx.appcompat.widget.SearchView
 import androidx.appcompat.widget.Toolbar
 import androidx.coordinatorlayout.widget.CoordinatorLayout
+import androidx.core.content.ContextCompat
 import androidx.core.view.GravityCompat
 import androidx.core.view.MenuCompat
 import androidx.core.view.isGone
@@ -107,6 +112,7 @@ import java.io.IOException
 import java.text.ParseException
 import java.util.*
 import java.util.concurrent.Executors
+
 
 class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
     BrowserAdapter.OnAmiiboClickListener {
@@ -434,9 +440,11 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
             buildText.movementMethod = LinkMovementMethod.getInstance()
             buildText.text = TagMo.getVersionLabel(false)
             prefsDrawer = findViewById(R.id.drawer_layout)
+            val settingsBanner = findViewById<TextView>(R.id.donation_banner)
             prefsDrawer?.addDrawerListener(object : SimpleDrawerListener() {
                 override fun onDrawerOpened(drawerView: View) {
-                    findViewById<View>(R.id.donation_banner).isVisible = TagMo.hasSubscription
+                    settingsBanner.isVisible = TagMo.hasSubscription
+                    onTextColorAnimation(settingsBanner, 0)
                     super.onDrawerOpened(drawerView)
                     findViewById<View>(R.id.build_layout).setOnClickListener {
                         closePrefsDrawer()
@@ -545,6 +553,35 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
         if (!prefs.guidesPrompted()) {
             prefs.guidesPrompted(true)
             layout?.setCurrentItem(pagerAdapter.itemCount - 1, false)
+        }
+    }
+
+    private val animationArray: ArrayList<ValueAnimator> = arrayListOf()
+
+    private fun getAnimationArray() {
+        val colorRed = ContextCompat.getColor(this, android.R.color.holo_red_light)
+        val colorGreen = ContextCompat.getColor(this, android.R.color.holo_green_light)
+        val colorBlue = ContextCompat.getColor(this, android.R.color.holo_blue_light)
+        animationArray.add(ValueAnimator.ofObject(ArgbEvaluator(), colorRed, colorGreen))
+        animationArray.add(ValueAnimator.ofObject(ArgbEvaluator(), colorGreen, colorBlue))
+        animationArray.add(ValueAnimator.ofObject(ArgbEvaluator(), colorBlue, colorRed))
+    }
+    private fun onTextColorAnimation(textView: TextView?, index: Int) {
+        if (textView?.isVisible == true) {
+            if (animationArray.isEmpty()) getAnimationArray()
+            val colorAnimation: ValueAnimator = animationArray[index]
+            colorAnimation.addUpdateListener { animator ->
+                textView.setTextColor(animator.animatedValue as Int)
+            }
+            colorAnimation.addListener(object : AnimatorListenerAdapter() {
+                override fun onAnimationEnd(animation: Animator) {
+                    animation.removeAllListeners()
+                    var nextIndex = index + 1
+                    if (nextIndex >= animationArray.size) nextIndex = 0
+                    onTextColorAnimation(textView, nextIndex)
+                }
+            })
+            colorAnimation.start()
         }
     }
 

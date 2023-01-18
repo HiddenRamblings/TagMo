@@ -546,7 +546,7 @@ class NfcActivity : AppCompatActivity() {
                                     }.show()
                                 }
                             }
-                            e is NullPointerException && Debug.hasException(e, NTAG215.CONNECT) -> {
+                            Debug.hasException(e, NTAG215.CONNECT) -> {
                                 runOnUiThread {
                                     getErrorDialog(this@NfcActivity,
                                         R.string.possible_blank, R.string.prepare_blank
@@ -562,7 +562,7 @@ class NfcActivity : AppCompatActivity() {
                         }
                     }
                     else -> {
-                        if (e is NullPointerException && Debug.hasException(e, NTAG215.CONNECT))
+                        if (Debug.hasException(e, NTAG215.CONNECT))
                             error = getString(R.string.error_tag_faulty) + "\n" + error
                         showError(error)
                     }

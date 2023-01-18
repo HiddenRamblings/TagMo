@@ -57,9 +57,8 @@ class NTAG215 : TagTechnology {
 
     @Throws(IOException::class)
     fun writePage(pageOffset: Int, data: ByteArray) {
-        if (null != tagMifare) {
-            tagMifare.writePage(pageOffset, data)
-        } else if (null != tagNfcA) {
+        tagMifare?.writePage(pageOffset, data) ?:
+        if (null != tagNfcA) {
             validatePageIndex(pageOffset)
             //m_nfcA.checkConnected();
             val cmd = ByteArray(data.size + 2)
@@ -67,19 +66,19 @@ class NTAG215 : TagTechnology {
             cmd[1] = pageOffset.toByte()
             System.arraycopy(data, 0, cmd, 2, data.size)
             tagNfcA.transceive(cmd)
+        } else {
+            throw IOException()
         }
     }
 
     @Throws(IOException::class)
     override fun connect() {
-        tagMifare?.connect()
-        tagNfcA?.connect()
+        tagMifare?.connect() ?: tagNfcA?.connect()
     }
 
     @Throws(IOException::class)
     override fun close() {
-        tagMifare?.close()
-        tagNfcA?.close()
+        tagMifare?.close() ?: tagNfcA?.close()
     }
 
     override fun getTag(): Tag? {

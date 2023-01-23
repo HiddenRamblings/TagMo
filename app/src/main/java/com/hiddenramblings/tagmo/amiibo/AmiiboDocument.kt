@@ -101,11 +101,11 @@ class AmiiboDocument(context: Context) {
                 val displayName = cursor.getString(0)
                 val mimeType = cursor.getString(1)
                 val childDocumentId = cursor.getString(2)
-                Debug.verbose(
-                    this.javaClass, "Child doc=$displayName, parent=$documentId, mime=$mimeType"
-                )
-                if (DocumentsContract.Document.MIME_TYPE_DIR == mimeType && recursiveFiles) {
-                    queue.add(childDocumentId)
+                if (DocumentsContract.Document.MIME_TYPE_DIR == mimeType) {
+                    Debug.verbose(
+                        this.javaClass, "Child doc=$displayName, parent=$documentId, mime=$mimeType"
+                    )
+                    if (recursiveFiles) queue.add(childDocumentId)
                 } else if (binFiles.contains(mimeType)) {
                     files.add(DocumentsContract.buildDocumentUriUsingTree(rootUri, childDocumentId))
                 }

@@ -12,7 +12,6 @@ import android.bluetooth.*
 import android.content.Intent
 import android.os.*
 import androidx.annotation.RequiresApi
-import com.hiddenramblings.tagmo.bluetooth.GattArray.byteToPortions
 import com.hiddenramblings.tagmo.eightbit.io.Debug
 import com.hiddenramblings.tagmo.nfctech.NfcByte
 import java.util.*
@@ -76,7 +75,7 @@ class PuckGattService : Service() {
     private fun getCharacteristicValue(characteristic: BluetoothGattCharacteristic, data: ByteArray?) {
         if (data?.isNotEmpty() == true) {
             Debug.verbose(
-                this.javaClass, getLogTag(characteristic.uuid) + " " + Arrays.toString(data)
+                this.javaClass, "${getLogTag(characteristic.uuid)} ${Arrays.toString(data)}"
             )
             if (characteristic.uuid.compareTo(PuckRX) == 0) {
                 if (data[0] == PUCK.INFO.bytes) {
@@ -161,8 +160,8 @@ class PuckGattService : Service() {
         override fun onCharacteristicWrite(
             gatt: BluetoothGatt, characteristic: BluetoothGattCharacteristic, status: Int
         ) {
-            Debug.verbose(
-                this.javaClass, getLogTag(characteristic.uuid) + " onCharacteristicWrite " + status
+            Debug.verbose(this.javaClass,
+                "${getLogTag(characteristic.uuid)} onCharacteristicWrite $status"
             )
         }
 
@@ -352,7 +351,7 @@ class PuckGattService : Service() {
                 throw UnsupportedOperationException()
             }
             for (customService in services) {
-                Debug.verbose(this.javaClass, "GattReadService: " + customService.uuid.toString())
+                Debug.verbose(this.javaClass, "GattReadService: ${customService.uuid}")
                 /*get the read characteristic from the service*/mCharacteristicRX =
                     getCharacteristicRX(customService)
                 break
@@ -391,7 +390,7 @@ class PuckGattService : Service() {
                 throw UnsupportedOperationException()
             }
             for (customService in services) {
-                Debug.verbose(this.javaClass, "GattWriteService: " + customService.uuid.toString())
+                Debug.verbose(this.javaClass, "GattWriteService: ${customService.uuid}")
                 /*get the read characteristic from the service*/mCharacteristicTX =
                     getCharacteristicTX(customService)
             }
@@ -402,14 +401,16 @@ class PuckGattService : Service() {
     }
 
     private fun delayedWriteCharacteristic(value: ByteArray) {
-        val chunks = byteToPortions(value, maxTransmissionUnit - 3)
-        val commandQueue = commandCallbacks.size + 1 + chunks.size
+        val chunks = GattArray.byteToPortions(value, maxTransmissionUnit - 3)
+        val commandQueue = commandCallbacks.size + chunks.size
         puckHandler.postDelayed({
             var i = 0
             while (i < chunks.size) {
                 val chunk = chunks[i]
                 if (null == mCharacteristicTX) continue
                 puckHandler.postDelayed({
+                    mCharacteristicTX!!.writeType =
+                        BluetoothGattCharacteristic.WRITE_TYPE_NO_RESPONSE
                     if (Debug.isNewer(Build.VERSION_CODES.TIRAMISU)) {
                         mBluetoothGatt!!.writeCharacteristic(
                             mCharacteristicTX!!, chunk,
@@ -417,8 +418,6 @@ class PuckGattService : Service() {
                         )
                     } else @Suppress("DEPRECATION") {
                         mCharacteristicTX!!.value = chunk
-                        mCharacteristicTX!!.writeType =
-                            BluetoothGattCharacteristic.WRITE_TYPE_NO_RESPONSE
                         mBluetoothGatt!!.writeCharacteristic(mCharacteristicTX)
                     }
                 }, (i + 1) * chunkTimeout)

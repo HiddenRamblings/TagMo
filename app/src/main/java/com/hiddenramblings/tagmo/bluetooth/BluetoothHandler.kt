@@ -97,11 +97,7 @@ class BluetoothHandler(
                 if (key == Manifest.permission.ACCESS_FINE_LOCATION && value)
                     isLocationAvailable = true
             }
-            if (isLocationAvailable) {
-                requestBluetooth(context)
-            } else {
-                listener.onPermissionsFailed()
-            }
+            if (isLocationAvailable) requestBluetooth(context) else listener.onPermissionsFailed()
         }
         onRequestBackgroundQ = registry.register(
             "BackgroundQ",
@@ -112,9 +108,8 @@ class BluetoothHandler(
             ActivityResultContracts.RequestMultiplePermissions()
         ) { permissions: Map<String, Boolean> ->
             var isBluetoothAvailable = false
-            for ((_, value) in permissions) {
+            for ((_, value) in permissions)
                 if (value) isBluetoothAvailable = true
-            }
             if (isBluetoothAvailable) {
                 val mBluetoothAdapter = getBluetoothAdapter(context)
                 if (null != mBluetoothAdapter) {
@@ -148,9 +143,8 @@ class BluetoothHandler(
             ActivityResultContracts.RequestMultiplePermissions()
         ) { permissions: Map<String, Boolean> ->
             var isLocationAvailable = false
-            for ((_, value) in permissions) {
+            for ((_, value) in permissions)
                 if (value) isLocationAvailable = true
-            }
             if (isLocationAvailable) {
                 val mBluetoothAdapter = getBluetoothAdapter(context)
                 if (null != mBluetoothAdapter)
@@ -220,21 +214,17 @@ class BluetoothHandler(
                         .setCancelable(false)
                         .setPositiveButton(R.string.accept) { dialog: DialogInterface, _: Int ->
                             dialog.dismiss()
-                            if (isNewer(Build.VERSION_CODES.Q)) {
+                            if (isNewer(Build.VERSION_CODES.Q))
                                 onRequestLocationQ.launch(PERMISSIONS_LOCATION)
-                            } else {
-                                onRequestLocation.launch(PERMISSIONS_LOCATION)
-                            }
+                            else onRequestLocation.launch(PERMISSIONS_LOCATION)
                         }
                         .setNegativeButton(R.string.deny) { _: DialogInterface?, _: Int ->
                             listener.onPermissionsFailed() }
                         .show()
                 } else {
-                    if (isNewer(Build.VERSION_CODES.Q)) {
+                    if (isNewer(Build.VERSION_CODES.Q))
                         onRequestLocationQ.launch(PERMISSIONS_LOCATION)
-                    } else {
-                        onRequestLocation.launch(PERMISSIONS_LOCATION)
-                    }
+                    else onRequestLocation.launch(PERMISSIONS_LOCATION)
                 }
             }
         }

@@ -14,7 +14,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.AppCompatImageView
 import androidx.appcompat.widget.Toolbar
 import androidx.core.view.isGone
-import androidx.core.view.isVisible
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
@@ -52,7 +51,7 @@ class ImageActivity : AppCompatActivity() {
     private var amiiboManager: AmiiboManager? = null
     private var amiibo: Amiibo? = null
 
-    private val loadingScope = CoroutineScope(Dispatchers.Main + Job())
+    private val scopeIO = CoroutineScope(Dispatchers.IO)
 
     public override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -108,8 +107,7 @@ class ImageActivity : AppCompatActivity() {
             )
         }
 
-        loadingScope.launch {
-            withContext(Dispatchers.IO) {
+        scopeIO.launch {
                 var amiiboManager: AmiiboManager? = null
                 try {
                     amiiboManager = AmiiboManager.getAmiiboManager(applicationContext)
@@ -122,7 +120,6 @@ class ImageActivity : AppCompatActivity() {
                 }
                 this@ImageActivity.amiiboManager = amiiboManager
                 withContext(Dispatchers.Main) { updateView(amiiboId) }
-            }
         }
         GlideApp.with(imageView).load(getImageUrl(amiiboId)).into(imageView)
         findViewById<View>(R.id.toggle).setOnClickListener {

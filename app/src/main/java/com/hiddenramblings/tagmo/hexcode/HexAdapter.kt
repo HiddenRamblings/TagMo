@@ -26,17 +26,11 @@ class HexAdapter(tagData: ByteArray) : RecyclerView.Adapter<HexAdapter.ViewHolde
                     hexItem = null
                 } else if (rowIndex == -1) {
                     hexItem = HexHeader(
-                        String.format(
-                            "%02X",
-                            columnIndex
-                        ), Color.TRANSPARENT
+                        String.format("%02X", columnIndex), Color.TRANSPARENT
                     )
                 } else if (columnIndex == -1) {
                     hexItem = HexHeader(
-                        String.format(
-                            "%04X",
-                            rowIndex * HEX
-                        ), Color.TRANSPARENT
+                        String.format("%04X", rowIndex * HEX), Color.TRANSPARENT
                     )
                 } else {
                     val index = rowIndex * HEX + columnIndex
@@ -44,8 +38,7 @@ class HexAdapter(tagData: ByteArray) : RecyclerView.Adapter<HexAdapter.ViewHolde
                         hexItem = null
                     } else {
                         val text = String.format(
-                            "%02X",
-                            java.lang.Byte.valueOf(tagData[index]).toInt() and 0xFF
+                            "%02X", java.lang.Byte.valueOf(tagData[index]).toInt() and 0xFF
                         )
                         var color = Color.WHITE
                         for (t in TagMap.getTagMap) {
@@ -101,9 +94,7 @@ class HexAdapter(tagData: ByteArray) : RecyclerView.Adapter<HexAdapter.ViewHolde
         }
     }
 
-    class ViewHolder internal constructor(var view: View) : RecyclerView.ViewHolder(
-        view
-    ) {
+    class ViewHolder internal constructor(var view: View) : RecyclerView.ViewHolder(view) {
         var textView = arrayOfNulls<TextView>(16 + 1)
 
         init {

@@ -220,8 +220,7 @@ class NTAG215 : TagTechnology {
 
     private fun internalWrite(method: IFastWrite, addr: Int, bank: Int, data: ByteArray): Boolean {
         val query = ByteArray(4)
-        val pages = data.size / 4
-        for (i in 0 until pages) {
+        for (i in 0 until data.size / 4) {
             System.arraycopy(data, i * 4, query, 0, 4)
             if (!method.doFastWrite(addr + i, bank, query)) {
                 return false

@@ -27,7 +27,6 @@ import java.io.DataInputStream
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
-import java.lang.ref.SoftReference
 import java.net.URL
 import java.util.concurrent.Executors
 
@@ -36,11 +35,10 @@ class UpdateManager internal constructor(activity: BrowserActivity) {
     private var listener: CheckUpdateListener? = null
     private var listenerPlay: CheckPlayUpdateListener? = null
     private var appUpdateManager: AppUpdateManager? = null
-    private val activity: SoftReference<BrowserActivity>
+    private val browserActivity: BrowserActivity = activity
     private var isUpdateAvailable = false
 
     init {
-        this.activity = SoftReference(activity)
         if (!BuildConfig.WEAR_OS) {
             if (BuildConfig.GOOGLE_PLAY) {
                 if (null == appUpdateManager) appUpdateManager =
@@ -50,8 +48,8 @@ class UpdateManager internal constructor(activity: BrowserActivity) {
                     isUpdateAvailable = (appUpdateInfo.updateAvailability()
                             == UpdateAvailability.UPDATE_AVAILABLE
                             && appUpdateInfo.isUpdateTypeAllowed(AppUpdateType.IMMEDIATE))
-                    if (isUpdateAvailable && null != listenerPlay)
-                        listenerPlay!!.onPlayUpdateFound(appUpdateInfo)
+                    if (isUpdateAvailable)
+                        listenerPlay?.onPlayUpdateFound(appUpdateInfo)
                 }
             } else {
                 configureUpdates(activity)
@@ -87,75 +85,72 @@ class UpdateManager internal constructor(activity: BrowserActivity) {
     }
 
     fun installUpdateTask(apkUrl: String?) {
-        if (null == apkUrl || null == activity.get()) return
+        if (null == apkUrl) return
         Executors.newSingleThreadExecutor().execute {
             val apk = File(
-                activity.get()?.externalCacheDir, apkUrl.substring(
+                browserActivity.externalCacheDir, apkUrl.substring(
                     apkUrl.lastIndexOf(File.separator) + 1
                 )
             )
             try {
-                val dis = DataInputStream(URL(apkUrl).openStream())
-                val buffer = ByteArray(1024)
-                var length: Int
-                val fos = FileOutputStream(apk)
-                while (dis.read(buffer).also { length = it } > 0) {
-                    fos.write(buffer, 0, length)
-                }
-                fos.close()
+                DataInputStream(URL(apkUrl).openStream()).use { dis ->
+                    val buffer = ByteArray(1024)
+                    var length: Int
+                    FileOutputStream(apk).use { fos ->
+                        while (dis.read(buffer).also { length = it } > 0) {
+                            fos.write(buffer, 0, length)
+                        }
+                    }
                 if (!apk.name.lowercase().endsWith(".apk")) apk.delete()
-                val applicationContext = activity.get()!!.applicationContext
+                val applicationContext = browserActivity.applicationContext
                 if (Debug.isNewer(Build.VERSION_CODES.N)) {
-                    val installer = applicationContext
-                        .packageManager.packageInstaller
+                    val installer = applicationContext.packageManager.packageInstaller
                     val resolver = applicationContext.contentResolver
                     val apkUri = Storage.getFileUri(apk)
-                    val apkStream = resolver.openInputStream(apkUri)
-                    val params = SessionParams(
-                        SessionParams.MODE_FULL_INSTALL
-                    )
-                    val sessionId = installer.createSession(params)
-                    val session = installer.openSession(sessionId)
-                    val document = DocumentFile.fromSingleUri(applicationContext, apkUri)
-                        ?: throw IOException(activity.get()?.getString(R.string.fail_invalid_size))
-                    val sessionStream = session.openWrite(
-                        "NAME", 0, document.length()
-                    )
-                    val buf = ByteArray(8192)
-                    var size: Int
-                    while (apkStream!!.read(buf).also { size = it } > 0) {
-                        sessionStream.write(buf, 0, size)
+                    resolver.openInputStream(apkUri).use { apkStream ->
+                        val params = SessionParams(SessionParams.MODE_FULL_INSTALL)
+                        val sessionId = installer.createSession(params)
+                        val session = installer.openSession(sessionId)
+                        val document = DocumentFile.fromSingleUri(applicationContext, apkUri)
+                            ?: throw IOException(browserActivity.getString(R.string.fail_invalid_size))
+                        session.openWrite("NAME", 0, document.length()).use { sessionStream ->
+                            val buf = ByteArray(8192)
+                            var size: Int
+                            while (apkStream!!.read(buf).also { size = it } > 0) {
+                                sessionStream.write(buf, 0, size)
+                            }
+                            session.fsync(sessionStream)
+                        }
+                        val pi = PendingIntent.getBroadcast(
+                            applicationContext, 8675309,
+                            Intent(applicationContext, UpdateReceiver::class.java),
+                            if (Debug.isNewer(Build.VERSION_CODES.S))
+                                PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_MUTABLE
+                            else PendingIntent.FLAG_UPDATE_CURRENT
+                        )
+                        session.commit(pi.intentSender)
                     }
-                    session.fsync(sessionStream)
-                    apkStream.close()
-                    sessionStream.close()
-                    val pi = PendingIntent.getBroadcast(
-                        applicationContext, 8675309,
-                        Intent(applicationContext, UpdateReceiver::class.java),
-                        if (Debug.isNewer(Build.VERSION_CODES.S)) PendingIntent.FLAG_UPDATE_CURRENT
-                                or PendingIntent.FLAG_MUTABLE else PendingIntent.FLAG_UPDATE_CURRENT
-                    )
-                    session.commit(pi.intentSender)
                 } else {
                     @Suppress("DEPRECATION")
                     val intent = Intent(Intent.ACTION_INSTALL_PACKAGE)
                     intent.setDataAndType(
                         Storage.getFileUri(apk),
-                        activity.get()?.getString(R.string.mimetype_apk)
+                        browserActivity.getString(R.string.mimetype_apk)
                     )
                     intent.putExtra(Intent.EXTRA_NOT_UNKNOWN_SOURCE, true)
                     intent.putExtra(
                         Intent.EXTRA_INSTALLER_PACKAGE_NAME,
-                        activity.get()!!.applicationInfo.packageName
+                        browserActivity.applicationInfo.packageName
                     )
                     try {
-                        activity.get()?.startActivity(NFCIntent.getIntent(intent))
+                        browserActivity.startActivity(NFCIntent.getIntent(intent))
                     } catch (anf: ActivityNotFoundException) {
                         try {
-                            activity.get()?.startActivity(intent.setAction(Intent.ACTION_VIEW))
+                            browserActivity.startActivity(intent.setAction(Intent.ACTION_VIEW))
                         } catch (ignored: ActivityNotFoundException) { }
                     }
                 }
+                    }
             } catch (ex: SecurityException) {
                 Debug.warn(ex)
             } catch (ex: IOException) {
@@ -165,17 +160,17 @@ class UpdateManager internal constructor(activity: BrowserActivity) {
     }
 
     fun installUpdateCompat(apkUrl: String?) {
-        if (null == apkUrl || null == activity.get()) return
+        if (null == apkUrl) return
         if (Debug.isNewer(Build.VERSION_CODES.O)) {
-            if (activity.get()!!.packageManager.canRequestPackageInstalls()) {
+            if (browserActivity.packageManager.canRequestPackageInstalls()) {
                 installUpdateTask(apkUrl)
             } else {
-                Preferences(activity.get()?.applicationContext).downloadUrl(apkUrl)
+                Preferences(browserActivity.applicationContext).downloadUrl(apkUrl)
                 val intent = Intent(Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES)
                 intent.data = Uri.parse(String.format(
-                        "package:%s", activity.get()!!.packageName
+                        "package:%s", browserActivity.packageName
                 ))
-                activity.get()!!.onRequestInstall.launch(intent)
+                browserActivity.onRequestInstall.launch(intent)
             }
         } else {
             installUpdateTask(apkUrl)
@@ -183,7 +178,7 @@ class UpdateManager internal constructor(activity: BrowserActivity) {
     }
 
     private fun parseUpdateJSON(result: String) {
-        val offset = activity.get()!!.getString(R.string.tagmo).length + 1
+        val offset = browserActivity.getString(R.string.tagmo).length + 1
         try {
             val jsonObject = JSONTokener(result).nextValue() as JSONObject
             val lastCommit = (jsonObject["name"] as String).substring(offset)
@@ -191,7 +186,7 @@ class UpdateManager internal constructor(activity: BrowserActivity) {
             val asset = assets[0] as JSONObject
             val downloadUrl = asset["browser_download_url"] as String
             isUpdateAvailable = BuildConfig.COMMIT != lastCommit
-            if (isUpdateAvailable && null != listener) listener!!.onUpdateFound(downloadUrl)
+            if (isUpdateAvailable) listener?.onUpdateFound(downloadUrl)
         } catch (e: JSONException) {
             Debug.warn(e)
         }
@@ -199,10 +194,10 @@ class UpdateManager internal constructor(activity: BrowserActivity) {
 
     fun downloadPlayUpdate(appUpdateInfo: AppUpdateInfo?) {
         try {
-            appUpdateManager!!.startUpdateFlowForResult( // Pass the intent that is returned by 'getAppUpdateInfo()'.
+            appUpdateManager?.startUpdateFlowForResult( // Pass the intent that is returned by 'getAppUpdateInfo()'.
                 appUpdateInfo!!,  // Or 'AppUpdateType.FLEXIBLE' for flexible updates.
                 AppUpdateType.IMMEDIATE,  // The current activity making the update request.
-                activity.get()!!,  // Include a request code to later monitor this update request.
+                browserActivity,  // Include a request code to later monitor this update request.
                 8675309
             )
         } catch (ex: SendIntentException) {

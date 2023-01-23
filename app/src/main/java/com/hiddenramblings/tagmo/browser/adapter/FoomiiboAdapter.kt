@@ -29,8 +29,7 @@ import com.hiddenramblings.tagmo.widget.BoldSpannable
 import java.util.*
 
 class FoomiiboAdapter(
-    private val settings: BrowserSettings,
-    private val listener: OnFoomiiboClickListener
+    private val settings: BrowserSettings, private val listener: OnFoomiiboClickListener
 ) : RecyclerView.Adapter<FoomiiboViewHolder>(), Filterable, BrowserSettingsListener,
     SectionIndexer {
     private var data = ArrayList<Amiibo>()
@@ -110,26 +109,16 @@ class FoomiiboAdapter(
         val sections: MutableList<String> = ArrayList(36)
         if (itemCount > 0) {
             mSectionPositions = ArrayList(36)
-            var i = 0
-            val size = filteredData!!.size
-            while (i < size) {
-                val amiibo = filteredData!![i]
+            filteredData?.indices?.forEach {
+                val amiibo = filteredData?.get(it)
                 var heading: String? = null
                 var section: String? = null
                 when (SORT.valueOf(settings.sort)) {
-                    SORT.NAME -> heading = amiibo.name
-                    SORT.CHARACTER -> if (null != amiibo.character) {
-                        heading = amiibo.character!!.name
-                    }
-                    SORT.GAME_SERIES -> if (null != amiibo.gameSeries) {
-                        heading = amiibo.gameSeries!!.name
-                    }
-                    SORT.AMIIBO_SERIES -> if (null != amiibo.amiiboSeries) {
-                        heading = amiibo.amiiboSeries!!.name
-                    }
-                    SORT.AMIIBO_TYPE -> if (null != amiibo.amiiboType) {
-                        heading = amiibo.amiiboType!!.name
-                    }
+                    SORT.NAME -> heading = amiibo?.name
+                    SORT.CHARACTER -> heading = amiibo?.character?.name
+                    SORT.GAME_SERIES -> heading = amiibo?.gameSeries?.name
+                    SORT.AMIIBO_SERIES -> heading = amiibo?.amiiboSeries?.name
+                    SORT.AMIIBO_TYPE -> heading = amiibo?.amiiboType?.name
                     else -> {}
                 }
                 if (heading?.isNotEmpty() == true) {
@@ -137,9 +126,8 @@ class FoomiiboAdapter(
                 }
                 if (null != section && !sections.contains(section)) {
                     sections.add(section)
-                    mSectionPositions!!.add(i)
+                    mSectionPositions!!.add(it)
                 }
-                i++
             }
         }
         return sections.toTypedArray()
@@ -151,26 +139,10 @@ class FoomiiboAdapter(
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): FoomiiboViewHolder {
         return when (VIEW.valueOf(viewType)) {
-            VIEW.COMPACT -> CompactViewHolder(
-                parent,
-                settings,
-                listener
-            )
-            VIEW.LARGE -> LargeViewHolder(
-                parent,
-                settings,
-                listener
-            )
-            VIEW.IMAGE -> ImageViewHolder(
-                parent,
-                settings,
-                listener
-            )
-            VIEW.SIMPLE -> SimpleViewHolder(
-                parent,
-                settings,
-                listener
-            )
+            VIEW.COMPACT -> CompactViewHolder(parent, settings, listener)
+            VIEW.LARGE -> LargeViewHolder(parent, settings, listener)
+            VIEW.IMAGE -> ImageViewHolder(parent, settings, listener)
+            VIEW.SIMPLE -> SimpleViewHolder(parent, settings, listener)
         }
     }
 
@@ -193,9 +165,9 @@ class FoomiiboAdapter(
         val clickPosition = if (hasStableIds()) holder.bindingAdapterPosition else position
         holder.itemView.setOnClickListener { handleClickEvent(holder) }
         holder.imageAmiibo?.setOnClickListener {
-            if (settings.amiiboView == VIEW.IMAGE.value) handleClickEvent(
-                holder
-            ) else if (null != holder.listener)
+            if (settings.amiiboView == VIEW.IMAGE.value)
+                handleClickEvent(holder)
+            else if (null != holder.listener)
                 holder.listener.onFoomiiboImageClicked(holder.foomiibo)
         }
         holder.bind(getItem(clickPosition))
@@ -264,8 +236,7 @@ class FoomiiboAdapter(
     }
 
     abstract class FoomiiboViewHolder(
-        itemView: View, private val settings: BrowserSettings,
-        val listener: OnFoomiiboClickListener?
+        itemView: View, private val settings: BrowserSettings, val listener: OnFoomiiboClickListener?
     ) : RecyclerView.ViewHolder(itemView) {
         val txtError: TextView?
         val txtName: TextView?
@@ -399,8 +370,7 @@ class FoomiiboAdapter(
     }
 
     internal class SimpleViewHolder(
-        parent: ViewGroup, settings: BrowserSettings,
-        listener: OnFoomiiboClickListener?
+        parent: ViewGroup, settings: BrowserSettings, listener: OnFoomiiboClickListener?
     ) : FoomiiboViewHolder(
         LayoutInflater.from(parent.context).inflate(
             R.layout.amiibo_simple_card, parent, false
@@ -409,8 +379,7 @@ class FoomiiboAdapter(
     )
 
     internal class CompactViewHolder(
-        parent: ViewGroup, settings: BrowserSettings,
-        listener: OnFoomiiboClickListener?
+        parent: ViewGroup, settings: BrowserSettings, listener: OnFoomiiboClickListener?
     ) : FoomiiboViewHolder(
         LayoutInflater.from(parent.context).inflate(
             R.layout.amiibo_compact_card, parent, false
@@ -419,8 +388,7 @@ class FoomiiboAdapter(
     )
 
     internal class LargeViewHolder(
-        parent: ViewGroup, settings: BrowserSettings,
-        listener: OnFoomiiboClickListener?
+        parent: ViewGroup, settings: BrowserSettings, listener: OnFoomiiboClickListener?
     ) : FoomiiboViewHolder(
         LayoutInflater.from(parent.context).inflate(
             R.layout.amiibo_large_card, parent, false
@@ -429,8 +397,7 @@ class FoomiiboAdapter(
     )
 
     internal class ImageViewHolder(
-        parent: ViewGroup, settings: BrowserSettings,
-        listener: OnFoomiiboClickListener?
+        parent: ViewGroup, settings: BrowserSettings, listener: OnFoomiiboClickListener?
     ) : FoomiiboViewHolder(
         LayoutInflater.from(parent.context).inflate(
             R.layout.amiibo_image_card, parent, false

@@ -58,26 +58,10 @@ class EliteBankAdapter     // setHasStableIds(true);
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): AmiiboViewHolder {
         return when (VIEW.valueOf(viewType)) {
-            VIEW.COMPACT -> CompactViewHolder(
-                parent,
-                settings,
-                listener
-            )
-            VIEW.LARGE -> LargeViewHolder(
-                parent,
-                settings,
-                listener
-            )
-            VIEW.IMAGE -> ImageViewHolder(
-                parent,
-                settings,
-                listener
-            )
-            VIEW.SIMPLE -> SimpleViewHolder(
-                parent,
-                settings,
-                listener
-            )
+            VIEW.COMPACT -> CompactViewHolder(parent, settings, listener)
+            VIEW.LARGE -> LargeViewHolder(parent, settings, listener)
+            VIEW.IMAGE -> ImageViewHolder(parent, settings, listener)
+            VIEW.SIMPLE -> SimpleViewHolder(parent, settings, listener)
         }
     }
 
@@ -97,10 +81,9 @@ class EliteBankAdapter     // setHasStableIds(true);
         }
         holder.imageAmiibo?.setOnClickListener {
             if (null != holder.listener) {
-                if (settings.amiiboView == VIEW.IMAGE.value) holder.listener.onAmiiboClicked(
-                    holder.amiiboItem,
-                    clickPosition
-                ) else holder.listener.onAmiiboImageClicked(holder.amiiboItem, clickPosition)
+                if (settings.amiiboView == VIEW.IMAGE.value)
+                    holder.listener.onAmiiboClicked(holder.amiiboItem, clickPosition)
+                else holder.listener.onAmiiboImageClicked(holder.amiiboItem, clickPosition)
             }
         }
         holder.itemView.setOnLongClickListener {
@@ -114,8 +97,7 @@ class EliteBankAdapter     // setHasStableIds(true);
     }
 
     abstract class AmiiboViewHolder(
-        itemView: View, private val settings: BrowserSettings,
-        val listener: OnAmiiboClickListener?
+        itemView: View, private val settings: BrowserSettings, val listener: OnAmiiboClickListener?
     ) : RecyclerView.ViewHolder(itemView) {
         val txtError: TextView?
         val txtName: TextView?
@@ -234,8 +216,7 @@ class EliteBankAdapter     // setHasStableIds(true);
     }
 
     internal class SimpleViewHolder(
-        parent: ViewGroup, settings: BrowserSettings,
-        listener: OnAmiiboClickListener?
+        parent: ViewGroup, settings: BrowserSettings, listener: OnAmiiboClickListener?
     ) : AmiiboViewHolder(
         LayoutInflater.from(parent.context).inflate(
             R.layout.amiibo_simple_card, parent, false
@@ -244,8 +225,7 @@ class EliteBankAdapter     // setHasStableIds(true);
     )
 
     internal class CompactViewHolder(
-        parent: ViewGroup, settings: BrowserSettings,
-        listener: OnAmiiboClickListener?
+        parent: ViewGroup, settings: BrowserSettings, listener: OnAmiiboClickListener?
     ) : AmiiboViewHolder(
         LayoutInflater.from(parent.context).inflate(
             R.layout.amiibo_compact_card, parent, false
@@ -254,8 +234,7 @@ class EliteBankAdapter     // setHasStableIds(true);
     )
 
     internal class LargeViewHolder(
-        parent: ViewGroup, settings: BrowserSettings,
-        listener: OnAmiiboClickListener?
+        parent: ViewGroup, settings: BrowserSettings, listener: OnAmiiboClickListener?
     ) : AmiiboViewHolder(
         LayoutInflater.from(parent.context).inflate(
             R.layout.amiibo_large_card, parent, false
@@ -264,8 +243,7 @@ class EliteBankAdapter     // setHasStableIds(true);
     )
 
     internal class ImageViewHolder(
-        parent: ViewGroup, settings: BrowserSettings,
-        listener: OnAmiiboClickListener?
+        parent: ViewGroup, settings: BrowserSettings, listener: OnAmiiboClickListener?
     ) : AmiiboViewHolder(
         LayoutInflater.from(parent.context).inflate(
             R.layout.amiibo_image_card, parent, false

@@ -47,6 +47,7 @@ import com.hiddenramblings.tagmo.browser.BrowserSettings
 import com.hiddenramblings.tagmo.browser.ImageActivity
 import com.hiddenramblings.tagmo.browser.adapter.FlaskSlotAdapter
 import com.hiddenramblings.tagmo.browser.adapter.WriteTagAdapter
+import com.hiddenramblings.tagmo.charset.CharsetCompat
 import com.hiddenramblings.tagmo.eightbit.io.Debug
 import com.hiddenramblings.tagmo.eightbit.material.IconifiedSnackbar
 import com.hiddenramblings.tagmo.nfctech.TagArray
@@ -762,36 +763,43 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
     }
 
     private fun getAmiiboFromTail(name: List<String>): Amiibo? {
-        if (name.size < 2) return null
-        if (name[1].isEmpty()) return FlaskTag(name)
-        var amiiboManager: AmiiboManager?
-        try {
-            amiiboManager = getAmiiboManager(requireContext().applicationContext)
-        } catch (e: IOException) {
-            Debug.warn(e)
-            amiiboManager = null
-            Toasty(requireActivity()).Short(R.string.amiibo_info_parse_error)
-        } catch (e: JSONException) {
-            Debug.warn(e)
-            amiiboManager = null
-            Toasty(requireActivity()).Short(R.string.amiibo_info_parse_error)
-        } catch (e: ParseException) {
-            Debug.warn(e)
-            amiiboManager = null
-            Toasty(requireActivity()).Short(R.string.amiibo_info_parse_error)
-        }
-        if (Thread.currentThread().isInterrupted) return null
-        var selectedAmiibo: Amiibo? = null
-        if (null != amiiboManager) {
-            for (amiibo in amiiboManager.amiibos.values) {
-                val flaskTail = Amiibo.idToHex(amiibo.id).substring(8, 16).toInt(16).toString(36)
-                if (name[1] == flaskTail) {
-                    selectedAmiibo = amiibo
-                    break
+        when {
+            name.size < 2 -> return null
+            name[0].startsWith("New Tag") || name[1].isEmpty() -> return FlaskTag(name)
+            else -> {
+                var amiiboManager: AmiiboManager?
+                try {
+                    amiiboManager = getAmiiboManager(requireContext().applicationContext)
+                } catch (e: IOException) {
+                    Debug.warn(e)
+                    amiiboManager = null
+                    Toasty(requireActivity()).Short(R.string.amiibo_info_parse_error)
+                } catch (e: JSONException) {
+                    Debug.warn(e)
+                    amiiboManager = null
+                    Toasty(requireActivity()).Short(R.string.amiibo_info_parse_error)
+                } catch (e: ParseException) {
+                    Debug.warn(e)
+                    amiiboManager = null
+                    Toasty(requireActivity()).Short(R.string.amiibo_info_parse_error)
                 }
+                if (Thread.currentThread().isInterrupted) return null
+                var selectedAmiibo: Amiibo? = null
+                if (null != amiiboManager) {
+                    for (amiibo in amiiboManager.amiibos.values) {
+                        try {
+                            val flaskTail = Amiibo.idToHex(amiibo.id)
+                                .substring(8, 16).toInt(16).toString(36)
+                            if (name[1] == flaskTail) {
+                                selectedAmiibo = amiibo
+                                break
+                            }
+                        } catch (ignored: NumberFormatException) { }
+                    }
+                }
+                return selectedAmiibo
             }
         }
-        return selectedAmiibo
     }
 
     private fun getAmiiboFromHead(tagData: ByteArray?): Amiibo? {
@@ -957,12 +965,10 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
             .setPositiveButton(R.string.proceed) { dialog: DialogInterface, _: Int ->
                 onBottomSheetChanged(SHEET.MENU)
                 showProcessingNotice(true)
-                for (i in amiiboList.indices) {
+                amiiboList.indices.forEach {
                     fragmentHandler.postDelayed({
-                        uploadAmiiboFile(
-                            amiiboList[i], i == amiiboList.size - 1
-                        )
-                    }, 30L * i)
+                        uploadAmiiboFile(amiiboList[it], it == amiiboList.size - 1)
+                    }, 30L * it)
                 }
                 dialog.dismiss()
             }
@@ -999,8 +1005,8 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
     }
 
     private fun setBottomSheetHidden(hidden: Boolean) {
-        bottomSheet!!.isHideable = hidden
-        if (hidden) bottomSheet!!.state = BottomSheetBehavior.STATE_HIDDEN
+        bottomSheet?.isHideable = hidden
+        if (hidden) bottomSheet?.state = BottomSheetBehavior.STATE_HIDDEN
     }
 
     private fun dismissSnackbarNotice(finite: Boolean = false) {
@@ -1224,7 +1230,7 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
                     serviceFlask!!.deleteAmiibo(
                         amiibo.name, String(TagArray.longToBytes(amiibo.id))
                     )
-                    bottomSheet!!.state = BottomSheetBehavior.STATE_COLLAPSED
+                    bottomSheet?.state = BottomSheetBehavior.STATE_COLLAPSED
                     return@setOnMenuItemClickListener true
                 }
                 false
@@ -1248,14 +1254,14 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
                         serviceFlask!!.deleteAmiibo(
                             amiibo.name, amiibo.flaskTail
                         )
-                        bottomSheet!!.state = BottomSheetBehavior.STATE_COLLAPSED
+                        bottomSheet?.state = BottomSheetBehavior.STATE_COLLAPSED
                         return@setOnMenuItemClickListener true
                     }
                     R.id.mnu_backup -> {
                         serviceFlask!!.downloadAmiibo(
                             amiibo.name, amiibo.flaskTail
                         )
-                        bottomSheet!!.state = BottomSheetBehavior.STATE_COLLAPSED
+                        bottomSheet?.state = BottomSheetBehavior.STATE_COLLAPSED
                         return@setOnMenuItemClickListener true
                     }
                     else -> false

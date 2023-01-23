@@ -5,7 +5,6 @@ import com.hiddenramblings.tagmo.R
 import com.hiddenramblings.tagmo.TagMo.Companion.appContext
 import com.hiddenramblings.tagmo.eightbit.io.Debug
 import com.hiddenramblings.tagmo.nfctech.Foomiibo.Companion.getDataSignature
-import com.hiddenramblings.tagmo.nfctech.TagArray.bytesToHex
 import java.io.*
 import java.util.*
 
@@ -14,7 +13,7 @@ object TagReader {
     @Throws(IOException::class)
     fun validateBlankTag(mifare: NTAG215) {
         val lockPage = mifare.readPages(0x02)
-        Debug.info(TagWriter::class.java, bytesToHex(lockPage!!))
+        Debug.info(TagWriter::class.java, TagArray.bytesToHex(lockPage!!))
         if (lockPage[2] == 0x0F.toByte() && lockPage[3] == 0xE0.toByte()) {
             throw IOException(appContext.getString(R.string.error_tag_rewrite))
         }
@@ -73,7 +72,7 @@ object TagReader {
             System.arraycopy(pages, 0, tagData, dstIndex, dstCount)
             i += BULK_READ_PAGE_COUNT
         }
-        Debug.info(TagReader::class.java, bytesToHex(tagData))
+        Debug.info(TagReader::class.java, TagArray.bytesToHex(tagData))
         return tagData
     }
 
@@ -91,7 +90,7 @@ object TagReader {
                 if (tagData?.size != 8) {
                     throw NullPointerException()
                 }
-                tags.add(bytesToHex(tagData))
+                tags.add(TagArray.bytesToHex(tagData))
                 i++
             } catch (e: Exception) {
                 Debug.warn(TagReader::class.java, appContext.getString(R.string.fail_parse_banks))
@@ -106,7 +105,7 @@ object TagReader {
 
     fun getBankSignature(tag: NTAG215?): String? {
         val signature = tag?.readSignature(false)
-        return if (null != signature) bytesToHex(signature).substring(0, 22) else null
+        return if (null != signature) TagArray.bytesToHex(signature).substring(0, 22) else null
     }
 
     @Throws(IllegalStateException::class, NullPointerException::class)
@@ -133,7 +132,7 @@ object TagReader {
             val data = tag?.amiiboFastRead(0x00, 0x86, bank)
                 ?: throw NullPointerException(context.getString(R.string.fail_read_amiibo))
             System.arraycopy(data, 0, tagData, 0, NfcByte.TAG_DATA_SIZE)
-            Debug.info(TagReader::class.java, bytesToHex(tagData))
+            Debug.info(TagReader::class.java, TagArray.bytesToHex(tagData))
             tagData
         } catch (e: IllegalStateException) {
             throw IllegalStateException(context.getString(R.string.fail_early_remove))

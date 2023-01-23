@@ -13,6 +13,7 @@ import android.view.MotionEvent
 import androidx.annotation.ColorInt
 import androidx.annotation.ColorRes
 import androidx.core.content.ContextCompat
+import androidx.core.content.res.use
 import androidx.recyclerview.widget.RecyclerView
 import com.hiddenramblings.tagmo.R
 
@@ -70,9 +71,7 @@ class IndexFastScrollRecyclerView : RecyclerView {
 
     private fun init(context: Context, attrs: AttributeSet?) {
         if (attrs != null) {
-            val typedArray =
-                context.obtainStyledAttributes(attrs, R.styleable.IndexFastScrollRecyclerView)
-            try {
+            context.obtainStyledAttributes(attrs, R.styleable.IndexFastScrollRecyclerView).use { typedArray ->
                 setIndexTextSize = typedArray.getInt(
                     R.styleable.IndexFastScrollRecyclerView_setIndexTextSize,
                     setIndexTextSize
@@ -226,8 +225,6 @@ class IndexFastScrollRecyclerView : RecyclerView {
                         )
                     }
                 }
-            } finally {
-                typedArray.recycle()
             }
 
             // This line here is neccesary else the attributes won't be updated if a value is passed from XML

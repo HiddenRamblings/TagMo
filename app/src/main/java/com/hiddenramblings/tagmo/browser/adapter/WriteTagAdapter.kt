@@ -116,26 +116,10 @@ class WriteTagAdapter(private val settings: BrowserSettings?) :
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): AmiiboViewHolder {
         return when (VIEW.valueOf(viewType)) {
-            VIEW.COMPACT -> CompactViewHolder(
-                parent,
-                settings
-            )
-            VIEW.LARGE -> LargeViewHolder(
-                parent,
-                settings
-            )
-            VIEW.IMAGE -> ImageViewHolder(
-                parent,
-                settings
-            )
-            VIEW.SIMPLE -> SimpleViewHolder(
-                parent,
-                settings
-            )
-            else -> SimpleViewHolder(
-                parent,
-                settings
-            )
+            VIEW.COMPACT -> CompactViewHolder(parent, settings)
+            VIEW.LARGE -> LargeViewHolder(parent, settings)
+            VIEW.IMAGE -> ImageViewHolder(parent, settings)
+            VIEW.SIMPLE -> SimpleViewHolder(parent, settings)
         }
     }
 
@@ -149,19 +133,17 @@ class WriteTagAdapter(private val settings: BrowserSettings?) :
     }
 
     private fun handleClickEvent(holder: AmiiboViewHolder, position: Int) {
-        if (null != listener) {
-            if (listSize > 1) {
-                if (amiiboList.contains(holder.amiiboFile)) {
-                    amiiboList.remove(filteredData!![position])
-                    setIsHighlighted(holder, false)
-                } else {
-                    amiiboList.add(filteredData!![position])
-                    setIsHighlighted(holder, true)
-                }
-                if (amiiboList.size == listSize) listener!!.onAmiiboListClicked(amiiboList)
+        if (listSize > 1) {
+            if (amiiboList.contains(holder.amiiboFile)) {
+                amiiboList.remove(filteredData?.get(position))
+                setIsHighlighted(holder, false)
             } else {
-                listener!!.onAmiiboClicked(holder.amiiboFile)
+                amiiboList.add(filteredData?.get(position))
+                setIsHighlighted(holder, true)
             }
+            if (amiiboList.size == listSize) listener?.onAmiiboListClicked(amiiboList)
+        } else {
+            listener?.onAmiiboClicked(holder.amiiboFile)
         }
     }
 
@@ -231,8 +213,7 @@ class WriteTagAdapter(private val settings: BrowserSettings?) :
     }
 
     abstract class AmiiboViewHolder(
-        itemView: View,
-        private val settings: BrowserSettings?
+        itemView: View, private val settings: BrowserSettings?
     ) : RecyclerView.ViewHolder(itemView) {
         val txtError: TextView
         val txtName: TextView

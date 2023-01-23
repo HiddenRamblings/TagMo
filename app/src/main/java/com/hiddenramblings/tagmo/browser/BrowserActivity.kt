@@ -133,14 +133,16 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
     private var currentFolderView: TextView? = null
     var reloadTabCollection = false
     private var prefsDrawer: DrawerLayout? = null
+    private var animationArray: ArrayList<ValueAnimator>? = null
     private var switchStorageRoot: AppCompatButton? = null
     private var switchStorageType: AppCompatButton? = null
     private var joyConDialog: Dialog? = null
     private var fakeSnackbar: AnimatedLinearLayout? = null
     private var fakeSnackbarText: TextView? = null
     private var fakeSnackbarItem: AppCompatButton? = null
-    var layout: ViewPager2? = null
+    var viewPager: ViewPager2? = null
         private set
+    private val pagerAdapter = NavPagerAdapter(this)
     private lateinit var nfcFab: FloatingActionButton
     private var amiibosView: RecyclerView? = null
     private var foomiiboView: RecyclerView? = null
@@ -170,19 +172,18 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
     private var txtTagId: TextView? = null
     private var txtName: TextView? = null
     private var txtGameSeries: TextView? = null
-
-    // private TextView txtCharacter;
+    // private TextView txtCharacter? = null
     private var txtAmiiboType: TextView? = null
     private var txtAmiiboSeries: TextView? = null
     private var imageAmiibo: AppCompatImageView? = null
-    private val pagerAdapter = NavPagerAdapter(this)
+
     private val tagScanner = ScanTag()
     private val donationManager = DonationManager(this)
     private val statsHandler = Handler(Looper.getMainLooper())
     private val sheetHandler = Handler(Looper.getMainLooper())
 
-    private val loadingScope = CoroutineScope(Dispatchers.Main + Job())
-    private val backgroundScope = CoroutineScope(Dispatchers.IO)
+    private val scopeDefault = CoroutineScope(Dispatchers.Default)
+    private val scopeIO = CoroutineScope(Dispatchers.IO)
     private val loadingExecutor = Executors.newSingleThreadExecutor()
 
     public override fun onCreate(savedInstanceState: Bundle?) {
@@ -202,7 +203,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
         fakeSnackbar = findViewById(R.id.fake_snackbar)
         fakeSnackbarText = findViewById(R.id.snackbar_text)
         fakeSnackbarItem = findViewById(R.id.snackbar_item)
-        layout = findViewById(R.id.amiibo_pager)
+        viewPager = findViewById(R.id.amiibo_pager)
         nfcFab = findViewById(R.id.nfc_fab)
         currentFolderView = findViewById(R.id.current_folder)
         if (!BuildConfig.WEAR_OS) {
@@ -234,19 +235,19 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
             intent.data?.let { browser.data = it }
             startActivity(browser)
         }
-        layout?.keepScreenOn = BuildConfig.WEAR_OS
-        layout?.adapter = pagerAdapter
+        viewPager?.keepScreenOn = BuildConfig.WEAR_OS
+        viewPager?.adapter = pagerAdapter
         val cardFlipPageTransformer = CardFlipPageTransformer2()
         cardFlipPageTransformer.isScalable = true
-        layout?.setPageTransformer(cardFlipPageTransformer)
-        setViewPagerSensitivity(layout, 4)
+        viewPager?.setPageTransformer(cardFlipPageTransformer)
+        setViewPagerSensitivity(viewPager, 4)
         fragmentBrowser = pagerAdapter.browser
         if (BuildConfig.WEAR_OS) fragmentSettings = pagerAdapter.settings
         fragmentElite = pagerAdapter.eliteBanks
         amiibosView = fragmentBrowser?.browserContent
         foomiiboView = fragmentBrowser?.foomiiboView
         bottomSheet = bottomSheetBehavior
-        layout?.registerOnPageChangeCallback(object : OnPageChangeCallback() {
+        viewPager?.registerOnPageChangeCallback(object : OnPageChangeCallback() {
             @SuppressLint("NewApi")
             override fun onPageSelected(position: Int) {
                 super.onPageSelected(position)
@@ -341,7 +342,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                 if (BuildConfig.WEAR_OS) onCreateWearOptionsMenu() else invalidateOptionsMenu()
             }
         })
-        TabLayoutMediator(findViewById(R.id.navigation_tabs), layout!!, true,
+        TabLayoutMediator(findViewById(R.id.navigation_tabs), viewPager!!, true,
             Debug.isNewer(Build.VERSION_CODES.JELLY_BEAN_MR2)
         ) { tab: TabLayout.Tab, position: Int ->
             val hasFlaskEnabled = prefs.flaskEnabled()
@@ -552,36 +553,26 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
 
         if (!prefs.guidesPrompted()) {
             prefs.guidesPrompted(true)
-            layout?.setCurrentItem(pagerAdapter.itemCount - 1, false)
+            viewPager?.setCurrentItem(pagerAdapter.itemCount - 1, false)
         }
     }
 
-    private val animationArray: ArrayList<ValueAnimator> = arrayListOf()
-
-    private fun getAnimationArray() {
-        val colorRed = ContextCompat.getColor(this, android.R.color.holo_red_light)
-        val colorGreen = ContextCompat.getColor(this, android.R.color.holo_green_light)
-        val colorBlue = ContextCompat.getColor(this, android.R.color.holo_blue_light)
-        animationArray.add(ValueAnimator.ofObject(ArgbEvaluator(), colorRed, colorGreen))
-        animationArray.add(ValueAnimator.ofObject(ArgbEvaluator(), colorGreen, colorBlue))
-        animationArray.add(ValueAnimator.ofObject(ArgbEvaluator(), colorBlue, colorRed))
-    }
     private fun onTextColorAnimation(textView: TextView?, index: Int) {
-        if (textView?.isVisible == true) {
-            if (animationArray.isEmpty()) getAnimationArray()
-            val colorAnimation: ValueAnimator = animationArray[index]
-            colorAnimation.addUpdateListener { animator ->
+        if (textView?.isVisible == true && !animationArray.isNullOrEmpty()) {
+            val colorAnimation: ValueAnimator? = animationArray?.get(index)
+            colorAnimation?.addUpdateListener { animator ->
                 textView.setTextColor(animator.animatedValue as Int)
             }
-            colorAnimation.addListener(object : AnimatorListenerAdapter() {
+            colorAnimation?.duration = 250
+            colorAnimation?.addListener(object : AnimatorListenerAdapter() {
                 override fun onAnimationEnd(animation: Animator) {
                     animation.removeAllListeners()
                     var nextIndex = index + 1
-                    if (nextIndex >= animationArray.size) nextIndex = 0
+                    if (nextIndex >= animationArray!!.size) nextIndex = 0
                     onTextColorAnimation(textView, nextIndex)
                 }
             })
-            colorAnimation.start()
+            colorAnimation?.start()
         }
     }
 
@@ -596,7 +587,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
 
     @SuppressLint("NotifyDataSetChanged")
     fun onTabCollectionChanged() {
-        if (layout?.currentItem != 0) layout?.setCurrentItem(0, false)
+        if (viewPager?.currentItem != 0) viewPager?.setCurrentItem(0, false)
         if (Debug.isNewer(Build.VERSION_CODES.TIRAMISU))
             onApplicationRecreate()
         else pagerAdapter.notifyDataSetChanged()
@@ -650,7 +641,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
             prefs.eliteBankCount(bankCount)
             showElitePage(result.data!!.extras)
         } else {
-            layout!!.setCurrentItem(0, true)
+            viewPager!!.setCurrentItem(0, true)
             updateAmiiboView(result.data?.getByteArrayExtra(NFCIntent.EXTRA_TAG_DATA))
         }
     }
@@ -661,7 +652,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
         if (NFCIntent.ACTION_NFC_SCANNED != result.data!!.action) return@registerForActivityResult
         val tagData = result.data?.getByteArrayExtra(NFCIntent.EXTRA_TAG_DATA)
         val view = layoutInflater.inflate(
-            R.layout.dialog_save_item, layout, false
+            R.layout.dialog_save_item, viewPager, false
         )
         val dialog = AlertDialog.Builder(this)
         val input = view.findViewById<EditText>(R.id.save_item_entry)
@@ -679,10 +670,10 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                     )
                 } else {
                     writeBytesToFile(Storage.getDownloadDir(
-                            "TagMo", "Backups"
+                        "TagMo", "Backups"
                     ), fileName!!, tagData)
                 }
-                IconifiedSnackbar(this, layout).buildSnackbar(
+                IconifiedSnackbar(this, viewPager).buildSnackbar(
                     getString(R.string.wrote_file, fileName), Snackbar.LENGTH_SHORT
                 ).show()
                 onRootFolderChanged(true)
@@ -701,11 +692,11 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
         if (NFCIntent.ACTION_NFC_SCANNED != result.data!!.action) return@registerForActivityResult
         try {
             validateData(result.data?.getByteArrayExtra(NFCIntent.EXTRA_TAG_DATA))
-            IconifiedSnackbar(this, layout).buildSnackbar(
+            IconifiedSnackbar(this, viewPager).buildSnackbar(
                 R.string.validation_success, Snackbar.LENGTH_SHORT
             ).show()
         } catch (e: Exception) {
-            IconifiedSnackbar(this, layout).buildSnackbar(
+            IconifiedSnackbar(this, viewPager).buildSnackbar(
                 e.message, R.drawable.ic_baseline_bug_report_24dp, Snackbar.LENGTH_LONG
             ).show()
         }
@@ -779,7 +770,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                 }
             } catch (e: IOException) {
                 runOnUiThread {
-                    IconifiedSnackbar(this, layout).buildSnackbar(
+                    IconifiedSnackbar(this, viewPager).buildSnackbar(
                         e.message, Snackbar.LENGTH_SHORT
                     ).show()
                 }
@@ -1134,10 +1125,10 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                                     )
                                 } else {
                                     writeBytesToFile(Storage.getDownloadDir(
-                                            "TagMo", "Backups"
+                                        "TagMo", "Backups"
                                     ), fileName!!, tagData)
                                 }
-                                IconifiedSnackbar(this, layout).buildSnackbar(
+                                IconifiedSnackbar(this, viewPager).buildSnackbar(
                                     getString(R.string.wrote_file, fileName), Snackbar.LENGTH_SHORT
                                 ).show()
                                 onRootFolderChanged(true)
@@ -1174,11 +1165,11 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                 R.id.mnu_validate -> {
                     try {
                         validateData(tagData)
-                        IconifiedSnackbar(this, layout).buildSnackbar(
+                        IconifiedSnackbar(this, viewPager).buildSnackbar(
                             R.string.validation_success, Snackbar.LENGTH_SHORT
                         ).show()
                     } catch (e: Exception) {
-                        IconifiedSnackbar(this, layout).buildSnackbar(
+                        IconifiedSnackbar(this, viewPager).buildSnackbar(
                             e.message,
                             R.drawable.ic_baseline_bug_report_24dp, Snackbar.LENGTH_LONG
                         ).show()
@@ -1215,7 +1206,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                     try {
                         fragment.onUpdateTagResult.launch(scan.putExtras(args))
                     } catch (ex: IllegalStateException) {
-                        layout?.adapter = pagerAdapter
+                        viewPager?.adapter = pagerAdapter
                     }
                     return@setOnMenuItemClickListener true
                 }
@@ -1226,7 +1217,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                     try {
                         fragment.onUpdateTagResult.launch(scan.putExtras(args))
                     } catch (ex: IllegalStateException) {
-                        layout?.adapter = pagerAdapter
+                        viewPager?.adapter = pagerAdapter
                     }
                     return@setOnMenuItemClickListener true
                 }
@@ -1246,7 +1237,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                     try {
                         fragment.onUpdateTagResult.launch(tagEdit.putExtras(args))
                     } catch (ex: IllegalStateException) {
-                        layout?.adapter = pagerAdapter
+                        viewPager?.adapter = pagerAdapter
                     }
                     return@setOnMenuItemClickListener true
                 }
@@ -1265,11 +1256,11 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                 R.id.mnu_validate -> {
                     try {
                         validateData(tagData)
-                        IconifiedSnackbar(this, layout).buildSnackbar(
+                        IconifiedSnackbar(this, viewPager).buildSnackbar(
                             R.string.validation_success, Snackbar.LENGTH_SHORT
                         ).show()
                     } catch (e: Exception) {
-                        IconifiedSnackbar(this, layout).buildSnackbar(
+                        IconifiedSnackbar(this, viewPager).buildSnackbar(
                             e.message, R.drawable.ic_baseline_bug_report_24dp, Snackbar.LENGTH_LONG
                         ).show()
                     }
@@ -1296,18 +1287,16 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
         val label = findViewById<TextView>(R.id.txtUsageLabel)
         if (null != gamesManager) {
             label.isVisible = true
-            loadingScope.launch {
-                withContext(Dispatchers.IO) {
-                    val usage: String? = try {
-                        val amiiboId = Amiibo.dataToId(tagData)
-                        gamesManager.getGamesCompatibility(amiiboId)
-                    } catch (ex: Exception) {
-                        Debug.warn(ex)
-                        null
-                    }
-                    withContext(Dispatchers.Main) {
-                        txtUsage.text = usage
-                    }
+            scopeDefault.launch {
+                val usage: String? = try {
+                    val amiiboId = Amiibo.dataToId(tagData)
+                    gamesManager.getGamesCompatibility(amiiboId)
+                } catch (ex: Exception) {
+                    Debug.warn(ex)
+                    null
+                }
+                withContext(Dispatchers.Main) {
+                    txtUsage.text = usage
                 }
             }
         } else {
@@ -1616,14 +1605,14 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
             override fun onQueryTextSubmit(query: String): Boolean {
                 settings?.query = query
                 settings?.notifyChanges()
-                if (layout?.currentItem == 0) setAmiiboStats()
+                if (viewPager?.currentItem == 0) setAmiiboStats()
                 return false
             }
 
             override fun onQueryTextChange(query: String): Boolean {
                 settings?.query = query
                 settings?.notifyChanges()
-                if (layout?.currentItem == 0 && query.isEmpty()) setAmiiboStats()
+                if (viewPager?.currentItem == 0 && query.isEmpty()) setAmiiboStats()
                 return true
             }
         })
@@ -1699,7 +1688,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
 
     fun loadPTagKeyManager() {
         if (prefs.powerTagEnabled()) {
-            backgroundScope.launch(Dispatchers.IO) {
+            scopeIO.launch(Dispatchers.IO) {
                 try {
                     powerTagManager
                 } catch (e: Exception) {
@@ -1711,42 +1700,40 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
     }
 
     private fun loadAmiiboManager() {
-        loadingScope.launch {
-            withContext(Dispatchers.IO) {
-                var amiiboManager: AmiiboManager?
-                try {
-                    amiiboManager = getAmiiboManager(applicationContext)
-                } catch (e: IOException) {
-                    Debug.warn(e)
-                    amiiboManager = null
-                    Toasty(this@BrowserActivity).Short(R.string.amiibo_info_parse_error)
-                } catch (e: JSONException) {
-                    Debug.warn(e)
-                    amiiboManager = null
-                    Toasty(this@BrowserActivity).Short(R.string.amiibo_info_parse_error)
-                } catch (e: ParseException) {
-                    Debug.warn(e)
-                    amiiboManager = null
-                    Toasty(this@BrowserActivity).Short(R.string.amiibo_info_parse_error)
-                }
-                val gamesManager: GamesManager? = try {
-                    getGamesManager(this@BrowserActivity)
-                } catch (e: IOException) {
-                    Debug.warn(e)
-                    null
-                } catch (e: JSONException) {
-                    Debug.warn(e)
-                    null
-                } catch (e: ParseException) {
-                    Debug.warn(e)
-                    null
-                }
-                withContext(Dispatchers.Main) {
-                    settings!!.amiiboManager = amiiboManager
-                    settings!!.gamesManager = gamesManager
-                    settings!!.notifyChanges()
-                    managerStats
-                }
+        scopeIO.launch {
+            var amiiboManager: AmiiboManager?
+            try {
+                amiiboManager = getAmiiboManager(applicationContext)
+            } catch (e: IOException) {
+                Debug.warn(e)
+                amiiboManager = null
+                Toasty(this@BrowserActivity).Short(R.string.amiibo_info_parse_error)
+            } catch (e: JSONException) {
+                Debug.warn(e)
+                amiiboManager = null
+                Toasty(this@BrowserActivity).Short(R.string.amiibo_info_parse_error)
+            } catch (e: ParseException) {
+                Debug.warn(e)
+                amiiboManager = null
+                Toasty(this@BrowserActivity).Short(R.string.amiibo_info_parse_error)
+            }
+            val gamesManager: GamesManager? = try {
+                getGamesManager(this@BrowserActivity)
+            } catch (e: IOException) {
+                Debug.warn(e)
+                null
+            } catch (e: JSONException) {
+                Debug.warn(e)
+                null
+            } catch (e: ParseException) {
+                Debug.warn(e)
+                null
+            }
+            withContext(Dispatchers.Main) {
+                settings?.amiiboManager = amiiboManager
+                settings?.gamesManager = gamesManager
+                settings?.notifyChanges()
+                managerStats
             }
         }
     }
@@ -1762,16 +1749,14 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
     }
 
     private fun loadFolders(rootFolder: File?) {
-        loadingScope.launch {
-            withContext(Dispatchers.IO) {
-                val folders = listFolders(rootFolder)
-                folders.sortWith { file1: File?, file2: File? ->
-                    file1?.path!!.compareTo(file2?.path!!, ignoreCase = true)
-                }
-                withContext(Dispatchers.Main) {
-                    settings?.folders = folders
-                    settings?.notifyChanges()
-                }
+        scopeIO.launch {
+            val folders = listFolders(rootFolder)
+            folders.sortWith { file1: File?, file2: File? ->
+                file1?.path!!.compareTo(file2?.path!!, ignoreCase = true)
+            }
+            withContext(Dispatchers.Main) {
+                settings?.folders = folders
+                settings?.notifyChanges()
             }
         }
     }
@@ -1784,41 +1769,37 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
     }
 
     private fun loadAmiiboFiles(rootFolder: File?, recursiveFiles: Boolean) {
-        loadingScope.launch {
-            withContext(Dispatchers.IO) {
-                val amiiboFiles = listAmiibos(keyManager, rootFolder, recursiveFiles)
-                val download = Storage.getDownloadDir(null)
-                if (isDirectoryHidden(rootFolder, download, recursiveFiles))
-                    amiiboFiles.addAll(listAmiibos(keyManager, download, true))
-                val foomiibo = File(filesDir, "Foomiibo")
-                amiiboFiles.addAll(listAmiibos(keyManager, foomiibo, true))
-                withContext(Dispatchers.Main) {
-                    hideFakeSnackbar()
-                    settings?.amiiboFiles = amiiboFiles
-                    settings?.notifyChanges()
-                }
+        scopeIO.launch {
+            val amiiboFiles = listAmiibos(keyManager, rootFolder, recursiveFiles)
+            val download = Storage.getDownloadDir(null)
+            if (isDirectoryHidden(rootFolder, download, recursiveFiles))
+                amiiboFiles.addAll(listAmiibos(keyManager, download, true))
+            val foomiibo = File(filesDir, "Foomiibo")
+            amiiboFiles.addAll(listAmiibos(keyManager, foomiibo, true))
+            withContext(Dispatchers.Main) {
+                hideFakeSnackbar()
+                settings?.amiiboFiles = amiiboFiles
+                settings?.notifyChanges()
             }
         }
     }
 
     @SuppressLint("NewApi")
     private fun loadAmiiboDocuments(rootFolder: DocumentFile?, recursiveFiles: Boolean) {
-        loadingScope.launch {
-            withContext(Dispatchers.IO) {
-                val amiiboFiles = listAmiiboDocuments(
-                    this@BrowserActivity, keyManager, rootFolder!!, recursiveFiles
-                )
-                if (amiiboFiles.isEmpty() && null == prefs.browserRootDocument()) {
-                    onDocumentRequested()
-                    return@withContext
-                }
-                val foomiibo = File(filesDir, "Foomiibo")
-                amiiboFiles.addAll(listAmiibos(keyManager, foomiibo, true))
-                withContext(Dispatchers.Main) {
-                    hideFakeSnackbar()
-                    settings?.amiiboFiles = amiiboFiles
-                    settings?.notifyChanges()
-                }
+        scopeIO.launch {
+            val amiiboFiles = listAmiiboDocuments(
+                this@BrowserActivity, keyManager, rootFolder!!, recursiveFiles
+            )
+            if (amiiboFiles.isEmpty() && null == prefs.browserRootDocument()) {
+                onDocumentRequested()
+                return@launch
+            }
+            val foomiibo = File(filesDir, "Foomiibo")
+            amiiboFiles.addAll(listAmiibos(keyManager, foomiibo, true))
+            withContext(Dispatchers.Main) {
+                hideFakeSnackbar()
+                settings?.amiiboFiles = amiiboFiles
+                settings?.notifyChanges()
             }
         }
     }
@@ -2029,7 +2010,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
         fragmentBrowser!!.addFilterItemView(filterText, filterTag) {
             settings!!.setFilter(filter, "")
             settings!!.notifyChanges()
-            if (layout!!.currentItem == 0) setAmiiboStats()
+            if (viewPager!!.currentItem == 0) setAmiiboStats()
         }
     }
 
@@ -2088,7 +2069,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                 .setPositiveButton(R.string.delete) { dialog: DialogInterface, _: Int ->
                     amiiboContainer?.isGone = true
                     amiiboFile.filePath?.delete()
-                    IconifiedSnackbar(this, layout).buildSnackbar(
+                    IconifiedSnackbar(this, viewPager).buildSnackbar(
                         getString(R.string.delete_file, relativeFile), Snackbar.LENGTH_SHORT
                     ).show()
                     onRootFolderChanged(true)
@@ -2109,7 +2090,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                 .setPositiveButton(R.string.delete) { dialog: DialogInterface, _: Int ->
                     amiiboContainer?.isGone = true
                     amiiboFile.docUri?.delete()
-                    IconifiedSnackbar(this, layout).buildSnackbar(
+                    IconifiedSnackbar(this, viewPager).buildSnackbar(
                         getString(R.string.delete_file, relativeDocument), Snackbar.LENGTH_SHORT
                     ).show()
                     onRootFolderChanged(true)
@@ -2358,10 +2339,9 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
             )
             if (hasGames) {
                 amiiboTitleStats.setOnClickListener {
-                    val amiiboTitles = gamesManager!!.gameTitles
                     val items = ArrayList<String>()
-                    for (amiiboTitle in amiiboTitles) {
-                        if (!items.contains(amiiboTitle.name)) items.add(amiiboTitle.name)
+                    gamesManager?.gameTitles?.forEach {
+                        if (!items.contains(it.name)) items.add(it.name)
                     }
                     items.sort()
                     android.app.AlertDialog.Builder(this)
@@ -2376,20 +2356,15 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
         }
 
     private fun getAdapterStats(amiiboManager: AmiiboManager): IntArray {
-        if (null != amiibosView && null != amiibosView!!.adapter
-            && amiibosView!!.adapter is BrowserAdapter) {
-            val adapter = amiibosView!!.adapter as BrowserAdapter?
-            val size = adapter!!.itemCount
+        if (amiibosView?.adapter is BrowserAdapter) {
+            val adapter = amiibosView!!.adapter as BrowserAdapter
             var count = 0
             for (amiibo in amiiboManager.amiibos.values) {
-                for (x in 0 until size) {
-                    if (amiibo.id == adapter.getItemId(x)) {
-                        count += 1
-                        break
-                    }
+                if (adapter.hasItem(amiibo.id)) {
+                    count += 1
                 }
             }
-            return intArrayOf(size, count)
+            return intArrayOf(adapter.itemCount, count)
         }
         return intArrayOf(0, 0)
     }
@@ -2417,11 +2392,8 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                     )
                 } else {
                     for (amiibo in amiiboManager.amiibos.values) {
-                        for (amiiboFile in settings!!.amiiboFiles) {
-                            if (amiibo.id == amiiboFile?.id) {
-                                count += 1
-                                break
-                            }
+                        settings?.amiiboFiles?.forEach {
+                            if (amiibo.id == it?.id) count += 1
                         }
                     }
                     currentFolderView!!.text = getString(
@@ -2543,8 +2515,8 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
 
     private fun onShowSettingsFragment() {
         if (BuildConfig.WEAR_OS) {
-            layout?.post {
-                layout?.setCurrentItem(if (prefs.flaskEnabled()) 2 else 1, false)
+            viewPager?.post {
+                viewPager?.setCurrentItem(if (prefs.flaskEnabled()) 2 else 1, false)
             }
         } else {
             prefsDrawer?.openDrawer(GravityCompat.START)
@@ -2553,14 +2525,14 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
 
     fun showElitePage(extras: Bundle?) {
         if (!prefs.eliteEnabled()) return
-        layout?.post {
+        viewPager?.post {
             fragmentElite!!.arguments = extras
-            layout!!.setCurrentItem(1, true)
+            viewPager!!.setCurrentItem(1, true)
         }
     }
 
     fun showWebsite(address: String?) {
-        layout?.setCurrentItem(pagerAdapter.itemCount - 1, true)
+        viewPager?.setCurrentItem(pagerAdapter.itemCount - 1, true)
         pagerAdapter.website.loadWebsite(address)
     }
 
@@ -2572,11 +2544,11 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
     }
 
     private suspend fun locateKeyFilesRecursive(rootFolder: File?) {
-        withContext(Dispatchers.IO) {
-            val files = rootFolder?.listFiles { _: File?, name: String -> keyNameMatcher(name) }
-            if (!files.isNullOrEmpty()) {
-                for (file in files) {
-                    try {
+        val files = rootFolder?.listFiles { _: File?, name: String -> keyNameMatcher(name) }
+        if (!files.isNullOrEmpty()) {
+            for (file in files) {
+                try {
+                    withContext(Dispatchers.IO) {
                         FileInputStream(file).use { inputStream ->
                             try {
                                 keyManager.evaluateKey(inputStream)
@@ -2585,28 +2557,28 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                             }
                             withContext(Dispatchers.Main) { hideFakeSnackbar() }
                         }
-                    } catch (e: Exception) {
-                        Debug.warn(e)
                     }
+                } catch (e: Exception) {
+                    Debug.warn(e)
                 }
-            } else {
-                val directories = rootFolder?.listFiles()
-                if (directories.isNullOrEmpty()) return@withContext
-                for (directory in directories) {
-                    if (directory.isDirectory) locateKeyFilesRecursive(directory)
-                }
+            }
+        } else {
+            val directories = rootFolder?.listFiles()
+            if (directories.isNullOrEmpty()) return
+            for (directory in directories) {
+                if (directory.isDirectory) locateKeyFilesRecursive(directory)
             }
         }
     }
 
     private fun locateKeyFiles() {
-        loadingScope.launch {
-            withContext(Dispatchers.IO) {
-                val files = Storage.getDownloadDir(null)
-                    .listFiles { _: File?, name: String -> keyNameMatcher(name) }
-                if (!files.isNullOrEmpty()) {
-                    for (file in files) {
-                        try {
+        scopeIO.launch {
+            val files = Storage.getDownloadDir(null)
+                .listFiles { _: File?, name: String -> keyNameMatcher(name) }
+            if (!files.isNullOrEmpty()) {
+                for (file in files) {
+                    try {
+                        withContext(Dispatchers.IO) {
                             FileInputStream(file).use { inputStream ->
                                 try {
                                     keyManager.evaluateKey(inputStream)
@@ -2615,18 +2587,18 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                                 }
                                 withContext(Dispatchers.Main) { hideFakeSnackbar() }
                             }
-                        } catch (e: Exception) {
-                            Debug.warn(e)
                         }
+                    } catch (e: Exception) {
+                        Debug.warn(e)
                     }
-                } else {
-                    locateKeyFilesRecursive(Storage.getFile(prefs.preferEmulated()))
                 }
-                if (keyManager.isKeyMissing) {
-                    withContext(Dispatchers.Main) {
-                        hideFakeSnackbar()
-                        onShowSettingsFragment()
-                    }
+            } else {
+                locateKeyFilesRecursive(Storage.getFile(prefs.preferEmulated()))
+            }
+            if (keyManager.isKeyMissing) {
+                withContext(Dispatchers.Main) {
+                    hideFakeSnackbar()
+                    onShowSettingsFragment()
                 }
             }
         }
@@ -2706,10 +2678,10 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                         bottomSheet?.setState(BottomSheetBehavior.STATE_COLLAPSED)
                     } else if (amiiboContainer?.isVisible == true) {
                         amiiboContainer?.isGone = true
-                    } else if (layout?.currentItem != 0) {
-                        if (layout?.currentItem == pagerAdapter.itemCount - 1
+                    } else if (viewPager?.currentItem != 0) {
+                        if (viewPager?.currentItem == pagerAdapter.itemCount - 1
                             && pagerAdapter.website.hasGoneBack()) return
-                        else layout?.setCurrentItem(0, true)
+                        else viewPager?.setCurrentItem(0, true)
                     } else {
                         finishAffinity()
                     }
@@ -2719,10 +2691,10 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                             bottomSheet?.setState(BottomSheetBehavior.STATE_COLLAPSED)
                         } else if (amiiboContainer?.isVisible == true) {
                             amiiboContainer?.isGone = true
-                        } else if (layout?.currentItem != 0) {
-                            if (layout?.currentItem == pagerAdapter.itemCount - 1
+                        } else if (viewPager?.currentItem != 0) {
+                            if (viewPager?.currentItem == pagerAdapter.itemCount - 1
                                 && pagerAdapter.website.hasGoneBack()) return
-                                else layout?.setCurrentItem(0, true)
+                                else viewPager?.setCurrentItem(0, true)
                         } else {
                             finishAffinity()
                         }
@@ -2730,6 +2702,21 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                 }
             }
         })
+        if (animationArray.isNullOrEmpty()) {
+            val colorRed = ContextCompat.getColor(this, android.R.color.holo_red_light)
+            val colorGreen = ContextCompat.getColor(this, android.R.color.holo_green_light)
+            val colorBlue = ContextCompat.getColor(this, android.R.color.holo_blue_light)
+            animationArray = arrayListOf(
+                ValueAnimator.ofObject(ArgbEvaluator(), colorRed, colorGreen),
+                ValueAnimator.ofObject(ArgbEvaluator(), colorGreen, colorBlue),
+                ValueAnimator.ofObject(ArgbEvaluator(), colorBlue, colorRed)
+            )
+        }
+    }
+
+    override fun onStop() {
+        super.onStop()
+        animationArray?.clear()
     }
 
     companion object {

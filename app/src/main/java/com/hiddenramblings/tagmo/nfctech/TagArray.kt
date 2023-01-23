@@ -148,7 +148,11 @@ object TagArray {
         return try {
             buffer.long
         } catch (bue: BufferUnderflowException) {
-            buffer.int.toLong()
+            try {
+                buffer.int.toLong()
+            } catch (bue: BufferUnderflowException) {
+                buffer.short.toLong()
+            }
         }
     }
 

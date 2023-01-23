@@ -16,7 +16,6 @@ import me.weishu.reflection.Reflection
 import org.lsposed.hiddenapibypass.HiddenApiBypass
 import java.io.PrintWriter
 import java.io.StringWriter
-import java.lang.ref.SoftReference
 import kotlin.system.exitProcess
 
 class TagMo : Application() {
@@ -36,10 +35,8 @@ class TagMo : Application() {
     override fun attachBaseContext(base: Context) {
         super.attachBaseContext(base)
         if (BuildConfig.WEAR_OS) {
-            mContext = SoftReference(ScaledContext(this).watch(2f))
-            mContext!!.get()!!.setTheme(R.style.AppTheme)
-        } else {
-            mContext = SoftReference(this)
+            appContext = ScaledContext(appContext).watch(2f)
+            appContext.setTheme(R.style.AppTheme)
         }
         if (isNewer(Build.VERSION_CODES.P))
             HiddenApiBypass.addHiddenApiExemptions("LBluetooth")
@@ -50,7 +47,7 @@ class TagMo : Application() {
     override fun onCreate() {
         super.onCreate()
         AppCompatDelegate.setCompatVectorFromResourcesEnabled(true)
-        if (BuildConfig.WEAR_OS) mContext!!.get()!!.setTheme(R.style.AppTheme)
+        if (BuildConfig.WEAR_OS) appContext.setTheme(R.style.AppTheme)
         if (isWatchingANR) {
             ANRWatchDog(30000).setANRListener { error: ANRError ->
                 val exception = StringWriter()
@@ -69,12 +66,15 @@ class TagMo : Application() {
         setThemePreference()
     }
 
+    init {
+        appContext = this
+    }
+
     companion object {
-        private var mContext: SoftReference<Context>? = null
-        const val uiDelay = 50
         @JvmStatic
-        val appContext: Context
-            get() = mContext!!.get()!!
+        lateinit var appContext : Context
+            private set
+        const val uiDelay = 50
         private const val commitHash = "#" + BuildConfig.COMMIT
         private val versionLabel = ("TagMo " + BuildConfig.VERSION_NAME + " (" + (
                 if (BuildConfig.GOOGLE_PLAY)

@@ -312,8 +312,7 @@ class WebsiteFragment : Fragment() {
                         filePath, Storage.getDownloadDir("TagMo", "Downloads")
                 )).start()
             } else {
-                val binTypes = resources.getStringArray(R.array.mimetype_bin)
-                for (binType in binTypes) {
+                for (binType in resources.getStringArray(R.array.mimetype_bin)) {
                     if (base64File.contains("data:$binType;")) {
                         setBinName(base64File, binType)
                         break

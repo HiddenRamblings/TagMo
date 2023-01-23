@@ -462,8 +462,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
                 }
             }
             try {
-                Executors.newSingleThreadExecutor()
-                    .execute { GlideApp.get(activity).clearDiskCache() }
+                Executors.newSingleThreadExecutor().execute { GlideApp.get(activity).clearDiskCache() }
                 requireActivity().runOnUiThread { GlideApp.get(activity).clearMemory() }
             } catch (ignored: IllegalStateException) {
             }

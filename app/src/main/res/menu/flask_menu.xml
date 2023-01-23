@@ -12,6 +12,6 @@
         app:showAsAction="always"/>
     <item
         android:id="@+id/mnu_backup"
-        android:title="@string/amiibo_backup"
+        android:title="@string/download"
         app:showAsAction="ifRoom"/>
 </menu>

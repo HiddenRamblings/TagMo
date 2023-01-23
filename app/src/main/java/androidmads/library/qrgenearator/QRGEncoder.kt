@@ -154,38 +154,34 @@ class QRGEncoder(data: String?, bundle: Bundle?, type: Int, private var dimensio
                 }
                 val uniquePhones: MutableCollection<String> = HashSet(keysPhone.size)
                 run {
-                    var x = 0
-                    while (x < keysPhone.size) {
-                        val phone = trim(bundle.getString(keysPhone[x]))
+                    keysPhone.forEach {
+                        val phone = trim(bundle.getString(it))
                         if (phone != null) {
                             uniquePhones.add(phone)
                         }
-                        x++
                     }
                 }
-                for (phone in uniquePhones) {
-                    newContents.append("TEL:").append(escapeVCard(phone)) //.append(';')
+                uniquePhones.forEach {
+                    newContents.append("TEL:").append(escapeVCard(it)) //.append(';')
                     newContents.append("\n")
                     newDisplayContents.append('\n').append(
                         if (Debug.isNewer(Build.VERSION_CODES.LOLLIPOP))
-                            PhoneNumberUtils.formatNumber(phone, Locale.getDefault().country)
+                            PhoneNumberUtils.formatNumber(it, Locale.getDefault().country)
                         else
-                            @Suppress("DEPRECATION") PhoneNumberUtils.formatNumber(phone)
+                            @Suppress("DEPRECATION") PhoneNumberUtils.formatNumber(it)
                     )
                 }
                 val uniqueEmails: MutableCollection<String> = HashSet(keysEmail.size)
-                var x = 0
-                while (x < keysEmail.size) {
-                    val email = trim(bundle.getString(keysEmail[x]))
+                keysEmail.forEach {
+                    val email = trim(bundle.getString(it))
                     if (email != null) {
                         uniqueEmails.add(email)
                     }
-                    x++
                 }
-                for (email in uniqueEmails) {
-                    newContents.append("EMAIL:").append(escapeVCard(email)) //.append(';')
+                uniqueEmails.forEach {
+                    newContents.append("EMAIL:").append(escapeVCard(it)) //.append(';')
                     newContents.append("\n")
-                    newDisplayContents.append('\n').append(email)
+                    newDisplayContents.append('\n').append(it)
                 }
                 val organization = trim(bundle.getString(ContactsContract.Intents.Insert.COMPANY))
                 if (organization != null) {

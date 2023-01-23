@@ -349,22 +349,22 @@ class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
         }
         if (amiibos.isEmpty()) {
             bankAdapter!!.setAmiibos(amiibos)
-            for (x in amiiboList!!.indices) {
-                amiibos.add(EliteTag(amiiboManager.amiibos[TagArray.hexToLong(amiiboList[x])]))
-                bankAdapter!!.notifyItemInserted(x)
+            amiiboList?.indices?.forEach {
+                amiibos.add(EliteTag(amiiboManager.amiibos[TagArray.hexToLong(amiiboList[it])]))
+                bankAdapter?.notifyItemInserted(it)
             }
         } else {
-            for (x in amiiboList!!.indices) {
-                val amiiboId = TagArray.hexToLong(amiiboList[x])
-                if (x >= amiibos.size) {
-                    amiibos.add(EliteTag(amiiboManager.amiibos[TagArray.hexToLong(amiiboList[x])]))
-                    bankAdapter!!.notifyItemInserted(x)
-                } else if (null == amiibos[x] || amiibos[x]!!.index != x || amiiboId != amiibos[x]!!.id) {
-                    amiibos[x] = EliteTag(amiiboManager.amiibos[amiiboId])
-                    bankAdapter!!.notifyItemChanged(x)
+            amiiboList?.indices?.forEach {
+                val amiiboId = TagArray.hexToLong(amiiboList[it])
+                if (it >= amiibos.size) {
+                    amiibos.add(EliteTag(amiiboManager.amiibos[TagArray.hexToLong(amiiboList[it])]))
+                    bankAdapter?.notifyItemInserted(it)
+                } else if (null == amiibos[it] || amiibos[it]!!.index != it || amiiboId != amiibos[it]!!.id) {
+                    amiibos[it] = EliteTag(amiiboManager.amiibos[amiiboId])
+                    bankAdapter?.notifyItemChanged(it)
                 }
             }
-            if (amiibos.size > amiiboList.size) {
+            if (null != amiiboList && amiibos.size > amiiboList.size) {
                 val count = amiibos.size
                 val size = amiiboList.size
                 val shortList = ArrayList<EliteTag?>()
@@ -372,14 +372,14 @@ class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
                     shortList.add(amiibos[x])
                 }
                 amiibos = ArrayList(shortList)
-                bankAdapter!!.notifyItemRangeChanged(0, size)
-                bankAdapter!!.notifyItemRangeRemoved(size, count - size)
+                bankAdapter?.notifyItemRangeChanged(0, size)
+                bankAdapter?.notifyItemRangeRemoved(size, count - size)
             }
         }
     }
 
     private fun onBottomSheetChanged(sheet: SHEET) {
-        bottomSheet!!.state = BottomSheetBehavior.STATE_COLLAPSED
+        bottomSheet?.state = BottomSheetBehavior.STATE_COLLAPSED
         when (sheet) {
             SHEET.LOCKED -> {
                 amiiboCard?.isGone = true
@@ -856,15 +856,14 @@ class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
     }
 
     private fun writeAmiiboCollection(amiiboList: ArrayList<AmiiboFile?>) {
-        for (i in amiiboList.indices) {
+        amiiboList.indices.forEach {
             try {
-                val amiiboFile = amiiboList[i]
+                val amiiboFile = amiiboList[it]
                 if (null != amiiboFile) {
                     amiiboFile.data = TagArray.getValidatedData(keyManager, amiiboFile)
-                    amiiboList[i] = amiiboFile
+                    amiiboList[it] = amiiboFile
                 }
-            } catch (ignored: Exception) {
-            }
+            } catch (ignored: Exception) { }
         }
         AlertDialog.Builder(requireContext())
             .setMessage(R.string.elite_write_confirm)

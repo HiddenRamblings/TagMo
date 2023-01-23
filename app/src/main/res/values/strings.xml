@@ -69,6 +69,7 @@
     <string name="delete">Delete</string>
     <string name="erase">Erase</string>
     <string name="activate">Activate</string>
+    <string name="download">Download</string>
     <string name="parent">Parent</string>
     <string name="unknown">Unknown</string>
     <string name="invalid">Invalid</string>

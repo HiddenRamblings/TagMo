@@ -107,7 +107,7 @@ class ScanTag {
                                     activity, NfcActivity::class.java
                                 ).setAction(NFCIntent.ACTION_BLIND_SCAN))
                             } else {
-                                IconifiedSnackbar(activity, activity.layout).buildSnackbar(
+                                IconifiedSnackbar(activity, activity.viewPager).buildSnackbar(
                                     R.string.speed_scan, Snackbar.LENGTH_SHORT
                                 ).show()
                             }

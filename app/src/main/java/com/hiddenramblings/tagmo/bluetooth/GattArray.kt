@@ -8,15 +8,19 @@ package com.hiddenramblings.tagmo.bluetooth
 object GattArray {
     @JvmStatic
     fun byteToPortions(largeByteArray: ByteArray, sizePerPortion: Int): List<ByteArray> {
-        val byteArrayPortions: MutableList<ByteArray> = ArrayList()
-        var offset = 0
-        while (offset < largeByteArray.size) {
-            byteArrayPortions.add(
-                if (largeByteArray.size - offset > sizePerPortion)
-                    largeByteArray.copyOfRange(offset, offset + sizePerPortion)
-                else largeByteArray.copyOfRange(offset, largeByteArray.size)
-            )
-            offset += sizePerPortion
+//        val byteArrayPortions: MutableList<ByteArray> = ArrayList()
+//        var offset = 0
+//        while (offset < largeByteArray.size) {
+//            byteArrayPortions.add(
+//                if (largeByteArray.size - offset > sizePerPortion)
+//                    largeByteArray.copyOfRange(offset, offset + sizePerPortion)
+//                else largeByteArray.copyOfRange(offset, largeByteArray.size)
+//            )
+//            offset += sizePerPortion
+//        }
+        val byteArrayPortions: ArrayList<ByteArray> = arrayListOf()
+        largeByteArray.asIterable().chunked(sizePerPortion).forEach {
+            byteArrayPortions.add(it.toByteArray())
         }
         return byteArrayPortions
     }
@@ -30,8 +34,8 @@ object GattArray {
         } else {
             var index = 0
             while (index < size) {
-                stringPortions.add(largeString.substring(
-                        index, (index + sizePerPortion).coerceAtMost(largeString.length)
+                stringPortions.add(largeString.substring(index,
+                    (index + sizePerPortion).coerceAtMost(largeString.length)
                 ))
                 index += sizePerPortion
             }

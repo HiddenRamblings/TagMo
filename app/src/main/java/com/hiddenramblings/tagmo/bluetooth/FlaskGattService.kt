@@ -14,10 +14,6 @@ import android.os.*
 import android.util.Base64
 import androidx.annotation.RequiresApi
 import com.hiddenramblings.tagmo.amiibo.Amiibo
-import com.hiddenramblings.tagmo.bluetooth.GattArray.byteToPortions
-import com.hiddenramblings.tagmo.bluetooth.GattArray.stringToPortions
-import com.hiddenramblings.tagmo.bluetooth.GattArray.stringToUnicode
-import com.hiddenramblings.tagmo.charset.CharsetCompat
 import com.hiddenramblings.tagmo.eightbit.io.Debug
 import org.json.JSONArray
 import org.json.JSONException
@@ -104,16 +100,18 @@ class FlaskGattService : Service() {
         fun onGattConnectionLost()
     }
 
-    var response = StringBuilder()
+    private var response = StringBuilder()
     private var rangeIndex = 0
     private fun getCharacteristicValue(characteristic: BluetoothGattCharacteristic, output: String?) {
         if (!output.isNullOrEmpty()) {
-            Debug.verbose(this.javaClass, getLogTag(characteristic.uuid) + " " + output)
+            Debug.verbose(this.javaClass, "${getLogTag(characteristic.uuid)} $output")
             if (characteristic.uuid.compareTo(FlaskRX) == 0) {
                 if (output.contains(">tag.")) {
                     response = StringBuilder()
                     response.append(output.split(">".toRegex()).toTypedArray()[1])
-                } else if (output.startsWith("tag.") || output.startsWith("{") || response.isNotEmpty()) {
+                } else if (output.startsWith("tag.")
+                    || output.startsWith("{")
+                    || response.isNotEmpty()) {
                     response.append(output)
                 }
                 val progress =
@@ -193,9 +191,7 @@ class FlaskGattService : Service() {
                                 }
                             } else {
                                 listener?.onFlaskListRetrieved(
-                                    JSONArray(
-                                        escapedList
-                                    )
+                                    JSONArray(escapedList)
                                 )
                             }
                         } catch (e: JSONException) {
@@ -216,9 +212,10 @@ class FlaskGattService : Service() {
                     }
                 } else if (progress.startsWith("tag.download")) {
                     if (progress.endsWith(">") || progress.endsWith("\n")) {
-                        val getData = progress.split("new Uint8Array".toRegex()).toTypedArray()
                         if (null != listener) {
-                            for (dataString in getData) {
+                            for (dataString in progress.split(
+                                "new Uint8Array".toRegex()).toTypedArray()
+                            ) {
                                 if (dataString.startsWith("tag.download")
                                     && dataString.endsWith("=")
                                 ) continue
@@ -243,11 +240,9 @@ class FlaskGattService : Service() {
                             if (event == "button") listener?.onFlaskActiveChanged(jsonObject)
                             if (event == "delete") listener?.onFlaskStatusChanged(jsonObject)
                         } catch (e: JSONException) {
-                            if (null != e.message && e.message!!.contains("tag.setTag")) {
+                            if (null != e.message && e.message!!.contains("tag.setTag"))
                                 activeAmiibo
-                            } else {
-                                Debug.warn(e)
-                            }
+                            else Debug.warn(e)
                         }
                     }
                     response = StringBuilder()
@@ -492,7 +487,7 @@ class FlaskGattService : Service() {
                 throw UnsupportedOperationException()
             }
             for (customService in services) {
-                Debug.verbose(this.javaClass, "GattReadService: " + customService.uuid.toString())
+                Debug.verbose(this.javaClass, "GattReadService: ${customService.uuid}")
                 /*get the read characteristic from the service*/mCharacteristicRX =
                     getCharacteristicRX(customService)
                 break
@@ -531,7 +526,7 @@ class FlaskGattService : Service() {
                 throw UnsupportedOperationException()
             }
             for (customService in services) {
-                Debug.verbose(this.javaClass, "GattWriteService: " + customService.uuid.toString())
+                Debug.verbose(this.javaClass, "GattWriteService: ${customService.uuid}")
                 /*get the read characteristic from the service*/mCharacteristicTX =
                     getCharacteristicTX(customService)
             }
@@ -541,46 +536,16 @@ class FlaskGattService : Service() {
         setCharacteristicNotification(mCharacteristicTX, true)
     }
 
-    private fun delayedWriteCharacteristic(value: ByteArray) {
-        val chunks = byteToPortions(value, maxTransmissionUnit)
-        val commandQueue = commandCallbacks.size + 1 + chunks.size
-        flaskHandler.postDelayed({
-            var i = 0
-            while (i < chunks.size) {
-                val chunk = chunks[i]
-                if (null == mCharacteristicTX) continue
-                flaskHandler.postDelayed({
-                    try {
-                        if (Debug.isNewer(Build.VERSION_CODES.TIRAMISU)) {
-                            mBluetoothGatt!!.writeCharacteristic(
-                                mCharacteristicTX!!, chunk,
-                                BluetoothGattCharacteristic.WRITE_TYPE_NO_RESPONSE
-                            )
-                        } else @Suppress("DEPRECATION") {
-                            mCharacteristicTX!!.value = chunk
-                            mCharacteristicTX!!.writeType =
-                                BluetoothGattCharacteristic.WRITE_TYPE_NO_RESPONSE
-                            mBluetoothGatt!!.writeCharacteristic(mCharacteristicTX)
-                        }
-                    } catch (ex: NullPointerException) {
-                        listener?.onServicesDiscovered()
-                    }
-                }, (i + 1) * chunkTimeout)
-                i += 1
-            }
-        }, commandQueue * chunkTimeout)
-    }
-
     private fun delayedWriteCharacteristic(value: String) {
-        val chunks = stringToPortions(value, maxTransmissionUnit)
-        val commandQueue = commandCallbacks.size + 1 + chunks.size
+        val chunks = GattArray.stringToPortions(value, maxTransmissionUnit)
+        val commandQueue = commandCallbacks.size + chunks.size
         flaskHandler.postDelayed({
-            var i = 0
-            while (i < chunks.size) {
+            for (i in chunks.indices) {
                 val chunk = chunks[i]
-                if (null == mCharacteristicTX) continue
                 flaskHandler.postDelayed({
                     try {
+                        mCharacteristicTX!!.writeType =
+                            BluetoothGattCharacteristic.WRITE_TYPE_NO_RESPONSE
                         if (Debug.isNewer(Build.VERSION_CODES.TIRAMISU)) {
                             mBluetoothGatt!!.writeCharacteristic(
                                 mCharacteristicTX!!, chunk.encodeToByteArray(),
@@ -588,15 +553,39 @@ class FlaskGattService : Service() {
                             )
                         } else @Suppress("DEPRECATION") {
                             mCharacteristicTX!!.value = chunk.encodeToByteArray()
-                            mCharacteristicTX!!.writeType =
-                                BluetoothGattCharacteristic.WRITE_TYPE_NO_RESPONSE
                             mBluetoothGatt!!.writeCharacteristic(mCharacteristicTX)
                         }
                     } catch (ex: NullPointerException) {
                         listener?.onServicesDiscovered()
                     }
                 }, (i + 1) * chunkTimeout)
-                i += 1
+            }
+        }, commandQueue * chunkTimeout)
+    }
+
+    private fun delayedWriteCharacteristic(value: ByteArray) {
+        val chunks = GattArray.byteToPortions(value, maxTransmissionUnit)
+        val commandQueue = commandCallbacks.size + chunks.size
+        flaskHandler.postDelayed({
+            for (i in chunks.indices) {
+                val chunk = chunks[i]
+                flaskHandler.postDelayed({
+                    try {
+                        mCharacteristicTX!!.writeType =
+                            BluetoothGattCharacteristic.WRITE_TYPE_NO_RESPONSE
+                        if (Debug.isNewer(Build.VERSION_CODES.TIRAMISU)) {
+                            mBluetoothGatt!!.writeCharacteristic(
+                                mCharacteristicTX!!, chunk,
+                                BluetoothGattCharacteristic.WRITE_TYPE_NO_RESPONSE
+                            )
+                        } else @Suppress("DEPRECATION") {
+                            mCharacteristicTX!!.value = chunk
+                            mBluetoothGatt!!.writeCharacteristic(mCharacteristicTX)
+                        }
+                    } catch (ex: NullPointerException) {
+                        listener?.onServicesDiscovered()
+                    }
+                }, (i + 1) * chunkTimeout)
             }
         }, commandQueue * chunkTimeout)
     }
@@ -616,10 +605,6 @@ class FlaskGattService : Service() {
         }
     }
 
-    private fun delayedTagCharacteristic(value: String) {
-        queueTagCharacteristic(value, commandCallbacks.size)
-    }
-
     private fun queueByteCharacteristic(value: ByteArray, index: Int) {
         if (null == mCharacteristicTX) {
             try {
@@ -635,12 +620,16 @@ class FlaskGattService : Service() {
         }
     }
 
-    private fun delayedByteCharacteric(value: ByteArray) {
-        queueByteCharacteristic(value, commandCallbacks.size)
+    private fun delayedTagCharacteristic(value: String) {
+        queueTagCharacteristic(value, commandCallbacks.size)
     }
 
     private fun promptTagCharacteristic(value: String) {
         queueTagCharacteristic(value, 0)
+    }
+
+    private fun delayedByteCharacteric(value: ByteArray) {
+        queueByteCharacteristic(value, commandCallbacks.size)
     }
 
     private fun queueScreenCharacteristic(value: String, index: Int) {
@@ -663,43 +652,42 @@ class FlaskGattService : Service() {
     }
 
     fun uploadAmiiboFile(tagData: ByteArray, amiibo: Amiibo, complete: Boolean) {
-        delayedTagCharacteristic("startTagUpload(" + tagData.size + ")")
-        val chunks = stringToPortions(
-            Base64.encodeToString(
-                tagData, Base64.NO_PADDING or Base64.NO_CLOSE or Base64.NO_WRAP
-            ), 128
-        )
-        var i = 0
-        while (i < chunks.size) {
-            val chunk = chunks[i]
-            delayedByteCharacteric(
-                "tag.tagUploadChunk(\"$chunk\")\n".toByteArray(CharsetCompat.UTF_8)
+        delayedTagCharacteristic("startTagUpload(${tagData.size})")
+        val parameters: ArrayList<String> = arrayListOf()
+        for (chunk in GattArray.byteToPortions(tagData, 128)) {
+            val byteString = Base64.encodeToString(
+                chunk, Base64.NO_PADDING or Base64.NO_CLOSE or Base64.NO_WRAP
             )
-            i += 1
+            parameters.add("tagUploadChunk(\"$byteString\")")
         }
+
         val flaskTail = Amiibo.idToHex(amiibo.id).substring(8, 16).toInt(16).toString(36)
         val reserved = flaskTail.length + 3 // |tail|#
-        val nameUnicode = stringToUnicode(amiibo.name!!)
-        val amiiboName = if (nameUnicode.length + reserved > 28) nameUnicode.substring(
-            0, nameUnicode.length
-                    - (nameUnicode.length + reserved - 28)
+        val nameUnicode = GattArray.stringToUnicode(amiibo.name!!)
+        val amiiboName = if (nameUnicode.length + reserved > 28)
+            nameUnicode.substring(0, nameUnicode.length - (nameUnicode.length + reserved - 28)
         ) else nameUnicode
-        delayedTagCharacteristic(
-            "saveUploadedTag(\""
-                    + amiiboName + "|" + flaskTail + "|0\")"
-        )
+        parameters.add("saveUploadedTag(\"$amiiboName|$flaskTail|0\")")
         if (complete) {
-            delayedTagCharacteristic("uploadsComplete()")
-            delayedTagCharacteristic("getList()")
+            parameters.add("uploadsComplete()")
+            parameters.add("getList()")
+        }
+        for (parameter in parameters) {
+            commandCallbacks.add(commandCallbacks.size, Runnable {
+                    delayedWriteCharacteristic("tag.$parameter\n")
+            })
         }
     }
 
     fun setActiveAmiibo(name: String?, tail: String) {
-        if (name == "New Tag ") {
-            delayedTagCharacteristic("setTag(\"$name||$tail\")")
-        } else if (null != name) {
+        if (null != name) {
+            if (name.startsWith("New Tag")) {
+                // delayedTagCharacteristic("setTag(\"$name||$tail\")")
+                delayedTagCharacteristic("setTag(\"$name|$tail|0\")")
+                return
+            }
             val reserved = tail.length + 3 // |tail|#
-            val nameUnicode = stringToUnicode(name)
+            val nameUnicode = GattArray.stringToUnicode(name)
             nameCompat = if (nameUnicode.length + reserved > 28) nameUnicode.substring(
                 0, nameUnicode.length
                         - (nameUnicode.length + reserved - 28)
@@ -711,24 +699,25 @@ class FlaskGattService : Service() {
 
     private fun fixAmiiboName(name: String?, tail: String) {
         val reserved = tail.length + 3 // |tail|#
-        val nameUnicode = stringToUnicode(name!!)
+        val nameUnicode = GattArray.stringToUnicode(name!!)
         val amiiboName = if (nameUnicode.length + reserved > 28) nameUnicode.substring(
-            0, nameUnicode.length
-                    - (nameUnicode.length + reserved - 28)
+            0, nameUnicode.length - (nameUnicode.length + reserved - 28)
         ) else nameUnicode
         promptTagCharacteristic(
-            "rename(\"" + amiiboName + "|" + tail
-                    + "\",\"" + amiiboName + "|" + tail + "|0\" )"
+            "rename(\"$amiiboName|$tail\",\"$amiiboName|$tail|0\" )"
         )
         deviceAmiibo
     }
 
     fun deleteAmiibo(name: String?, tail: String) {
-        if (name == "New Tag ") {
-            delayedTagCharacteristic("remove(\"$name||$tail\")")
-        } else if (null != name) {
+        if (null != name) {
+            if (name.startsWith("New Tag")) {
+                // delayedTagCharacteristic("remove(\"$name||$tail\")")
+                delayedTagCharacteristic("remove(\"$name|$tail|0\")")
+                return
+            }
             val reserved = tail.length + 3 // |tail|#
-            val nameUnicode = stringToUnicode(name)
+            val nameUnicode = GattArray.stringToUnicode(name)
             nameCompat = if (nameUnicode.length + reserved > 28)
                 nameUnicode.substring(0, nameUnicode.length - (nameUnicode.length + reserved - 28))
             else nameUnicode
@@ -739,7 +728,7 @@ class FlaskGattService : Service() {
 
     fun downloadAmiibo(name: String?, tail: String) {
         val reserved = tail.length + 3 // |tail|#
-        val nameUnicode = stringToUnicode(name!!)
+        val nameUnicode = GattArray.stringToUnicode(name!!)
         val amiiboName = if (nameUnicode.length + reserved > 28)
             nameUnicode.substring(0, nameUnicode.length - (nameUnicode.length + reserved - 28))
         else nameUnicode

@@ -228,8 +228,8 @@ class AppDataSSBU(appData: ByteArray?) : AppData(appData!!) { // 0xE2 - 0D // 0x
         bb.order(ByteOrder.LITTLE_ENDIAN)
         bb.putInt(Checksum().generate(appData))
         val crc32 = bb.array()
-        for (i in crc32.indices) {
-            appData.put(GAME_CRC32_OFFSET + i, crc32[i])
+        crc32.indices.forEach {
+            appData.put(GAME_CRC32_OFFSET + it, crc32[it])
         }
         return appData
     }

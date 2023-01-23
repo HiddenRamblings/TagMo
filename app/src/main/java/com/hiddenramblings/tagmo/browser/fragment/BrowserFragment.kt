@@ -62,7 +62,8 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
     private lateinit var settings: BrowserSettings
     private val resultData = ArrayList<ByteArray>()
 
-    private val loadingScope = CoroutineScope(Dispatchers.Main + Job())
+    private val scopeDefault = CoroutineScope(Dispatchers.Default)
+    private val scopeIO = CoroutineScope(Dispatchers.IO)
 
     val onUpdateTagResult = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
@@ -274,13 +275,11 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
         val dialog = ProgressDialog.show(
             requireActivity(), "", "", true
         )
-        loadingScope.launch {
-            withContext(Dispatchers.IO) {
-                deleteDir(dialog, directory)
-                withContext(Dispatchers.Main) {
-                    dialog.dismiss()
-                    (requireActivity() as BrowserActivity).onRefresh(false)
-                }
+        scopeIO.launch {
+            deleteDir(dialog, directory)
+            withContext(Dispatchers.Main) {
+                dialog.dismiss()
+                (requireActivity() as BrowserActivity).onRefresh(false)
             }
         }
     }
@@ -328,38 +327,34 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
         val dialog = ProgressDialog.show(
             requireActivity(), "", "", true
         )
-        loadingScope.launch {
-            withContext(Dispatchers.IO) {
-                deleteDir(null, directory)
-                directory.mkdirs()
-                amiiboManager.amiibos.values.forEach {
-                    buildFoomiiboFile(it)
-                    withContext(Dispatchers.Main) {
-                        dialog.setMessage(getString(R.string.foomiibo_progress, it.character!!.name))
-                    }
-                }
+        scopeIO.launch {
+            deleteDir(null, directory)
+            directory.mkdirs()
+            amiiboManager.amiibos.values.forEach {
+                buildFoomiiboFile(it)
                 withContext(Dispatchers.Main) {
-                    dialog.dismiss()
-                    (requireActivity() as BrowserActivity).onRefresh(false)
+                    dialog.setMessage(getString(R.string.foomiibo_progress, it.character!!.name))
                 }
+            }
+            withContext(Dispatchers.Main) {
+                dialog.dismiss()
+                (requireActivity() as BrowserActivity).onRefresh(false)
             }
         }
     }
 
     private fun getGameCompatibility(txtUsage: TextView, tagData: ByteArray) {
-        loadingScope.launch {
-            withContext(Dispatchers.IO) {
-                val usage: String? = try {
-                    val amiiboId = Amiibo.dataToId(tagData)
-                    val gamesManager = getGamesManager(requireContext())
-                    gamesManager.getGamesCompatibility(amiiboId)
-                } catch (ex: Exception) {
-                    Debug.warn(ex)
-                    null
-                }
-                withContext(Dispatchers.Main) {
-                    txtUsage.text = usage
-                }
+        scopeDefault.launch {
+            val usage: String? = try {
+                val amiiboId = Amiibo.dataToId(tagData)
+                val gamesManager = getGamesManager(requireContext())
+                gamesManager.getGamesCompatibility(amiiboId)
+            } catch (ex: Exception) {
+                Debug.warn(ex)
+                null
+            }
+            withContext(Dispatchers.Main) {
+                txtUsage.text = usage
             }
         }
     }

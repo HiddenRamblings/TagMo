@@ -36,8 +36,7 @@ import com.hiddenramblings.tagmo.widget.BoldSpannable
 import java.util.*
 
 class BrowserAdapter(
-    private val settings: BrowserSettings,
-    private val listener: OnAmiiboClickListener
+    private val settings: BrowserSettings, private val listener: OnAmiiboClickListener
 ) : RecyclerView.Adapter<BrowserAdapter.AmiiboViewHolder>(), Filterable, BrowserSettingsListener,
     SectionIndexer {
     private var data = ArrayList<AmiiboFile?>()
@@ -99,6 +98,15 @@ class BrowserAdapter(
         return filteredData?.get(i)
     }
 
+    fun hasItem(id: Long) : Boolean {
+        filteredData?.let {
+            for (amiiboFile in it) {
+                if (id == amiiboFile?.id) return true
+            }
+        }
+        return false
+    }
+
     private var mSectionPositions: ArrayList<Int>? = null
 
     init {
@@ -116,28 +124,19 @@ class BrowserAdapter(
             mSectionPositions = ArrayList(36)
             val amiiboManager = settings.amiiboManager
             if (null != amiiboManager) {
-                var i = 0
-                val size = filteredData?.size ?: 0
-                while (i < size) {
-                    val amiiboId = filteredData?.get(i)?.id
+                filteredData?.indices?.forEach {
+                    val amiiboId = filteredData?.get(it)?.id
                     var amiibo = amiiboManager.amiibos[amiiboId]
-                    if (null == amiibo) amiibo = Amiibo(amiiboManager, amiiboId!!, null, null)
+                    if (null == amiibo)
+                        amiibo = Amiibo(amiiboManager, amiiboId!!, null, null)
                     var heading: String? = null
                     var section: String? = null
                     when (SORT.valueOf(settings.sort)) {
                         SORT.NAME -> heading = amiibo.name
-                        SORT.CHARACTER -> if (null != amiibo.character) {
-                            heading = amiibo.character!!.name
-                        }
-                        SORT.GAME_SERIES -> if (null != amiibo.gameSeries) {
-                            heading = amiibo.gameSeries!!.name
-                        }
-                        SORT.AMIIBO_SERIES -> if (null != amiibo.amiiboSeries) {
-                            heading = amiibo.amiiboSeries!!.name
-                        }
-                        SORT.AMIIBO_TYPE -> if (null != amiibo.amiiboType) {
-                            heading = amiibo.amiiboType!!.name
-                        }
+                        SORT.CHARACTER -> heading = amiibo.character?.name
+                        SORT.GAME_SERIES -> heading = amiibo.gameSeries?.name
+                        SORT.AMIIBO_SERIES -> heading = amiibo.amiiboSeries?.name
+                        SORT.AMIIBO_TYPE -> heading = amiibo.amiiboType?.name
                         else -> {}
                     }
                     if (heading?.isNotEmpty() == true) {
@@ -145,9 +144,8 @@ class BrowserAdapter(
                     }
                     if (null != section && !sections.contains(section)) {
                         sections.add(section)
-                        mSectionPositions!!.add(i)
+                        mSectionPositions!!.add(it)
                     }
-                    i++
                 }
             }
         }
@@ -164,26 +162,10 @@ class BrowserAdapter(
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): AmiiboViewHolder {
         return when (VIEW.valueOf(viewType)) {
-            VIEW.COMPACT -> CompactViewHolder(
-                parent,
-                settings,
-                listener
-            )
-            VIEW.LARGE -> LargeViewHolder(
-                parent,
-                settings,
-                listener
-            )
-            VIEW.IMAGE -> ImageViewHolder(
-                parent,
-                settings,
-                listener
-            )
-            VIEW.SIMPLE -> SimpleViewHolder(
-                parent,
-                settings,
-                listener
-            )
+            VIEW.COMPACT -> CompactViewHolder(parent, settings, listener)
+            VIEW.LARGE -> LargeViewHolder(parent, settings, listener)
+            VIEW.IMAGE -> ImageViewHolder(parent, settings, listener)
+            VIEW.SIMPLE -> SimpleViewHolder(parent, settings, listener)
         }
     }
 
@@ -281,9 +263,7 @@ class BrowserAdapter(
     }
 
     abstract class AmiiboViewHolder(
-        itemView: View,
-        private val settings: BrowserSettings,
-        val listener: OnAmiiboClickListener?
+        itemView: View, private val settings: BrowserSettings, val listener: OnAmiiboClickListener?
     ) : RecyclerView.ViewHolder(itemView) {
         val txtError: TextView?
         val txtName: TextView?
@@ -480,8 +460,7 @@ class BrowserAdapter(
     }
 
     internal class SimpleViewHolder(
-        parent: ViewGroup, settings: BrowserSettings,
-        listener: OnAmiiboClickListener?
+        parent: ViewGroup, settings: BrowserSettings, listener: OnAmiiboClickListener?
     ) : AmiiboViewHolder(
         LayoutInflater.from(parent.context).inflate(
             R.layout.amiibo_simple_card, parent, false

@@ -5,8 +5,6 @@ import com.hiddenramblings.tagmo.TagMo.Companion.appContext
 import com.hiddenramblings.tagmo.amiibo.KeyManager
 import com.hiddenramblings.tagmo.amiibo.PowerTagManager.getPowerTagKey
 import com.hiddenramblings.tagmo.eightbit.io.Debug
-import com.hiddenramblings.tagmo.nfctech.TagArray
-import com.hiddenramblings.tagmo.nfctech.TagReader
 import java.io.BufferedReader
 import java.io.IOException
 import java.io.InputStreamReader

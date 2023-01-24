@@ -82,7 +82,7 @@ class PuckGattService : Service() {
                     if (data.size == 3) {
                         activeSlot = data[1].toInt()
                         slotsCount = data[2].toInt()
-                        getDeviceSlots(slotsCount)
+                        deviceAmiibo
                     } else {
                         puckArray.add(
                             if (data.size > 2)
@@ -264,10 +264,8 @@ class PuckGattService : Service() {
      * callback.
      */
     fun disconnect() {
-        if (mBluetoothAdapter == null || mBluetoothGatt == null) {
-            return
-        }
-        mBluetoothGatt!!.disconnect()
+        if (mBluetoothAdapter == null) return
+        mBluetoothGatt?.disconnect()
     }
 
     private fun setResponseDescriptors(characteristic: BluetoothGattCharacteristic?) {
@@ -321,14 +319,13 @@ class PuckGattService : Service() {
      * @return A `List` of supported services.
      */
     private val supportedGattServices: List<BluetoothGattService>?
-        get() = if (mBluetoothGatt == null) null else mBluetoothGatt!!.services
+        get() = mBluetoothGatt?.services
 
     private fun getCharacteristicRX(mCustomService: BluetoothGattService): BluetoothGattCharacteristic {
         var mReadCharacteristic = mCustomService.getCharacteristic(PuckRX)
         if (!mBluetoothGatt!!.readCharacteristic(mReadCharacteristic)) {
             for (customRead in mCustomService.characteristics) {
                 val customUUID = customRead.uuid
-                /*get the read characteristic from the service*/
                 if (customUUID.compareTo(PuckRX) == 0) {
                     Debug.verbose(this.javaClass, "GattReadCharacteristic: $customUUID")
                     mReadCharacteristic = mCustomService.getCharacteristic(customUUID)
@@ -345,15 +342,12 @@ class PuckGattService : Service() {
             throw UnsupportedOperationException()
         }
         val mCustomService = mBluetoothGatt!!.getService(PuckNUS)
-        /*check if the service is available on the device*/if (null == mCustomService) {
+        if (null == mCustomService) {
             val services = supportedGattServices
-            if (null == services || services.isEmpty()) {
-                throw UnsupportedOperationException()
-            }
+            if (services.isNullOrEmpty()) throw UnsupportedOperationException()
             for (customService in services) {
                 Debug.verbose(this.javaClass, "GattReadService: ${customService.uuid}")
-                /*get the read characteristic from the service*/mCharacteristicRX =
-                    getCharacteristicRX(customService)
+                mCharacteristicRX = getCharacteristicRX(customService)
                 break
             }
         } else {
@@ -364,17 +358,16 @@ class PuckGattService : Service() {
 
     private fun getCharacteristicTX(mCustomService: BluetoothGattService): BluetoothGattCharacteristic {
         var mWriteCharacteristic = mCustomService.getCharacteristic(PuckTX)
-        // if (!mBluetoothGatt!!.writeCharacteristic(mWriteCharacteristic)) {
+        if (!mCustomService.characteristics.contains(mWriteCharacteristic)) {
             for (customWrite in mCustomService.characteristics) {
                 val customUUID = customWrite.uuid
-                /*get the write characteristic from the service*/
                 if (customUUID.compareTo(PuckTX) == 0) {
                     Debug.verbose(this.javaClass, "GattWriteCharacteristic: $customUUID")
                     mWriteCharacteristic = mCustomService.getCharacteristic(customUUID)
                     break
                 }
             }
-        // }
+        }
         return mWriteCharacteristic
     }
 
@@ -384,15 +377,12 @@ class PuckGattService : Service() {
             throw UnsupportedOperationException()
         }
         val mCustomService = mBluetoothGatt!!.getService(PuckNUS)
-        /*check if the service is available on the device*/if (null == mCustomService) {
+        if (null == mCustomService) {
             val services = supportedGattServices
-            if (null == services || services.isEmpty()) {
-                throw UnsupportedOperationException()
-            }
+            if (services.isNullOrEmpty()) throw UnsupportedOperationException()
             for (customService in services) {
                 Debug.verbose(this.javaClass, "GattWriteService: ${customService.uuid}")
-                /*get the read characteristic from the service*/mCharacteristicTX =
-                    getCharacteristicTX(customService)
+                mCharacteristicTX = getCharacteristicTX(customService)
             }
         } else {
             mCharacteristicTX = getCharacteristicTX(mCustomService)
@@ -446,21 +436,12 @@ class PuckGattService : Service() {
     }
 
     private fun sendCommand(params: ByteArray, data: ByteArray?) {
-        if (null != data) {
-            val command = ByteArray(params.size + data.size)
-            System.arraycopy(params, 0, command, 0, params.size)
-            System.arraycopy(data, 0, command, params.size, data.size)
-            delayedByteCharacteric(command)
-        } else {
-            delayedByteCharacteric(params)
-        }
+        delayedByteCharacteric(data?.let { params.plus(data) } ?: params)
     }
 
-    // sendCommand(new byte[] { PUCK.INFO.bytes }, null);
     val deviceAmiibo: Unit
         get() {
-            puckArray = ArrayList()
-            // sendCommand(new byte[] { PUCK.INFO.bytes }, null);
+            puckArray = arrayListOf()
             getDeviceSlots(slotsCount)
         }
 

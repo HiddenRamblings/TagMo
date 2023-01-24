@@ -353,9 +353,8 @@ class NTAG215 : TagTechnology {
             // Note that issuing a command to an out-of-bounds block is safe - the
             // tag will wrap the read to an addressable area. This validation is a
             // helper to guard against obvious programming mistakes.
-            if (pageIndex < 0 || pageIndex >= MAX_PAGE_COUNT) {
+            if (pageIndex < 0 || pageIndex >= MAX_PAGE_COUNT)
                 throw IndexOutOfBoundsException("page out of bounds: $pageIndex")
-            }
         }
     }
 }

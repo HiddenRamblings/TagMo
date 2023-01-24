@@ -117,15 +117,15 @@ object Debug {
 
     fun hasException(e: Exception, target: String): Boolean {
         if (e.stackTrace.isNullOrEmpty()) return false
-        e.stackTrace.forEach {
-            if (null != it && (it.className + it.methodName) == target) return true
+        for (trace in e.stackTrace) {
+            if (null != trace && ("${trace.className}.${trace.methodName}") == target) return true
         }
         return false
     }
 
     @JvmStatic
     fun error(source: Class<*>, params: String?) {
-        if (hasDebugging()) Log.e(source.simpleName, params!!)
+        if (hasDebugging()) params?.let { Log.e(source.simpleName, it) }
     }
 
     @JvmStatic
@@ -155,7 +155,7 @@ object Debug {
 
     @JvmStatic
     fun warn(source: Class<*>, params: String?) {
-        if (hasDebugging()) Log.w(source.simpleName, params!!)
+        if (hasDebugging()) params?.let { Log.w(source.simpleName, it) }
     }
 
     @JvmStatic
@@ -185,7 +185,7 @@ object Debug {
 
     @JvmStatic
     fun info(source: Class<*>, params: String?) {
-        if (hasDebugging()) Log.i(source.simpleName, params!!)
+        if (hasDebugging()) params?.let { Log.i(source.simpleName, it) }
     }
 
     @JvmStatic
@@ -215,7 +215,7 @@ object Debug {
 
     @JvmStatic
     fun verbose(source: Class<*>, params: String?) {
-        if (BuildConfig.DEBUG && hasDebugging()) Log.d(source.simpleName, params!!)
+        if (BuildConfig.DEBUG && hasDebugging()) params?.let { Log.d(source.simpleName, it) }
     }
 
     @JvmStatic

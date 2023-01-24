@@ -59,7 +59,9 @@ class TagMo : Application() {
             if (isWatchingANR && isUncaughtANR(error)) return@setDefaultUncaughtExceptionHandler
             val exception = StringWriter()
             error.printStackTrace(PrintWriter(exception))
-            Toast.makeText(this, R.string.logcat_crash, Toast.LENGTH_SHORT).show()
+            try {
+                Toast.makeText(this, R.string.logcat_crash, Toast.LENGTH_SHORT).show()
+            } catch (ignored: Exception) { }
             processException(this, exception.toString())
             exitProcess(0)
         }

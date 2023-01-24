@@ -402,10 +402,8 @@ class FlaskGattService : Service() {
      * callback.
      */
     fun disconnect() {
-        if (mBluetoothAdapter == null || mBluetoothGatt == null) {
-            return
-        }
-        mBluetoothGatt!!.disconnect()
+        if (mBluetoothAdapter == null) return
+        mBluetoothGatt?.disconnect()
     }
 
     private fun setResponseDescriptors(characteristic: BluetoothGattCharacteristic?) {
@@ -457,7 +455,7 @@ class FlaskGattService : Service() {
      * @return A `List` of supported services.
      */
     private val supportedGattServices: List<BluetoothGattService>?
-        get() = if (mBluetoothGatt == null) null else mBluetoothGatt!!.services
+        get() = mBluetoothGatt?.services
 
     private fun getCharacteristicRX(mCustomService: BluetoothGattService): BluetoothGattCharacteristic {
         var mReadCharacteristic = mCustomService.getCharacteristic(FlaskRX)
@@ -481,15 +479,12 @@ class FlaskGattService : Service() {
             throw UnsupportedOperationException()
         }
         val mCustomService = mBluetoothGatt!!.getService(FlaskNUS)
-        /*check if the service is available on the device*/if (null == mCustomService) {
+        if (null == mCustomService) {
             val services = supportedGattServices
-            if (null == services || services.isEmpty()) {
-                throw UnsupportedOperationException()
-            }
+            if (services.isNullOrEmpty()) throw UnsupportedOperationException()
             for (customService in services) {
                 Debug.verbose(this.javaClass, "GattReadService: ${customService.uuid}")
-                /*get the read characteristic from the service*/mCharacteristicRX =
-                    getCharacteristicRX(customService)
+                mCharacteristicRX = getCharacteristicRX(customService)
                 break
             }
         } else {
@@ -500,17 +495,16 @@ class FlaskGattService : Service() {
 
     private fun getCharacteristicTX(mCustomService: BluetoothGattService): BluetoothGattCharacteristic {
         var mWriteCharacteristic = mCustomService.getCharacteristic(FlaskTX)
-        // if (!mBluetoothGatt!!.writeCharacteristic(mWriteCharacteristic)) {
+        if (!mCustomService.characteristics.contains(mWriteCharacteristic)) {
             for (customWrite in mCustomService.characteristics) {
                 val customUUID = customWrite.uuid
-                /*get the write characteristic from the service*/
                 if (customUUID.compareTo(FlaskTX) == 0) {
                     Debug.verbose(this.javaClass, "GattWriteCharacteristic: $customUUID")
                     mWriteCharacteristic = mCustomService.getCharacteristic(customUUID)
                     break
                 }
             }
-        // }
+        }
         return mWriteCharacteristic
     }
 
@@ -520,15 +514,12 @@ class FlaskGattService : Service() {
             throw UnsupportedOperationException()
         }
         val mCustomService = mBluetoothGatt!!.getService(FlaskNUS)
-        /*check if the service is available on the device*/if (null == mCustomService) {
+        if (null == mCustomService) {
             val services = supportedGattServices
-            if (null == services || services.isEmpty()) {
-                throw UnsupportedOperationException()
-            }
+            if (services.isNullOrEmpty()) throw UnsupportedOperationException()
             for (customService in services) {
                 Debug.verbose(this.javaClass, "GattWriteService: ${customService.uuid}")
-                /*get the read characteristic from the service*/mCharacteristicTX =
-                    getCharacteristicTX(customService)
+                mCharacteristicTX = getCharacteristicTX(customService)
             }
         } else {
             mCharacteristicTX = getCharacteristicTX(mCustomService)
@@ -672,9 +663,9 @@ class FlaskGattService : Service() {
             parameters.add("uploadsComplete()")
             parameters.add("getList()")
         }
-        for (parameter in parameters) {
+        parameters.forEach {
             commandCallbacks.add(commandCallbacks.size, Runnable {
-                    delayedWriteCharacteristic("tag.$parameter\n")
+                delayedWriteCharacteristic("tag.$it\n")
             })
         }
     }

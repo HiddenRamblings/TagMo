@@ -15,8 +15,6 @@ import android.widget.LinearLayout
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.view.ContextThemeWrapper
 import androidx.core.content.ContextCompat
-import androidx.core.view.isGone
-import androidx.core.view.isVisible
 import com.android.billingclient.api.*
 import com.android.billingclient.api.BillingFlowParams.ProductDetailsParams
 import com.android.billingclient.api.QueryProductDetailsParams.Product
@@ -74,11 +72,11 @@ class DonationManager internal constructor(private val activity: BrowserActivity
     private fun handlePurchase(purchase: Purchase) {
         if (purchase.purchaseState == Purchase.PurchaseState.PURCHASED) {
             if (!purchase.isAcknowledged) {
-                for (iap in iapList) {
-                    if (purchase.products.contains(iap)) handlePurchaseIAP(purchase)
+                iapList.forEach {
+                    if (purchase.products.contains(it)) handlePurchaseIAP(purchase)
                 }
-                for (sub in subList) {
-                    if (purchase.products.contains(sub)) handlePurchaseSub(purchase)
+                subList.forEach {
+                    if (purchase.products.contains(it)) handlePurchaseSub(purchase)
                 }
             }
         }
@@ -87,8 +85,8 @@ class DonationManager internal constructor(private val activity: BrowserActivity
     private val purchasesUpdatedListener =
         PurchasesUpdatedListener { billingResult: BillingResult, purchases: List<Purchase>? ->
             if (billingResult.responseCode == BillingClient.BillingResponseCode.OK && null != purchases) {
-                for (purchase in purchases) {
-                    handlePurchase(purchase)
+                purchases.forEach {
+                    handlePurchase(it)
                 }
             }
         }
@@ -96,8 +94,8 @@ class DonationManager internal constructor(private val activity: BrowserActivity
     private val subsOwnedListener = PurchasesResponseListener {
             billingResult: BillingResult, purchases: List<Purchase> ->
             if (billingResult.responseCode == BillingClient.BillingResponseCode.OK) {
-                for (purchase in purchases) {
-                    for (sku in purchase.products) {
+                purchases.forEach {
+                    for (sku in it.products) {
                         if (subsPurchased.contains(sku)) {
                             TagMo.hasSubscription = true
                             break
@@ -109,7 +107,9 @@ class DonationManager internal constructor(private val activity: BrowserActivity
     private val subHistoryListener = PurchaseHistoryResponseListener {
             billingResult: BillingResult, purchases: List<PurchaseHistoryRecord>? ->
             if (billingResult.responseCode == BillingClient.BillingResponseCode.OK && null != purchases) {
-                for (purchase in purchases) subsPurchased.addAll(purchase.products)
+                purchases.forEach {
+                    subsPurchased.addAll(it.products)
+                }
                 billingClient?.queryPurchasesAsync(
                     QueryPurchasesParams.newBuilder()
                         .setProductType(BillingClient.ProductType.SUBS).build(), subsOwnedListener
@@ -119,8 +119,8 @@ class DonationManager internal constructor(private val activity: BrowserActivity
     private val iapHistoryListener = PurchaseHistoryResponseListener {
             billingResult: BillingResult, purchases: List<PurchaseHistoryRecord>? ->
             if (billingResult.responseCode == BillingClient.BillingResponseCode.OK && null != purchases) {
-                for (purchase in purchases) {
-                    for (sku in purchase.products) {
+                purchases.forEach {
+                    for (sku in it.products) {
                         if (sku.split("_").toTypedArray()[1].toInt() >= 10) {
                             break
                         }

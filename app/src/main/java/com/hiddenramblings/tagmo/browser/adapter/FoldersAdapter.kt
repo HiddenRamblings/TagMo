@@ -17,8 +17,8 @@ import java.io.File
 
 class FoldersAdapter(var settings: BrowserSettings?) : RecyclerView.Adapter<FolderViewHolder>(),
     BrowserSettingsListener {
-    var mPrefs = Preferences(TagMo.appContext)
-    var data: ArrayList<File?>? = null
+    private var mPrefs = Preferences(TagMo.appContext)
+    var data: ArrayList<File?> = arrayListOf()
     private var rootFolder: File? = null
     private var showUpFolder = false
     private var firstRun = true
@@ -65,7 +65,7 @@ class FoldersAdapter(var settings: BrowserSettings?) : RecyclerView.Adapter<Fold
             if (showUpFolder) {
                 target -= 1
             }
-            folder = data?.get(target)
+            folder = data[target]
         }
         holder.bind(settings, folder as File)
     }
@@ -86,14 +86,8 @@ class FoldersAdapter(var settings: BrowserSettings?) : RecyclerView.Adapter<Fold
     }
 
     override fun getItemCount(): Int {
-        var count: Int = if (null == data) {
-            0
-        } else {
-            data!!.size
-        }
-        if (showUpFolder) {
-            count += 1
-        }
+        var count: Int = data.size
+        if (showUpFolder) count += 1
         return count
     }
 
@@ -105,7 +99,7 @@ class FoldersAdapter(var settings: BrowserSettings?) : RecyclerView.Adapter<Fold
 
     internal class ParentFolderViewHolder(itemView: View?) : FolderViewHolder(itemView) {
         var settings: BrowserSettings? = null
-        var folder: File? = null
+        private var folder: File? = null
 
         constructor(parent: ViewGroup) : this(
             LayoutInflater

@@ -60,7 +60,7 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
     private lateinit var keyManager: KeyManager
     private val foomiibo = Foomiibo()
     private lateinit var settings: BrowserSettings
-    private val resultData = ArrayList<ByteArray>()
+    private val resultData: ArrayList<ByteArray> = arrayListOf()
 
     private val scopeDefault = CoroutineScope(Dispatchers.Default)
     private val scopeIO = CoroutineScope(Dispatchers.IO)

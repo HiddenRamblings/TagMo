@@ -271,12 +271,12 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                         2, 3 -> hideBrowserInterface()
                         else -> {
                             showBrowserInterface()
-                            amiibosView = fragmentBrowser!!.browserContent
-                            foomiiboView = fragmentBrowser!!.foomiiboView
+                            amiibosView = fragmentBrowser?.browserContent
+                            foomiiboView = fragmentBrowser?.foomiiboView
                             bottomSheet = bottomSheetBehavior
                             if (null != foomiiboView) {
                                 foomiiboView?.layoutManager =
-                                    if (settings!!.amiiboView == VIEW.IMAGE.value)
+                                    if (settings?.amiiboView == VIEW.IMAGE.value)
                                         GridLayoutManager(this@BrowserActivity, columnCount)
                                     else LinearLayoutManager(this@BrowserActivity)
                             }
@@ -289,8 +289,8 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                             showActionButton()
                             hideBottomSheet()
                             setTitle(R.string.elite_n2)
-                            amiibosView = fragmentElite!!.eliteContent
-                            bottomSheet = fragmentElite!!.bottomSheet
+                            amiibosView = fragmentElite?.eliteContent
+                            bottomSheet = fragmentElite?.bottomSheet
                         } else if (hasFlaskEnabled) {
                             showActionButton()
                             hideBottomSheet()
@@ -322,12 +322,12 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                         else -> {
                             showBrowserInterface()
                             setTitle(R.string.tagmo)
-                            amiibosView = fragmentBrowser!!.browserContent
-                            foomiiboView = fragmentBrowser!!.foomiiboView
+                            amiibosView = fragmentBrowser?.browserContent
+                            foomiiboView = fragmentBrowser?.foomiiboView
                             bottomSheet = bottomSheetBehavior
                             if (null != foomiiboView) {
                                 foomiiboView?.layoutManager =
-                                    if (settings!!.amiiboView == VIEW.IMAGE.value)
+                                    if (settings?.amiiboView == VIEW.IMAGE.value)
                                         GridLayoutManager(this@BrowserActivity, columnCount)
                                     else LinearLayoutManager(this@BrowserActivity)
                             }
@@ -335,7 +335,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                     }
                 }
                 if (null != amiibosView) {
-                    amiibosView?.layoutManager = if (settings!!.amiiboView == VIEW.IMAGE.value)
+                    amiibosView?.layoutManager = if (settings?.amiiboView == VIEW.IMAGE.value)
                         GridLayoutManager(this@BrowserActivity, columnCount)
                     else LinearLayoutManager(this@BrowserActivity)
                 }
@@ -410,6 +410,11 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                     }.show()
             } catch (ignored: PackageManager.NameNotFoundException) { }
         }
+
+        val foldersView = findViewById<RecyclerView>(R.id.folders_list)
+        foldersView.layoutManager = LinearLayoutManager(this)
+        foldersView.adapter = FoldersAdapter(settings)
+        settings?.addChangeListener(foldersView.adapter as BrowserSettingsListener?)
 
         val toggle = findViewById<AppCompatImageView>(R.id.toggle)
         bottomSheetBehavior = BottomSheetBehavior.from(findViewById(R.id.bottom_sheet))
@@ -490,11 +495,6 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                 { fragmentBrowser?.buildFoomiiboSet() }, TagMo.uiDelay.toLong()
             )
         }
-
-        val foldersView = findViewById<RecyclerView>(R.id.folders_list)
-        foldersView.layoutManager = LinearLayoutManager(this)
-        foldersView.adapter = FoldersAdapter(settings)
-        settings?.addChangeListener(foldersView.adapter as BrowserSettingsListener?)
 
         val popup = if (Debug.isNewer(Build.VERSION_CODES.LOLLIPOP_MR1)) PopupMenu(
             this, nfcFab, Gravity.END, 0, R.style.PopupMenu
@@ -785,9 +785,9 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
     private fun getQueryCount(queryText: String?): Int {
         if (null == queryText) return 0
         val amiiboManager = settings?.amiiboManager ?: return 0
-        val items: MutableSet<Long> = HashSet()
-        for (amiibo in amiiboManager.amiibos.values) {
-            if (settings?.amiiboContainsQuery(amiibo, queryText) == true) items.add(amiibo.id)
+        val items: HashSet<Long> = hashSetOf()
+        amiiboManager.amiibos.values.forEach {
+            if (settings?.amiiboContainsQuery(it, queryText) == true) items.add(it.id)
         }
         return items.size
     }
@@ -795,8 +795,8 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
     private fun getFilteredCount(filter: String, filterType: FILTER): Int {
         val amiiboManager = settings?.amiiboManager ?: return 0
         val gamesManager = settings?.gamesManager
-        val items: MutableSet<Long> = HashSet()
-        for (amiibo in amiiboManager.amiibos.values) {
+        val items: HashSet<Long> = hashSetOf()
+        amiiboManager.amiibos.values.forEach { amiibo ->
             when (filterType) {
                 FILTER.CHARACTER -> {
                     val character = amiibo.character
@@ -876,8 +876,8 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
         val subMenu = menuFilterCharacter?.subMenu
         subMenu?.clear() ?: return true
         settings?.amiiboManager ?: return true
-        val items: MutableSet<String> = HashSet()
-        settings!!.amiiboManager!!.amiibos.values.forEach {
+        val items: ArrayList<String> = arrayListOf()
+        settings?.amiiboManager?.amiibos?.values?.forEach {
             val character = it.character
             if (null != character && Amiibo.matchesGameSeriesFilter(
                     it.gameSeries, settings!!.getFilter(FILTER.GAME_SERIES)
@@ -890,11 +890,10 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                 items.add(character.name)
             }
         }
-        val list = ArrayList(items)
-        list.sort()
-        for (item in list) {
-            subMenu.add(R.id.filter_character_group, Menu.NONE, 0, item)
-                .setChecked(item == settings!!.getFilter(FILTER.CHARACTER))
+        items.sort()
+        items.forEach {
+            subMenu.add(R.id.filter_character_group, Menu.NONE, 0, it)
+                .setChecked(it == settings!!.getFilter(FILTER.CHARACTER))
                 .setOnMenuItemClickListener(onFilterCharacterItemClick)
         }
         subMenu.setGroupCheckable(R.id.filter_character_group, true, true)
@@ -912,8 +911,8 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
         val subMenu = menuFilterGameSeries!!.subMenu
         subMenu?.clear() ?: return true
         settings?.amiiboManager ?: return false
-        val items: MutableSet<String> = HashSet()
-        settings!!.amiiboManager!!.amiibos.values.forEach {
+        val items: ArrayList<String> = arrayListOf()
+        settings?.amiiboManager?.amiibos?.values?.forEach {
             val gameSeries = it.gameSeries
             if (null != gameSeries && Amiibo.matchesCharacterFilter(
                     it.character, settings!!.getFilter(FILTER.CHARACTER)
@@ -926,11 +925,10 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                 items.add(gameSeries.name)
             }
         }
-        val list = ArrayList(items)
-        list.sort()
-        for (item in list) {
-            subMenu.add(R.id.filter_game_series_group, Menu.NONE, 0, item)
-                .setChecked(item == settings!!.getFilter(FILTER.GAME_SERIES))
+        items.sort()
+        items.forEach {
+            subMenu.add(R.id.filter_game_series_group, Menu.NONE, 0, it)
+                .setChecked(it == settings!!.getFilter(FILTER.GAME_SERIES))
                 .setOnMenuItemClickListener(onFilterGameSeriesItemClick)
         }
         subMenu.setGroupCheckable(R.id.filter_game_series_group, true, true)
@@ -948,7 +946,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
         val subMenu = menuFilterAmiiboSeries!!.subMenu
         subMenu?.clear() ?: return true
         val amiiboManager = settings?.amiiboManager ?: return true
-        val items: MutableSet<String> = HashSet()
+        val items: ArrayList<String> = arrayListOf()
         amiiboManager.amiibos.values.forEach {
             val amiiboSeries = it.amiiboSeries
             if (null != amiiboSeries && Amiibo.matchesGameSeriesFilter(
@@ -962,11 +960,10 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                 items.add(amiiboSeries.name)
             }
         }
-        val list = ArrayList(items)
-        list.sort()
-        for (item in list) {
-            subMenu.add(R.id.filter_amiibo_series_group, Menu.NONE, 0, item)
-                .setChecked(item == settings!!.getFilter(FILTER.AMIIBO_SERIES))
+        items.sort()
+        items.forEach {
+            subMenu.add(R.id.filter_amiibo_series_group, Menu.NONE, 0, it)
+                .setChecked(it == settings?.getFilter(FILTER.AMIIBO_SERIES))
                 .setOnMenuItemClickListener(onFilterAmiiboSeriesItemClick)
         }
         subMenu.setGroupCheckable(R.id.filter_amiibo_series_group, true, true)
@@ -984,7 +981,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
         val subMenu = menuFilterAmiiboType!!.subMenu
         subMenu?.clear() ?: return true
         val amiiboManager = settings?.amiiboManager ?: return true
-        val items: MutableSet<AmiiboType> = HashSet()
+        val items: ArrayList<AmiiboType> = arrayListOf()
         amiiboManager.amiibos.values.forEach {
             val amiiboType = it.amiiboType
             if (null != amiiboType && Amiibo.matchesGameSeriesFilter(
@@ -998,11 +995,10 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                 items.add(amiiboType)
             }
         }
-        val list = ArrayList(items)
-        list.sort()
-        for (item in list) {
-            subMenu.add(R.id.filter_amiibo_type_group, Menu.NONE, 0, item.name)
-                .setChecked(item.name == settings!!.getFilter(FILTER.AMIIBO_TYPE))
+        items.sort()
+        items.forEach {
+            subMenu.add(R.id.filter_amiibo_type_group, Menu.NONE, 0, it.name)
+                .setChecked(it.name == settings!!.getFilter(FILTER.AMIIBO_TYPE))
                 .setOnMenuItemClickListener(onFilterAmiiboTypeItemClick)
         }
         subMenu.setGroupCheckable(R.id.filter_amiibo_type_group, true, true)
@@ -1021,11 +1017,10 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
         subMenu?.clear() ?: return
         settings?.amiiboManager ?: return
         val gamesManager = settings!!.gamesManager
-        val items: MutableSet<String> = HashSet()
-        gamesManager?.gameTitles!!.forEach { items.add(it.name) }
-        val list = ArrayList(items)
-        list.sort()
-        list.forEach {
+        val items: ArrayList<String> = arrayListOf()
+        gamesManager?.gameTitles?.forEach { items.add(it.name) }
+        items.sort()
+        items.forEach {
             subMenu.add(R.id.filter_game_titles_group, Menu.NONE, 0, it)
                 .setChecked(it == settings!!.getFilter(FILTER.GAME_TITLES))
                 .setOnMenuItemClickListener(onFilterGameTitlesItemClick)
@@ -1315,16 +1310,13 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
     }
 
     val isDocumentStorage: Boolean
-        get() = if (
-            Debug.isNewer(Build.VERSION_CODES.LOLLIPOP) && null != settings?.browserRootDocument
-        ) {
-            try {
-                DocumentFile.fromTreeUri(this, settings!!.browserRootDocument!!)
-                true
-            } catch (iae: IllegalArgumentException) {
-                false
-            }
-        } else false
+        get() = Debug.isNewer(Build.VERSION_CODES.LOLLIPOP)
+                && null != settings?.browserRootDocument && try {
+            DocumentFile.fromTreeUri(this, settings!!.browserRootDocument!!)
+            true
+        } catch (iae: IllegalArgumentException) {
+            false
+        }
 
     @Throws(ActivityNotFoundException::class)
     private fun onDocumentRequested() {
@@ -1739,7 +1731,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
     }
 
     private fun listFolders(rootFolder: File?): ArrayList<File?> {
-        val folders = ArrayList<File?>()
+        val folders: ArrayList<File?> = arrayListOf()
         val files = rootFolder?.listFiles()
         if (files.isNullOrEmpty()) return folders
         for (file in files) {
@@ -1752,7 +1744,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
         scopeIO.launch {
             val folders = listFolders(rootFolder)
             folders.sortWith { file1: File?, file2: File? ->
-                file1?.path!!.compareTo(file2?.path!!, ignoreCase = true)
+                file2?.path?.let { file1?.path?.compareTo(it, ignoreCase = true) } ?: 0
             }
             withContext(Dispatchers.Main) {
                 settings?.folders = folders
@@ -1763,7 +1755,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
 
     private fun isDirectoryHidden(rootFolder: File?, directory: File, recursive: Boolean): Boolean {
         if (null == rootFolder) return false
-        return rootFolder.path != directory.path && (!recursive
+        return rootFolder.path != directory.path || (!recursive
                 || (!rootFolder.path.startsWith(directory.path)
                 && !directory.path.startsWith(rootFolder.path)))
     }
@@ -1771,7 +1763,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
     private fun loadAmiiboFiles(rootFolder: File?, recursiveFiles: Boolean) {
         scopeIO.launch {
             val amiiboFiles = listAmiibos(keyManager, rootFolder, recursiveFiles)
-            val download = Storage.getDownloadDir(null)
+            val download = Storage.getDownloadDir("TagMo")
             if (isDirectoryHidden(rootFolder, download, recursiveFiles))
                 amiiboFiles.addAll(listAmiibos(keyManager, download, true))
             val foomiibo = File(filesDir, "Foomiibo")
@@ -1790,7 +1782,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
             val amiiboFiles = listAmiiboDocuments(
                 this@BrowserActivity, keyManager, rootFolder!!, recursiveFiles
             )
-            if (amiiboFiles.isEmpty() && null == prefs.browserRootDocument()) {
+            if (amiiboFiles.isEmpty() && null == settings?.browserRootDocument) {
                 onDocumentRequested()
                 return@launch
             }
@@ -1809,9 +1801,9 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
             val rootDocument = DocumentFile.fromTreeUri(
                 this@BrowserActivity, settings!!.browserRootDocument!!
             )
-            loadAmiiboDocuments(rootDocument, settings!!.isRecursiveEnabled)
+            loadAmiiboDocuments(rootDocument, settings?.isRecursiveEnabled == true)
         } else {
-            loadAmiiboFiles(settings!!.browserRootFolder!!, settings!!.isRecursiveEnabled)
+            loadAmiiboFiles(settings?.browserRootFolder, settings?.isRecursiveEnabled == true)
         }
     }
 
@@ -1829,7 +1821,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
 
         // List all existing files inside picked directory
         if (null != pickedDir) {
-            settings!!.browserRootDocument = treeUri
+            settings?.browserRootDocument = treeUri
             onStorageEnabled()
         }
     }
@@ -1986,13 +1978,13 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
             )
             if (!keyManager.isKeyMissing) {
                 if (indicator) showFakeSnackbar(getString(R.string.refreshing_list))
-                loadAmiiboDocuments(rootDocument, settings!!.isRecursiveEnabled)
+                loadAmiiboDocuments(rootDocument, settings?.isRecursiveEnabled == true)
             }
         } else {
-            val rootFolder = settings!!.browserRootFolder
+            val rootFolder = settings?.browserRootFolder
             if (!keyManager.isKeyMissing) {
                 if (indicator) showFakeSnackbar(getString(R.string.refreshing_list))
-                loadAmiiboFiles(rootFolder, settings!!.isRecursiveEnabled)
+                loadAmiiboFiles(rootFolder, settings?.isRecursiveEnabled == true)
             }
             loadFolders(rootFolder)
         }
@@ -2007,9 +1999,9 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
             FILTER.AMIIBO_TYPE -> getString(R.string.filter_amiibo_type)
             FILTER.GAME_TITLES -> getString(R.string.filter_game_titles)
         }
-        fragmentBrowser!!.addFilterItemView(filterText, filterTag) {
-            settings!!.setFilter(filter, "")
-            settings!!.notifyChanges()
+        fragmentBrowser?.addFilterItemView(filterText, filterTag) {
+            settings?.setFilter(filter, "")
+            settings?.notifyChanges()
             if (viewPager!!.currentItem == 0) setAmiiboStats()
         }
     }
@@ -2023,14 +2015,12 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
     }
 
     private fun onRecursiveFilesChanged() {
-        if (null == menuRecursiveFiles) return
-        menuRecursiveFiles!!.isChecked = settings!!.isRecursiveEnabled
+        menuRecursiveFiles?.isChecked = settings?.isRecursiveEnabled == true
     }
 
     private fun launchEliteActivity(resultData: Intent?) {
-        if (resultData!!.hasExtra(NFCIntent.EXTRA_SIGNATURE)) {
+        if (resultData?.hasExtra(NFCIntent.EXTRA_SIGNATURE) == true)
             showElitePage(resultData.extras)
-        }
     }
 
     private val onQRCodeScanner = registerForActivityResult(
@@ -2288,9 +2278,9 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
             )
             if (hasAmiibo) {
                 characterStats.setOnClickListener {
-                    val items = ArrayList<Character>()
-                    for (character in amiiboManager!!.characters.values) {
-                        if (!items.contains(character)) items.add(character)
+                    val items: ArrayList<Character> = arrayListOf()
+                    amiiboManager?.characters?.values?.forEach {
+                        if (!items.contains(it)) items.add(it)
                     }
                     items.sort()
                     android.app.AlertDialog.Builder(this)
@@ -2319,9 +2309,9 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                         amiiboManager!!.amiiboTypes.values
                     )
                     amiiboTypes.sort()
-                    val items = ArrayList<String>()
-                    for (amiiboType in amiiboTypes) {
-                        if (!items.contains(amiiboType.name)) items.add(amiiboType.name)
+                    val items: ArrayList<String> = arrayListOf()
+                    amiiboTypes.forEach {
+                        if (!items.contains(it.name)) items.add(it.name)
                     }
                     android.app.AlertDialog.Builder(this)
                         .setTitle(R.string.pref_amiibo_types)
@@ -2339,7 +2329,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
             )
             if (hasGames) {
                 amiiboTitleStats.setOnClickListener {
-                    val items = ArrayList<String>()
+                    val items: ArrayList<String> = arrayListOf()
                     gamesManager?.gameTitles?.forEach {
                         if (!items.contains(it.name)) items.add(it.name)
                     }
@@ -2359,10 +2349,8 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
         if (amiibosView?.adapter is BrowserAdapter) {
             val adapter = amiibosView!!.adapter as BrowserAdapter
             var count = 0
-            for (amiibo in amiiboManager.amiibos.values) {
-                if (adapter.hasItem(amiibo.id)) {
-                    count += 1
-                }
+            amiiboManager.amiibos.values.forEach {
+                if (adapter.hasItem(it.id)) count += 1
             }
             return intArrayOf(adapter.itemCount, count)
         }
@@ -2371,38 +2359,38 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
 
     private fun setAmiiboStats() {
         statsHandler.removeCallbacksAndMessages(null)
-        currentFolderView!!.post {
-            val size = settings!!.amiiboFiles.size
+        currentFolderView?.post {
+            val size = settings?.amiiboFiles?.size ?: 0
             if (size <= 0) return@post
-            currentFolderView!!.gravity = Gravity.CENTER
-            val amiiboManager = settings!!.amiiboManager
+            currentFolderView?.gravity = Gravity.CENTER
+            val amiiboManager = settings?.amiiboManager
             if (null != amiiboManager) {
                 var count = 0
                 if (!TextUtils.isEmpty(settings?.query)) {
                     val stats = getAdapterStats(amiiboManager)
-                    currentFolderView!!.text = getString(
+                    currentFolderView?.text = getString(
                         R.string.amiibo_collected,
                         stats[0], stats[1], getQueryCount(settings?.query)
                     )
-                } else if (!settings!!.isFilterEmpty) {
+                } else if (settings?.isFilterEmpty != true) {
                     val stats = getAdapterStats(amiiboManager)
-                    currentFolderView!!.text = getString(
+                    currentFolderView?.text = getString(
                         R.string.amiibo_collected,
                         stats[0], stats[1], filteredCount
                     )
                 } else {
-                    for (amiibo in amiiboManager.amiibos.values) {
+                    amiiboManager.amiibos.values.forEach { amiibo ->
                         settings?.amiiboFiles?.forEach {
                             if (amiibo.id == it?.id) count += 1
                         }
                     }
-                    currentFolderView!!.text = getString(
+                    currentFolderView?.text = getString(
                         R.string.amiibo_collected,
                         size, count, amiiboManager.amiibos.size
                     )
                 }
             } else {
-                currentFolderView!!.text = getString(R.string.files_displayed, size)
+                currentFolderView?.text = getString(R.string.files_displayed, size)
             }
         }
     }
@@ -2489,7 +2477,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
     private fun showBrowserInterface() {
         bottomSheetBehavior?.state = BottomSheetBehavior.STATE_COLLAPSED
         sheetHandler.postDelayed(
-            { bottomSheetBehavior!!.setHideable(false) },
+            { bottomSheetBehavior?.setHideable(false) },
             TagMo.uiDelay.toLong()
         )
         showActionButton()
@@ -2505,7 +2493,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
 
     private fun onLoadSettingsFragment() {
         if (null == fragmentSettings) fragmentSettings = SettingsFragment()
-        if (!fragmentSettings!!.isAdded) {
+        if (fragmentSettings?.isAdded != true) {
             supportFragmentManager
                 .beginTransaction()
                 .replace(R.id.preferences, fragmentSettings!!)
@@ -2606,8 +2594,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
         ActivityResultContracts.RequestMultiplePermissions()) { permissions: Map<String, Boolean> ->
         var isStorageEnabled = true
         if (BuildConfig.WEAR_OS) {
-            isStorageEnabled =
-                java.lang.Boolean.TRUE == permissions[Manifest.permission.READ_EXTERNAL_STORAGE]
+            isStorageEnabled = permissions[Manifest.permission.READ_EXTERNAL_STORAGE] == true
         } else {
             for ((_, value) in permissions) {
                 if (!value) isStorageEnabled = false
@@ -2621,8 +2608,8 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
         ActivityResultContracts.StartActivityForResult()
     ) {
         if (Environment.isExternalStorageManager()) {
-            settings!!.browserRootDocument = null
-            settings!!.notifyChanges()
+            settings?.browserRootDocument = null
+            settings?.notifyChanges()
             onStorageEnabled()
         } else {
             onDocumentEnabled()

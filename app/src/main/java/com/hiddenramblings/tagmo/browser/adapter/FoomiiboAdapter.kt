@@ -32,8 +32,8 @@ class FoomiiboAdapter(
     private val settings: BrowserSettings, private val listener: OnFoomiiboClickListener
 ) : RecyclerView.Adapter<FoomiiboViewHolder>(), Filterable, BrowserSettingsListener,
     SectionIndexer {
-    private var data = ArrayList<Amiibo>()
-    private var filteredData: ArrayList<Amiibo>?
+    private var data: ArrayList<Amiibo> = arrayListOf()
+    private var filteredData: ArrayList<Amiibo> = arrayListOf()
     private var filter: FoomiiboFilter? = null
     private var firstRun = true
     override fun onBrowserSettingsChanged(
@@ -79,15 +79,15 @@ class FoomiiboAdapter(
     }
 
     override fun getItemCount(): Int {
-        return filteredData?.size ?: 0
+        return filteredData.size
     }
 
     override fun getItemId(i: Int): Long {
-        return (filteredData?.get(i)?.id ?: 0).toLong()
+        return filteredData[i].id
     }
 
-    private fun getItem(i: Int): Amiibo? {
-        return filteredData?.get(i)
+    private fun getItem(i: Int): Amiibo {
+        return filteredData[i]
     }
 
     override fun getItemViewType(position: Int): Int {
@@ -109,16 +109,16 @@ class FoomiiboAdapter(
         val sections: MutableList<String> = ArrayList(36)
         if (itemCount > 0) {
             mSectionPositions = ArrayList(36)
-            filteredData?.indices?.forEach {
-                val amiibo = filteredData?.get(it)
+            filteredData.indices.forEach {
+                val amiibo = filteredData[it]
                 var heading: String? = null
                 var section: String? = null
                 when (SORT.valueOf(settings.sort)) {
-                    SORT.NAME -> heading = amiibo?.name
-                    SORT.CHARACTER -> heading = amiibo?.character?.name
-                    SORT.GAME_SERIES -> heading = amiibo?.gameSeries?.name
-                    SORT.AMIIBO_SERIES -> heading = amiibo?.amiiboSeries?.name
-                    SORT.AMIIBO_TYPE -> heading = amiibo?.amiiboType?.name
+                    SORT.NAME -> heading = amiibo.name
+                    SORT.CHARACTER -> heading = amiibo.character?.name
+                    SORT.GAME_SERIES -> heading = amiibo.gameSeries?.name
+                    SORT.AMIIBO_SERIES -> heading = amiibo.amiiboSeries?.name
+                    SORT.AMIIBO_TYPE -> heading = amiibo.amiiboType?.name
                     else -> {}
                 }
                 if (heading?.isNotEmpty() == true) {
@@ -197,7 +197,7 @@ class FoomiiboAdapter(
                 data = ArrayList(settings.amiiboManager?.amiibos!!.values)
             else
                 data.clear()
-            val tempList = ArrayList<Amiibo>()
+            val tempList: ArrayList<Amiibo> = arrayListOf()
             val queryText = query.trim { it <= ' ' }.lowercase(Locale.getDefault())
             data.forEach {
                 if (settings.amiiboContainsQuery(it, queryText)) tempList.add(it)
@@ -209,16 +209,16 @@ class FoomiiboAdapter(
 
         @SuppressLint("NotifyDataSetChanged")
         override fun publishResults(charSequence: CharSequence?, filterResults: FilterResults) {
-            if (null != filteredData && filteredData === filterResults.values) return
+            if (filteredData === filterResults.values) return
             filteredData = filterResults.values as ArrayList<Amiibo>
             if (itemCount > 0) {
                 Collections.sort(filteredData, AmiiboComparator(settings))
-                val missingFiles = ArrayList<Amiibo>()
-                val amiiboIds = HashSet<Long>()
+                val missingFiles: ArrayList<Amiibo> = arrayListOf()
+                val amiiboIds: HashSet<Long> = hashSetOf()
                 settings.amiiboFiles.forEach {
                     amiiboIds.add(it!!.id)
                 }
-                val iterator = filteredData!!.iterator()
+                val iterator = filteredData.iterator()
                 while (iterator.hasNext()) {
                     val amiibo = iterator.next()
                     if (!amiiboIds.contains(amiibo.id)) {
@@ -228,7 +228,7 @@ class FoomiiboAdapter(
                 }
                 if (missingFiles.isNotEmpty()) {
                     Collections.sort(missingFiles, AmiiboComparator(settings))
-                    filteredData!!.addAll(0, missingFiles)
+                    filteredData.addAll(0, missingFiles)
                 }
             }
             notifyDataSetChanged()
@@ -412,7 +412,7 @@ class FoomiiboAdapter(
     }
 
     companion object {
-        private val foomiiboId = ArrayList<Long>()
+        private val foomiiboId: ArrayList<Long> = arrayListOf()
         fun resetVisible() {
             foomiiboId.clear()
         }

@@ -38,11 +38,11 @@ class WriteTagAdapter(private val settings: BrowserSettings?) :
     RecyclerView.Adapter<WriteTagAdapter.AmiiboViewHolder>(), Filterable, BrowserSettingsListener {
     private var listener: OnAmiiboClickListener? = null
     private var listSize = 1
-    private var amiiboFiles = ArrayList<AmiiboFile?>()
-    private var filteredData: ArrayList<AmiiboFile?>?
+    private var amiiboFiles: ArrayList<AmiiboFile?> = arrayListOf()
+    private var filteredData: ArrayList<AmiiboFile?> = arrayListOf()
     private var filter: AmiiboFilter? = null
     private var firstRun = true
-    private val amiiboList = ArrayList<AmiiboFile?>()
+    private val amiiboList: ArrayList<AmiiboFile?> = arrayListOf()
 
     init {
         filteredData = amiiboFiles
@@ -74,7 +74,7 @@ class WriteTagAdapter(private val settings: BrowserSettings?) :
                 oldBrowserSettings?.amiiboFiles
             )
         ) {
-            amiiboFiles = ArrayList()
+            amiiboFiles = arrayListOf()
             if (null != newBrowserSettings?.amiiboFiles)
                 amiiboFiles.addAll(newBrowserSettings.amiiboFiles)
             refresh = true
@@ -99,15 +99,15 @@ class WriteTagAdapter(private val settings: BrowserSettings?) :
     }
 
     override fun getItemCount(): Int {
-        return filteredData?.size ?: 0
+        return filteredData.size
     }
 
     override fun getItemId(i: Int): Long {
-        return (filteredData?.get(i)?.id ?: 0).toLong()
+        return (filteredData[i]?.id ?: 0).toLong()
     }
 
     private fun getItem(i: Int): AmiiboFile? {
-        return filteredData?.get(i)
+        return filteredData[i]
     }
 
     override fun getItemViewType(position: Int): Int {
@@ -135,10 +135,10 @@ class WriteTagAdapter(private val settings: BrowserSettings?) :
     private fun handleClickEvent(holder: AmiiboViewHolder, position: Int) {
         if (listSize > 1) {
             if (amiiboList.contains(holder.amiiboFile)) {
-                amiiboList.remove(filteredData?.get(position))
+                amiiboList.remove(filteredData[position])
                 setIsHighlighted(holder, false)
             } else {
-                amiiboList.add(filteredData?.get(position))
+                amiiboList.add(filteredData[position])
                 setIsHighlighted(holder, true)
             }
             if (amiiboList.size == listSize) listener?.onAmiiboListClicked(amiiboList)
@@ -176,7 +176,7 @@ class WriteTagAdapter(private val settings: BrowserSettings?) :
     inner class AmiiboFilter : Filter() {
         override fun performFiltering(constraint: CharSequence): FilterResults {
             val filterResults = FilterResults()
-            val tempList = ArrayList<AmiiboFile>()
+            val tempList: ArrayList<AmiiboFile> = arrayListOf()
             val queryText = settings?.query!!.trim { it <= ' ' }.lowercase(Locale.getDefault())
             val amiiboManager = settings.amiiboManager
             amiiboFiles.forEach {
@@ -204,9 +204,9 @@ class WriteTagAdapter(private val settings: BrowserSettings?) :
 
         @SuppressLint("NotifyDataSetChanged")
         override fun publishResults(charSequence: CharSequence?, filterResults: FilterResults) {
-            if (null != filteredData && filteredData === filterResults.values) return
+            if (filteredData === filterResults.values) return
             filteredData = filterResults.values as ArrayList<AmiiboFile?>
-            if (null != filteredData && null != settings)
+            if (null != settings)
                 Collections.sort(filteredData, AmiiboFileComparator(settings))
             notifyDataSetChanged()
         }

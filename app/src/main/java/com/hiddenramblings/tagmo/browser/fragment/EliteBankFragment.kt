@@ -85,7 +85,7 @@ class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
     var bottomSheet: BottomSheetBehavior<View>? = null
         private set
     private lateinit var keyManager: KeyManager
-    private var amiibos: ArrayList<EliteTag?> = ArrayList()
+    private var amiibos: ArrayList<EliteTag?> = arrayListOf()
     private var clickedPosition = 0
 
     private enum class CLICKED {
@@ -367,11 +367,11 @@ class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
             if (null != amiiboList && amiibos.size > amiiboList.size) {
                 val count = amiibos.size
                 val size = amiiboList.size
-                val shortList = ArrayList<EliteTag?>()
+                val shortList: ArrayList<EliteTag?> = arrayListOf()
                 for (x in 0 until size) {
                     shortList.add(amiibos[x])
                 }
-                amiibos = ArrayList(shortList)
+                amiibos = shortList
                 bankAdapter?.notifyItemRangeChanged(0, size)
                 bankAdapter?.notifyItemRangeRemoved(size, count - size)
             }

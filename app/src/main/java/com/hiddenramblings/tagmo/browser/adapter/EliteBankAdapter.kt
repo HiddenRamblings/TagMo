@@ -29,7 +29,7 @@ class EliteBankAdapter     // setHasStableIds(true);
     (private val settings: BrowserSettings, private val listener: OnAmiiboClickListener) :
     RecyclerView.Adapter<EliteBankAdapter.AmiiboViewHolder>(), BrowserSettingsListener {
     var mPrefs = Preferences(TagMo.appContext)
-    private var amiibos = ArrayList<EliteTag?>()
+    private var amiibos: ArrayList<EliteTag?> = arrayListOf()
     fun setAmiibos(amiibos: ArrayList<EliteTag?>) {
         this.amiibos = amiibos
     }

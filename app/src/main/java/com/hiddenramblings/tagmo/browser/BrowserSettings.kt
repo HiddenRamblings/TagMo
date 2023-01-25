@@ -67,12 +67,12 @@ open class BrowserSettings : Parcelable {
         }
     }
 
-    protected var listeners = ArrayList<BrowserSettingsListener?>()
+    protected var listeners: ArrayList<BrowserSettingsListener?> = arrayListOf()
     var amiiboManager: AmiiboManager? = null
     var gamesManager: GamesManager? = null
     protected var oldBrowserSettings: BrowserSettings? = null
-    var amiiboFiles: ArrayList<AmiiboFile?> = ArrayList()
-    var folders = ArrayList<File?>()
+    var amiiboFiles: ArrayList<AmiiboFile?> = arrayListOf()
+    var folders: ArrayList<File?> = arrayListOf()
     var browserRootFolder: File? = null
     var browserRootDocument: Uri? = null
     var query: String? = null
@@ -242,7 +242,7 @@ open class BrowserSettings : Parcelable {
 
     protected constructor(parcel: Parcel) {
         amiiboFiles = parcel.createTypedArrayList(AmiiboFile.CREATOR)!!
-        folders = ArrayList()
+        folders = arrayListOf()
         if (Debug.isNewer(Build.VERSION_CODES.TIRAMISU))
             parcel.readList(folders, File::class.java.classLoader, File::class.java)
         else

@@ -149,7 +149,7 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
                         override fun onFlaskListRetrieved(jsonArray: JSONArray) {
                             Executors.newSingleThreadExecutor().execute {
                                 currentCount = jsonArray.length()
-                                val flaskAmiibos = ArrayList<Amiibo?>()
+                                val flaskAmiibos: ArrayList<Amiibo?> = arrayListOf()
                                 for (i in 0 until currentCount) {
                                     try {
                                         val amiibo = getAmiiboFromTail(
@@ -182,7 +182,7 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
 
                         override fun onFlaskRangeRetrieved(jsonArray: JSONArray) {
                             Executors.newSingleThreadExecutor().execute {
-                                val flaskAmiibos = ArrayList<Amiibo?>()
+                                val flaskAmiibos: ArrayList<Amiibo?> = arrayListOf()
                                 for (i in 0 until jsonArray.length()) {
                                     try {
                                         val amiibo = getAmiiboFromTail(
@@ -326,7 +326,7 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
                         ) {
                             Executors.newSingleThreadExecutor().execute {
                                 currentCount = slotData.size
-                                val flaskAmiibos = ArrayList<Amiibo?>()
+                                val flaskAmiibos: ArrayList<Amiibo?> = arrayListOf()
                                 for (i in 0 until currentCount) {
                                     if (slotData[i]?.isNotEmpty() == true) {
                                         val amiibo = getAmiiboFromHead(slotData[i])
@@ -874,7 +874,7 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
         }
         showScanningNotice()
         deviceProfile = null
-        val devices = ArrayList<BluetoothDevice>()
+        val devices: ArrayList<BluetoothDevice> = arrayListOf()
         if (Debug.isNewer(Build.VERSION_CODES.LOLLIPOP)) {
             val scanner = mBluetoothAdapter?.bluetoothLeScanner
             val settings = ScanSettings.Builder().setScanMode(

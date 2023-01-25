@@ -28,7 +28,7 @@ class FlaskSlotAdapter(
     private val settings: BrowserSettings, private val listener: OnAmiiboClickListener
 ) : RecyclerView.Adapter<FlaskViewHolder>(), BrowserSettingsListener {
     var mPrefs = Preferences(TagMo.appContext)
-    private var flaskAmiibo: ArrayList<Amiibo?> = ArrayList()
+    private var flaskAmiibo: ArrayList<Amiibo?> = arrayListOf()
     fun setFlaskAmiibo(amiibo: ArrayList<Amiibo?>) {
         flaskAmiibo = amiibo
     }

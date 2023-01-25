@@ -39,8 +39,8 @@ class BrowserAdapter(
     private val settings: BrowserSettings, private val listener: OnAmiiboClickListener
 ) : RecyclerView.Adapter<BrowserAdapter.AmiiboViewHolder>(), Filterable, BrowserSettingsListener,
     SectionIndexer {
-    private var data = ArrayList<AmiiboFile?>()
-    private var filteredData: ArrayList<AmiiboFile?>?
+    private var data: ArrayList<AmiiboFile?> = arrayListOf()
+    private var filteredData: ArrayList<AmiiboFile?> = arrayListOf()
     private var filter: AmiiboFilter? = null
     private var firstRun = true
     override fun onBrowserSettingsChanged(
@@ -87,22 +87,20 @@ class BrowserAdapter(
     }
 
     override fun getItemCount(): Int {
-        return filteredData?.size ?: 0
+        return filteredData.size
     }
 
     override fun getItemId(i: Int): Long {
-        return (filteredData?.get(i)?.id ?: 0).toLong()
+        return (filteredData[i]?.id ?: 0).toLong()
     }
 
     private fun getItem(i: Int): AmiiboFile? {
-        return filteredData?.get(i)
+        return filteredData[i]
     }
 
     fun hasItem(id: Long) : Boolean {
-        filteredData?.let {
-            for (amiiboFile in it) {
-                if (id == amiiboFile?.id) return true
-            }
+        for (amiiboFile in filteredData) {
+            if (id == amiiboFile?.id) return true
         }
         return false
     }
@@ -124,8 +122,8 @@ class BrowserAdapter(
             mSectionPositions = ArrayList(36)
             val amiiboManager = settings.amiiboManager
             if (null != amiiboManager) {
-                filteredData?.indices?.forEach {
-                    val amiiboId = filteredData?.get(it)?.id
+                filteredData.indices.forEach {
+                    val amiiboId = filteredData[it]?.id
                     var amiibo = amiiboManager.amiibos[amiiboId]
                     if (null == amiibo)
                         amiibo = Amiibo(amiiboManager, amiiboId!!, null, null)
@@ -223,7 +221,7 @@ class BrowserAdapter(
             }
             settings.query = query
             data = ArrayList(settings.amiiboFiles)
-            val tempList = ArrayList<AmiiboFile>()
+            val tempList:ArrayList<AmiiboFile> = arrayListOf()
             val queryText = query.trim { it <= ' ' }.lowercase(Locale.getDefault())
             val amiiboManager = settings.amiiboManager
             val amiiboFiles = settings.amiiboFiles
@@ -254,7 +252,7 @@ class BrowserAdapter(
 
         @SuppressLint("NotifyDataSetChanged")
         override fun publishResults(charSequence: CharSequence?, filterResults: FilterResults) {
-            if (null != filteredData && filteredData === filterResults.values) return
+            if (filteredData === filterResults.values) return
             filteredData = filterResults.values as ArrayList<AmiiboFile?>
             if (itemCount > 0)
                 Collections.sort(filteredData, AmiiboFileComparator(settings))
@@ -506,7 +504,7 @@ class BrowserAdapter(
 
     companion object {
         var mPrefs = Preferences(TagMo.appContext)
-        private val amiiboPath = ArrayList<String?>()
+        private val amiiboPath: ArrayList<String?> = arrayListOf()
         fun resetVisible() {
             amiiboPath.clear()
         }

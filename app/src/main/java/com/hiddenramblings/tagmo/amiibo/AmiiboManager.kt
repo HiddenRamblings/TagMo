@@ -355,7 +355,7 @@ class AmiiboManager {
                 }
             } else if (recursiveFiles) {
                 val directories = rootFolder?.listFiles()
-                if (directories == null || directories.isEmpty()) return amiiboFiles
+                if (directories.isNullOrEmpty()) return amiiboFiles
                 directories.forEach {
                     if (it.isDirectory)
                         amiiboFiles.addAll(listAmiibos(keyManager, it, true))

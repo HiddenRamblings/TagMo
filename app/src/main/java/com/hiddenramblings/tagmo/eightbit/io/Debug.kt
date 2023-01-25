@@ -250,8 +250,7 @@ object Debug {
             val output = StringBuilder()
             var i = 0
             while (i < hex.length) {
-                val str = hex.substring(i, i + 2)
-                output.append(str.toInt(16).toChar())
+                output.append(hex.substring(i, i + 2).toInt(16).toChar())
                 i += 2
             }
             return output.toString()

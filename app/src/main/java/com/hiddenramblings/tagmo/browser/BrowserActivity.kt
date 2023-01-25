@@ -2572,21 +2572,19 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
     }
 
     private fun locateKeyFiles() {
-        scopeIO.launch {
+        scopeIO.launch(Dispatchers.IO) {
             val files = Storage.getDownloadDir(null)
                 .listFiles { _: File?, name: String -> keyNameMatcher(name) }
             if (!files.isNullOrEmpty()) {
                 for (file in files) {
                     try {
-                        withContext(Dispatchers.IO) {
-                            FileInputStream(file).use { inputStream ->
-                                try {
-                                    keyManager.evaluateKey(inputStream)
-                                } catch (ex: Exception) {
-                                    withContext(Dispatchers.Main) { onShowSettingsFragment() }
-                                }
-                                withContext(Dispatchers.Main) { hideFakeSnackbar() }
+                        FileInputStream(file).use { inputStream ->
+                            try {
+                                keyManager.evaluateKey(inputStream)
+                            } catch (ex: Exception) {
+                                withContext(Dispatchers.Main) { onShowSettingsFragment() }
                             }
+                            withContext(Dispatchers.Main) { hideFakeSnackbar() }
                         }
                     } catch (e: Exception) {
                         Debug.warn(e)

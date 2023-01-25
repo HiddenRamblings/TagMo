@@ -19,6 +19,10 @@ import com.hiddenramblings.tagmo.eightbit.io.Debug
 import com.hiddenramblings.tagmo.eightbit.net.JSONExecutor
 import com.hiddenramblings.tagmo.eightbit.net.JSONExecutor.ResultListener
 import com.hiddenramblings.tagmo.eightbit.os.Storage
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
@@ -28,7 +32,6 @@ import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
 import java.net.URL
-import java.util.concurrent.Executors
 
 
 class UpdateManager internal constructor(activity: BrowserActivity) {
@@ -38,45 +41,41 @@ class UpdateManager internal constructor(activity: BrowserActivity) {
     private val browserActivity: BrowserActivity = activity
     private var isUpdateAvailable = false
 
+    private val scopeIO = CoroutineScope(Dispatchers.IO)
+
     init {
         if (!BuildConfig.WEAR_OS) {
-            if (BuildConfig.GOOGLE_PLAY) {
-                if (null == appUpdateManager) appUpdateManager =
-                    AppUpdateManagerFactory.create(activity)
-                val appUpdateInfoTask = appUpdateManager!!.appUpdateInfo
-                appUpdateInfoTask.addOnSuccessListener { appUpdateInfo: AppUpdateInfo ->
-                    isUpdateAvailable = (appUpdateInfo.updateAvailability()
-                            == UpdateAvailability.UPDATE_AVAILABLE
-                            && appUpdateInfo.isUpdateTypeAllowed(AppUpdateType.IMMEDIATE))
-                    if (isUpdateAvailable)
-                        listenerPlay?.onPlayUpdateFound(appUpdateInfo)
-                }
-            } else {
-                configureUpdates(activity)
-            }
+            if (BuildConfig.GOOGLE_PLAY) configureManager(activity) else configureUpdates(activity)
+        }
+    }
+
+    private fun configureManager(activity: BrowserActivity) {
+        if (null == appUpdateManager) appUpdateManager = AppUpdateManagerFactory.create(activity)
+        val appUpdateInfoTask = appUpdateManager!!.appUpdateInfo
+        appUpdateInfoTask.addOnSuccessListener { appUpdateInfo: AppUpdateInfo ->
+            isUpdateAvailable = (appUpdateInfo.updateAvailability()
+                    == UpdateAvailability.UPDATE_AVAILABLE
+                    && appUpdateInfo.isUpdateTypeAllowed(AppUpdateType.IMMEDIATE))
+            if (isUpdateAvailable) listenerPlay?.onPlayUpdateFound(appUpdateInfo)
         }
     }
 
     private fun configureUpdates(activity: BrowserActivity) {
         if (Debug.isNewer(Build.VERSION_CODES.LOLLIPOP)) {
-            val installer = activity.applicationContext
-                .packageManager.packageInstaller
+            val installer = activity.applicationContext.packageManager.packageInstaller
             installer.mySessions.forEach {
                 try {
                     installer.abandonSession(it.sessionId)
                 } catch (ignored: Exception) { }
             }
         }
-        Executors.newSingleThreadExecutor().execute {
+        scopeIO.launch {
             val files = activity.externalCacheDir!!.listFiles {
                     _: File?, name: String -> name.lowercase().endsWith(".apk")
             }
             files?.forEach { if (!it.isDirectory) it.delete() }
-        }
-        Executors.newSingleThreadExecutor().execute {
-            JSONExecutor(
-                activity, TAGMO_GIT_API, "releases/tags/master"
-            ).setResultListener(object : ResultListener {
+            JSONExecutor(activity, TAGMO_GIT_API, "releases/tags/master")
+                .setResultListener(object : ResultListener {
                 override fun onResults(result: String?) {
                     result?.let { parseUpdateJSON(it) }
                 }
@@ -86,21 +85,22 @@ class UpdateManager internal constructor(activity: BrowserActivity) {
 
     fun installUpdateTask(apkUrl: String?) {
         if (null == apkUrl) return
-        Executors.newSingleThreadExecutor().execute {
+        scopeIO.launch(Dispatchers.IO) {
             val apk = File(
-                browserActivity.externalCacheDir, apkUrl.substring(
-                    apkUrl.lastIndexOf(File.separator) + 1
-                )
+                browserActivity.externalCacheDir,
+                apkUrl.substring(apkUrl.lastIndexOf(File.separator) + 1)
             )
             try {
-                DataInputStream(URL(apkUrl).openStream()).use { dis ->
-                    val buffer = ByteArray(1024)
-                    var length: Int
-                    FileOutputStream(apk).use { fos ->
-                        while (dis.read(buffer).also { length = it } > 0) {
-                            fos.write(buffer, 0, length)
+                URL(apkUrl).openStream().use { urlStream ->
+                    DataInputStream(urlStream).use { dis ->
+                        val buffer = ByteArray(1024)
+                        var length: Int
+                        FileOutputStream(apk).use { fos ->
+                            while (dis.read(buffer).also { length = it } > 0)
+                                fos.write(buffer, 0, length)
                         }
                     }
+                }
                 if (!apk.name.lowercase().endsWith(".apk")) apk.delete()
                 val applicationContext = browserActivity.applicationContext
                 if (Debug.isNewer(Build.VERSION_CODES.N)) {
@@ -150,7 +150,6 @@ class UpdateManager internal constructor(activity: BrowserActivity) {
                         } catch (ignored: ActivityNotFoundException) { }
                     }
                 }
-                    }
             } catch (ex: SecurityException) {
                 Debug.warn(ex)
             } catch (ex: IOException) {

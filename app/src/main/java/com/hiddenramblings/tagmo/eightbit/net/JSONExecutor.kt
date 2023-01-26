@@ -124,19 +124,19 @@ class JSONExecutor(activity: Activity, server: String, path: String) {
                     conn.disconnect()
                     return@execute
                 }
-                val inStream = conn.inputStream
-                val streamReader = BufferedReader(
-                    InputStreamReader(inStream, CharsetCompat.UTF_8)
-                )
-                val responseStrBuilder = StringBuilder()
-                var inputStr: String?
-                while (null != streamReader.readLine()
-                        .also { inputStr = it }
-                ) responseStrBuilder.append(inputStr)
-                listener?.onResults(responseStrBuilder.toString())
-                streamReader.close()
-                inStream.close()
-                conn.disconnect()
+                conn.inputStream.use { inStream ->
+                    BufferedReader(
+                        InputStreamReader(inStream, CharsetCompat.UTF_8)
+                    ).use { streamReader ->
+                        val responseStrBuilder = StringBuilder()
+                        var inputStr: String?
+                        while (null != streamReader.readLine()
+                                .also { inputStr = it }
+                        ) responseStrBuilder.append(inputStr)
+                        listener?.onResults(responseStrBuilder.toString())
+                        conn.disconnect()
+                    }
+                }
             } catch (e: IOException) {
                 Debug.warn(e)
             }

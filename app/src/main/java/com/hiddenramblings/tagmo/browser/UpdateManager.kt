@@ -61,25 +61,24 @@ class UpdateManager internal constructor(activity: BrowserActivity) {
     }
 
     private fun configureUpdates(activity: BrowserActivity) {
-        if (Debug.isNewer(Build.VERSION_CODES.LOLLIPOP)) {
-            val installer = activity.applicationContext.packageManager.packageInstaller
-            installer.mySessions.forEach {
-                try {
-                    installer.abandonSession(it.sessionId)
-                } catch (ignored: Exception) { }
-            }
-        }
         scopeIO.launch {
-            val files = activity.externalCacheDir!!.listFiles {
-                    _: File?, name: String -> name.lowercase().endsWith(".apk")
+            if (Debug.isNewer(Build.VERSION_CODES.LOLLIPOP)) {
+                val installer = activity.applicationContext.packageManager.packageInstaller
+                installer.mySessions.forEach {
+                    try {
+                        installer.abandonSession(it.sessionId)
+                    } catch (ignored: Exception) { }
+                }
             }
-            files?.forEach { if (!it.isDirectory) it.delete() }
+            activity.externalCacheDir?.listFiles {
+                    _: File?, name: String -> name.lowercase().endsWith(".apk")
+            }?.forEach { if (!it.isDirectory) it.delete() }
             JSONExecutor(activity, TAGMO_GIT_API, "releases/tags/master")
                 .setResultListener(object : ResultListener {
-                override fun onResults(result: String?) {
-                    result?.let { parseUpdateJSON(it) }
-                }
-            })
+                    override fun onResults(result: String?) {
+                        result?.let { parseUpdateJSON(it) }
+                    }
+                })
         }
     }
 

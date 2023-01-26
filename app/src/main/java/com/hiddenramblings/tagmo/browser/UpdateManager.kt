@@ -8,6 +8,7 @@ import android.content.pm.PackageInstaller.SessionParams
 import android.net.Uri
 import android.os.Build
 import android.provider.Settings
+import androidx.annotation.RequiresApi
 import androidx.documentfile.provider.DocumentFile
 import com.google.android.play.core.appupdate.AppUpdateInfo
 import com.google.android.play.core.appupdate.AppUpdateManager
@@ -41,6 +42,9 @@ class UpdateManager internal constructor(activity: BrowserActivity) {
     private val browserActivity: BrowserActivity = activity
     private var isUpdateAvailable = false
 
+    @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
+    private val installer = activity.applicationContext.packageManager.packageInstaller
+
     private val scopeIO = CoroutineScope(Dispatchers.IO)
 
     init {
@@ -63,7 +67,6 @@ class UpdateManager internal constructor(activity: BrowserActivity) {
     private fun configureUpdates(activity: BrowserActivity) {
         scopeIO.launch {
             if (Debug.isNewer(Build.VERSION_CODES.LOLLIPOP)) {
-                val installer = activity.applicationContext.packageManager.packageInstaller
                 installer.mySessions.forEach {
                     try {
                         installer.abandonSession(it.sessionId)
@@ -103,7 +106,6 @@ class UpdateManager internal constructor(activity: BrowserActivity) {
                 if (!apk.name.lowercase().endsWith(".apk")) apk.delete()
                 val applicationContext = browserActivity.applicationContext
                 if (Debug.isNewer(Build.VERSION_CODES.N)) {
-                    val installer = applicationContext.packageManager.packageInstaller
                     val resolver = applicationContext.contentResolver
                     val apkUri = Storage.getFileUri(apk)
                     resolver.openInputStream(apkUri).use { apkStream ->
@@ -176,10 +178,11 @@ class UpdateManager internal constructor(activity: BrowserActivity) {
     }
 
     private fun parseUpdateJSON(result: String) {
-        val offset = browserActivity.getString(R.string.tagmo).length + 1
         try {
             val jsonObject = JSONTokener(result).nextValue() as JSONObject
-            val lastCommit = (jsonObject["name"] as String).substring(offset)
+            val lastCommit = (jsonObject["name"] as String).substring(
+                browserActivity.getString(R.string.tagmo).length + 1
+            )
             val assets = jsonObject["assets"] as JSONArray
             val asset = assets[0] as JSONObject
             val downloadUrl = asset["browser_download_url"] as String

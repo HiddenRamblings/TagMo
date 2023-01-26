@@ -88,7 +88,7 @@ class JSONExecutor(activity: Activity, server: String, path: String) {
                         .imageNetwork(GlideTagModule.IMAGE_NETWORK_NEVER)
                     activity.runOnUiThread { activity.settings!!.notifyChanges() }
                 }
-                listener!!.onResults(null)
+                listener?.onResults(null)
             }
         })
     }

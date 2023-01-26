@@ -554,7 +554,7 @@ class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
                 val data = if (null != amiiboFile.data)
                     amiiboFile.data
                 else if (null != amiiboFile.filePath)
-                    TagArray.getValidatedFile(keyManager, amiiboFile.filePath!!)
+                    TagArray.getValidatedFile(keyManager, amiiboFile.filePath)
                 else null
                 args.putByteArray(NFCIntent.EXTRA_TAG_DATA, data)
             } catch (e: Exception) {

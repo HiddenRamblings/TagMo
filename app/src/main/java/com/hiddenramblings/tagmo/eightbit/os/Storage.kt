@@ -115,15 +115,13 @@ object Storage : Environment() {
 
     private fun setFileMounts(): File {
         val extStorage = externalMounts
-        if (extStorage.isNotEmpty()) {
-            extStorage.forEach {
-                // Workaround for WRITE_MEDIA_STORAGE
-                val sdCardPath = it.replace("mnt/media_rw", "storage")
-                if (sdCardPath != getExternalStorageDirectory().absolutePath
-                    && File(sdCardPath).canRead()) {
-                    isPhysicalAvailable = true
-                    return File(sdCardPath)
-                }
+        extStorage.forEach {
+            // Workaround for WRITE_MEDIA_STORAGE
+            val sdCardPath = it.replace("mnt/media_rw", "storage")
+            if (sdCardPath != getExternalStorageDirectory().absolutePath
+                && File(sdCardPath).canRead()) {
+                isPhysicalAvailable = true
+                return File(sdCardPath)
             }
         }
         return getExternalStorageDirectory()
@@ -133,22 +131,20 @@ object Storage : Environment() {
         var emulated: File? = null
         var physical: File? = null
         try {
-            if (!File(STORAGE_ROOT).listFiles().isNullOrEmpty()) {
-                File(STORAGE_ROOT).listFiles()!!.forEach {
-                    if (it.absolutePath.endsWith("emulated"))
-                        emulated = File(it, "0")
-                    else if (!it.absolutePath.endsWith("self"))
-                        physical = it
-                }
-                // Force a possible failure to prevent crash later
-                Log.d("EMULATED", (emulated as File).absolutePath)
-                Log.d("PHYSICAL", physical?.absolutePath ?: "")
-                if (null != physical && physical !== emulated) isPhysicalAvailable = true
+            File(STORAGE_ROOT).listFiles()?.forEach {
+                if (it.absolutePath.endsWith("emulated"))
+                    emulated = File(it, "0")
+                else if (!it.absolutePath.endsWith("self"))
+                    physical = it
             }
+            // Force a possible failure to prevent crash later
+            Log.d("EMULATED", (emulated as File).absolutePath)
+            Log.d("PHYSICAL", physical?.absolutePath ?: "")
+            if (null != physical && physical !== emulated) isPhysicalAvailable = true
         } catch (e: NullPointerException) {
-            return if (internal) getExternalStorageDirectory() else setFileMounts().also {
-                storageFile = it
-            }
+            return if (internal)
+                getExternalStorageDirectory()
+            else setFileMounts().also { storageFile = it }
         }
         return if (internal)
             emulated ?: physical.also { storageFile = it }
@@ -159,9 +155,9 @@ object Storage : Environment() {
     private fun setFileLollipop(internal: Boolean): File? {
         val storage = ContextCompat.getExternalFilesDirs(appContext, null)
         val emulated: File? = try {
-            if (null != storage[0] && storage[0]!!.canRead()) getRootPath(
-                storage[0]
-            ) else null
+            if (null != storage[0] && storage[0]!!.canRead())
+                getRootPath(storage[0])
+            else null
         } catch (e: IllegalArgumentException) {
             null
         } catch (e: NullPointerException) {
@@ -169,8 +165,9 @@ object Storage : Environment() {
         }
         val physical: File? = try {
             if (storage.size > 1 && null != storage[1] && storage[1]!!.canRead()
-                && !isExternalStorageEmulated(storage[1]!!)
-            ) getRootPath(storage[1]) else null
+                && !isExternalStorageEmulated(storage[1]!!))
+                getRootPath(storage[1])
+            else null
         } catch (e: IllegalArgumentException) {
             null
         } catch (e: NullPointerException) {
@@ -187,18 +184,16 @@ object Storage : Environment() {
         var emulated: File? = null
         var physical: File? = null
         try {
-            if (!getStorageDirectory().listFiles().isNullOrEmpty()) {
-                getStorageDirectory().listFiles()!!.forEach {
-                    if (it.absolutePath.endsWith("emulated"))
-                        emulated = File(it, "0")
-                    else if (!it.absolutePath.endsWith("self"))
-                        physical = it
-                }
-                // Force a possible failure to prevent crash later
-                Log.d("EMULATED", (emulated as File).absolutePath)
-                Log.d("PHYSICAL", physical?.absolutePath ?: "")
-                if (null != physical && physical !== emulated) isPhysicalAvailable = true
+            getStorageDirectory().listFiles()?.forEach {
+                if (it.absolutePath.endsWith("emulated"))
+                    emulated = File(it, "0")
+                else if (!it.absolutePath.endsWith("self"))
+                    physical = it
             }
+            // Force a possible failure to prevent crash later
+            Log.d("EMULATED", (emulated as File).absolutePath)
+            Log.d("PHYSICAL", physical?.absolutePath ?: "")
+            if (null != physical && physical !== emulated) isPhysicalAvailable = true
         } catch (e: IllegalArgumentException) {
             return setFileLollipop(internal)
         } catch (e: NullPointerException) {
@@ -229,20 +224,20 @@ object Storage : Environment() {
     }
 
     fun getFileUri(file: File?): Uri {
-        return if (isNewer(Build.VERSION_CODES.N)) FileProvider.getUriForFile(
-            appContext, PROVIDER, file!!
-        ) else Uri.fromFile(file)
+        return if (isNewer(Build.VERSION_CODES.N))
+            FileProvider.getUriForFile(appContext, PROVIDER, file!!)
+        else Uri.fromFile(file)
     }
 
     fun getRelativePath(file: File?, internal: Boolean): String {
         val filePath = file?.absolutePath
         val storagePath =
-            if (filePath?.contains("/Foomiibo/")!!)
+            if (filePath?.contains("/Foomiibo/") == true)
                 appContext.filesDir.absolutePath
             else getPath(internal)
-        return if (!storagePath.isNullOrEmpty() && filePath.startsWith(storagePath))
+        return if (!storagePath.isNullOrEmpty() && filePath?.startsWith(storagePath) == true)
             filePath.substring(storagePath.length)
-        else filePath
+        else filePath ?: ""
     }
 
     fun getDownloadDir(directory: String?, subfolder: String?): File {

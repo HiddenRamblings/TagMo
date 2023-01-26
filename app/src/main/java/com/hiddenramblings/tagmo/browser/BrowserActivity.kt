@@ -90,12 +90,7 @@ import com.hiddenramblings.tagmo.eightbit.view.AnimatedLinearLayout
 import com.hiddenramblings.tagmo.hexcode.HexCodeViewer
 import com.hiddenramblings.tagmo.nfctech.NfcActivity
 import com.hiddenramblings.tagmo.nfctech.ScanTag
-import com.hiddenramblings.tagmo.nfctech.TagArray.decipherFilename
-import com.hiddenramblings.tagmo.nfctech.TagArray.getValidatedData
-import com.hiddenramblings.tagmo.nfctech.TagArray.getValidatedFile
-import com.hiddenramblings.tagmo.nfctech.TagArray.validateData
-import com.hiddenramblings.tagmo.nfctech.TagArray.writeBytesToDocument
-import com.hiddenramblings.tagmo.nfctech.TagArray.writeBytesToFile
+import com.hiddenramblings.tagmo.nfctech.TagArray
 import com.hiddenramblings.tagmo.nfctech.TagReader
 import com.hiddenramblings.tagmo.qrcode.QRCodeScanner
 import com.hiddenramblings.tagmo.widget.Toasty
@@ -533,9 +528,9 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                     }
                 } else if (null != intent.data) {
                     val uri = intent.data
-                    val data = TagReader.readTagDocument(uri!!)
+                    val data = TagReader.readTagDocument(uri)
                     updateAmiiboView(data, AmiiboFile(
-                        uri.path?.let { File(it) }, Amiibo.dataToId(data), data
+                        uri?.path?.let { File(it) }, Amiibo.dataToId(data), data
                     ))
                 }
             } catch (ignored: Exception) { }
@@ -656,7 +651,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
         )
         val dialog = AlertDialog.Builder(this)
         val input = view.findViewById<EditText>(R.id.save_item_entry)
-        input.setText(decipherFilename(settings?.amiiboManager, tagData, true))
+        input.setText(TagArray.decipherFilename(settings?.amiiboManager, tagData, true))
         val backupDialog: Dialog = dialog.setView(view).create()
         view.findViewById<View>(R.id.button_save).setOnClickListener { _: View? ->
             try {
@@ -665,11 +660,11 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                     val rootDocument = settings?.browserRootDocument?.let {
                         DocumentFile.fromTreeUri(this, it)
                     } ?: throw NullPointerException()
-                    writeBytesToDocument(
+                    TagArray.writeBytesToDocument(
                         this, rootDocument, fileName!!, tagData
                     )
                 } else {
-                    writeBytesToFile(Storage.getDownloadDir(
+                    TagArray.writeBytesToFile(Storage.getDownloadDir(
                         "TagMo", "Backups"
                     ), fileName!!, tagData)
                 }
@@ -691,7 +686,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
         if (result.resultCode != RESULT_OK || null == result.data) return@registerForActivityResult
         if (NFCIntent.ACTION_NFC_SCANNED != result.data!!.action) return@registerForActivityResult
         try {
-            validateData(result.data?.getByteArrayExtra(NFCIntent.EXTRA_TAG_DATA))
+            TagArray.validateData(result.data?.getByteArrayExtra(NFCIntent.EXTRA_TAG_DATA))
             IconifiedSnackbar(this, viewPager).buildSnackbar(
                 R.string.validation_success, Snackbar.LENGTH_SHORT
             ).show()
@@ -1106,20 +1101,22 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                         val view = layoutInflater.inflate(R.layout.dialog_save_item, null)
                         val dialog = AlertDialog.Builder(this)
                         val input = view.findViewById<EditText>(R.id.save_item_entry)
-                        input.setText(decipherFilename(settings!!.amiiboManager, tagData, true))
+                        input.setText(
+                            TagArray.decipherFilename(settings?.amiiboManager, tagData, true)
+                        )
                         val backupDialog: Dialog = dialog.setView(view).create()
                         view.findViewById<View>(R.id.button_save).setOnClickListener {
                             try {
                                 var fileName: String? = input.text.toString()
                                 fileName = if (isDocumentStorage) {
-                                    val rootDocument = DocumentFile.fromTreeUri(
-                                        this, settings!!.browserRootDocument!!
-                                    ) ?: throw NullPointerException()
-                                    writeBytesToDocument(
+                                    val rootDocument = settings?.browserRootDocument?.let {
+                                        DocumentFile.fromTreeUri(this, it)
+                                    } ?: throw NullPointerException()
+                                    TagArray.writeBytesToDocument(
                                         this, rootDocument, fileName!!, tagData
                                     )
                                 } else {
-                                    writeBytesToFile(Storage.getDownloadDir(
+                                    TagArray.writeBytesToFile(Storage.getDownloadDir(
                                         "TagMo", "Backups"
                                     ), fileName!!, tagData)
                                 }
@@ -1159,7 +1156,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                 }
                 R.id.mnu_validate -> {
                     try {
-                        validateData(tagData)
+                        TagArray.validateData(tagData)
                         IconifiedSnackbar(this, viewPager).buildSnackbar(
                             R.string.validation_success, Snackbar.LENGTH_SHORT
                         ).show()
@@ -1250,7 +1247,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                 }
                 R.id.mnu_validate -> {
                     try {
-                        validateData(tagData)
+                        TagArray.validateData(tagData)
                         IconifiedSnackbar(this, viewPager).buildSnackbar(
                             R.string.validation_success, Snackbar.LENGTH_SHORT
                         ).show()
@@ -1632,7 +1629,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
     override fun onAmiiboClicked(itemView: View, amiiboFile: AmiiboFile?) {
         if (null == amiiboFile!!.docUri && null == amiiboFile.filePath) return
         try {
-            val tagData = getValidatedData(keyManager, amiiboFile)
+            val tagData = TagArray.getValidatedData(keyManager, amiiboFile)
             if (settings?.amiiboView != VIEW.IMAGE.value) {
                 val menuOptions = itemView.findViewById<LinearLayout>(R.id.menu_options)
                 val toolbar = menuOptions.findViewById<Toolbar>(R.id.toolbar)
@@ -1655,7 +1652,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
             val tagData = if (null != amiiboFile.data)
                 amiiboFile.data
             else
-                getValidatedFile(keyManager, amiiboFile.filePath!!)!!
+                TagArray.getValidatedFile(keyManager, amiiboFile.filePath)
             if (settings?.amiiboView != VIEW.IMAGE.value) {
                 onCreateToolbarMenu(
                     itemView.findViewById<View>(R.id.menu_options).findViewById(R.id.toolbar),

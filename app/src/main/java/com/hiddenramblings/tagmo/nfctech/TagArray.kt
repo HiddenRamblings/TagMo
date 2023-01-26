@@ -309,7 +309,7 @@ object TagArray {
 
     @JvmStatic
     @Throws(Exception::class)
-    fun getValidatedFile(keyManager: KeyManager?, file: File): ByteArray? {
+    fun getValidatedFile(keyManager: KeyManager?, file: File?): ByteArray? {
         return getValidatedData(keyManager, TagReader.readTagFile(file))
     }
 

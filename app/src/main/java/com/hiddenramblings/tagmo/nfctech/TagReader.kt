@@ -3,6 +3,7 @@ package com.hiddenramblings.tagmo.nfctech
 import android.net.Uri
 import com.hiddenramblings.tagmo.R
 import com.hiddenramblings.tagmo.TagMo.Companion.appContext
+import com.hiddenramblings.tagmo.amiibo.AmiiboManager
 import com.hiddenramblings.tagmo.eightbit.io.Debug
 import com.hiddenramblings.tagmo.nfctech.Foomiibo.Companion.getDataSignature
 import java.io.*
@@ -46,14 +47,17 @@ object TagReader {
     }
 
     @Throws(Exception::class)
-    fun readTagFile(file: File): ByteArray {
-        FileInputStream(file).use { inputStream -> return getTagData(file.path, inputStream) }
+    fun readTagFile(file: File?): ByteArray {
+        FileInputStream(file).use { inputStream -> return getTagData(file?.path, inputStream) }
     }
 
     @Throws(Exception::class)
-    fun readTagDocument(uri: Uri): ByteArray {
-        appContext.contentResolver.openInputStream(uri)
-            .use { inputStream -> return getTagData(uri.path, inputStream!!) }
+    fun readTagDocument(uri: Uri?): ByteArray? {
+        return if (uri != null) {
+            appContext.contentResolver.openInputStream(uri).use { inputStream ->
+                return inputStream?.let { getTagData(uri.path, it) }
+            }
+        } else null
     }
 
     @Throws(Exception::class)

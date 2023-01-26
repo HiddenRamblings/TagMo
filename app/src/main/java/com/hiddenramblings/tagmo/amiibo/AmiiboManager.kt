@@ -23,6 +23,7 @@ class AmiiboManager {
     val gameSeries = HashMap<Long, GameSeries>()
     val amiiboTypes = HashMap<Long, AmiiboType>()
     val amiiboSeries = HashMap<Long, AmiiboSeries>()
+
     @Throws(JSONException::class)
     fun toJSON(): JSONObject {
         val iso8601: DateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.US)
@@ -238,59 +239,32 @@ class AmiiboManager {
 
         @Throws(JSONException::class, IOException::class)
         fun saveDatabase(amiiboManager: AmiiboManager, outputStream: OutputStream?) {
-            var streamWriter: OutputStreamWriter? = null
-            try {
-                streamWriter = OutputStreamWriter(outputStream)
-                streamWriter.write(amiiboManager.toJSON().toString())
-            } finally {
-                try {
-                    streamWriter?.close()
-                } catch (e: IOException) {
-                    Debug.info(e)
-                }
-                outputStream?.flush()
+            OutputStreamWriter(outputStream).use {
+                it.write(amiiboManager.toJSON().toString())
+                it.flush()
             }
         }
 
         @Throws(IOException::class, JSONException::class)
         fun saveDatabase(amiiboManager: AmiiboManager, context: Context) {
-            var outputStream: OutputStream? = null
-            try {
-                outputStream = context.openFileOutput(AMIIBO_DATABASE_FILE, Context.MODE_PRIVATE)
-                saveDatabase(amiiboManager, outputStream)
-            } finally {
-                try {
-                    outputStream?.close()
-                } catch (e: IOException) {
-                    Debug.info(e)
-                }
+            context.openFileOutput(AMIIBO_DATABASE_FILE, Context.MODE_PRIVATE).use {
+                saveDatabase(amiiboManager, it)
             }
         }
 
         private fun readDatabase(context: Context): String? {
             val database = StringBuilder()
-            var inputStream: InputStream? = null
-            var reader: BufferedReader? = null
             try {
-                inputStream = context.openFileInput(AMIIBO_DATABASE_FILE)
-                reader = BufferedReader(InputStreamReader(inputStream))
-                var line: String?
-                while (reader.readLine().also { line = it } != null) {
-                    database.append(line).append('\n')
+                context.openFileInput(AMIIBO_DATABASE_FILE).use { inputStream ->
+                BufferedReader(InputStreamReader(inputStream)).use { reader ->
+                    var line: String?
+                    while (reader.readLine().also { line = it } != null) {
+                        database.append(line).append('\n')
+                    }
                 }
+            }
             } catch (ex: IOException) {
                 return null
-            } finally {
-                try {
-                    reader?.close()
-                } catch (e: IOException) {
-                    Debug.info(e)
-                }
-                try {
-                    inputStream?.close()
-                } catch (e: IOException) {
-                    Debug.info(e)
-                }
             }
             return if (database.isNotEmpty()) database.toString() else null
         }
@@ -344,11 +318,11 @@ class AmiiboManager {
             val files = rootFolder?.listFiles { _: File?, name: String -> binFileMatches(name) }
             if (!files.isNullOrEmpty()) {
                 files.forEach {
-                    if (Thread.currentThread().isInterrupted) return amiiboFiles
                     try {
-                        val data = TagArray.getValidatedFile(keyManager, it)
-                        if (null != data)
-                            amiiboFiles.add(AmiiboFile(it, Amiibo.dataToId(data), data))
+                        TagArray.getValidatedFile(keyManager, it).also { data ->
+                            if (null != data)
+                                amiiboFiles.add(AmiiboFile(it, Amiibo.dataToId(data), data))
+                        }
                     } catch (e: Exception) {
                         Debug.info(e)
                     }
@@ -373,13 +347,13 @@ class AmiiboManager {
             val uris = context?.let { AmiiboDocument(it).listFiles(rootFolder.uri, recursiveFiles) }
             if (uris.isNullOrEmpty()) return amiiboFiles
             uris.forEach {
-                if (Thread.currentThread().isInterrupted) return amiiboFiles
                 try {
-                    val data = TagArray.getValidatedDocument(keyManager, it)
-                    if (null != data) {
-                        amiiboFiles.add(AmiiboFile(
-                            DocumentFile.fromSingleUri(context, it), Amiibo.dataToId(data), data
-                        ))
+                    TagArray.getValidatedDocument(keyManager, it).also { data ->
+                        if (null != data) {
+                            amiiboFiles.add(AmiiboFile(
+                                DocumentFile.fromSingleUri(context, it), Amiibo.dataToId(data), data
+                            ))
+                        }
                     }
                 } catch (e: Exception) {
                     Debug.info(e)

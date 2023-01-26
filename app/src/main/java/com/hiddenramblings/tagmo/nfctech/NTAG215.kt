@@ -188,29 +188,19 @@ class NTAG215 : TagTechnology {
         endAddr: Int,
         bank: Int
     ): ByteArray? {
-        if (endAddr < startAddr) {
-            return null
-        }
+        if (endAddr < startAddr) return null
         val resp = ByteArray((endAddr - startAddr + 1) * 4)
         val maxReadLength = maxTransceiveLength / 4 - 1
-        if (maxReadLength < 1) {
-            return null
-        }
+        if (maxReadLength < 1) return null
         val snippetByteSize = maxReadLength * 4
         var startSnippet = startAddr
         var i = 0
         while (startSnippet <= endAddr) {
             var endSnippet = startSnippet + maxReadLength - 1
-            if (endSnippet > endAddr) {
-                endSnippet = endAddr
-            }
+            if (endSnippet > endAddr) endSnippet = endAddr
             val respSnippet = method.doFastRead(startSnippet, endSnippet, bank) ?: return null
-            if (respSnippet.size != (endSnippet - startSnippet + 1) * 4) {
-                return null
-            }
-            if (respSnippet.size == resp.size) {
-                return respSnippet
-            }
+            if (respSnippet.size != (endSnippet - startSnippet + 1) * 4) return null
+            if (respSnippet.size == resp.size) return respSnippet
             System.arraycopy(respSnippet, 0, resp, i * snippetByteSize, respSnippet.size)
             startSnippet += maxReadLength
             i++
@@ -259,17 +249,11 @@ class NTAG215 : TagTechnology {
         var startSnippet = startAddr
         var i = 0
         while (startSnippet <= endAddr) {
-            if (startSnippet + 4 >= endAddr) {
-                snippetByteSize = data.size % snippetByteSize
-            }
-            if (snippetByteSize == 0) {
-                return true
-            }
+            if (startSnippet + 4 >= endAddr) snippetByteSize = data.size % snippetByteSize
+            if (snippetByteSize == 0) return true
             val query = ByteArray(snippetByteSize)
             System.arraycopy(data, i, query, 0, snippetByteSize)
-            if (!method.doFastWrite(startSnippet, bank, query)) {
-                return false
-            }
+            if (!method.doFastWrite(startSnippet, bank, query)) return false
             startSnippet += 4
             i += snippetByteSize
         }
@@ -297,30 +281,15 @@ class NTAG215 : TagTechnology {
     }
 
     fun amiiboLock() {
-        transceive(
-            byteArrayOf(
-                NfcByte.N2_LOCK
-                    .toByte()
-            )
-        )
+        transceive(byteArrayOf(NfcByte.N2_LOCK.toByte()))
     }
 
     fun amiiboPrepareUnlock(): ByteArray? {
-        return transceive(
-            byteArrayOf(
-                NfcByte.N2_UNLOCK_1
-                    .toByte()
-            )
-        )
+        return transceive(byteArrayOf(NfcByte.N2_UNLOCK_1.toByte()))
     }
 
     fun amiiboUnlock() {
-        transceive(
-            byteArrayOf(
-                NfcByte.N2_UNLOCK_2
-                    .toByte()
-            )
-        )
+        transceive(byteArrayOf(NfcByte.N2_UNLOCK_2.toByte()))
     }
 
     override fun isConnected(): Boolean {

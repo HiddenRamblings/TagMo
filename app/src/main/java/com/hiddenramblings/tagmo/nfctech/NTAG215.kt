@@ -297,6 +297,9 @@ class NTAG215 : TagTechnology {
     }
 
     companion object {
+
+        private infix fun Short.equals(i: Int): Boolean = this == i.toShort()
+
         val CONNECT = "${NTAG215::class.java.name}.connect()"
         private const val NXP_MANUFACTURER_ID = 0x04
         private const val MAX_PAGE_COUNT = 256
@@ -305,7 +308,7 @@ class NTAG215 : TagTechnology {
             if (null != mifare) return NTAG215(mifare)
             val nfcA = NfcA.get(tag)
             return if (null != nfcA)
-                if (nfcA.sak.toInt() == 0x00 && tag?.id?.get(0)?.toInt()  == NXP_MANUFACTURER_ID)
+                if (nfcA.sak equals 0x00 && tag?.id?.get(0)?.toInt() == NXP_MANUFACTURER_ID)
                     NTAG215(nfcA)
                 else null
             else null

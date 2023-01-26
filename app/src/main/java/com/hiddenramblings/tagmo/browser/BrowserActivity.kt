@@ -1682,7 +1682,9 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                     powerTagManager
                 } catch (e: Exception) {
                     Debug.warn(e)
-                    Toasty(this@BrowserActivity).Short(R.string.fail_powertag_keys)
+                    withContext(Dispatchers.Main) {
+                        Toasty(this@BrowserActivity).Short(R.string.fail_powertag_keys)
+                    }
                 }
             }
         }
@@ -1696,15 +1698,21 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
             } catch (e: IOException) {
                 Debug.warn(e)
                 amiiboManager = null
-                Toasty(this@BrowserActivity).Short(R.string.amiibo_info_parse_error)
+                withContext(Dispatchers.Main) {
+                    Toasty(this@BrowserActivity).Short(R.string.amiibo_info_parse_error)
+                }
             } catch (e: JSONException) {
                 Debug.warn(e)
                 amiiboManager = null
-                Toasty(this@BrowserActivity).Short(R.string.amiibo_info_parse_error)
+                withContext(Dispatchers.Main) {
+                    Toasty(this@BrowserActivity).Short(R.string.amiibo_info_parse_error)
+                }
             } catch (e: ParseException) {
                 Debug.warn(e)
                 amiiboManager = null
-                Toasty(this@BrowserActivity).Short(R.string.amiibo_info_parse_error)
+                withContext(Dispatchers.Main) {
+                    Toasty(this@BrowserActivity).Short(R.string.amiibo_info_parse_error)
+                }
             }
             val gamesManager: GamesManager? = try {
                 getGamesManager(this@BrowserActivity)

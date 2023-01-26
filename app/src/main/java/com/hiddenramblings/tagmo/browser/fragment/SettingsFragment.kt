@@ -420,30 +420,42 @@ class SettingsFragment : PreferenceFragmentCompat() {
                 parse(requireContext(), data)
             } catch (e: JSONException) {
                 Debug.warn(e)
-                Toasty(requireActivity()).Short(R.string.amiibo_failure_parse)
+                withContext(Dispatchers.Main) {
+                    Toasty(requireActivity()).Short(R.string.amiibo_failure_parse)
+                }
                 return@launch
             } catch (e: ParseException) {
                 Debug.warn(e)
-                Toasty(requireActivity()).Short(R.string.amiibo_failure_parse)
+                withContext(Dispatchers.Main) {
+                    Toasty(requireActivity()).Short(R.string.amiibo_failure_parse)
+                }
                 return@launch
             } catch (e: IOException) {
                 Debug.warn(e)
-                Toasty(requireActivity()).Short(R.string.amiibo_failure_parse)
+                withContext(Dispatchers.Main) {
+                    Toasty(requireActivity()).Short(R.string.amiibo_failure_parse)
+                }
                 return@launch
             }
             try {
                 if (null != amiiboManager) {
                     saveDatabase(amiiboManager, requireContext().applicationContext)
                 } else {
-                    Toasty(requireActivity()).Short(R.string.amiibo_failure_update)
+                    withContext(Dispatchers.Main) {
+                        Toasty(requireActivity()).Short(R.string.amiibo_failure_update)
+                    }
                 }
             } catch (e: JSONException) {
                 Debug.warn(e)
-                Toasty(requireActivity()).Short(R.string.amiibo_failure_update)
+                withContext(Dispatchers.Main) {
+                    Toasty(requireActivity()).Short(R.string.amiibo_failure_update)
+                }
                 return@launch
             } catch (e: IOException) {
                 Debug.warn(e)
-                Toasty(requireActivity()).Short(R.string.amiibo_failure_update)
+                withContext(Dispatchers.Main) {
+                    Toasty(requireActivity()).Short(R.string.amiibo_failure_update)
+                }
                 return@launch
             }
             withContext(Dispatchers.Main) {

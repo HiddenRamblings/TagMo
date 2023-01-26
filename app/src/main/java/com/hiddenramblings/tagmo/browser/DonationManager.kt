@@ -298,14 +298,14 @@ class DonationManager internal constructor(private val activity: BrowserActivity
             donations.addView(getDonationButton(skuDetail))
         }
         val subscriptions = layout.findViewById<LinearLayout>(R.id.subscription_layout)
-            subscriptions.removeAllViewsInLayout()
-            subSkuDetails.sortWith { obj1: ProductDetails, obj2: ProductDetails ->
-                obj1.productId.compareTo(obj2.productId, ignoreCase = true)
-            }
-            for (skuDetail in subSkuDetails) {
-                if (null == skuDetail.subscriptionOfferDetails) continue
-                subscriptions.addView(getSubscriptionButton(skuDetail))
-            }
+        subscriptions.removeAllViewsInLayout()
+        subSkuDetails.sortWith { obj1: ProductDetails, obj2: ProductDetails ->
+            obj1.productId.compareTo(obj2.productId, ignoreCase = true)
+        }
+        for (skuDetail in subSkuDetails) {
+            if (null == skuDetail.subscriptionOfferDetails) continue
+            subscriptions.addView(getSubscriptionButton(skuDetail))
+        }
         dialog.setOnCancelListener {
             donations.removeAllViewsInLayout()
             if (!BuildConfig.GOOGLE_PLAY) subscriptions.removeAllViewsInLayout()

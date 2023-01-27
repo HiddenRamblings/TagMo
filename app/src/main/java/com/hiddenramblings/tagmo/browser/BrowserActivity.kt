@@ -885,8 +885,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                 items.add(character.name)
             }
         }
-        items.sort()
-        items.forEach {
+        items.sorted().forEach {
             subMenu.add(R.id.filter_character_group, Menu.NONE, 0, it)
                 .setChecked(it == settings!!.getFilter(FILTER.CHARACTER))
                 .setOnMenuItemClickListener(onFilterCharacterItemClick)
@@ -920,8 +919,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                 items.add(gameSeries.name)
             }
         }
-        items.sort()
-        items.forEach {
+        items.sorted().forEach {
             subMenu.add(R.id.filter_game_series_group, Menu.NONE, 0, it)
                 .setChecked(it == settings!!.getFilter(FILTER.GAME_SERIES))
                 .setOnMenuItemClickListener(onFilterGameSeriesItemClick)
@@ -955,8 +953,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                 items.add(amiiboSeries.name)
             }
         }
-        items.sort()
-        items.forEach {
+        items.sorted().forEach {
             subMenu.add(R.id.filter_amiibo_series_group, Menu.NONE, 0, it)
                 .setChecked(it == settings?.getFilter(FILTER.AMIIBO_SERIES))
                 .setOnMenuItemClickListener(onFilterAmiiboSeriesItemClick)
@@ -990,8 +987,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                 items.add(amiiboType)
             }
         }
-        items.sort()
-        items.forEach {
+        items.sorted().forEach {
             subMenu.add(R.id.filter_amiibo_type_group, Menu.NONE, 0, it.name)
                 .setChecked(it.name == settings!!.getFilter(FILTER.AMIIBO_TYPE))
                 .setOnMenuItemClickListener(onFilterAmiiboTypeItemClick)
@@ -1014,8 +1010,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
         val gamesManager = settings!!.gamesManager
         val items: ArrayList<String> = arrayListOf()
         gamesManager?.gameTitles?.forEach { items.add(it.name) }
-        items.sort()
-        items.forEach {
+        items.sorted().forEach {
             subMenu.add(R.id.filter_game_titles_group, Menu.NONE, 0, it)
                 .setChecked(it == settings!!.getFilter(FILTER.GAME_TITLES))
                 .setOnMenuItemClickListener(onFilterGameTitlesItemClick)
@@ -1737,10 +1732,11 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
 
     private fun listFolders(rootFolder: File?): ArrayList<File?> {
         val folders: ArrayList<File?> = arrayListOf()
-        val files = rootFolder?.listFiles()
-        if (files.isNullOrEmpty()) return folders
-        for (file in files) {
-            if (file.isDirectory) folders.add(file)
+        rootFolder?.listFiles().also { files ->
+            if (files.isNullOrEmpty()) return folders
+            files.forEach { file ->
+                if (file.isDirectory) folders.add(file)
+            }
         }
         return folders
     }
@@ -1748,9 +1744,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
     private fun loadFolders(rootFolder: File?) {
         scopeIO.launch {
             val folders = listFolders(rootFolder)
-            folders.sortWith { file1: File?, file2: File? ->
-                file2?.path?.let { file1?.path?.compareTo(it, ignoreCase = true) } ?: 0
-            }
+            folders.sortWith(compareBy(String.CASE_INSENSITIVE_ORDER) { it?.path ?: "" })
             withContext(Dispatchers.Main) {
                 settings?.folders = folders
                 settings?.notifyChanges()
@@ -2288,7 +2282,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                         if (!items.contains(it)) items.add(it)
                     }
                     items.sort()
-                    android.app.AlertDialog.Builder(this)
+                    AlertDialog.Builder(this)
                         .setTitle(R.string.pref_amiibo_characters)
                         .setAdapter(object : ArrayAdapter<Character>(
                             this, android.R.layout.simple_list_item_2, android.R.id.text1, items
@@ -2339,7 +2333,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                         if (!items.contains(it.name)) items.add(it.name)
                     }
                     items.sort()
-                    android.app.AlertDialog.Builder(this)
+                    AlertDialog.Builder(this)
                         .setTitle(R.string.pref_amiibo_titles)
                         .setAdapter(ArrayAdapter(
                                 this, android.R.layout.simple_list_item_1, items
@@ -2519,8 +2513,8 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
     fun showElitePage(extras: Bundle?) {
         if (!prefs.eliteEnabled()) return
         viewPager?.post {
-            fragmentElite!!.arguments = extras
-            viewPager!!.setCurrentItem(1, true)
+            fragmentElite?.arguments = extras
+            viewPager?.setCurrentItem(1, true)
         }
     }
 
@@ -2537,59 +2531,63 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
     }
 
     private suspend fun locateKeyFilesRecursive(rootFolder: File?) {
-        val files = rootFolder?.listFiles { _: File?, name: String -> keyNameMatcher(name) }
-        if (!files.isNullOrEmpty()) {
-            for (file in files) {
-                try {
-                    withContext(Dispatchers.IO) {
-                        FileInputStream(file).use { inputStream ->
-                            try {
-                                keyManager.evaluateKey(inputStream)
-                            } catch (ex: Exception) {
-                                withContext(Dispatchers.Main) { onShowSettingsFragment() }
-                            }
-                            withContext(Dispatchers.Main) { hideFakeSnackbar() }
-                        }
-                    }
-                } catch (e: Exception) {
-                    Debug.warn(e)
-                }
-            }
-        } else {
-            val directories = rootFolder?.listFiles()
-            if (directories.isNullOrEmpty()) return
-            for (directory in directories) {
-                if (directory.isDirectory) locateKeyFilesRecursive(directory)
-            }
-        }
-    }
-
-    private fun locateKeyFiles() {
-        scopeIO.launch(Dispatchers.IO) {
-            val files = Storage.getDownloadDir(null)
-                .listFiles { _: File?, name: String -> keyNameMatcher(name) }
+        rootFolder?.listFiles { _: File?, name: String -> keyNameMatcher(name) }.also { files ->
             if (!files.isNullOrEmpty()) {
                 for (file in files) {
                     try {
-                        FileInputStream(file).use { inputStream ->
-                            try {
-                                keyManager.evaluateKey(inputStream)
-                            } catch (ex: Exception) {
-                                withContext(Dispatchers.Main) { onShowSettingsFragment() }
+                        withContext(Dispatchers.IO) {
+                            FileInputStream(file).use { inputStream ->
+                                try {
+                                    keyManager.evaluateKey(inputStream)
+                                } catch (ex: Exception) {
+                                    withContext(Dispatchers.Main) { onShowSettingsFragment() }
+                                }
+                                withContext(Dispatchers.Main) { hideFakeSnackbar() }
                             }
-                            withContext(Dispatchers.Main) { hideFakeSnackbar() }
                         }
                     } catch (e: Exception) {
                         Debug.warn(e)
                     }
                 }
             } else {
-                locateKeyFilesRecursive(Storage.getFile(prefs.preferEmulated()))
+                rootFolder?.listFiles().also { directories ->
+                    if (directories.isNullOrEmpty()) return
+                    for (directory in directories) {
+                        if (directory.isDirectory) locateKeyFilesRecursive(directory)
+                    }
+                }
             }
-            if (keyManager.isKeyMissing) {
-                withContext(Dispatchers.Main) {
-                    hideFakeSnackbar()
-                    onShowSettingsFragment()
+        }
+    }
+
+    private fun locateKeyFiles() {
+        scopeIO.launch(Dispatchers.IO) {
+            Storage.getDownloadDir(null).listFiles {
+                    _: File?, name: String -> keyNameMatcher(name)
+            }.also { files ->
+                if (!files.isNullOrEmpty()) {
+                    files.forEach { file ->
+                        try {
+                            FileInputStream(file).use { inputStream ->
+                                try {
+                                    keyManager.evaluateKey(inputStream)
+                                } catch (ex: Exception) {
+                                    withContext(Dispatchers.Main) { onShowSettingsFragment() }
+                                }
+                                withContext(Dispatchers.Main) { hideFakeSnackbar() }
+                            }
+                        } catch (e: Exception) {
+                            Debug.warn(e)
+                        }
+                    }
+                } else {
+                    locateKeyFilesRecursive(Storage.getFile(prefs.preferEmulated()))
+                }
+                if (keyManager.isKeyMissing) {
+                    withContext(Dispatchers.Main) {
+                        hideFakeSnackbar()
+                        onShowSettingsFragment()
+                    }
                 }
             }
         }

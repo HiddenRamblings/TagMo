@@ -29,9 +29,9 @@ open class BrowserSettings : Parcelable {
         companion object {
             fun valueOf(value: Int): SORT {
                 if (Debug.isNewer(Build.VERSION_CODES.N)) {
-                    val optional =
-                        Arrays.stream(values()).filter { SORT: SORT -> SORT.value == value }
-                            .findFirst()
+                    val optional = Arrays.stream(values()).filter {
+                            SORT: SORT -> SORT.value == value
+                    }.findFirst()
                     if (optional.isPresent) return optional.get()
                 } else {
                     for (view in values()) {
@@ -248,7 +248,7 @@ open class BrowserSettings : Parcelable {
         else
             @Suppress("DEPRECATION") parcel.readList(folders, File::class.java.classLoader)
         browserRootFolder = if (Debug.isNewer(Build.VERSION_CODES.TIRAMISU))
-            parcel.readSerializable(null, File::class.java)
+            parcel.readSerializable(File::class.java.classLoader, File::class.java)
         else
             @Suppress("DEPRECATION") parcel.readSerializable() as File?
         val docs = parcel.readString()

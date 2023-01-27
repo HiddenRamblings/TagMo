@@ -62,27 +62,23 @@ class FoldersAdapter(var settings: BrowserSettings?) : RecyclerView.Adapter<Fold
         if (holder is ParentFolderViewHolder) {
             folder = rootFolder?.parentFile
         } else {
-            if (showUpFolder) {
-                target -= 1
-            }
+            if (showUpFolder) target -= 1
             folder = data[target]
         }
         holder.bind(settings, folder as File)
     }
 
     override fun getItemViewType(position: Int): Int {
-        return if (position == 0 && showUpFolder) {
+        return if (position == 0 && showUpFolder)
             PARENT_FOLDER_VIEW_TYPE
-        } else {
-            CHILD_FOLDER_VIEW_TYPE
-        }
+        else CHILD_FOLDER_VIEW_TYPE
     }
 
     private fun showParentFolder(): Boolean {
         val internal = mPrefs.preferEmulated()
         val storage = Storage.getPath(internal)
         return (null != rootFolder && Storage.getFile(internal) != rootFolder
-                && (null != storage && rootFolder!!.absolutePath.startsWith(storage)))
+                && (null == storage || rootFolder!!.absolutePath.startsWith(storage)))
     }
 
     override fun getItemCount(): Int {

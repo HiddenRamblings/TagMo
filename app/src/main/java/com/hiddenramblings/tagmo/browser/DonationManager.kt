@@ -290,21 +290,19 @@ class DonationManager internal constructor(private val activity: BrowserActivity
         )
         val donations = layout.findViewById<LinearLayout>(R.id.donation_layout)
         donations.removeAllViewsInLayout()
-        iapSkuDetails.sortWith { obj1: ProductDetails, obj2: ProductDetails ->
-            obj1.productId.compareTo(obj2.productId, ignoreCase = true)
-        }
-        for (skuDetail in iapSkuDetails) {
-            if (null == skuDetail.oneTimePurchaseOfferDetails) continue
-            donations.addView(getDonationButton(skuDetail))
+        iapSkuDetails.sortedWith(
+            compareBy(String.CASE_INSENSITIVE_ORDER) { it.productId }
+        ).forEach { skuDetail ->
+            if (null != skuDetail.oneTimePurchaseOfferDetails)
+                donations.addView(getDonationButton(skuDetail))
         }
         val subscriptions = layout.findViewById<LinearLayout>(R.id.subscription_layout)
         subscriptions.removeAllViewsInLayout()
-        subSkuDetails.sortWith { obj1: ProductDetails, obj2: ProductDetails ->
-            obj1.productId.compareTo(obj2.productId, ignoreCase = true)
-        }
-        for (skuDetail in subSkuDetails) {
-            if (null == skuDetail.subscriptionOfferDetails) continue
-            subscriptions.addView(getSubscriptionButton(skuDetail))
+        subSkuDetails.sortedWith(
+            compareBy(String.CASE_INSENSITIVE_ORDER) { it.productId }
+        ).forEach { skuDetail ->
+            if (null != skuDetail.subscriptionOfferDetails)
+                subscriptions.addView(getSubscriptionButton(skuDetail))
         }
         dialog.setOnCancelListener {
             donations.removeAllViewsInLayout()

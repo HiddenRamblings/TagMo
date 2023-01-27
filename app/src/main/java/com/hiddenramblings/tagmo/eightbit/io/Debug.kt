@@ -281,16 +281,17 @@ object Debug {
     }
 
     private fun getDeviceRAM(context: Context): String {
-        val actManager = context.getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
-        val memInfo = ActivityManager.MemoryInfo()
-        actManager.getMemoryInfo(memInfo)
-        return bytesToSizeUnit(memInfo.totalMem)
+        (context.getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager).run {
+            val memInfo = ActivityManager.MemoryInfo()
+            getMemoryInfo(memInfo)
+            return bytesToSizeUnit(memInfo.totalMem)
+        }
     }
 
     private fun getDeviceProfile(context: Context): StringBuilder {
-        val separator = if (System.getProperty("line.separator") != null) Objects.requireNonNull(
-            System.getProperty("line.separator")
-        ) else "\n"
+        val separator = if (System.getProperty("line.separator") != null)
+            Objects.requireNonNull(System.getProperty("line.separator"))
+        else "\n"
         val log = StringBuilder(separator)
         log.append(TagMo.getVersionLabel(true))
         log.append(separator)
@@ -323,8 +324,9 @@ object Debug {
     private fun submitLogcat(context: Context, logText: String) {
         if (BuildConfig.WEAR_OS) return
         val subject = context.getString(R.string.git_issue_title, BuildConfig.COMMIT)
-        val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-        clipboard.setPrimaryClip(ClipData.newPlainText(subject, logText))
+        (context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager).run {
+            setPrimaryClip(ClipData.newPlainText(subject, logText))
+        }
         try {
             val emailIntent = setEmailParams(Intent.ACTION_SENDTO, subject, logText)
             context.startActivity(Intent.createChooser(

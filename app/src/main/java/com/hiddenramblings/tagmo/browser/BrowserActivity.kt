@@ -1565,10 +1565,11 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
         onViewChanged()
         onRecursiveFilesChanged()
         menuUpdate.isVisible = null != appUpdate || null != updateUrl
-        val searchManager = getSystemService(SEARCH_SERVICE) as SearchManager
         val searchView = menuSearch.actionView as SearchView?
-        searchView!!.setSearchableInfo(searchManager.getSearchableInfo(componentName))
-        searchView.isSubmitButtonEnabled = false
+        (getSystemService(SEARCH_SERVICE) as SearchManager).run {
+            searchView?.setSearchableInfo(getSearchableInfo(componentName))
+        }
+        searchView?.isSubmitButtonEnabled = false
         menuSearch.setOnActionExpandListener(object : MenuItem.OnActionExpandListener {
             override fun onMenuItemActionExpand(menuItem: MenuItem): Boolean {
                 return true
@@ -1585,7 +1586,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                 }
             }
         })
-        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+        searchView?.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String): Boolean {
                 settings?.query = query
                 settings?.notifyChanges()
@@ -1603,8 +1604,8 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
         val query = settings?.query
         if (!TextUtils.isEmpty(query)) {
             menuSearch.expandActionView()
-            searchView.setQuery(query, true)
-            searchView.clearFocus()
+            searchView?.setQuery(query, true)
+            searchView?.clearFocus()
         }
         return super.onCreateOptionsMenu(menu)
     }
@@ -2221,16 +2222,17 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
     val columnCount: Int
         get() {
             val metrics = DisplayMetrics()
-            val mWindowManager = getSystemService(WINDOW_SERVICE) as WindowManager
-            val columns = if (Debug.isNewer(Build.VERSION_CODES.S)) {
-                val bounds: Rect = mWindowManager.currentWindowMetrics.bounds
-                ((bounds.width() / (resources.configuration.densityDpi / 160)) + 0.5) / 112
-            } else @Suppress("DEPRECATION") {
-                if (Debug.isNewer(Build.VERSION_CODES.JELLY_BEAN_MR1))
-                    mWindowManager.defaultDisplay.getRealMetrics(metrics)
-                else
-                    mWindowManager.defaultDisplay.getMetrics(metrics)
-                ((metrics.widthPixels / metrics.density) + 0.5) / 112
+            val columns = (getSystemService(WINDOW_SERVICE) as WindowManager).run {
+                if (Debug.isNewer(Build.VERSION_CODES.S)) {
+                    val bounds: Rect = currentWindowMetrics.bounds
+                    ((bounds.width() / (resources.configuration.densityDpi / 160)) + 0.5) / 112
+                } else @Suppress("DEPRECATION") {
+                    if (Debug.isNewer(Build.VERSION_CODES.JELLY_BEAN_MR1))
+                        defaultDisplay.getRealMetrics(metrics)
+                    else
+                        defaultDisplay.getMetrics(metrics)
+                    ((metrics.widthPixels / metrics.density) + 0.5) / 112
+                }
             }
             return if (columns < 1) 3 else columns.toInt()
         }

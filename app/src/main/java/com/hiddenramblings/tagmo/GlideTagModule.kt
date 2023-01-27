@@ -19,7 +19,7 @@ class GlideTagModule : AppGlideModule() {
         val cm = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager?
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             cm?.run {
-                cm.getNetworkCapabilities(cm.activeNetwork)?.run {
+                getNetworkCapabilities(cm.activeNetwork)?.run {
                     result = when {
                         hasTransport(NetworkCapabilities.TRANSPORT_WIFI) -> true
                         hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) -> false
@@ -31,7 +31,7 @@ class GlideTagModule : AppGlideModule() {
         } else {
             @Suppress("DEPRECATION")
             cm?.run {
-                cm.activeNetworkInfo?.run {
+                activeNetworkInfo?.run {
                     result = type == ConnectivityManager.TYPE_WIFI
                             || type == ConnectivityManager.TYPE_ETHERNET
                 }

@@ -236,27 +236,24 @@ class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
             bottomSheet?.setState(BottomSheetBehavior.STATE_EXPANDED)
         }
         searchView = rootLayout.findViewById(R.id.amiibo_search)
-        if (null != searchView) {
-            val searchManager = activity.getSystemService(Context.SEARCH_SERVICE) as SearchManager
-            searchView!!.setSearchableInfo(
-                searchManager.getSearchableInfo(activity.componentName)
-            )
-            searchView!!.isSubmitButtonEnabled = false
-            searchView!!.setIconifiedByDefault(false)
-            searchView!!.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
-                override fun onQueryTextSubmit(query: String): Boolean {
-                    settings.query = query
-                    settings.notifyChanges()
-                    return false
-                }
-
-                override fun onQueryTextChange(query: String): Boolean {
-                    settings.query = query
-                    settings.notifyChanges()
-                    return true
-                }
-            })
+        (activity.getSystemService(Context.SEARCH_SERVICE) as SearchManager).run {
+            searchView?.setSearchableInfo(getSearchableInfo(activity.componentName))
         }
+        searchView?.isSubmitButtonEnabled = false
+        searchView?.setIconifiedByDefault(false)
+        searchView?.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String): Boolean {
+                settings.query = query
+                settings.notifyChanges()
+                return false
+            }
+
+            override fun onQueryTextChange(query: String): Boolean {
+                settings.query = query
+                settings.notifyChanges()
+                return true
+            }
+        })
         writeOpenBanks?.setOnClickListener {
             onBottomSheetChanged(SHEET.WRITE)
             searchView?.setQuery(settings.query, true)

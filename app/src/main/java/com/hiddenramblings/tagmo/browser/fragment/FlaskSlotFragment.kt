@@ -525,12 +525,9 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
         if (BuildConfig.WEAR_OS) {
             searchView.isGone = true
         } else {
-            val searchManager = activity
-                .getSystemService(Context.SEARCH_SERVICE) as SearchManager
-            searchView.setSearchableInfo(
-                searchManager
-                    .getSearchableInfo(activity.componentName)
-            )
+            (activity.getSystemService(Context.SEARCH_SERVICE) as SearchManager).run {
+                searchView.setSearchableInfo(getSearchableInfo(activity.componentName))
+            }
             searchView.isSubmitButtonEnabled = false
             searchView.setIconifiedByDefault(false)
             val searchBar = searchView.findViewById<LinearLayout>(R.id.search_bar)

@@ -4,11 +4,10 @@ import android.app.PendingIntent
 import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.content.IntentSender.SendIntentException
-import android.content.pm.PackageInstaller.SessionParams
+import android.content.pm.PackageInstaller
 import android.net.Uri
 import android.os.Build
 import android.provider.Settings
-import androidx.annotation.RequiresApi
 import androidx.documentfile.provider.DocumentFile
 import com.google.android.play.core.appupdate.AppUpdateInfo
 import com.google.android.play.core.appupdate.AppUpdateManager
@@ -33,7 +32,7 @@ import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
 import java.net.URL
-
+import kotlin.random.Random
 
 class UpdateManager internal constructor(activity: BrowserActivity) {
     private var listener: CheckUpdateListener? = null
@@ -41,9 +40,6 @@ class UpdateManager internal constructor(activity: BrowserActivity) {
     private var appUpdateManager: AppUpdateManager? = null
     private val browserActivity: BrowserActivity = activity
     private var isUpdateAvailable = false
-
-    @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
-    private val installer = activity.applicationContext.packageManager.packageInstaller
 
     private val scopeIO = CoroutineScope(Dispatchers.IO)
 
@@ -67,10 +63,12 @@ class UpdateManager internal constructor(activity: BrowserActivity) {
     private fun configureUpdates(activity: BrowserActivity) {
         scopeIO.launch {
             if (Debug.isNewer(Build.VERSION_CODES.LOLLIPOP)) {
-                installer.mySessions.forEach {
-                    try {
-                        installer.abandonSession(it.sessionId)
-                    } catch (ignored: Exception) { }
+                activity.applicationContext.packageManager.packageInstaller.run {
+                    mySessions.forEach {
+                        try {
+                            abandonSession(it.sessionId)
+                        } catch (ignored: Exception) { }
+                    }
                 }
             }
             activity.externalCacheDir?.listFiles {
@@ -106,12 +104,14 @@ class UpdateManager internal constructor(activity: BrowserActivity) {
                 if (!apk.name.lowercase().endsWith(".apk")) apk.delete()
                 val applicationContext = browserActivity.applicationContext
                 if (Debug.isNewer(Build.VERSION_CODES.N)) {
-                    val resolver = applicationContext.contentResolver
                     val apkUri = Storage.getFileUri(apk)
-                    resolver.openInputStream(apkUri).use { apkStream ->
-                        val params = SessionParams(SessionParams.MODE_FULL_INSTALL)
-                        val sessionId = installer.createSession(params)
-                        val session = installer.openSession(sessionId)
+                    applicationContext.contentResolver.openInputStream(apkUri).use { apkStream ->
+                        val session = applicationContext.packageManager.packageInstaller.run {
+                            val params = PackageInstaller.SessionParams(
+                                PackageInstaller.SessionParams.MODE_FULL_INSTALL
+                            )
+                            openSession(createSession(params))
+                        }
                         val document = DocumentFile.fromSingleUri(applicationContext, apkUri)
                             ?: throw IOException(browserActivity.getString(R.string.fail_invalid_size))
                         session.openWrite("NAME", 0, document.length()).use { sessionStream ->
@@ -123,7 +123,7 @@ class UpdateManager internal constructor(activity: BrowserActivity) {
                             session.fsync(sessionStream)
                         }
                         val pi = PendingIntent.getBroadcast(
-                            applicationContext, 8675309,
+                            applicationContext, Random.nextInt(),
                             Intent(applicationContext, UpdateReceiver::class.java),
                             if (Debug.isNewer(Build.VERSION_CODES.S))
                                 PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_MUTABLE
@@ -199,7 +199,7 @@ class UpdateManager internal constructor(activity: BrowserActivity) {
                 appUpdateInfo!!,  // Or 'AppUpdateType.FLEXIBLE' for flexible updates.
                 AppUpdateType.IMMEDIATE,  // The current activity making the update request.
                 browserActivity,  // Include a request code to later monitor this update request.
-                8675309
+                Random.nextInt()
             )
         } catch (ex: SendIntentException) {
             Debug.warn(ex)

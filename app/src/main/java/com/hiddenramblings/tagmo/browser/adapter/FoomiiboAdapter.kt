@@ -106,7 +106,7 @@ class FoomiiboAdapter(
     }
 
     override fun getSections(): Array<String> {
-        val sections: MutableList<String> = ArrayList(36)
+        val sections: ArrayList<String> = ArrayList(36)
         if (itemCount > 0) {
             mSectionPositions = ArrayList(36)
             filteredData.indices.forEach {
@@ -126,7 +126,7 @@ class FoomiiboAdapter(
                 }
                 if (null != section && !sections.contains(section)) {
                     sections.add(section)
-                    mSectionPositions!!.add(it)
+                    mSectionPositions?.add(it)
                 }
             }
         }
@@ -134,7 +134,7 @@ class FoomiiboAdapter(
     }
 
     override fun getPositionForSection(sectionIndex: Int): Int {
-        return mSectionPositions!![sectionIndex]
+        return mSectionPositions?.get(sectionIndex) ?: 0
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): FoomiiboViewHolder {

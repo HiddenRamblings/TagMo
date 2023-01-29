@@ -117,7 +117,7 @@ class BrowserAdapter(
     }
 
     override fun getSections(): Array<String> {
-        val sections: MutableList<String> = ArrayList(36)
+        val sections: ArrayList<String> = ArrayList(36)
         if (itemCount > 0) {
             mSectionPositions = ArrayList(36)
             val amiiboManager = settings.amiiboManager
@@ -142,7 +142,7 @@ class BrowserAdapter(
                     }
                     if (null != section && !sections.contains(section)) {
                         sections.add(section)
-                        mSectionPositions!!.add(it)
+                        mSectionPositions?.add(it)
                     }
                 }
             }
@@ -151,7 +151,7 @@ class BrowserAdapter(
     }
 
     override fun getPositionForSection(sectionIndex: Int): Int {
-        return mSectionPositions!![sectionIndex]
+        return mSectionPositions?.get(sectionIndex) ?: 0
     }
 
     override fun getItemViewType(position: Int): Int {

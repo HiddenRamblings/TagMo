@@ -8,16 +8,6 @@ package com.hiddenramblings.tagmo.bluetooth
 object GattArray {
     @JvmStatic
     fun byteToPortions(largeByteArray: ByteArray, sizePerPortion: Int): List<ByteArray> {
-//        val byteArrayPortions: MutableList<ByteArray> = ArrayList()
-//        var offset = 0
-//        while (offset < largeByteArray.size) {
-//            byteArrayPortions.add(
-//                if (largeByteArray.size - offset > sizePerPortion)
-//                    largeByteArray.copyOfRange(offset, offset + sizePerPortion)
-//                else largeByteArray.copyOfRange(offset, largeByteArray.size)
-//            )
-//            offset += sizePerPortion
-//        }
         val byteArrayPortions: ArrayList<ByteArray> = arrayListOf()
         largeByteArray.asIterable().chunked(sizePerPortion).forEach {
             byteArrayPortions.add(it.toByteArray())
@@ -27,7 +17,7 @@ object GattArray {
 
     @JvmStatic
     fun stringToPortions(largeString: String, sizePerPortion: Int): List<String> {
-        val stringPortions: MutableList<String> = ArrayList()
+        val stringPortions: ArrayList<String> = arrayListOf()
         val size = largeString.length
         if (size <= sizePerPortion) {
             stringPortions.add(largeString)

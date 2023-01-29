@@ -494,13 +494,17 @@ class QRCodeScanner : AppCompatActivity() {
                     cameraPreview?.isGone = true
                 }
                 onPickImage.launch(
-                    Intent.createChooser(Intent(if (Debug.isNewer(Build.VERSION_CODES.KITKAT))
-                        Intent.ACTION_OPEN_DOCUMENT else Intent.ACTION_GET_CONTENT
-                    ).setType("image/*").addCategory(Intent.CATEGORY_OPENABLE)
-                        .addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-                        .addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
-                        .putExtra("android.content.extra.SHOW_ADVANCED", true)
-                        .putExtra("android.content.extra.FANCY", true), title))
+                    Intent.createChooser(Intent(
+                        if (Debug.isNewer(Build.VERSION_CODES.KITKAT))
+                            Intent.ACTION_OPEN_DOCUMENT
+                        else Intent.ACTION_GET_CONTENT
+                    ).apply {
+                        setType("image/*").addCategory(Intent.CATEGORY_OPENABLE)
+                        addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                        addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
+                        putExtra("android.content.extra.SHOW_ADVANCED", true)
+                        putExtra("android.content.extra.FANCY", true)
+                    }, title))
             }
             R.id.mnu_generate -> {
                 txtMiiValue.text = ""

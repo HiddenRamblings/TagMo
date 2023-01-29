@@ -300,20 +300,19 @@ class NfcActivity : AppCompatActivity() {
                             return
                         }
                         TagWriter.writeEliteAuto(mifare!!, data, keyManager, bankNumber)
-                        val write = Intent(NFCIntent.ACTION_NFC_SCANNED)
-                        write.putExtra(
-                            NFCIntent.EXTRA_SIGNATURE,
-                            TagReader.getBankSignature(mifare)
-                        )
-                        write.putExtra(NFCIntent.EXTRA_BANK_COUNT, banksCount)
-                        write.putExtra(NFCIntent.EXTRA_ACTIVE_BANK, activeBank)
-                        write.putExtra(NFCIntent.EXTRA_CURRENT_BANK, bankNumber)
-                        args.putStringArrayList(
-                            NFCIntent.EXTRA_AMIIBO_LIST,
-                            TagReader.readTagTitles(mifare, banksCount)
-                        )
-                        args.putByteArray(NFCIntent.EXTRA_TAG_DATA, data)
-                        setResult(RESULT_OK, write.putExtras(args))
+                        setResult(RESULT_OK, Intent(NFCIntent.ACTION_NFC_SCANNED).apply {
+                            putExtra(NFCIntent.EXTRA_SIGNATURE,
+                                TagReader.getBankSignature(mifare)
+                            )
+                            putExtra(NFCIntent.EXTRA_BANK_COUNT, banksCount)
+                            putExtra(NFCIntent.EXTRA_ACTIVE_BANK, activeBank)
+                            putExtra(NFCIntent.EXTRA_CURRENT_BANK, bankNumber)
+                            args.putStringArrayList(NFCIntent.EXTRA_AMIIBO_LIST,
+                                TagReader.readTagTitles(mifare, banksCount)
+                            )
+                            args.putByteArray(NFCIntent.EXTRA_TAG_DATA, data)
+                            putExtras(args)
+                        })
                     } else {
                         update = TagReader.readFromTag(mifare)
                         TagWriter.writeToTagAuto(
@@ -359,38 +358,39 @@ class NfcActivity : AppCompatActivity() {
                                 TagWriter.writeEliteAuto(mifare!!, tagData, keyManager, x)
                             }
                         }
-                        val write = Intent(NFCIntent.ACTION_NFC_SCANNED)
-                        write.putExtra(NFCIntent.EXTRA_BANK_COUNT, writeCount)
-                        args.putStringArrayList(
-                            NFCIntent.EXTRA_AMIIBO_LIST,
-                            TagReader.readTagTitles(mifare, banksCount)
-                        )
-                        setResult(RESULT_OK, write.putExtras(args))
+                        setResult(RESULT_OK, Intent(NFCIntent.ACTION_NFC_SCANNED).apply {
+                            putExtra(NFCIntent.EXTRA_BANK_COUNT, writeCount)
+                            args.putStringArrayList(NFCIntent.EXTRA_AMIIBO_LIST,
+                                TagReader.readTagTitles(mifare, banksCount)
+                            )
+                            putExtras(args)
+                        })
                     }
                     NFCIntent.ACTION_BACKUP_AMIIBO -> {
-                        val backup = Intent(NFCIntent.ACTION_NFC_SCANNED)
-                        if (commandIntent.hasExtra(NFCIntent.EXTRA_CURRENT_BANK)) {
-                            args.putByteArray(
-                                NFCIntent.EXTRA_TAG_DATA,
-                                TagReader.scanTagToBytes(mifare, bankNumber)
-                            )
-                            backup.putExtra(NFCIntent.EXTRA_CURRENT_BANK, bankNumber)
-                        } else {
-                            args.putByteArray(
-                                NFCIntent.EXTRA_TAG_DATA,
-                                TagReader.scanTagToBytes(mifare, activeBank)
-                            )
-                        }
-                        setResult(RESULT_OK, backup.putExtras(args))
+                        setResult(RESULT_OK, Intent(NFCIntent.ACTION_NFC_SCANNED).apply {
+                            if (commandIntent.hasExtra(NFCIntent.EXTRA_CURRENT_BANK)) {
+                                args.putByteArray(
+                                    NFCIntent.EXTRA_TAG_DATA,
+                                    TagReader.scanTagToBytes(mifare, bankNumber)
+                                )
+                                putExtra(NFCIntent.EXTRA_CURRENT_BANK, bankNumber)
+                            } else {
+                                args.putByteArray(
+                                    NFCIntent.EXTRA_TAG_DATA,
+                                    TagReader.scanTagToBytes(mifare, activeBank)
+                                )
+                            }
+                            putExtras(args)
+                        })
                     }
                     NFCIntent.ACTION_ERASE_BANK -> {
                         TagWriter.wipeBankData(mifare!!, bankNumber)
-                        val format = Intent(NFCIntent.ACTION_NFC_SCANNED)
-                        args.putStringArrayList(
-                            NFCIntent.EXTRA_AMIIBO_LIST,
-                            TagReader.readTagTitles(mifare, banksCount)
-                        )
-                        setResult(RESULT_OK, format.putExtras(args))
+                        setResult(RESULT_OK, Intent(NFCIntent.ACTION_NFC_SCANNED).apply {
+                            args.putStringArrayList(NFCIntent.EXTRA_AMIIBO_LIST,
+                                TagReader.readTagTitles(mifare, banksCount)
+                            )
+                            putExtras(args)
+                        })
                     }
                     NFCIntent.ACTION_ERASE_ALL_TAGS -> {
                         mifare?.setBankCount(writeCount)
@@ -401,60 +401,60 @@ class NfcActivity : AppCompatActivity() {
                             TagWriter.wipeBankData(mifare!!, x)
                             x++
                         }
-                        val erase = Intent(NFCIntent.ACTION_NFC_SCANNED)
-                        erase.putExtra(NFCIntent.EXTRA_BANK_COUNT, writeCount)
-                        erase.putExtra(NFCIntent.EXTRA_ACTIVE_BANK, 0)
-                        erase.putExtra(NFCIntent.EXTRA_CURRENT_BANK, 0)
-                        args.putStringArrayList(
-                            NFCIntent.EXTRA_AMIIBO_LIST,
-                            TagReader.readTagTitles(mifare, banksCount)
-                        )
-                        setResult(RESULT_OK, erase.putExtras(args))
+                        setResult(RESULT_OK, Intent(NFCIntent.ACTION_NFC_SCANNED).apply {
+                            putExtra(NFCIntent.EXTRA_BANK_COUNT, writeCount)
+                            putExtra(NFCIntent.EXTRA_ACTIVE_BANK, 0)
+                            putExtra(NFCIntent.EXTRA_CURRENT_BANK, 0)
+                            args.putStringArrayList(NFCIntent.EXTRA_AMIIBO_LIST,
+                                TagReader.readTagTitles(mifare, banksCount)
+                            )
+                            putExtras(args)
+                        })
                     }
                     NFCIntent.ACTION_BLIND_SCAN,
                     NFCIntent.ACTION_SCAN_TAG -> {
-                        val result = Intent(NFCIntent.ACTION_NFC_SCANNED)
-                        if (isEliteDevice) {
-                            if (commandIntent.hasExtra(NFCIntent.EXTRA_CURRENT_BANK)) {
-                                data = TagArray.getValidatedData(keyManager,
-                                    TagReader.scanBankToBytes(mifare, bankNumber)
-                                )
-                                args.putByteArray(NFCIntent.EXTRA_TAG_DATA, data)
-                                result.putExtra(NFCIntent.EXTRA_CURRENT_BANK, bankNumber)
+                        setResult(RESULT_OK, Intent(NFCIntent.ACTION_NFC_SCANNED).apply {
+                            if (isEliteDevice) {
+                                if (commandIntent.hasExtra(NFCIntent.EXTRA_CURRENT_BANK)) {
+                                    data = TagArray.getValidatedData(keyManager,
+                                        TagReader.scanBankToBytes(mifare, bankNumber)
+                                    )
+                                    args.putByteArray(NFCIntent.EXTRA_TAG_DATA, data)
+                                    putExtra(NFCIntent.EXTRA_CURRENT_BANK, bankNumber)
+                                } else {
+                                    val titles = TagReader.readTagTitles(mifare, banksCount)
+                                    putExtra(NFCIntent.EXTRA_SIGNATURE,
+                                        TagReader.getBankSignature(mifare)
+                                    )
+                                    putExtra(NFCIntent.EXTRA_BANK_COUNT, banksCount)
+                                    putExtra(NFCIntent.EXTRA_ACTIVE_BANK, activeBank)
+                                    args.putStringArrayList(NFCIntent.EXTRA_AMIIBO_LIST, titles)
+                                }
                             } else {
-                                val titles = TagReader.readTagTitles(mifare, banksCount)
-                                result.putExtra(
-                                    NFCIntent.EXTRA_SIGNATURE,
-                                    TagReader.getBankSignature(mifare)
+                                args.putByteArray(NFCIntent.EXTRA_TAG_DATA,
+                                    TagReader.readFromTag(mifare)
                                 )
-                                result.putExtra(NFCIntent.EXTRA_BANK_COUNT, banksCount)
-                                result.putExtra(NFCIntent.EXTRA_ACTIVE_BANK, activeBank)
-                                args.putStringArrayList(NFCIntent.EXTRA_AMIIBO_LIST, titles)
                             }
-                        } else {
-                            args.putByteArray(
-                                NFCIntent.EXTRA_TAG_DATA, TagReader.readFromTag(mifare)
-                            )
-                        }
-                        setResult(RESULT_OK, result.putExtras(args))
+                            putExtras(args)
+                        })
                     }
                     NFCIntent.ACTION_ACTIVATE_BANK -> {
                         mifare?.activateBank(bankNumber)
-                        val active = Intent(NFCIntent.ACTION_NFC_SCANNED)
-                        active.putExtra(
-                            NFCIntent.EXTRA_ACTIVE_BANK,
-                            TagReader.getBankParams(mifare)?.get(0)?.toInt()?.and(0xFF)
-                        )
-                        setResult(RESULT_OK, active)
+                        setResult(RESULT_OK, Intent(NFCIntent.ACTION_NFC_SCANNED).apply {
+                            putExtra(NFCIntent.EXTRA_ACTIVE_BANK,
+                                TagReader.getBankParams(mifare)?.get(0)?.toInt()?.and(0xFF)
+                            )
+                        })
                     }
                     NFCIntent.ACTION_SET_BANK_COUNT -> {
                         mifare!!.setBankCount(writeCount)
                         mifare!!.activateBank(activeBank)
                         val list = TagReader.readTagTitles(mifare, writeCount)
-                        val configure = Intent(NFCIntent.ACTION_NFC_SCANNED)
-                        configure.putExtra(NFCIntent.EXTRA_BANK_COUNT, writeCount)
-                        args.putStringArrayList(NFCIntent.EXTRA_AMIIBO_LIST, list)
-                        setResult(RESULT_OK, configure.putExtras(args))
+                        setResult(RESULT_OK, Intent(NFCIntent.ACTION_NFC_SCANNED).apply {
+                            putExtra(NFCIntent.EXTRA_BANK_COUNT, writeCount)
+                            args.putStringArrayList(NFCIntent.EXTRA_AMIIBO_LIST, list)
+                            putExtras(args)
+                        })
                     }
                     NFCIntent.ACTION_LOCK_AMIIBO -> {
                         try {

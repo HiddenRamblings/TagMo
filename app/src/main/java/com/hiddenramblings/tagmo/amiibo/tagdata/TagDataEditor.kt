@@ -558,9 +558,9 @@ class TagDataEditor : AppCompatActivity() {
             showErrorDialog(R.string.fail_encrypt)
             return
         }
-        val intent = Intent(NFCIntent.ACTION_EDIT_COMPLETE)
-        intent.putExtra(NFCIntent.EXTRA_TAG_DATA, tagData)
-        setResult(RESULT_OK, intent)
+        setResult(RESULT_OK, Intent(NFCIntent.ACTION_EDIT_COMPLETE).apply {
+            putExtra(NFCIntent.EXTRA_TAG_DATA, tagData)
+        })
         finish()
     }
 

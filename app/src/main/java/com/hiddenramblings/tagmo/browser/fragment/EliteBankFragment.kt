@@ -273,14 +273,13 @@ class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
             AlertDialog.Builder(requireContext())
                 .setMessage(R.string.elite_erase_confirm)
                 .setPositiveButton(R.string.proceed) { _: DialogInterface?, _: Int ->
-                    val collection = Intent(requireActivity(), NfcActivity::class.java)
-                    collection.putExtra(
-                        NFCIntent.EXTRA_SIGNATURE,
-                        prefs.eliteSignature()
-                    )
-                    collection.action = NFCIntent.ACTION_ERASE_ALL_TAGS
-                    collection.putExtra(NFCIntent.EXTRA_BANK_COUNT, eliteBankCount.value)
-                    onOpenBanksActivity.launch(collection)
+                    onOpenBanksActivity.launch(Intent(
+                        requireActivity(), NfcActivity::class.java
+                    ).apply {
+                        putExtra(NFCIntent.EXTRA_SIGNATURE, prefs.eliteSignature())
+                        action = NFCIntent.ACTION_ERASE_ALL_TAGS
+                        putExtra(NFCIntent.EXTRA_BANK_COUNT, eliteBankCount.value)
+                    })
                 }
                 .setNegativeButton(R.string.cancel) { dialog: DialogInterface, _: Int -> dialog.dismiss() }
                 .show()
@@ -291,14 +290,11 @@ class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
                 onBottomSheetChanged(SHEET.MENU)
                 return@setOnClickListener
             }
-            val configure = Intent(activity, NfcActivity::class.java)
-            configure.putExtra(
-                NFCIntent.EXTRA_SIGNATURE,
-                prefs.eliteSignature()
-            )
-            configure.action = NFCIntent.ACTION_SET_BANK_COUNT
-            configure.putExtra(NFCIntent.EXTRA_BANK_COUNT, eliteBankCount.value)
-            onOpenBanksActivity.launch(configure)
+            onOpenBanksActivity.launch(Intent(activity, NfcActivity::class.java).apply {
+                putExtra(NFCIntent.EXTRA_SIGNATURE, prefs.eliteSignature())
+                action = NFCIntent.ACTION_SET_BANK_COUNT
+                putExtra(NFCIntent.EXTRA_BANK_COUNT, eliteBankCount.value)
+            })
         }
         view.findViewById<View>(R.id.lock_elite).setOnClickListener {
             android.app.AlertDialog.Builder(requireContext())
@@ -496,14 +492,12 @@ class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
         when (status) {
             CLICKED.NOTHING -> {}
             CLICKED.WRITE_DATA -> {
-                val modify = Intent(requireContext(), NfcActivity::class.java)
-                modify.putExtra(
-                    NFCIntent.EXTRA_SIGNATURE,
-                    prefs.eliteSignature()
-                )
-                modify.action = NFCIntent.ACTION_WRITE_TAG_FULL
-                modify.putExtra(NFCIntent.EXTRA_CURRENT_BANK, clickedPosition)
-                onUpdateTagResult.launch(modify.putExtras(args))
+                onUpdateTagResult.launch(Intent(requireContext(), NfcActivity::class.java).apply {
+                    putExtra(NFCIntent.EXTRA_SIGNATURE, prefs.eliteSignature())
+                    action = NFCIntent.ACTION_WRITE_TAG_FULL
+                    putExtra(NFCIntent.EXTRA_CURRENT_BANK, clickedPosition)
+                    putExtras(args)
+                })
             }
             CLICKED.EDIT_DATA -> onUpdateTagResult.launch(
                 Intent(requireContext(), TagDataEditor::class.java).putExtras(args)
@@ -526,25 +520,19 @@ class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
     }
 
     private fun scanAmiiboBank(current_bank: Int) {
-        val scan = Intent(requireContext(), NfcActivity::class.java)
-        scan.putExtra(
-            NFCIntent.EXTRA_SIGNATURE,
-            prefs.eliteSignature()
-        )
-        scan.action = NFCIntent.ACTION_SCAN_TAG
-        scan.putExtra(NFCIntent.EXTRA_CURRENT_BANK, current_bank)
-        onScanTagResult.launch(scan)
+        onScanTagResult.launch(Intent(requireContext(), NfcActivity::class.java).apply {
+            putExtra(NFCIntent.EXTRA_SIGNATURE, prefs.eliteSignature())
+            action = NFCIntent.ACTION_SCAN_TAG
+            putExtra(NFCIntent.EXTRA_CURRENT_BANK, current_bank)
+        })
     }
 
     private fun scanAmiiboTag(position: Int) {
-        val amiiboIntent = Intent(requireContext(), NfcActivity::class.java)
-        amiiboIntent.putExtra(
-            NFCIntent.EXTRA_SIGNATURE,
-            prefs.eliteSignature()
-        )
-        amiiboIntent.putExtra(NFCIntent.EXTRA_CURRENT_BANK, position)
-        amiiboIntent.action = NFCIntent.ACTION_SCAN_TAG
-        onUpdateTagResult.launch(amiiboIntent)
+        onUpdateTagResult.launch(Intent(requireContext(), NfcActivity::class.java).apply {
+            putExtra(NFCIntent.EXTRA_SIGNATURE, prefs.eliteSignature())
+            putExtra(NFCIntent.EXTRA_CURRENT_BANK, position)
+            action = NFCIntent.ACTION_SCAN_TAG
+        })
     }
 
     private fun writeAmiiboFile(amiiboFile: AmiiboFile, position: Int) {
@@ -572,15 +560,12 @@ class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
                 Debug.warn(e)
             }
         }
-        val intent = Intent(requireContext(), NfcActivity::class.java)
-        intent.putExtra(
-            NFCIntent.EXTRA_SIGNATURE,
-            prefs.eliteSignature()
-        )
-        intent.action = NFCIntent.ACTION_WRITE_TAG_FULL
-        intent.putExtra(NFCIntent.EXTRA_CURRENT_BANK, position)
-        intent.putExtras(args)
-        onUpdateTagResult.launch(intent)
+        onUpdateTagResult.launch(Intent(requireContext(), NfcActivity::class.java).apply {
+            putExtra(NFCIntent.EXTRA_SIGNATURE, prefs.eliteSignature())
+            action = NFCIntent.ACTION_WRITE_TAG_FULL
+            putExtra(NFCIntent.EXTRA_CURRENT_BANK, position)
+            putExtras(args)
+        })
     }
 
     private fun displayWriteDialog(position: Int) {
@@ -655,11 +640,10 @@ class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
     private fun getAmiiboToolbar(tagData: ByteArray?, current_bank: Int) {
         toolbar!!.setOnMenuItemClickListener { item: MenuItem ->
             val notice = Toasty(requireActivity())
-            val scan = Intent(requireContext(), NfcActivity::class.java)
-            scan.putExtra(
-                NFCIntent.EXTRA_SIGNATURE, prefs.eliteSignature()
-            )
-            scan.putExtra(NFCIntent.EXTRA_CURRENT_BANK, current_bank)
+            val scan = Intent(requireContext(), NfcActivity::class.java).apply {
+                putExtra(NFCIntent.EXTRA_SIGNATURE, prefs.eliteSignature())
+                putExtra(NFCIntent.EXTRA_CURRENT_BANK, current_bank)
+            }
             when (item.itemId) {
                 R.id.mnu_activate -> {
                     scan.action = NFCIntent.ACTION_ACTIVATE_BANK
@@ -693,9 +677,11 @@ class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
                 }
                 R.id.mnu_edit -> {
                     if (tagData?.isNotEmpty() == true) {
-                        val editor = Intent(requireContext(), TagDataEditor::class.java)
-                        editor.putExtra(NFCIntent.EXTRA_TAG_DATA, tagData)
-                        onUpdateTagResult.launch(editor)
+                        onUpdateTagResult.launch(Intent(
+                            requireContext(), TagDataEditor::class.java
+                        ).apply {
+                            putExtra(NFCIntent.EXTRA_TAG_DATA, tagData)
+                        })
                     } else {
                         status = CLICKED.EDIT_DATA
                         scanAmiiboBank(current_bank)
@@ -704,9 +690,9 @@ class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
                 }
                 R.id.mnu_view_hex -> {
                     if (tagData?.isNotEmpty() == true) {
-                        val viewhex = Intent(requireContext(), HexCodeViewer::class.java)
-                        viewhex.putExtra(NFCIntent.EXTRA_TAG_DATA, tagData)
-                        startActivity(viewhex)
+                        startActivity(Intent(requireContext(), HexCodeViewer::class.java).apply {
+                            putExtra(NFCIntent.EXTRA_TAG_DATA, tagData)
+                        })
                     } else {
                         status = CLICKED.HEX_CODE
                         scanAmiiboBank(current_bank)
@@ -834,11 +820,11 @@ class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
                 if (amiiboLongId == -1L) {
                     return@setOnClickListener
                 }
-                val bundle = Bundle()
-                bundle.putLong(NFCIntent.EXTRA_AMIIBO_ID, amiiboLongId)
-                val intent = Intent(requireContext(), ImageActivity::class.java)
-                intent.putExtras(bundle)
-                startActivity(intent)
+                startActivity(Intent(requireContext(), ImageActivity::class.java).apply {
+                    putExtras(Bundle().apply {
+                        putLong(NFCIntent.EXTRA_AMIIBO_ID, amiiboLongId)
+                    })
+                })
             }
         }
     }
@@ -879,13 +865,13 @@ class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
         AlertDialog.Builder(requireContext())
             .setMessage(R.string.elite_write_confirm)
             .setPositiveButton(R.string.proceed) { dialog: DialogInterface, _: Int ->
-                val collection = Intent(requireContext(), NfcActivity::class.java)
-                collection.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-                collection.putExtra(NFCIntent.EXTRA_SIGNATURE, prefs.eliteSignature())
-                collection.action = NFCIntent.ACTION_WRITE_ALL_TAGS
-                collection.putExtra(NFCIntent.EXTRA_BANK_COUNT, eliteBankCount.value)
-                collection.putExtra(NFCIntent.EXTRA_AMIIBO_FILES, amiiboList)
-                onOpenBanksActivity.launch(collection)
+                onOpenBanksActivity.launch(Intent(requireContext(), NfcActivity::class.java).apply {
+                    addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                    putExtra(NFCIntent.EXTRA_SIGNATURE, prefs.eliteSignature())
+                    action = NFCIntent.ACTION_WRITE_ALL_TAGS
+                    putExtra(NFCIntent.EXTRA_BANK_COUNT, eliteBankCount.value)
+                    putExtra(NFCIntent.EXTRA_AMIIBO_FILES, amiiboList)
+                })
                 onBottomSheetChanged(SHEET.MENU)
                 dialog.dismiss()
             }
@@ -945,21 +931,21 @@ class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
 
     private fun handleImageClicked(amiibo: Amiibo?) {
         if (null != amiibo) {
-            val bundle = Bundle()
-            bundle.putLong(NFCIntent.EXTRA_AMIIBO_ID, amiibo.id)
-            val intent = Intent(requireContext(), ImageActivity::class.java)
-            intent.putExtras(bundle)
-            startActivity(intent)
+            this.startActivity(Intent(requireContext(), ImageActivity::class.java).apply {
+                putExtras(Bundle().apply {
+                    putLong(NFCIntent.EXTRA_AMIIBO_ID, amiibo.id)
+                })
+            })
         }
     }
 
     private fun handleImageClicked(amiiboFile: AmiiboFile?) {
         if (null != amiiboFile) {
-            val bundle = Bundle()
-            bundle.putLong(NFCIntent.EXTRA_AMIIBO_ID, amiiboFile.id)
-            val intent = Intent(requireContext(), ImageActivity::class.java)
-            intent.putExtras(bundle)
-            startActivity(intent)
+            this.startActivity(Intent(requireContext(), ImageActivity::class.java).apply {
+                putExtras(Bundle().apply {
+                    putLong(NFCIntent.EXTRA_AMIIBO_ID, amiiboFile.id)
+                })
+            })
         }
     }
 

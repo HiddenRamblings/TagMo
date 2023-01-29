@@ -80,13 +80,13 @@ class ScanTag {
                     prefs.eliteSignature(signature)
                     prefs.eliteActiveBank(activeBank)
                     prefs.eliteBankCount(banksCount)
-                    val args = Bundle()
-                    val titles = TagReader.readTagTitles(mifare, banksCount)
-                    args.putString(NFCIntent.EXTRA_SIGNATURE, signature)
-                    args.putInt(NFCIntent.EXTRA_BANK_COUNT, banksCount)
-                    args.putInt(NFCIntent.EXTRA_ACTIVE_BANK, activeBank)
-                    args.putStringArrayList(NFCIntent.EXTRA_AMIIBO_LIST, titles)
-                    activity.showElitePage(args)
+                    activity.showElitePage(Bundle().apply {
+                        val titles = TagReader.readTagTitles(mifare, banksCount)
+                        putString(NFCIntent.EXTRA_SIGNATURE, signature)
+                        putInt(NFCIntent.EXTRA_BANK_COUNT, banksCount)
+                        putInt(NFCIntent.EXTRA_ACTIVE_BANK, activeBank)
+                        putStringArrayList(NFCIntent.EXTRA_AMIIBO_LIST, titles)
+                    })
                 } else {
                     activity.updateAmiiboView(TagReader.readFromTag(mifare))
                 }

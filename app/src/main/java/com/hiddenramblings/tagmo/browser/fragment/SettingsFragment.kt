@@ -615,38 +615,38 @@ class SettingsFragment : PreferenceFragmentCompat() {
     }
 
     private fun showFileChooser(title: String, resultCode: Int) {
-        val intent = Intent(if (Debug.isNewer(Build.VERSION_CODES.KITKAT))
-            Intent.ACTION_OPEN_DOCUMENT
-        else
-            Intent.ACTION_GET_CONTENT)
-            .putExtra("android.content.extra.SHOW_ADVANCED", true)
-            .putExtra("android.content.extra.FANCY", true)
-        when (resultCode) {
-            RESULT_KEYS -> {
-                if (Debug.isNewer(Build.VERSION_CODES.JELLY_BEAN_MR2))
-                    intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true)
-                try {
+        Intent(
+            if (Debug.isNewer(Build.VERSION_CODES.KITKAT))
+                Intent.ACTION_OPEN_DOCUMENT
+            else Intent.ACTION_GET_CONTENT
+        ).apply {
+            putExtra("android.content.extra.SHOW_ADVANCED", true)
+            putExtra("android.content.extra.FANCY", true)
+            when (resultCode) {
+                RESULT_KEYS -> {
+                    if (Debug.isNewer(Build.VERSION_CODES.JELLY_BEAN_MR2))
+                        putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true)
+                    try {
+                        if (Debug.isNewer(Build.VERSION_CODES.KITKAT)) {
+                            putExtra(Intent.EXTRA_MIME_TYPES,
+                                resources.getStringArray(R.array.mimetype_bin)
+                            )
+                        }
+                        onLoadKeys.launch(Intent.createChooser(getIntent(this), title))
+                    } catch (ex: ActivityNotFoundException) {
+                        Debug.info(ex)
+                    }
+                }
+                RESULT_IMPORT_AMIIBO_DATABASE -> try {
                     if (Debug.isNewer(Build.VERSION_CODES.KITKAT)) {
-                        intent.putExtra(
-                            Intent.EXTRA_MIME_TYPES,
-                            resources.getStringArray(R.array.mimetype_bin)
+                        putExtra(Intent.EXTRA_MIME_TYPES,
+                            resources.getStringArray(R.array.mimetype_json)
                         )
                     }
-                    onLoadKeys.launch(Intent.createChooser(getIntent(intent), title))
+                    onImportAmiiboDatabase.launch(Intent.createChooser(getIntent(this), title))
                 } catch (ex: ActivityNotFoundException) {
                     Debug.info(ex)
                 }
-            }
-            RESULT_IMPORT_AMIIBO_DATABASE -> try {
-                if (Debug.isNewer(Build.VERSION_CODES.KITKAT)) {
-                    intent.putExtra(
-                        Intent.EXTRA_MIME_TYPES,
-                        resources.getStringArray(R.array.mimetype_json)
-                    )
-                }
-                onImportAmiiboDatabase.launch(Intent.createChooser(getIntent(intent), title))
-            } catch (ex: ActivityNotFoundException) {
-                Debug.info(ex)
             }
         }
     }

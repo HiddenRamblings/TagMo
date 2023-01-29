@@ -95,49 +95,48 @@ class UpdateManager internal constructor(activity: BrowserActivity) {
                     }
                 }
                 if (!apk.name.lowercase().endsWith(".apk")) apk.delete()
-                val applicationContext = browserActivity.applicationContext
-                if (Debug.isNewer(Build.VERSION_CODES.N)) {
-                    val apkUri = Storage.getFileUri(apk)
-                    applicationContext.contentResolver.openInputStream(apkUri).use { apkStream ->
-                        val session = applicationContext.packageManager.packageInstaller.run {
-                            val params = PackageInstaller.SessionParams(
-                                PackageInstaller.SessionParams.MODE_FULL_INSTALL
+                browserActivity.run {
+                    if (Debug.isNewer(Build.VERSION_CODES.N)) {
+                        val apkUri = Storage.getFileUri(apk)
+                        applicationContext.contentResolver.openInputStream(apkUri).use { apkStream ->
+                            val session = applicationContext.packageManager.packageInstaller.run {
+                                val params = PackageInstaller.SessionParams(
+                                    PackageInstaller.SessionParams.MODE_FULL_INSTALL
+                                )
+                                openSession(createSession(params))
+                            }
+                            val document = DocumentFile.fromSingleUri(applicationContext, apkUri)
+                                ?: throw IOException(browserActivity.getString(R.string.fail_invalid_size))
+                            session.openWrite("NAME", 0, document.length()).use { sessionStream ->
+                                apkStream?.copyTo(sessionStream)
+                                session.fsync(sessionStream)
+                            }
+                            val pi = PendingIntent.getBroadcast(
+                                applicationContext, Random.nextInt(),
+                                Intent(applicationContext, UpdateReceiver::class.java),
+                                if (Debug.isNewer(Build.VERSION_CODES.S))
+                                    PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_MUTABLE
+                                else PendingIntent.FLAG_UPDATE_CURRENT
                             )
-                            openSession(createSession(params))
+                            session.commit(pi.intentSender)
                         }
-                        val document = DocumentFile.fromSingleUri(applicationContext, apkUri)
-                            ?: throw IOException(browserActivity.getString(R.string.fail_invalid_size))
-                        session.openWrite("NAME", 0, document.length()).use { sessionStream ->
-                            apkStream?.copyTo(sessionStream)
-                            session.fsync(sessionStream)
+                    } else {
+                        @Suppress("DEPRECATION")
+                        val intent = Intent(Intent.ACTION_INSTALL_PACKAGE).apply {
+                            setDataAndType(
+                                Storage.getFileUri(apk),
+                                browserActivity.getString(R.string.mimetype_apk)
+                            )
+                            putExtra(Intent.EXTRA_NOT_UNKNOWN_SOURCE, true)
+                            putExtra(Intent.EXTRA_INSTALLER_PACKAGE_NAME, applicationInfo.packageName)
                         }
-                        val pi = PendingIntent.getBroadcast(
-                            applicationContext, Random.nextInt(),
-                            Intent(applicationContext, UpdateReceiver::class.java),
-                            if (Debug.isNewer(Build.VERSION_CODES.S))
-                                PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_MUTABLE
-                            else PendingIntent.FLAG_UPDATE_CURRENT
-                        )
-                        session.commit(pi.intentSender)
-                    }
-                } else {
-                    @Suppress("DEPRECATION")
-                    val intent = Intent(Intent.ACTION_INSTALL_PACKAGE)
-                    intent.setDataAndType(
-                        Storage.getFileUri(apk),
-                        browserActivity.getString(R.string.mimetype_apk)
-                    )
-                    intent.putExtra(Intent.EXTRA_NOT_UNKNOWN_SOURCE, true)
-                    intent.putExtra(
-                        Intent.EXTRA_INSTALLER_PACKAGE_NAME,
-                        browserActivity.applicationInfo.packageName
-                    )
-                    try {
-                        browserActivity.startActivity(NFCIntent.getIntent(intent))
-                    } catch (anf: ActivityNotFoundException) {
                         try {
-                            browserActivity.startActivity(intent.setAction(Intent.ACTION_VIEW))
-                        } catch (ignored: ActivityNotFoundException) { }
+                            startActivity(NFCIntent.getIntent(intent))
+                        } catch (anf: ActivityNotFoundException) {
+                            try {
+                                startActivity(intent.setAction(Intent.ACTION_VIEW))
+                            } catch (ignored: ActivityNotFoundException) { }
+                        }
                     }
                 }
             } catch (ex: SecurityException) {

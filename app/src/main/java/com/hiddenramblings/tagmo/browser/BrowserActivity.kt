@@ -224,11 +224,11 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
         settings?.addChangeListener(this)
         val intent = intent
         if (null != intent && componentName == FilterComponent) {
-            val browser = Intent(this, BrowserActivity::class.java)
-            intent.action?.let { browser.action = it}
-            intent.extras?.let { browser.putExtras(it) }
-            intent.data?.let { browser.data = it }
-            startActivity(browser)
+            startActivity(Intent(this, BrowserActivity::class.java).apply {
+                intent.action?.let { action = it}
+                intent.extras?.let { putExtras(it) }
+                intent.data?.let { data = it }
+            })
         }
         viewPager?.keepScreenOn = BuildConfig.WEAR_OS
         viewPager?.adapter = pagerAdapter
@@ -1138,15 +1138,15 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                     return@setOnMenuItemClickListener true
                 }
                 R.id.mnu_view_hex -> {
-                    val hexView = Intent(this, HexCodeViewer::class.java)
-                    hexView.putExtra(NFCIntent.EXTRA_TAG_DATA, tagData)
-                    startActivity(hexView)
+                    startActivity(Intent(this, HexCodeViewer::class.java).apply {
+                        putExtra(NFCIntent.EXTRA_TAG_DATA, tagData)
+                    })
                     return@setOnMenuItemClickListener true
                 }
                 R.id.mnu_share_qr -> {
-                    val qrShare = Intent(this, QRCodeScanner::class.java)
-                    qrShare.putExtra(NFCIntent.EXTRA_TAG_DATA, tagData)
-                    onQRCodeScanner.launch(qrShare)
+                    onQRCodeScanner.launch(Intent(this, QRCodeScanner::class.java).apply {
+                        putExtra(NFCIntent.EXTRA_TAG_DATA, tagData)
+                    })
                     return@setOnMenuItemClickListener true
                 }
                 R.id.mnu_validate -> {
@@ -1229,15 +1229,15 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                     return@setOnMenuItemClickListener true
                 }
                 R.id.mnu_view_hex -> {
-                    val hexView = Intent(this, HexCodeViewer::class.java)
-                    hexView.putExtra(NFCIntent.EXTRA_TAG_DATA, tagData)
-                    startActivity(hexView)
+                    startActivity(Intent(this, HexCodeViewer::class.java).apply {
+                        putExtra(NFCIntent.EXTRA_TAG_DATA, tagData)
+                    })
                     return@setOnMenuItemClickListener true
                 }
                 R.id.mnu_share_qr -> {
-                    val qrShare = Intent(this, QRCodeScanner::class.java)
-                    qrShare.putExtra(NFCIntent.EXTRA_TAG_DATA, tagData)
-                    onQRCodeScanner.launch(qrShare)
+                    onQRCodeScanner.launch(Intent(this, QRCodeScanner::class.java).apply {
+                        putExtra(NFCIntent.EXTRA_TAG_DATA, tagData)
+                    })
                     return@setOnMenuItemClickListener true
                 }
                 R.id.mnu_validate -> {
@@ -1313,10 +1313,10 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
     @Throws(ActivityNotFoundException::class)
     private fun onDocumentRequested() {
         if (Debug.isNewer(Build.VERSION_CODES.LOLLIPOP)) {
-            val intent = Intent(Intent.ACTION_OPEN_DOCUMENT_TREE)
-            intent.putExtra("android.content.extra.SHOW_ADVANCED", true)
-            intent.putExtra("android.content.extra.FANCY", true)
-            onDocumentTree.launch(intent)
+            onDocumentTree.launch(Intent(Intent.ACTION_OPEN_DOCUMENT_TREE).apply {
+                putExtra("android.content.extra.SHOW_ADVANCED", true)
+                putExtra("android.content.extra.FANCY", true)
+            })
         }
     }
 
@@ -1664,11 +1664,11 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
     }
 
     override fun onAmiiboImageClicked(amiiboFile: AmiiboFile?) {
-        val bundle = Bundle()
-        bundle.putLong(NFCIntent.EXTRA_AMIIBO_ID, amiiboFile!!.id)
-        val intent = Intent(this, ImageActivity::class.java)
-        intent.putExtras(bundle)
-        this.startActivity(intent)
+        this.startActivity(Intent(this, ImageActivity::class.java).apply {
+            putExtras(Bundle().apply {
+                putLong(NFCIntent.EXTRA_AMIIBO_ID, amiiboFile!!.id)
+            })
+        })
     }
 
     fun loadPTagKeyManager() {
@@ -2209,11 +2209,13 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                 }
                 val amiiboTagId = amiiboId
                 imageAmiibo!!.setOnClickListener {
-                    val bundle = Bundle()
-                    bundle.putLong(NFCIntent.EXTRA_AMIIBO_ID, amiiboTagId)
-                    val intent = Intent(this@BrowserActivity, ImageActivity::class.java)
-                    intent.putExtras(bundle)
-                    startActivity(intent)
+                    startActivity(Intent(
+                        this@BrowserActivity, ImageActivity::class.java
+                    ).apply {
+                        putExtras(Bundle().apply {
+                            putLong(NFCIntent.EXTRA_AMIIBO_ID, amiiboTagId)
+                        })
+                    })
                 }
             }
         }

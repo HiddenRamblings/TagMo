@@ -752,11 +752,11 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
                     )
                 }
                 imageAmiibo.setOnClickListener {
-                    val bundle = Bundle()
-                    bundle.putLong(NFCIntent.EXTRA_AMIIBO_ID, active!!.id)
-                    val intent = Intent(requireContext(), ImageActivity::class.java)
-                    intent.putExtras(bundle)
-                    startActivity(intent)
+                    startActivity(Intent(requireContext(), ImageActivity::class.java).apply {
+                        putExtras(Bundle().apply {
+                            putLong(NFCIntent.EXTRA_AMIIBO_ID, active!!.id)
+                        })
+                    })
                 }
             }
         }
@@ -1143,11 +1143,11 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
 
     private fun handleImageClicked(amiiboFile: AmiiboFile?) {
         if (null != amiiboFile) {
-            val bundle = Bundle()
-            bundle.putLong(NFCIntent.EXTRA_AMIIBO_ID, amiiboFile.id)
-            val intent = Intent(requireContext(), ImageActivity::class.java)
-            intent.putExtras(bundle)
-            startActivity(intent)
+            this.startActivity(Intent(requireContext(), ImageActivity::class.java).apply {
+                putExtras(Bundle().apply {
+                    putLong(NFCIntent.EXTRA_AMIIBO_ID, amiiboFile.id)
+                })
+            })
         }
     }
 
@@ -1272,11 +1272,11 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
 
     override fun onAmiiboImageClicked(amiibo: Amiibo?) {
         if (null != amiibo) {
-            val bundle = Bundle()
-            bundle.putLong(NFCIntent.EXTRA_AMIIBO_ID, amiibo.id)
-            val intent = Intent(requireContext(), ImageActivity::class.java)
-            intent.putExtras(bundle)
-            startActivity(intent)
+            this.startActivity(Intent(requireContext(), ImageActivity::class.java).apply {
+                putExtras(Bundle().apply {
+                    putLong(NFCIntent.EXTRA_AMIIBO_ID, amiibo.id)
+                })
+            })
         }
     }
 

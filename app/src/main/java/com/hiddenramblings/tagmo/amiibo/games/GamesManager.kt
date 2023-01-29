@@ -80,12 +80,12 @@ class GamesManager {
         private const val GAMES_DATABASE_FILE = "games_info.json"
 
         @Throws(IOException::class, JSONException::class, ParseException::class)
-        fun parse(context: Context, uri: Uri?): GamesManager {
-            context.contentResolver.openInputStream(uri!!).use { inputSteam ->
-                return parse(
-                    inputSteam!!
-                )
-            }
+        fun parse(context: Context, uri: Uri?): GamesManager? {
+            return if (uri != null) {
+                context.contentResolver.openInputStream(uri).use { inputSteam ->
+                    inputSteam?.let { parse(it) }
+                }
+            } else null
         }
 
         @Throws(IOException::class, JSONException::class, ParseException::class)

@@ -12,7 +12,6 @@ import android.app.Activity
 import android.app.Dialog
 import android.content.ContentValues
 import android.content.Intent
-import android.database.Cursor
 import android.graphics.Bitmap
 import android.graphics.ImageDecoder
 import android.graphics.Rect
@@ -93,7 +92,7 @@ class QRCodeScanner : AppCompatActivity() {
 
     private val metrics = DisplayMetrics()
 
-    private val loadingScope = CoroutineScope(Dispatchers.Main + Job())
+    private val scopeIO = CoroutineScope(Dispatchers.IO)
 
     public override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -129,32 +128,30 @@ class QRCodeScanner : AppCompatActivity() {
         txtMiiLabel = findViewById(R.id.txtMiiLabel)
         txtMiiValue = findViewById(R.id.txtMiiValue)
 
-        loadingScope.launch {
-            withContext(Dispatchers.IO) {
-                var amiiboManager: AmiiboManager? = null
+        scopeIO.launch {
+            var amiiboManager: AmiiboManager? = null
+            try {
+                amiiboManager = AmiiboManager.getAmiiboManager(applicationContext)
+            } catch (e: IOException) {
+                Debug.warn(e)
+            } catch (e: JSONException) {
+                Debug.warn(e)
+            } catch (e: ParseException) {
+                Debug.warn(e)
+            }
+            this@QRCodeScanner.amiiboManager = amiiboManager
+            if (intent.hasExtra(NFCIntent.EXTRA_TAG_DATA)) {
+                val data = intent.getByteArrayExtra(NFCIntent.EXTRA_TAG_DATA)
                 try {
-                    amiiboManager = AmiiboManager.getAmiiboManager(applicationContext)
-                } catch (e: IOException) {
-                    Debug.warn(e)
-                } catch (e: JSONException) {
-                    Debug.warn(e)
-                } catch (e: ParseException) {
-                    Debug.warn(e)
-                }
-                this@QRCodeScanner.amiiboManager = amiiboManager
-                if (intent.hasExtra(NFCIntent.EXTRA_TAG_DATA)) {
-                    val data = intent.getByteArrayExtra(NFCIntent.EXTRA_TAG_DATA)
-                    try {
-                        val bitmap = encodeQR(TagArray.bytesToString(data), Barcode.TYPE_TEXT)
-                        if (null != bitmap) {
-                            withContext(Dispatchers.Main) {
-                                barcodePreview.setImageBitmap(bitmap)
-                            }
-                            scanBarcodes(InputImage.fromBitmap(bitmap, 0))
+                    val bitmap = encodeQR(TagArray.bytesToString(data), Barcode.TYPE_TEXT)
+                    if (null != bitmap) {
+                        withContext(Dispatchers.Main) {
+                            barcodePreview.setImageBitmap(bitmap)
                         }
-                    } catch (ex: Exception) {
-                        Debug.warn(ex)
+                        scanBarcodes(InputImage.fromBitmap(bitmap, 0))
                     }
+                } catch (ex: Exception) {
+                    Debug.warn(ex)
                 }
             }
         }
@@ -274,7 +271,6 @@ class QRCodeScanner : AppCompatActivity() {
             } catch (ex: Exception) {
                 Debug.warn(ex)
                 runOnUiThread {
-
                     txtMiiValue.text = ex.localizedMessage
                 }
             }
@@ -300,25 +296,24 @@ class QRCodeScanner : AppCompatActivity() {
             }
             captureUri = null
             if (null != photoUri) {
-                loadingScope.launch {
-                    withContext(Dispatchers.IO) {
-                        var rotation = 0
-                        val bitmap: Bitmap? = if (Debug.isNewer(Build.VERSION_CODES.P)) {
-                            val source: ImageDecoder.Source = ImageDecoder.createSource(
-                                this@QRCodeScanner.contentResolver, photoUri
-                            )
-                            ImageDecoder.decodeBitmap(source)
-                        } else {
-                            @Suppress("DEPRECATION")
-                            MediaStore.Images.Media.getBitmap(contentResolver, photoUri)
-                        }
-                        val cursor: Cursor? = contentResolver.query(
-                            photoUri, arrayOf(MediaStore.Images.ImageColumns.ORIENTATION),
-                            null, null, null
+                scopeIO.launch {
+                    var rotation = 0
+                    val bitmap: Bitmap? = if (Debug.isNewer(Build.VERSION_CODES.P)) {
+                        val source: ImageDecoder.Source = ImageDecoder.createSource(
+                            this@QRCodeScanner.contentResolver, photoUri
                         )
-                        if (cursor?.count == 1) {
-                            cursor.moveToFirst()
-                            rotation = cursor.getInt(0)
+                        ImageDecoder.decodeBitmap(source)
+                    } else {
+                        @Suppress("DEPRECATION")
+                        MediaStore.Images.Media.getBitmap(contentResolver, photoUri)
+                    }
+                    contentResolver.query(
+                        photoUri, arrayOf(MediaStore.Images.ImageColumns.ORIENTATION),
+                        null, null, null
+                    ).use {
+                        if (it?.count == 1) {
+                            it.moveToFirst()
+                            rotation = it.getInt(0)
                         }
                         if (null != bitmap) {
                             withContext(Dispatchers.Main) {
@@ -326,7 +321,6 @@ class QRCodeScanner : AppCompatActivity() {
                             }
                             scanBarcodes(InputImage.fromBitmap(bitmap, rotation))
                         }
-                        cursor?.close()
                     }
                 }
             }
@@ -372,9 +366,7 @@ class QRCodeScanner : AppCompatActivity() {
         previewUseCase!!.setSurfaceProvider(cameraPreview!!.surfaceProvider)
 
         try {
-            cameraProvider!!.bindToLifecycle(
-                /* lifecycleOwner = */this, cameraSelector!!, previewUseCase
-            )
+            cameraProvider!!.bindToLifecycle(this, cameraSelector!!, previewUseCase)
         } catch (illegalStateException: IllegalStateException) {
             Debug.error(illegalStateException)
         } catch (illegalArgumentException: IllegalArgumentException) {
@@ -397,9 +389,7 @@ class QRCodeScanner : AppCompatActivity() {
         }
 
         try {
-            cameraProvider!!.bindToLifecycle(
-                /* lifecycleOwner = */this, cameraSelector!!, analysisUseCase
-            )
+            cameraProvider!!.bindToLifecycle(this, cameraSelector!!, analysisUseCase)
         } catch (illegalStateException: IllegalStateException) {
             Debug.error(illegalStateException)
         } catch (illegalArgumentException: IllegalArgumentException) {

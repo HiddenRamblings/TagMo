@@ -337,7 +337,9 @@ object TagArray {
     @Throws(IOException::class)
     fun writeBytesToFile(directory: File?, name: String, tagData: ByteArray?): String {
         val binFile = File(directory, name)
-        FileOutputStream(binFile).write(tagData)
+        FileOutputStream(binFile).use {
+            it.write(tagData)
+        }
         try {
             MediaScannerConnection.scanFile(
                 TagMo.appContext, arrayOf(binFile.absolutePath), null, null
@@ -357,9 +359,9 @@ object TagArray {
             context.resources.getStringArray(R.array.mimetype_bin)[0], name
         )
         if (null != newFile) {
-            val docWriter = context.contentResolver.openOutputStream(newFile.uri)
-            docWriter?.write(tagData)
-            docWriter?.close()
+            context.contentResolver.openOutputStream(newFile.uri).use {
+                it?.write(tagData)
+            }
         }
         return newFile?.name
     }

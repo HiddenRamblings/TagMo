@@ -8,6 +8,7 @@ import android.content.pm.PackageInstaller
 import android.net.Uri
 import android.os.Build
 import android.provider.Settings
+import androidx.core.content.FileProvider
 import androidx.documentfile.provider.DocumentFile
 import com.google.android.play.core.appupdate.AppUpdateInfo
 import com.google.android.play.core.appupdate.AppUpdateManager
@@ -22,7 +23,6 @@ import com.hiddenramblings.tagmo.eightbit.os.Storage
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
@@ -91,14 +91,9 @@ class UpdateManager internal constructor(activity: BrowserActivity) {
                 apkUrl.substring(apkUrl.lastIndexOf(File.separator) + 1)
             )
             try {
-                URL(apkUrl).openStream().use { urlStream ->
-                    DataInputStream(urlStream).use { dis ->
-                        val buffer = ByteArray(1024)
-                        var length: Int
-                        FileOutputStream(apk).use { fos ->
-                            while (dis.read(buffer).also { length = it } > 0)
-                                fos.write(buffer, 0, length)
-                        }
+                URL(apkUrl).openStream().use { stream ->
+                    FileOutputStream(apk).use {
+                        stream.copyTo(it)
                     }
                 }
                 if (!apk.name.lowercase().endsWith(".apk")) apk.delete()
@@ -115,11 +110,7 @@ class UpdateManager internal constructor(activity: BrowserActivity) {
                         val document = DocumentFile.fromSingleUri(applicationContext, apkUri)
                             ?: throw IOException(browserActivity.getString(R.string.fail_invalid_size))
                         session.openWrite("NAME", 0, document.length()).use { sessionStream ->
-                            val buf = ByteArray(8192)
-                            var size: Int
-                            while (apkStream!!.read(buf).also { size = it } > 0) {
-                                sessionStream.write(buf, 0, size)
-                            }
+                            apkStream?.copyTo(sessionStream)
                             session.fsync(sessionStream)
                         }
                         val pi = PendingIntent.getBroadcast(

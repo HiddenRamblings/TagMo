@@ -71,8 +71,6 @@ class NfcActivity : AppCompatActivity() {
     private var tagTech: String? = null
     private var hasTestedElite = false
 
-    private val loadingExecutor = Executors.newSingleThreadExecutor()
-
     private val mReceiver: BroadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
             val action = intent.action
@@ -679,7 +677,7 @@ class NfcActivity : AppCompatActivity() {
             || NfcAdapter.ACTION_TAG_DISCOVERED == intent.action) {
             val tech = if (null != tagTech) tagTech!! else getString(R.string.nfc_tag)
             showMessage(R.string.tag_detected, tech)
-            loadingExecutor.execute { onTagDiscovered(intent) }
+            Executors.newSingleThreadExecutor().execute { onTagDiscovered(intent) }
         }
     }
 

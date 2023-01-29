@@ -33,23 +33,21 @@ class AmiiboDocument(context: Context) {
             val items = ArrayList(listOf(*resources.getStringArray(R.array.mimetype_bin)))
             items.add(DocumentsContract.Document.MIME_TYPE_DIR)
             val selectionArgs = items.toTypedArray()
-            val docCursor = contentResolver.query(
+            contentResolver.query(
                 docUri, arrayOf(
                     DocumentsContract.Document.COLUMN_DISPLAY_NAME,
                     DocumentsContract.Document.COLUMN_MIME_TYPE
                 ),
                 DocumentsContract.Document.COLUMN_MIME_TYPE, selectionArgs, null
-            )
-            try {
-                while (docCursor!!.moveToNext()) {
-                    val displayName = docCursor.getString(0)
-                    val mimeType = docCursor.getString(1)
-                    Debug.verbose(
-                        this.javaClass, "Primary doc=$displayName, mime=$mimeType"
+            ).use {
+                if (null == it) return@use
+                while (it.moveToNext()) {
+                    val displayName = it.getString(0)
+                    val mimeType = it.getString(1)
+                    Debug.verbose(this.javaClass,
+                        "Primary doc=$displayName, mime=$mimeType"
                     )
                 }
-            } finally {
-                closeQuietly(docCursor)
             }
         }
         val queue: Queue<String> = ArrayDeque()
@@ -95,32 +93,22 @@ class AmiiboDocument(context: Context) {
                 return
             }
         } ?: return
-        try {
-            while (cursor.moveToNext()) {
+        cursor.use {
+            while (it.moveToNext()) {
                 fileCount.increment()
-                val displayName = cursor.getString(0)
-                val mimeType = cursor.getString(1)
-                val childDocumentId = cursor.getString(2)
+                val displayName = it.getString(0)
+                val mimeType = it.getString(1)
+                val childDocumentId = it.getString(2)
                 if (DocumentsContract.Document.MIME_TYPE_DIR == mimeType) {
-                    Debug.verbose(
-                        this.javaClass, "Child doc=$displayName, parent=$documentId, mime=$mimeType"
+                    Debug.verbose(this.javaClass,
+                        "Child doc=$displayName, parent=$documentId, mime=$mimeType"
                     )
                     if (recursiveFiles) queue.add(childDocumentId)
                 } else if (binFiles.contains(mimeType)) {
                     files.add(DocumentsContract.buildDocumentUriUsingTree(rootUri, childDocumentId))
                 }
             }
-        } finally {
-            closeQuietly(cursor)
         }
-    }
-
-    private fun closeQuietly(closeable: AutoCloseable?) {
-        try {
-            closeable?.close()
-        } catch (runtime: RuntimeException) {
-            throw runtime
-        } catch (ignored: Exception) { }
     }
 
     class MutableInteger(private var value: Int) {

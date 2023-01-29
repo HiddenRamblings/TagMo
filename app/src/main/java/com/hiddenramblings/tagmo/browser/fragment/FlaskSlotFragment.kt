@@ -52,13 +52,16 @@ import com.hiddenramblings.tagmo.eightbit.material.IconifiedSnackbar
 import com.hiddenramblings.tagmo.nfctech.TagArray
 import com.hiddenramblings.tagmo.widget.Toasty
 import com.shawnlin.numberpicker.NumberPicker
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
 import java.io.IOException
 import java.nio.ByteBuffer
 import java.text.ParseException
-import java.util.concurrent.Executors
 
 @SuppressLint("NewApi")
 open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListener, BluetoothListener {
@@ -100,6 +103,8 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
     private var maxSlotCount = 85
     private var currentCount = 0
     private var deviceDialog: AlertDialog? = null
+
+    private val scopeIO = CoroutineScope(Dispatchers.IO)
 
     private enum class STATE {
         NONE, SCANNING, CONNECT, MISSING, PURCHASE
@@ -147,7 +152,7 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
                         }
 
                         override fun onFlaskListRetrieved(jsonArray: JSONArray) {
-                            Executors.newSingleThreadExecutor().execute {
+                            scopeIO.launch {
                                 currentCount = jsonArray.length()
                                 val flaskAmiibos: ArrayList<Amiibo?> = arrayListOf()
                                 for (i in 0 until currentCount) {
@@ -166,7 +171,7 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
                                     settings, this@FlaskSlotFragment
                                 )
                                 adapter.setFlaskAmiibo(flaskAmiibos)
-                                flaskContent?.post {
+                                withContext(Dispatchers.Main) {
                                     dismissSnackbarNotice(true)
                                     flaskContent?.adapter = adapter
                                     if (currentCount > 0) {
@@ -181,7 +186,7 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
                         }
 
                         override fun onFlaskRangeRetrieved(jsonArray: JSONArray) {
-                            Executors.newSingleThreadExecutor().execute {
+                            scopeIO.launch {
                                 val flaskAmiibos: ArrayList<Amiibo?> = arrayListOf()
                                 for (i in 0 until jsonArray.length()) {
                                     try {
@@ -198,7 +203,7 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
                                 val adapter = flaskContent?.adapter as FlaskSlotAdapter?
                                 if (null != adapter) {
                                     adapter.addFlaskAmiibo(flaskAmiibos)
-                                    flaskContent?.post {
+                                    withContext(Dispatchers.Main) {
                                         adapter.notifyItemRangeInserted(
                                             currentCount, flaskAmiibos.size
                                         )
@@ -245,8 +250,7 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
 
                         override fun onFlaskProcessFinish() {
                             requireActivity().runOnUiThread {
-                                if (null != processDialog && processDialog!!.isShowing)
-                                    processDialog!!.dismiss()
+                                if (processDialog?.isShowing == true) processDialog?.dismiss()
                             }
                         }
 
@@ -324,7 +328,7 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
                         override fun onPuckListRetrieved(
                             slotData: ArrayList<ByteArray?>, active: Int
                         ) {
-                            Executors.newSingleThreadExecutor().execute {
+                            scopeIO.launch {
                                 currentCount = slotData.size
                                 val flaskAmiibos: ArrayList<Amiibo?> = arrayListOf()
                                 for (i in 0 until currentCount) {
@@ -339,7 +343,7 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
                                     settings, this@FlaskSlotFragment
                                 )
                                 adapter.setFlaskAmiibo(flaskAmiibos)
-                                flaskContent?.post {
+                                withContext(Dispatchers.Main) {
                                     dismissSnackbarNotice(true)
                                     flaskContent?.adapter = adapter
                                     if (currentCount > 0) {

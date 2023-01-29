@@ -294,15 +294,12 @@ class WebsiteFragment : Fragment() {
             val zipType = getString(R.string.mimetype_zip)
             if (base64File.contains("data:$zipType;")) {
                 val filePath = File(Storage.getDownloadDir("TagMo"), "download.zip")
-                val os = FileOutputStream(filePath, false)
-                os.write(
-                    Base64.decode(
-                        base64File.replaceFirst(
-                            "^data:$zipType;base64,".toRegex(), ""
-                        ), 0
-                    )
-                )
-                os.flush()
+                FileOutputStream(filePath, false).use {
+                    it.write(Base64.decode(base64File.replaceFirst(
+                        "^data:$zipType;base64,".toRegex(), ""
+                    ), 0))
+                    it.flush()
+                }
                 webHandler.post {
                     dialog = ProgressDialog.show(
                         requireContext(), "", "", true

@@ -113,7 +113,8 @@ class ScanTag {
                             }
                             closeTagSilently(mifare)
                         }
-                        activity.getString(R.string.nfc_null_array) == error -> {
+                        activity.getString(R.string.nfc_null_array) == error ||
+                                activity.getString(R.string.nfc_read_result) == error -> {
                             activity.runOnUiThread {
                                 getErrorDialog(activity,
                                     R.string.possible_lock, R.string.prepare_unlock

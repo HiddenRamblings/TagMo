@@ -433,8 +433,7 @@ class NfcActivity : AppCompatActivity() {
                             }
                         } else {
                             args.putByteArray(
-                                NFCIntent.EXTRA_TAG_DATA,
-                                TagReader.readFromTag(mifare)
+                                NFCIntent.EXTRA_TAG_DATA, TagReader.readFromTag(mifare)
                             )
                         }
                         setResult(RESULT_OK, result.putExtras(args))
@@ -510,7 +509,8 @@ class NfcActivity : AppCompatActivity() {
                                 showMessage(R.string.speed_scan)
                                 closeTagSilently(mifare)
                             }
-                            getString(R.string.nfc_null_array) == error -> {
+                            getString(R.string.nfc_null_array) == error ||
+                                    getString(R.string.nfc_read_result) == error -> {
                                 runOnUiThread {
                                     getErrorDialog(this@NfcActivity,
                                         R.string.possible_lock, R.string.prepare_unlock

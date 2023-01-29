@@ -71,6 +71,7 @@
     <string name="ndef_formatable" translatable="false">NdefFormatable</string>
 
     <string name="nfc_null_array" translatable="false">Attempt to read from null array</string>
+    <string name="nfc_read_result" translatable="false">Invalid read result size</string>
 
     <string name="write_pack" translatable="false">Writing PACK</string>
     <string name="write_pwd" translatable="false">Writing PWD</string>

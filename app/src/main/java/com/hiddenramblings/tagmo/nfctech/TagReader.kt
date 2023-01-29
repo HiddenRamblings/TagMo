@@ -67,10 +67,9 @@ object TagReader {
         var i = 0
         while (i < pageCount) {
             val pages = tag?.readPages(i)
-            if (null == pages || pages.size != NfcByte.PAGE_SIZE * BULK_READ_PAGE_COUNT) throw IOException(
-                appContext
-                    .getString(R.string.fail_invalid_size)
-            )
+            if (null == pages || pages.size != NfcByte.PAGE_SIZE * BULK_READ_PAGE_COUNT)
+                throw IOException(appContext
+                    .getString(R.string.fail_invalid_size))
             val dstIndex = i * NfcByte.PAGE_SIZE
             val dstCount = (BULK_READ_PAGE_COUNT * NfcByte.PAGE_SIZE).coerceAtMost(tagData.size - dstIndex)
             System.arraycopy(pages, 0, tagData, dstIndex, dstCount)

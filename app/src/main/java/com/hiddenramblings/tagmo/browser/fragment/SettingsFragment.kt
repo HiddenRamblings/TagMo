@@ -22,6 +22,7 @@ import androidx.preference.CheckBoxPreference
 import androidx.preference.ListPreference
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
+import androidx.preference.SwitchPreferenceCompat
 import com.google.android.material.snackbar.Snackbar
 import com.hiddenramblings.tagmo.*
 import com.hiddenramblings.tagmo.NFCIntent.FilterComponent
@@ -138,7 +139,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
                     super@SettingsFragment.onPreferenceTreeClick(it)
                 }
         }
-        val enablePowerTagSupport = findPreference<CheckBoxPreference>(
+        val enablePowerTagSupport = findPreference<SwitchPreferenceCompat>(
             getString(R.string.settings_enable_power_tag_support)
         )
         if (null != enablePowerTagSupport) {
@@ -152,7 +153,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
                     super@SettingsFragment.onPreferenceTreeClick(it)
                 }
         }
-        val enableEliteSupport = findPreference<CheckBoxPreference>(
+        val enableEliteSupport = findPreference<SwitchPreferenceCompat>(
             getString(R.string.settings_enable_elite_support)
         )
         if (null != enableEliteSupport) {
@@ -175,7 +176,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
                     super@SettingsFragment.onPreferenceTreeClick(it)
                 }
         }
-        val enableFlaskSupport = findPreference<CheckBoxPreference>(
+        val enableFlaskSupport = findPreference<SwitchPreferenceCompat>(
             getString(R.string.settings_enable_flask_support)
         )
         if (null != enableFlaskSupport) {
@@ -236,8 +237,9 @@ class SettingsFragment : PreferenceFragmentCompat() {
                     super@SettingsFragment.onPreferenceTreeClick(it)
                 }
         }
-        val softwareLayer =
-            findPreference<CheckBoxPreference>(getString(R.string.settings_software_layer))
+        val softwareLayer = findPreference<CheckBoxPreference>(
+            getString(R.string.settings_software_layer)
+        )
         if (null != softwareLayer) {
             softwareLayer.isChecked = prefs.softwareLayer()
             softwareLayer.onPreferenceClickListener =
@@ -266,7 +268,9 @@ class SettingsFragment : PreferenceFragmentCompat() {
                     super@SettingsFragment.onPreferenceTreeClick(preference)
                 }
         }
-        val disableDebug = findPreference<CheckBoxPreference>(getString(R.string.settings_disable_debug))
+        val disableDebug = findPreference<CheckBoxPreference>(
+            getString(R.string.settings_disable_debug)
+        )
         if (null != disableDebug) {
             disableDebug.isChecked = prefs.disableDebug()
             disableDebug.onPreferenceClickListener =

@@ -30,19 +30,19 @@
 
     <androidx.preference.PreferenceCategory
         android:title="@string/tag_devices">
-        <androidx.preference.CheckBoxPreference
+        <androidx.preference.SwitchPreferenceCompat
             android:defaultValue="false"
             android:key="@string/settings_enable_power_tag_support"
             android:summary="@string/power_tag_details"
             android:title="@string/enable_power_tag" />
 
-        <androidx.preference.CheckBoxPreference
+        <androidx.preference.SwitchPreferenceCompat
             android:defaultValue="false"
             android:key="@string/settings_enable_elite_support"
             android:summary="@string/elite_details"
             android:title="@string/enable_elite" />
 
-        <androidx.preference.CheckBoxPreference
+        <androidx.preference.SwitchPreferenceCompat
             android:defaultValue="true"
             android:key="@string/settings_enable_flask_support"
             android:summary="@string/elite_details"

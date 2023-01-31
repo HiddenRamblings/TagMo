@@ -215,7 +215,7 @@ class BrowserAdapter(
         override fun performFiltering(constraint: CharSequence?): FilterResults {
             val query = constraint?.toString() ?: ""
             val filterResults = FilterResults()
-            if (TextUtils.isEmpty(query.trim { it <= ' ' })) {
+            if (query.trim { it <= ' ' }.isEmpty()) {
                 filterResults.count = data.size
                 filterResults.values = data
             }
@@ -246,8 +246,8 @@ class BrowserAdapter(
         }
 
         private fun pathContainsQuery(path: String, query: String?): Boolean {
-            return (!TextUtils.isEmpty(query) && settings.isFilterEmpty
-                    && path.lowercase(Locale.getDefault()).contains(query!!))
+            return (!query.isNullOrEmpty() && settings.isFilterEmpty
+                    && path.lowercase(Locale.getDefault()).contains(query))
         }
 
         @SuppressLint("NotifyDataSetChanged")
@@ -345,6 +345,11 @@ class BrowserAdapter(
                 tagInfo = "ID: $amiiboHexId"
                 amiiboImageUrl = Amiibo.getImageUrl(amiiboId)
             }
+            if (null != imageAmiibo) {
+                GlideApp.with(imageAmiibo!!).clear(imageAmiibo!!)
+                if (!amiiboImageUrl.isNullOrEmpty())
+                    GlideApp.with(imageAmiibo!!).asBitmap().load(amiiboImageUrl).into(target)
+            }
             val query = settings.query?.lowercase(Locale.getDefault())
             setAmiiboInfoText(txtName, amiiboName, false)
             if (settings.amiiboView != VIEW.IMAGE.value) {
@@ -435,12 +440,6 @@ class BrowserAdapter(
                 }
             }
             if (hasSpoofData(amiiboHexId) && null != txtTagId) txtTagId.isEnabled = false
-            if (null != imageAmiibo) {
-                GlideApp.with(imageAmiibo!!).clear(imageAmiibo!!)
-                if (!amiiboImageUrl.isNullOrEmpty()) {
-                    GlideApp.with(imageAmiibo!!).asBitmap().load(amiiboImageUrl).into(target)
-                }
-            }
         }
 
         fun setAmiiboInfoText(textView: TextView?, text: CharSequence?, hasTagInfo: Boolean) {

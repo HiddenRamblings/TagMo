@@ -162,6 +162,15 @@ class FlaskSlotAdapter(
                     amiiboImageUrl = amiibo!!.imageUrl
                 }
             }
+            if (null != imageAmiibo) {
+                GlideApp.with(imageAmiibo!!).clear(imageAmiibo!!)
+                if (amiiboImageUrl.isNullOrEmpty()) {
+                    imageAmiibo!!.setImageResource(R.mipmap.ic_launcher_round)
+                    imageAmiibo!!.visibility = View.VISIBLE
+                } else {
+                    GlideApp.with(imageAmiibo!!).asBitmap().load(amiiboImageUrl).into(target)
+                }
+            }
             if (settings.amiiboView != VIEW.IMAGE.value) {
                 txtError?.isGone = true
                 txtPath?.isGone = true
@@ -184,15 +193,6 @@ class FlaskSlotAdapter(
                     setAmiiboInfoText(txtAmiiboType, amiiboType)
                     setAmiiboInfoText(txtGameSeries, gameSeries)
                     if (hasSpoofData(amiiboHexId)) txtTagId?.isEnabled = false
-                }
-            }
-            if (null != imageAmiibo) {
-                GlideApp.with(imageAmiibo!!).clear(imageAmiibo!!)
-                if (!amiiboImageUrl.isNullOrEmpty()) {
-                    GlideApp.with(imageAmiibo!!).asBitmap().load(amiiboImageUrl).into(target)
-                } else {
-                    imageAmiibo!!.setImageResource(R.mipmap.ic_launcher_round)
-                    imageAmiibo!!.visibility = View.VISIBLE
                 }
             }
         }

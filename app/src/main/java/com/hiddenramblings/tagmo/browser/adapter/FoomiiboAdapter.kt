@@ -188,7 +188,7 @@ class FoomiiboAdapter(
         override fun performFiltering(constraint: CharSequence?): FilterResults {
             val query = constraint?.toString() ?: ""
             val filterResults = FilterResults()
-            if (TextUtils.isEmpty(query.trim { it <= ' ' })) {
+            if (query.trim { it <= ' ' }.isEmpty()) {
                 filterResults.count = data.size
                 filterResults.values = data
             }
@@ -311,6 +311,11 @@ class FoomiiboAdapter(
                 tagInfo = "ID: $amiiboHexId"
                 amiiboImageUrl = Amiibo.getImageUrl(amiiboId)
             }
+            if (null != imageAmiibo) {
+                GlideApp.with(imageAmiibo!!).clear(imageAmiibo!!)
+                if (!amiiboImageUrl.isNullOrEmpty())
+                    GlideApp.with(imageAmiibo!!).asBitmap().load(amiiboImageUrl).into(target)
+            }
             val query = settings.query?.lowercase(Locale.getDefault())
             setFoomiiboInfoText(txtName, amiiboName, false)
             if (settings.amiiboView != VIEW.IMAGE.value) {
@@ -347,12 +352,6 @@ class FoomiiboAdapter(
             }
             if (AmiiboManager.hasSpoofData(amiiboHexId) && null != txtTagId)
                 txtTagId.isEnabled = false
-            if (null != imageAmiibo) {
-                GlideApp.with(imageAmiibo!!).clear(imageAmiibo!!)
-                if (!amiiboImageUrl.isNullOrEmpty()) {
-                    GlideApp.with(imageAmiibo!!).asBitmap().load(amiiboImageUrl).into(target)
-                }
-            }
         }
 
         private fun setFoomiiboInfoText(textView: TextView?, text: CharSequence?, hasTagInfo: Boolean) {

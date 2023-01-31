@@ -47,7 +47,7 @@ class BluetoothHidHost(private val mProfile: BluetoothProfile) {
 
     init {
         synchronized(mMethods) {
-            if (mMethods.isEmpty()) {
+            mMethods.ifEmpty {
                 try {
                     val cls = mProfile::class.java
                     mMethods["connect"] = cls.getDeclaredMethod("connect", BluetoothDevice::class.java)

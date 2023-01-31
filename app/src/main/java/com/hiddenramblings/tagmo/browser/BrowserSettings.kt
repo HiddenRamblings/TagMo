@@ -155,7 +155,7 @@ open class BrowserSettings : Parcelable {
             FILTER.GAME_TITLES -> filterText = filterGameTitles
             else -> {}
         }
-        return if (TextUtils.isEmpty(filterText)) "" else filterText!!
+        return if (filterText.isNullOrEmpty()) "" else filterText
     }
 
     fun setFilter(filter: FILTER?, filterText: String?) {
@@ -290,8 +290,8 @@ open class BrowserSettings : Parcelable {
         if (getFilter(FILTER.GAME_TITLES).isNotEmpty()
             && !gamesManager!!.isGameSupported(amiibo, getFilter(FILTER.GAME_TITLES))
         ) return false
-        return if (!TextUtils.isEmpty(query)) {
-            if (Amiibo.idToHex(amiibo.id).lowercase().startsWith(query!!))
+        return if (!query.isNullOrEmpty()) {
+            if (Amiibo.idToHex(amiibo.id).lowercase().startsWith(query))
                 true
             else if (null != amiibo.name && amiibo.name.lowercase(Locale.getDefault()).contains(query))
                 true

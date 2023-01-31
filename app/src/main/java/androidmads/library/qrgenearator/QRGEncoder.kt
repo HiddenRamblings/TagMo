@@ -27,6 +27,7 @@ import com.google.mlkit.vision.barcode.common.Barcode
 import com.google.zxing.BarcodeFormat
 import com.google.zxing.EncodeHintType
 import com.google.zxing.MultiFormatWriter
+import com.hiddenramblings.tagmo.charset.CharsetCompat
 import com.hiddenramblings.tagmo.eightbit.io.Debug
 import java.util.*
 
@@ -73,36 +74,37 @@ class QRGEncoder(data: String?, bundle: Bundle?, type: Int, private var dimensio
         return contents?.isNotEmpty() == true
     }
 
+    private fun retrieveStringContents(data: String?) {
+        if (!data.isNullOrEmpty()) {
+            contents = data
+            displayContents = data
+        }
+    }
+
     private fun encodeQRCodeContents(data: String?, bundle: Bundle?, type: Int) {
         when (type) {
-            Barcode.TYPE_WIFI -> if (!data.isNullOrEmpty()) {
-                contents = data
-                displayContents = data
+            Barcode.TYPE_WIFI -> {
+                retrieveStringContents(data)
                 title = "WiFi"
             }
-            Barcode.TYPE_URL -> if (!data.isNullOrEmpty()) {
-                contents = data
-                displayContents = data
+            Barcode.TYPE_URL -> {
+                retrieveStringContents(data)
                 title = "URL"
             }
-            Barcode.TYPE_PRODUCT -> if (!data.isNullOrEmpty()) {
-                contents = data
-                displayContents = data
+            Barcode.TYPE_PRODUCT -> {
+                retrieveStringContents(data)
                 title = "Product"
             }
-            Barcode.TYPE_TEXT -> if (!data.isNullOrEmpty()) {
-                contents = data
-                displayContents = data
+            Barcode.TYPE_TEXT -> {
+                retrieveStringContents(data)
                 title = "Text"
             }
-            Barcode.TYPE_CALENDAR_EVENT -> if (!data.isNullOrEmpty()) {
-                contents = data
-                displayContents = data
+            Barcode.TYPE_CALENDAR_EVENT -> {
+                retrieveStringContents(data)
                 title = "Calendar"
             }
-            Barcode.TYPE_DRIVER_LICENSE -> if (!data.isNullOrEmpty()) {
-                contents = data
-                displayContents = data
+            Barcode.TYPE_DRIVER_LICENSE -> {
+                retrieveStringContents(data)
                 title = "License"
             }
             Barcode.TYPE_EMAIL -> {
@@ -226,14 +228,12 @@ class QRGEncoder(data: String?, bundle: Bundle?, type: Int, private var dimensio
                     title = "Location"
                 }
             }
-            Barcode.TYPE_ISBN -> if (!data.isNullOrEmpty()) {
-                contents = data
-                displayContents = data
+            Barcode.TYPE_ISBN -> {
+                retrieveStringContents(data)
                 title = "ISBN"
             }
-            Barcode.TYPE_UNKNOWN -> if (!data.isNullOrEmpty()) {
-                contents = data
-                displayContents = data
+            Barcode.TYPE_UNKNOWN -> {
+                retrieveStringContents(data)
                 title = "Unknown"
             }
         }
@@ -242,11 +242,9 @@ class QRGEncoder(data: String?, bundle: Bundle?, type: Int, private var dimensio
     // All are 0, or black, by default
     val bitmap: Bitmap?
         get() = if (!encoded) null else try {
-            var hints: MutableMap<EncodeHintType?, Any?>? = null
-            val encoding = guessAppropriateEncoding(contents)
-            if (encoding != null) {
-                hints = EnumMap(EncodeHintType::class.java)
-                hints[EncodeHintType.CHARACTER_SET] = encoding
+            val hints: MutableMap<EncodeHintType?, Any?> = EnumMap(EncodeHintType::class.java)
+            guessAppropriateEncoding(contents).let {
+                if (null != it) hints[EncodeHintType.CHARACTER_SET] = it
             }
             val writer = MultiFormatWriter()
             val result = writer.encode(contents, format, dimension, dimension, hints)
@@ -268,17 +266,16 @@ class QRGEncoder(data: String?, bundle: Bundle?, type: Int, private var dimensio
         }
 
     @Suppress("UNUSED")
-    fun getBitmap(margin: Int): Bitmap? {
+    fun getBitmap(margin: Int?): Bitmap? {
         return if (!encoded) null else try {
-            val hints: MutableMap<EncodeHintType?, Any?>?
-            hints = EnumMap(EncodeHintType::class.java)
-            val encoding = guessAppropriateEncoding(contents)
-            if (encoding != null) {
-                hints[EncodeHintType.CHARACTER_SET] = encoding
+            val hints: MutableMap<EncodeHintType?, Any?> = EnumMap(EncodeHintType::class.java)
+            guessAppropriateEncoding(contents).let {
+                if (null != it) hints[EncodeHintType.CHARACTER_SET] = it
             }
-
             // Setting the margin width
-            hints[EncodeHintType.MARGIN] = margin
+            margin.let {
+                if (null != it) hints[EncodeHintType.MARGIN] = margin
+            }
             val writer = MultiFormatWriter()
             val result = writer.encode(contents, format, dimension, dimension, hints)
             val width = result.width
@@ -300,33 +297,28 @@ class QRGEncoder(data: String?, bundle: Bundle?, type: Int, private var dimensio
 
     private fun guessAppropriateEncoding(contents: CharSequence?): String? {
         // Very crude at the moment
-        for (i in 0 until contents!!.length) {
-            if (contents[i].code > 0xFF) {
-                return "UTF-8"
+        if (contents != null) {
+            for (element in contents) {
+                if (element.code > 0xFF) return CharsetCompat.UTF_8.name()
             }
         }
         return null
     }
 
     private fun trim(s: String?): String? {
-        if (s == null) {
-            return null
-        }
-        val result = s.trim { it <= ' ' }
-        return result.ifEmpty { null }
+        if (null == s) return null
+        return s.trim { it <= ' ' }.ifEmpty { null }
     }
 
     private fun escapeVCard(input: String?): String? {
-        if (input == null || input.indexOf(':') < 0 && input.indexOf(';') < 0) {
+        if (null == input || input.indexOf(':') < 0 && input.indexOf(';') < 0) {
             return input
         }
         val length = input.length
         val result = StringBuilder(length)
         for (i in 0 until length) {
             val c = input[i]
-            if (c == ':' || c == ';') {
-                result.append('\\')
-            }
+            if (c == ':' || c == ';') result.append('\\')
             result.append(c)
         }
         return result.toString()

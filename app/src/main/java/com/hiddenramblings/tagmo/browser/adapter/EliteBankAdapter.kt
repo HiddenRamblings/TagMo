@@ -169,6 +169,15 @@ class EliteBankAdapter     // setHasStableIds(true);
                     txtName, TagMo.appContext.getString(R.string.blank_bank, value)
                 )
             }
+            if (null != imageAmiibo) {
+                GlideApp.with(imageAmiibo!!).clear(imageAmiibo!!)
+                if (amiiboImageUrl.isNullOrEmpty()) {
+                    imageAmiibo!!.setImageResource(R.mipmap.ic_launcher_round)
+                    imageAmiibo!!.visibility = View.VISIBLE
+                } else {
+                    GlideApp.with(imageAmiibo!!).asBitmap().load(amiiboImageUrl).into(target)
+                }
+            }
             if (settings.amiiboView != VIEW.IMAGE.value) {
                 txtError?.isGone = true
                 if (isAmiibo) {
@@ -190,15 +199,6 @@ class EliteBankAdapter     // setHasStableIds(true);
                     txtAmiiboSeries?.isGone = true
                     txtAmiiboType?.isGone = true
                     txtGameSeries?.isGone = true
-                }
-            }
-            if (null != imageAmiibo) {
-                GlideApp.with(imageAmiibo!!).clear(imageAmiibo!!)
-                if (!amiiboImageUrl.isNullOrEmpty()) {
-                    GlideApp.with(imageAmiibo!!).asBitmap().load(amiiboImageUrl).into(target)
-                } else {
-                    imageAmiibo!!.setImageResource(R.mipmap.ic_launcher_round)
-                    imageAmiibo!!.visibility = View.VISIBLE
                 }
             }
         }

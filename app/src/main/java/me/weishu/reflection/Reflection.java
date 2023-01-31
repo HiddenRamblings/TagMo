@@ -1,6 +1,8 @@
 package me.weishu.reflection;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
+import android.os.Build;
 import android.text.TextUtils;
 import android.util.Base64;
 
@@ -26,18 +28,13 @@ public class Reflection {
     private static native int unsealNative(int targetSdkVersion);
 
     public static int unseal(Context context) {
-        if (SDK_INT < 28) {
-            // Below Android P, ignore
-            return 0;
-        }
+        // Below Android P, ignore
+        if (SDK_INT < 28) return 0;
 
         // try exempt API first.
-        if (exemptAll()) {
-            return 0;
-        }
-        if (unsealByDexFile(context)) {
-            return 0;
-        }
+        if (exemptAll()) return 0;
+
+        if (unsealByDexFile(context)) return 0;
 
         return -1;
     }
@@ -45,9 +42,8 @@ public class Reflection {
     private static boolean unsealByDexFile(Context context) {
         byte[] bytes = Base64.decode(DEX, Base64.NO_WRAP);
         File codeCacheDir = getCodeCacheDir(context);
-        if (codeCacheDir == null) {
-            return false;
-        }
+        if (null == codeCacheDir) return false;
+
         File code = new File(codeCacheDir, System.currentTimeMillis() + ".dex");
         try {
 
@@ -73,17 +69,15 @@ public class Reflection {
     }
 
     private static File getCodeCacheDir(Context context) {
-        if (context != null) {
+        if (SDK_INT >= Build.VERSION_CODES.LOLLIPOP && null != context)
             return context.getCodeCacheDir();
-        }
+
         String tmpDir = System.getProperty("java.io.tmpdir");
-        if (TextUtils.isEmpty(tmpDir)) {
-            return null;
-        }
+        if (TextUtils.isEmpty(tmpDir)) return null;
+
         File tmp = new File(tmpDir);
-        if (!tmp.exists()) {
-            return null;
-        }
+        if (!tmp.exists()) return null;
+
         return tmp;
     }
 }

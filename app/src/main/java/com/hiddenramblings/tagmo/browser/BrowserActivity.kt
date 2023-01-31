@@ -1602,7 +1602,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
             }
         })
         val query = settings?.query
-        if (!TextUtils.isEmpty(query)) {
+        if (!query.isNullOrEmpty()) {
             menuSearch.expandActionView()
             searchView?.setQuery(query, true)
             searchView?.clearFocus()
@@ -2368,7 +2368,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
             val amiiboManager = settings?.amiiboManager
             if (null != amiiboManager) {
                 var count = 0
-                if (!TextUtils.isEmpty(settings?.query)) {
+                if (!settings?.query.isNullOrEmpty()) {
                     val stats = getAdapterStats(amiiboManager)
                     currentFolderView?.text = getString(
                         R.string.amiibo_collected,

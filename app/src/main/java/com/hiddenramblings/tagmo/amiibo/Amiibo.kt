@@ -172,13 +172,13 @@ open class Amiibo : Comparable<Amiibo>, Parcelable {
 
         fun matchesCharacterFilter(character: Character?, characterFilter: String): Boolean {
             return if (null != character) {
-                TextUtils.isEmpty(characterFilter) || character.name == characterFilter
+                characterFilter.isEmpty() || character.name == characterFilter
             } else true
         }
 
         fun matchesGameSeriesFilter(gameSeries: GameSeries?, gameSeriesFilter: String): Boolean {
             return if (null != gameSeries) {
-                TextUtils.isEmpty(gameSeriesFilter) || gameSeries.name == gameSeriesFilter
+                gameSeriesFilter.isEmpty() || gameSeries.name == gameSeriesFilter
             } else true
         }
 
@@ -187,13 +187,13 @@ open class Amiibo : Comparable<Amiibo>, Parcelable {
             amiiboSeriesFilter: String
         ): Boolean {
             return if (null != amiiboSeries) {
-                TextUtils.isEmpty(amiiboSeriesFilter) || amiiboSeries.name == amiiboSeriesFilter
+                amiiboSeriesFilter.isEmpty() || amiiboSeries.name == amiiboSeriesFilter
             } else true
         }
 
         fun matchesAmiiboTypeFilter(amiiboType: AmiiboType?, amiiboTypeFilter: String): Boolean {
             return if (null != amiiboType) {
-                TextUtils.isEmpty(amiiboTypeFilter) || amiiboType.name == amiiboTypeFilter
+                amiiboTypeFilter.isEmpty() || amiiboType.name == amiiboTypeFilter
             } else true
         }
 

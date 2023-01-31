@@ -198,8 +198,8 @@ class WriteTagAdapter(private val settings: BrowserSettings?) :
         }
 
         private fun pathContainsQuery(path: String, query: String?): Boolean {
-            return (!TextUtils.isEmpty(query) && settings!!.isFilterEmpty
-                    && path.lowercase(Locale.getDefault()).contains(query!!))
+            return (!query.isNullOrEmpty() && settings!!.isFilterEmpty
+                    && path.lowercase(Locale.getDefault()).contains(query))
         }
 
         @SuppressLint("NotifyDataSetChanged")
@@ -287,6 +287,11 @@ class WriteTagAdapter(private val settings: BrowserSettings?) :
                 tagInfo = "ID: " + Amiibo.idToHex(amiiboId)
                 amiiboImageUrl = Amiibo.getImageUrl(amiiboId)
             }
+            if (null != imageAmiibo) {
+                GlideApp.with(imageAmiibo!!).clear(imageAmiibo!!)
+                if (!amiiboImageUrl.isNullOrEmpty())
+                    GlideApp.with(imageAmiibo!!).asBitmap().load(amiiboImageUrl).into(target)
+            }
             val query = settings.query?.lowercase(Locale.getDefault())
             setAmiiboInfoText(txtName, amiiboName, false)
             if (settings.amiiboView != VIEW.IMAGE.value) {
@@ -355,12 +360,6 @@ class WriteTagAdapter(private val settings: BrowserSettings?) :
                     txtPath.setTextColor(ContextCompat.getColor(txtPath.context, R.color.tag_text))
                 }
                 txtPath.isVisible = true
-            }
-            if (null != imageAmiibo) {
-                GlideApp.with(imageAmiibo!!).clear(imageAmiibo!!)
-                if (!amiiboImageUrl.isNullOrEmpty()) {
-                    GlideApp.with(imageAmiibo!!).asBitmap().load(amiiboImageUrl).into(target)
-                }
             }
         }
 

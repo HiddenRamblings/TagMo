@@ -180,7 +180,7 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
         if (null == chipList) return
         var chipContainer = chipList?.findViewWithTag<FrameLayout>(tag)
         if (null != chipContainer) chipList?.removeView(chipContainer)
-        if (!TextUtils.isEmpty(text)) {
+        if (!text.isNullOrEmpty()) {
             chipContainer = layoutInflater.inflate(R.layout.chip_view, null) as FrameLayout
             chipContainer.tag = tag
             val chip = chipContainer.findViewById<Chip>(R.id.chip)

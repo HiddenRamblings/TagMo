@@ -418,11 +418,11 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
 
     override fun onFoomiiboImageClicked(amiibo: Amiibo?) {
         if (null == amiibo) return
-        this.startActivity(Intent(requireContext(), ImageActivity::class.java).apply {
-            putExtras(Bundle().apply {
+        this.startActivity(Intent(requireContext(), ImageActivity::class.java)
+            .putExtras(Bundle().apply {
                 putLong(NFCIntent.EXTRA_AMIIBO_ID, amiibo.id)
             })
-        })
+        )
     }
 
     override fun onConfigurationChanged(newConfig: Configuration) {

@@ -752,11 +752,11 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
                     )
                 }
                 imageAmiibo.setOnClickListener {
-                    startActivity(Intent(requireContext(), ImageActivity::class.java).apply {
-                        putExtras(Bundle().apply {
+                    startActivity(Intent(requireContext(), ImageActivity::class.java)
+                        .putExtras(Bundle().apply {
                             putLong(NFCIntent.EXTRA_AMIIBO_ID, active!!.id)
                         })
-                    })
+                    )
                 }
             }
         }
@@ -1272,11 +1272,11 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
 
     override fun onAmiiboImageClicked(amiibo: Amiibo?) {
         if (null != amiibo) {
-            this.startActivity(Intent(requireContext(), ImageActivity::class.java).apply {
-                putExtras(Bundle().apply {
+            this.startActivity(Intent(requireContext(), ImageActivity::class.java)
+                .putExtras(Bundle().apply {
                     putLong(NFCIntent.EXTRA_AMIIBO_ID, amiibo.id)
                 })
-            })
+            )
         }
     }
 

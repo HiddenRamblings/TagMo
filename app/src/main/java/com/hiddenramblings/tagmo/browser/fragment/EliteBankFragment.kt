@@ -530,8 +530,8 @@ class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
     private fun scanAmiiboTag(position: Int) {
         onUpdateTagResult.launch(Intent(requireContext(), NfcActivity::class.java).apply {
             putExtra(NFCIntent.EXTRA_SIGNATURE, prefs.eliteSignature())
-            putExtra(NFCIntent.EXTRA_CURRENT_BANK, position)
             action = NFCIntent.ACTION_SCAN_TAG
+            putExtra(NFCIntent.EXTRA_CURRENT_BANK, position)
         })
     }
 
@@ -640,10 +640,9 @@ class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
     private fun getAmiiboToolbar(tagData: ByteArray?, current_bank: Int) {
         toolbar!!.setOnMenuItemClickListener { item: MenuItem ->
             val notice = Toasty(requireActivity())
-            val scan = Intent(requireContext(), NfcActivity::class.java).apply {
-                putExtra(NFCIntent.EXTRA_SIGNATURE, prefs.eliteSignature())
-                putExtra(NFCIntent.EXTRA_CURRENT_BANK, current_bank)
-            }
+            val scan = Intent(requireContext(), NfcActivity::class.java)
+                .putExtra(NFCIntent.EXTRA_SIGNATURE, prefs.eliteSignature())
+                .putExtra(NFCIntent.EXTRA_CURRENT_BANK, current_bank)
             when (item.itemId) {
                 R.id.mnu_activate -> {
                     scan.action = NFCIntent.ACTION_ACTIVATE_BANK
@@ -679,9 +678,7 @@ class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
                     if (tagData?.isNotEmpty() == true) {
                         onUpdateTagResult.launch(Intent(
                             requireContext(), TagDataEditor::class.java
-                        ).apply {
-                            putExtra(NFCIntent.EXTRA_TAG_DATA, tagData)
-                        })
+                        ).putExtra(NFCIntent.EXTRA_TAG_DATA, tagData))
                     } else {
                         status = CLICKED.EDIT_DATA
                         scanAmiiboBank(current_bank)
@@ -690,9 +687,9 @@ class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
                 }
                 R.id.mnu_view_hex -> {
                     if (tagData?.isNotEmpty() == true) {
-                        startActivity(Intent(requireContext(), HexCodeViewer::class.java).apply {
-                            putExtra(NFCIntent.EXTRA_TAG_DATA, tagData)
-                        })
+                        startActivity(Intent(requireContext(), HexCodeViewer::class.java)
+                            .putExtra(NFCIntent.EXTRA_TAG_DATA, tagData)
+                        )
                     } else {
                         status = CLICKED.HEX_CODE
                         scanAmiiboBank(current_bank)
@@ -820,11 +817,11 @@ class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
                 if (amiiboLongId == -1L) {
                     return@setOnClickListener
                 }
-                startActivity(Intent(requireContext(), ImageActivity::class.java).apply {
-                    putExtras(Bundle().apply {
+                startActivity(Intent(requireContext(), ImageActivity::class.java)
+                    .putExtras(Bundle().apply {
                         putLong(NFCIntent.EXTRA_AMIIBO_ID, amiiboLongId)
                     })
-                })
+                )
             }
         }
     }
@@ -931,21 +928,21 @@ class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
 
     private fun handleImageClicked(amiibo: Amiibo?) {
         if (null != amiibo) {
-            this.startActivity(Intent(requireContext(), ImageActivity::class.java).apply {
-                putExtras(Bundle().apply {
+            this.startActivity(Intent(requireContext(), ImageActivity::class.java)
+                .putExtras(Bundle().apply {
                     putLong(NFCIntent.EXTRA_AMIIBO_ID, amiibo.id)
                 })
-            })
+            )
         }
     }
 
     private fun handleImageClicked(amiiboFile: AmiiboFile?) {
         if (null != amiiboFile) {
-            this.startActivity(Intent(requireContext(), ImageActivity::class.java).apply {
-                putExtras(Bundle().apply {
+            this.startActivity(Intent(requireContext(), ImageActivity::class.java)
+                .putExtras(Bundle().apply {
                     putLong(NFCIntent.EXTRA_AMIIBO_ID, amiiboFile.id)
                 })
-            })
+            )
         }
     }
 

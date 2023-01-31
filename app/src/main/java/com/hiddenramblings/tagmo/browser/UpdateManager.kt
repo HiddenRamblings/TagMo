@@ -122,14 +122,13 @@ class UpdateManager internal constructor(activity: BrowserActivity) {
                         }
                     } else {
                         @Suppress("DEPRECATION")
-                        val intent = Intent(Intent.ACTION_INSTALL_PACKAGE).apply {
-                            setDataAndType(
+                        val intent = Intent(Intent.ACTION_INSTALL_PACKAGE)
+                            .setDataAndType(
                                 Storage.getFileUri(apk),
                                 browserActivity.getString(R.string.mimetype_apk)
                             )
-                            putExtra(Intent.EXTRA_NOT_UNKNOWN_SOURCE, true)
-                            putExtra(Intent.EXTRA_INSTALLER_PACKAGE_NAME, applicationInfo.packageName)
-                        }
+                            .putExtra(Intent.EXTRA_NOT_UNKNOWN_SOURCE, true)
+                            .putExtra(Intent.EXTRA_INSTALLER_PACKAGE_NAME, applicationInfo.packageName)
                         try {
                             startActivity(NFCIntent.getIntent(intent))
                         } catch (anf: ActivityNotFoundException) {

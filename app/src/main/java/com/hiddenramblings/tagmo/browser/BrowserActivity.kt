@@ -1138,15 +1138,15 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                     return@setOnMenuItemClickListener true
                 }
                 R.id.mnu_view_hex -> {
-                    startActivity(Intent(this, HexCodeViewer::class.java).apply {
-                        putExtra(NFCIntent.EXTRA_TAG_DATA, tagData)
-                    })
+                    startActivity(Intent(this, HexCodeViewer::class.java)
+                        .putExtra(NFCIntent.EXTRA_TAG_DATA, tagData)
+                    )
                     return@setOnMenuItemClickListener true
                 }
                 R.id.mnu_share_qr -> {
-                    onQRCodeScanner.launch(Intent(this, QRCodeScanner::class.java).apply {
-                        putExtra(NFCIntent.EXTRA_TAG_DATA, tagData)
-                    })
+                    onQRCodeScanner.launch(Intent(this, QRCodeScanner::class.java)
+                        .putExtra(NFCIntent.EXTRA_TAG_DATA, tagData)
+                    )
                     return@setOnMenuItemClickListener true
                 }
                 R.id.mnu_validate -> {
@@ -1229,15 +1229,15 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                     return@setOnMenuItemClickListener true
                 }
                 R.id.mnu_view_hex -> {
-                    startActivity(Intent(this, HexCodeViewer::class.java).apply {
-                        putExtra(NFCIntent.EXTRA_TAG_DATA, tagData)
-                    })
+                    startActivity(Intent(this, HexCodeViewer::class.java)
+                        .putExtra(NFCIntent.EXTRA_TAG_DATA, tagData)
+                    )
                     return@setOnMenuItemClickListener true
                 }
                 R.id.mnu_share_qr -> {
-                    onQRCodeScanner.launch(Intent(this, QRCodeScanner::class.java).apply {
-                        putExtra(NFCIntent.EXTRA_TAG_DATA, tagData)
-                    })
+                    onQRCodeScanner.launch(Intent(this, QRCodeScanner::class.java)
+                        .putExtra(NFCIntent.EXTRA_TAG_DATA, tagData)
+                    )
                     return@setOnMenuItemClickListener true
                 }
                 R.id.mnu_validate -> {
@@ -1313,10 +1313,10 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
     @Throws(ActivityNotFoundException::class)
     private fun onDocumentRequested() {
         if (Debug.isNewer(Build.VERSION_CODES.LOLLIPOP)) {
-            onDocumentTree.launch(Intent(Intent.ACTION_OPEN_DOCUMENT_TREE).apply {
-                putExtra("android.content.extra.SHOW_ADVANCED", true)
-                putExtra("android.content.extra.FANCY", true)
-            })
+            onDocumentTree.launch(Intent(Intent.ACTION_OPEN_DOCUMENT_TREE)
+                .putExtra("android.content.extra.SHOW_ADVANCED", true)
+                .putExtra("android.content.extra.FANCY", true)
+            )
         }
     }
 
@@ -1664,11 +1664,11 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
     }
 
     override fun onAmiiboImageClicked(amiiboFile: AmiiboFile?) {
-        this.startActivity(Intent(this, ImageActivity::class.java).apply {
-            putExtras(Bundle().apply {
+        this.startActivity(Intent(this, ImageActivity::class.java)
+            .putExtras(Bundle().apply {
                 putLong(NFCIntent.EXTRA_AMIIBO_ID, amiiboFile!!.id)
             })
-        })
+        )
     }
 
     fun loadPTagKeyManager() {
@@ -2211,11 +2211,10 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                 imageAmiibo!!.setOnClickListener {
                     startActivity(Intent(
                         this@BrowserActivity, ImageActivity::class.java
-                    ).apply {
-                        putExtras(Bundle().apply {
+                    ).putExtras(Bundle().apply {
                             putLong(NFCIntent.EXTRA_AMIIBO_ID, amiiboTagId)
                         })
-                    })
+                    )
                 }
             }
         }

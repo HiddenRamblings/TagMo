@@ -128,7 +128,7 @@ class QRCodeScanner : AppCompatActivity() {
         txtMiiLabel = findViewById(R.id.txtMiiLabel)
         txtMiiValue = findViewById(R.id.txtMiiValue)
 
-        scopeIO.launch {
+        scopeIO.launch(Dispatchers.IO) {
             var amiiboManager: AmiiboManager? = null
             try {
                 amiiboManager = AmiiboManager.getAmiiboManager(applicationContext)
@@ -296,7 +296,7 @@ class QRCodeScanner : AppCompatActivity() {
             }
             captureUri = null
             if (null != photoUri) {
-                scopeIO.launch {
+                scopeIO.launch(Dispatchers.IO) {
                     var rotation = 0
                     val bitmap: Bitmap? = if (Debug.isNewer(Build.VERSION_CODES.P)) {
                         val source: ImageDecoder.Source = ImageDecoder.createSource(

@@ -335,7 +335,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
     }
 
     private fun validateKeys(data: Uri?) {
-        scopeIO.launch {
+        scopeIO.launch(Dispatchers.IO) {
             try {
                 requireContext().contentResolver.openInputStream(data!!).use { strm ->
                     keyManager.evaluateKey(strm!!)
@@ -419,7 +419,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
 
     private fun updateAmiiboDatabase(data: Uri?) {
         resetAmiiboDatabase(false)
-        scopeIO.launch {
+        scopeIO.launch(Dispatchers.IO) {
             val amiiboManager: AmiiboManager? = try {
                 parse(requireContext(), data)
             } catch (e: JSONException) {
@@ -471,7 +471,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
     }
 
     private fun resetAmiiboDatabase(notify: Boolean) {
-        scopeIO.launch {
+        scopeIO.launch(Dispatchers.IO) {
             requireContext().deleteFile(AmiiboManager.AMIIBO_DATABASE_FILE)
             val activity = requireActivity() as BrowserActivity
             if (notify) {

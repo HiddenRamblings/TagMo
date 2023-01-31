@@ -276,7 +276,7 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
         val dialog = ProgressDialog.show(
             requireActivity(), "", "", true
         )
-        scopeIO.launch {
+        scopeIO.launch(Dispatchers.IO) {
             deleteDir(dialog, directory)
             withContext(Dispatchers.Main) {
                 dialog.dismiss()
@@ -327,7 +327,7 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
         val dialog = ProgressDialog.show(
             requireActivity(), "", "", true
         )
-        scopeIO.launch {
+        scopeIO.launch(Dispatchers.IO) {
             deleteDir(null, directory)
             directory.mkdirs()
             amiiboManager.amiibos.values.forEach {

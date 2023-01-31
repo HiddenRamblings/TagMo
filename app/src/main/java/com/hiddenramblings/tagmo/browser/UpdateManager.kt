@@ -59,7 +59,7 @@ class UpdateManager internal constructor(activity: BrowserActivity) {
     }
 
     private fun configureUpdates(activity: BrowserActivity) {
-        scopeIO.launch {
+        scopeIO.launch(Dispatchers.IO) {
             if (Debug.isNewer(Build.VERSION_CODES.LOLLIPOP)) {
                 activity.applicationContext.packageManager.packageInstaller.run {
                     mySessions.forEach {

@@ -323,7 +323,7 @@ class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
     }
 
     private fun updateEliteAdapter(amiiboList: ArrayList<String>?) {
-        scopeIO.launch {
+        scopeIO.launch(Dispatchers.IO) {
             var amiiboManager = settings.amiiboManager
             if (null == amiiboManager) {
                 try {

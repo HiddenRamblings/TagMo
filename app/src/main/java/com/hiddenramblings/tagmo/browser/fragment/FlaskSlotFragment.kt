@@ -152,7 +152,7 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
                         }
 
                         override fun onFlaskListRetrieved(jsonArray: JSONArray) {
-                            scopeIO.launch {
+                            scopeIO.launch(Dispatchers.IO) {
                                 currentCount = jsonArray.length()
                                 val flaskAmiibos: ArrayList<Amiibo?> = arrayListOf()
                                 for (i in 0 until currentCount) {
@@ -186,7 +186,7 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
                         }
 
                         override fun onFlaskRangeRetrieved(jsonArray: JSONArray) {
-                            scopeIO.launch {
+                            scopeIO.launch(Dispatchers.IO) {
                                 val flaskAmiibos: ArrayList<Amiibo?> = arrayListOf()
                                 for (i in 0 until jsonArray.length()) {
                                     try {
@@ -328,7 +328,7 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
                         override fun onPuckListRetrieved(
                             slotData: ArrayList<ByteArray?>, active: Int
                         ) {
-                            scopeIO.launch {
+                            scopeIO.launch(Dispatchers.IO) {
                                 currentCount = slotData.size
                                 val flaskAmiibos: ArrayList<Amiibo?> = arrayListOf()
                                 for (i in 0 until currentCount) {

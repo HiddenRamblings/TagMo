@@ -1687,7 +1687,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
     }
 
     private fun loadAmiiboManager() {
-        scopeIO.launch {
+        scopeIO.launch(Dispatchers.IO) {
             var amiiboManager: AmiiboManager?
             try {
                 amiiboManager = getAmiiboManager(applicationContext)
@@ -1743,7 +1743,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
     }
 
     private fun loadFolders(rootFolder: File?) {
-        scopeIO.launch {
+        scopeIO.launch(Dispatchers.IO) {
             val folders = listFolders(rootFolder)
             folders.sortWith(compareBy(String.CASE_INSENSITIVE_ORDER) { it?.path ?: "" })
             withContext(Dispatchers.Main) {
@@ -1761,7 +1761,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
     }
 
     private fun loadAmiiboFiles(rootFolder: File?, recursiveFiles: Boolean) {
-        scopeIO.launch {
+        scopeIO.launch(Dispatchers.IO) {
             val amiiboFiles = listAmiibos(keyManager, rootFolder, recursiveFiles)
             val download = Storage.getDownloadDir("TagMo")
             if (isDirectoryHidden(rootFolder, download, recursiveFiles))
@@ -1778,7 +1778,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
 
     @SuppressLint("NewApi")
     private fun loadAmiiboDocuments(rootFolder: DocumentFile?, recursiveFiles: Boolean) {
-        scopeIO.launch {
+        scopeIO.launch(Dispatchers.IO) {
             val amiiboFiles = listAmiiboDocuments(
                 this@BrowserActivity, keyManager, rootFolder!!, recursiveFiles
             )

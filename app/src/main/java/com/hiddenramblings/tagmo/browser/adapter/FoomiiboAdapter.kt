@@ -3,7 +3,6 @@ package com.hiddenramblings.tagmo.browser.adapter
 import android.annotation.SuppressLint
 import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
-import android.text.TextUtils
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -250,6 +249,7 @@ class FoomiiboAdapter(
         var imageAmiibo: AppCompatImageView? = null
         var foomiibo: Amiibo? = null
         private val boldSpannable = BoldSpannable()
+
         var target: CustomTarget<Bitmap?> = object : CustomTarget<Bitmap?>() {
             override fun onLoadStarted(placeholder: Drawable?) {
                 imageAmiibo?.setImageResource(0)
@@ -311,10 +311,10 @@ class FoomiiboAdapter(
                 tagInfo = "ID: $amiiboHexId"
                 amiiboImageUrl = Amiibo.getImageUrl(amiiboId)
             }
-            if (null != imageAmiibo) {
-                GlideApp.with(imageAmiibo!!).clear(imageAmiibo!!)
+            imageAmiibo?.let {
+                GlideApp.with(it).clear(it)
                 if (!amiiboImageUrl.isNullOrEmpty())
-                    GlideApp.with(imageAmiibo!!).asBitmap().load(amiiboImageUrl).into(target)
+                    GlideApp.with(it).asBitmap().load(amiiboImageUrl).into(target)
             }
             val query = settings.query?.lowercase(Locale.getDefault())
             setFoomiiboInfoText(txtName, amiiboName, false)
@@ -348,7 +348,7 @@ class FoomiiboAdapter(
                 val expanded = foomiiboId.contains(foomiibo?.id)
                 itemView.findViewById<View>(R.id.menu_options).isVisible = expanded
                 itemView.findViewById<View>(R.id.txtUsage).isVisible = expanded
-                if (expanded) listener!!.onFoomiiboRebind(itemView, foomiibo)
+                if (expanded) listener?.onFoomiiboRebind(itemView, foomiibo)
             }
             if (AmiiboManager.hasSpoofData(amiiboHexId) && null != txtTagId)
                 txtTagId.isEnabled = false

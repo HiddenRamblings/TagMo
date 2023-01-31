@@ -110,7 +110,7 @@ class ImageActivity : AppCompatActivity() {
             )
         }
 
-        scopeIO.launch {
+        scopeIO.launch(Dispatchers.IO) {
                 var amiiboManager: AmiiboManager? = null
                 try {
                     amiiboManager = AmiiboManager.getAmiiboManager(applicationContext)

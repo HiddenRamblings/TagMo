@@ -40,10 +40,10 @@ object NFCIntent {
     const val SITE_GITLAB_README = "https://tagmo.gitlab.io/"
     @JvmStatic
     fun getIntent(intent: Intent): Intent {
-        return if (Debug.isNewer(Build.VERSION_CODES.N)) intent.addCategory(Intent.CATEGORY_OPENABLE)
-            .setType("*/*")
+        return if (Debug.isNewer(Build.VERSION_CODES.N))
+            intent.addCategory(Intent.CATEGORY_OPENABLE).setType("*/*")
             .addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-            .addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION) else intent.addCategory(Intent.CATEGORY_OPENABLE)
-            .setType("*/*")
+            .addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
+        else intent.addCategory(Intent.CATEGORY_OPENABLE).setType("*/*")
     }
 }

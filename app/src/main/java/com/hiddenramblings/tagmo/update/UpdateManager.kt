@@ -1,4 +1,59 @@
-package com.hiddenramblings.tagmo.browser
+/*
+ * ====================================================================
+ * Copyright (c) 2021-2023 AbandonedCart.  All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions
+ * are met:
+ *
+ * For the purpose of this license, the phrase "TagMo labels" shall
+ * be used to refer to the labels "8-bit Dream", "TwistedUmbrella",
+ * "TagMo" and "AbandonedCart" and these labels should be considered
+ * the equivalent of any usage of the aforementioned phrase.
+ *
+ * 1. Redistributions of source code must retain the above copyright
+ *    notice, this list of conditions and the following disclaimer.
+ *
+ * 2. Redistributions in binary form must reproduce the above copyright
+ *    notice, this list of conditions and the following disclaimer in
+ *    the documentation and/or other materials provided with the
+ *    distribution.
+ *
+ * 3. All materials mentioning features or use of this software and
+ *    redistributions of any form whatsoever must display the following
+ *    acknowledgment unless made available by tagged, public "commits":
+ *    "This product includes software developed for TagMo by AbandonedCart"
+ *
+ * 4. The TagMo labels must not be used in any form to endorse or promote
+ *    products derived from this software without prior written permission.
+ *    For written permission, please contact enderinexiledc@gmail.com
+ *
+ * 5. Products derived from this software may not be called by the TagMo labels
+ *    nor may these labels appear in their names or product information without
+ *    prior written permission of AbandonedCart.
+ *
+ * THIS SOFTWARE IS PROVIDED BY AbandonedCart AND TagMo ``AS IS'' AND ANY
+ * EXPRESSED OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+ * PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL THE OpenSSL PROJECT OR
+ * ITS CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+ * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
+ * NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+ * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+ * STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
+ * OF THE POSSIBILITY OF SUCH DAMAGE.
+ * ====================================================================
+ *
+ * The license and distribution terms for any publicly available version or
+ * derivative of this code cannot be changed.  i.e. this code cannot simply be
+ * copied and put under another distribution license
+ * [including the GNU Public License.] Content not subject to these terms is
+ * subject to to the terms and conditions of the Apache License, Version 2.0.
+ */
+
+package com.hiddenramblings.tagmo.update
 
 import android.app.PendingIntent
 import android.content.ActivityNotFoundException
@@ -15,6 +70,7 @@ import com.google.android.play.core.appupdate.AppUpdateManagerFactory
 import com.google.android.play.core.install.model.AppUpdateType
 import com.google.android.play.core.install.model.UpdateAvailability
 import com.hiddenramblings.tagmo.*
+import com.hiddenramblings.tagmo.browser.BrowserActivity
 import com.hiddenramblings.tagmo.eightbit.io.Debug
 import com.hiddenramblings.tagmo.eightbit.net.JSONExecutor
 import com.hiddenramblings.tagmo.eightbit.net.JSONExecutor.ResultListener
@@ -33,8 +89,8 @@ import java.net.URL
 import kotlin.random.Random
 
 class UpdateManager internal constructor(activity: BrowserActivity) {
-    private var listener: CheckUpdateListener? = null
-    private var listenerPlay: CheckPlayUpdateListener? = null
+    private var listenerGit: GitUpdateListener? = null
+    private var listenerPlay: PlayUpdateListener? = null
     private var appUpdateManager: AppUpdateManager? = null
     private val browserActivity: BrowserActivity = activity
     private var isUpdateAvailable = false
@@ -122,18 +178,23 @@ class UpdateManager internal constructor(activity: BrowserActivity) {
                         }
                     } else {
                         @Suppress("DEPRECATION")
-                        val intent = Intent(Intent.ACTION_INSTALL_PACKAGE)
-                            .setDataAndType(
-                                Storage.getFileUri(apk),
+                        val installIntent = Intent(Intent.ACTION_INSTALL_PACKAGE).apply {
+                            setDataAndType(Storage.getFileUri(apk),
                                 browserActivity.getString(R.string.mimetype_apk)
                             )
-                            .putExtra(Intent.EXTRA_NOT_UNKNOWN_SOURCE, true)
-                            .putExtra(Intent.EXTRA_INSTALLER_PACKAGE_NAME, applicationInfo.packageName)
+                            putExtra(Intent.EXTRA_NOT_UNKNOWN_SOURCE, true)
+                            putExtra(Intent.EXTRA_INSTALLER_PACKAGE_NAME, applicationInfo.packageName)
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                                addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                                addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
+                            }
+                            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                        }
                         try {
-                            startActivity(NFCIntent.getIntent(intent))
+                            startActivity(installIntent)
                         } catch (anf: ActivityNotFoundException) {
                             try {
-                                startActivity(intent.setAction(Intent.ACTION_VIEW))
+                                startActivity(installIntent.setAction(Intent.ACTION_VIEW))
                             } catch (ignored: ActivityNotFoundException) { }
                         }
                     }
@@ -153,11 +214,11 @@ class UpdateManager internal constructor(activity: BrowserActivity) {
                 installUpdateTask(apkUrl)
             } else {
                 Preferences(browserActivity.applicationContext).downloadUrl(apkUrl)
-                val intent = Intent(Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES)
-                intent.data = Uri.parse(String.format(
-                        "package:%s", browserActivity.packageName
-                ))
-                browserActivity.onRequestInstall.launch(intent)
+                browserActivity.onRequestInstall.launch(
+                    Intent(Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES).apply {
+                        data = Uri.parse(String.format("package:%s", browserActivity.packageName))
+                    }
+                )
             }
         } else {
             installUpdateTask(apkUrl)
@@ -174,7 +235,7 @@ class UpdateManager internal constructor(activity: BrowserActivity) {
             val asset = assets[0] as JSONObject
             val downloadUrl = asset["browser_download_url"] as String
             isUpdateAvailable = BuildConfig.COMMIT != lastCommit
-            if (isUpdateAvailable) listener?.onUpdateFound(downloadUrl)
+            if (isUpdateAvailable) listenerGit?.onUpdateFound(downloadUrl)
         } catch (e: JSONException) {
             Debug.warn(e)
         }
@@ -197,19 +258,19 @@ class UpdateManager internal constructor(activity: BrowserActivity) {
         return isUpdateAvailable
     }
 
-    fun setUpdateListener(listener: CheckUpdateListener?) {
-        this.listener = listener
+    fun setUpdateListener(listener: GitUpdateListener?) {
+        this.listenerGit = listener
     }
 
-    interface CheckUpdateListener {
+    interface GitUpdateListener {
         fun onUpdateFound(downloadUrl: String?)
     }
 
-    fun setPlayUpdateListener(listenerPlay: CheckPlayUpdateListener?) {
+    fun setPlayUpdateListener(listenerPlay: PlayUpdateListener?) {
         this.listenerPlay = listenerPlay
     }
 
-    interface CheckPlayUpdateListener {
+    interface PlayUpdateListener {
         fun onPlayUpdateFound(appUpdateInfo: AppUpdateInfo?)
     }
 

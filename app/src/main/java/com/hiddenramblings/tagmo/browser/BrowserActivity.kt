@@ -21,7 +21,6 @@ import android.net.Uri
 import android.nfc.NfcAdapter
 import android.os.*
 import android.provider.Settings
-import android.text.TextUtils
 import android.text.method.LinkMovementMethod
 import android.util.DisplayMetrics
 import android.view.*
@@ -74,8 +73,8 @@ import com.hiddenramblings.tagmo.amiibo.games.GamesManager
 import com.hiddenramblings.tagmo.amiibo.games.GamesManager.Companion.getGamesManager
 import com.hiddenramblings.tagmo.amiibo.tagdata.TagDataEditor
 import com.hiddenramblings.tagmo.browser.BrowserSettings.*
-import com.hiddenramblings.tagmo.browser.UpdateManager.CheckPlayUpdateListener
-import com.hiddenramblings.tagmo.browser.UpdateManager.CheckUpdateListener
+import com.hiddenramblings.tagmo.update.UpdateManager.PlayUpdateListener
+import com.hiddenramblings.tagmo.update.UpdateManager.GitUpdateListener
 import com.hiddenramblings.tagmo.browser.adapter.BrowserAdapter
 import com.hiddenramblings.tagmo.browser.adapter.FoldersAdapter
 import com.hiddenramblings.tagmo.browser.adapter.FoomiiboAdapter
@@ -93,6 +92,7 @@ import com.hiddenramblings.tagmo.nfctech.ScanTag
 import com.hiddenramblings.tagmo.nfctech.TagArray
 import com.hiddenramblings.tagmo.nfctech.TagReader
 import com.hiddenramblings.tagmo.qrcode.QRCodeScanner
+import com.hiddenramblings.tagmo.update.UpdateManager
 import com.hiddenramblings.tagmo.widget.Toasty
 import com.wajahatkarim3.easyflipviewpager.CardFlipPageTransformer2
 import eightbitlab.com.blurview.BlurView
@@ -1905,7 +1905,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
         if (System.currentTimeMillis() >= oldBrowserSettings.lastUpdatedGit + 3600000) {
             updateManager = UpdateManager(this)
             if (BuildConfig.GOOGLE_PLAY) {
-                updateManager?.setPlayUpdateListener(object : CheckPlayUpdateListener {
+                updateManager?.setPlayUpdateListener(object : PlayUpdateListener {
                     override fun onPlayUpdateFound(appUpdateInfo: AppUpdateInfo?) {
                         appUpdate = appUpdateInfo
                         if (BuildConfig.WEAR_OS)
@@ -1914,7 +1914,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                     }
                 })
             } else {
-                updateManager?.setUpdateListener(object : CheckUpdateListener {
+                updateManager?.setUpdateListener(object : GitUpdateListener {
                     override fun onUpdateFound(downloadUrl: String?) {
                         updateUrl = downloadUrl
                         if (BuildConfig.WEAR_OS)

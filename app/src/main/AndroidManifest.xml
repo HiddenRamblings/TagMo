@@ -41,8 +41,8 @@
     androidx.camera.camera2, androidx.camera.core, androidx.camera.view, androidx.camera.lifecycle" />
 
     <queries>
-        <package android:name="com.hiddenramblings.tagmo.eightbit" />
-        <package android:name="com.hiddenramblings.tagmo" />
+        <package android:name="${applicationId}" />
+        <package android:name="${applicationId}.eightbit" />
     </queries>
 
     <application
@@ -119,7 +119,7 @@
         <service
             android:name=".bluetooth.PuckGattService" />
         <receiver
-            android:name=".UpdateReceiver"
+            android:name=".update.UpdateReceiver"
             android:exported="true">
             <intent-filter android:priority="999">
                 <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />

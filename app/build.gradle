@@ -33,7 +33,6 @@ android {
             dimension "source"
             manifestPlaceholders.storagePermission = "android.permission.MANAGE_EXTERNAL_STORAGE"
             manifestPlaceholders.installPermission = "android.permission.REQUEST_INSTALL_PACKAGES"
-            manifestPlaceholders.hasFragileUserData = "true"
             buildConfigField "boolean", "GOOGLE_PLAY", "false"
         }
         google {
@@ -41,7 +40,6 @@ android {
             isDefault true
             manifestPlaceholders.storagePermission = "com.hiddenramblings.tagmo.BROWSER"
             manifestPlaceholders.installPermission = "com.hiddenramblings.tagmo.UPDATING"
-            manifestPlaceholders.hasFragileUserData = "false"
             buildConfigField "boolean", "GOOGLE_PLAY", "true"
         }
     }
@@ -51,6 +49,7 @@ android {
             minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             applicationIdSuffix ".eightbit"
+            manifestPlaceholders.hasFragileUserData = "true"
             manifestPlaceholders.wearUsesFeature = "android.hardware.screen.portrait"
             buildConfigField "boolean", "WEAR_OS", "false"
         }
@@ -61,6 +60,7 @@ android {
         wearos {
             initWith buildTypes.release
             versionNameSuffix "-wear"
+            manifestPlaceholders.hasFragileUserData = "false"
             manifestPlaceholders.wearUsesFeature = "android.hardware.type.watch"
             buildConfigField "boolean", "WEAR_OS", "true"
         }

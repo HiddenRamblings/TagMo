@@ -31,22 +31,20 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <myinnos.indexfastscrollrecycler.IndexFastScrollRecyclerView
-            android:id="@+id/browser_content"
+        <com.qtalk.recyclerviewfastscroller.RecyclerViewFastScroller
+            android:id="@+id/browser_scroller"
             android:layout_width="match_parent"
-            android:layout_height="360dp"
-            android:clipToPadding="false"
-            android:paddingTop="4dp"
-            android:scrollbars="vertical"
-            android:scrollbarSize="0dp"
-            android:scrollbarStyle="outsideOverlay"
-            app:setIndexBarColor="@color/colorAccent"
-            app:setIndexBarTextColor="@android:color/white"
-            app:setIndexBarStrokeColor="@color/colorPrimary"
-            app:setPreviewColor="@color/colorPrimaryDark"
-            app:setPreviewTextColor="@android:color/white"
-            app:setIndexBarShown="false"
-            app:setTransientIndexBar="true"/>
+            android:layout_height="match_parent">
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/browser_content"
+                android:layout_width="match_parent"
+                android:layout_height="360dp"
+                android:clipToPadding="false"
+                android:paddingTop="4dp"
+                android:scrollbars="vertical"
+                android:scrollbarSize="0dp"
+                android:scrollbarStyle="outsideOverlay"/>
+        </com.qtalk.recyclerviewfastscroller.RecyclerViewFastScroller>
 
         <LinearLayout
             android:id="@+id/list_divider"
@@ -92,23 +90,20 @@
                 app:srcCompat="@drawable/ic_baseline_move_up_24" />
         </LinearLayout>
 
-        <myinnos.indexfastscrollrecycler.IndexFastScrollRecyclerView
-            android:id="@+id/foomiibo_list"
+        <com.qtalk.recyclerviewfastscroller.RecyclerViewFastScroller
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:clipToPadding="false"
-            android:paddingTop="4dp"
-            android:paddingBottom="@dimen/button_height_min"
-            android:scrollbars="vertical"
-            android:scrollbarSize="0dp"
-            android:scrollbarStyle="outsideOverlay"
-            app:setIndexBarColor="@color/colorAccent"
-            app:setIndexBarTextColor="@android:color/white"
-            app:setIndexBarStrokeColor="@color/colorPrimary"
-            app:setPreviewColor="@color/colorPrimaryDark"
-            app:setPreviewTextColor="@android:color/white"
-            app:setIndexBarShown="false"
-            app:setTransientIndexBar="true"/>
+            android:layout_height="match_parent">
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/foomiibo_list"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:clipToPadding="false"
+                android:paddingTop="4dp"
+                android:paddingBottom="@dimen/button_height_min"
+                android:scrollbars="vertical"
+                android:scrollbarSize="0dp"
+                android:scrollbarStyle="outsideOverlay"/>
+        </com.qtalk.recyclerviewfastscroller.RecyclerViewFastScroller>
     </LinearLayout>
     </LinearLayout>
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

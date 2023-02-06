@@ -3,24 +3,4 @@
     <declare-styleable name="BlurView">
         <attr name="blurOverlayColor" format="color"/>
     </declare-styleable>
-
-    <declare-styleable name="IndexFastScrollRecyclerView">
-        <attr name="setIndexTextSize" format="integer" />
-        <attr name="setIndexbarWidth" format="float" />
-        <attr name="setIndexbarMargin" format="float" />
-        <attr name="setPreviewPadding" format="integer" />
-        <attr name="setPreviewTextSize" format="integer" />
-        <attr name="setPreviewColor" format="color|string" />
-        <attr name="setPreviewTextColor" format="color|string" />
-        <attr name="setPreviewTransparentValue" format="float" />
-        <attr name="setIndexBarCornerRadius" format="integer" />
-        <attr name="setIndexBarTransparentValue" format="float" />
-        <attr name="setIndexBarShown" format="boolean" />
-        <attr name="setTransientIndexBar" format="boolean" />
-        <attr name="setIndexBarColor" format="color|string" />
-        <attr name="setIndexBarTextColor" format="color|string" />
-        <attr name="setIndexBarHighlightTextColor" format="color|string" />
-        <attr name="setIndexBarStrokeWidth" format="integer" />
-        <attr name="setIndexBarStrokeColor" format="color|string" />
-    </declare-styleable>
 </resources>

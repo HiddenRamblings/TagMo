@@ -10,7 +10,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Filter
 import android.widget.Filterable
-import android.widget.SectionIndexer
 import android.widget.TextView
 import androidx.appcompat.widget.AppCompatImageView
 import androidx.core.content.ContextCompat
@@ -32,12 +31,14 @@ import com.hiddenramblings.tagmo.browser.BrowserSettings.*
 import com.hiddenramblings.tagmo.eightbit.io.Debug.isNewer
 import com.hiddenramblings.tagmo.eightbit.os.Storage
 import com.hiddenramblings.tagmo.widget.BoldSpannable
+import com.qtalk.recyclerviewfastscroller.RecyclerViewFastScroller
 import java.util.*
 
 class BrowserAdapter(
     private val settings: BrowserSettings, private val listener: OnAmiiboClickListener
-) : RecyclerView.Adapter<BrowserAdapter.AmiiboViewHolder>(), Filterable, BrowserSettingsListener,
-    SectionIndexer {
+) : RecyclerView.Adapter<BrowserAdapter.AmiiboViewHolder>(),
+    RecyclerViewFastScroller.OnPopupViewUpdate,
+    Filterable, BrowserSettingsListener {
     private var data: ArrayList<AmiiboFile?> = arrayListOf()
     private var filteredData: ArrayList<AmiiboFile?> = arrayListOf()
     private var filter: AmiiboFilter? = null
@@ -104,53 +105,9 @@ class BrowserAdapter(
         return false
     }
 
-    private var mSectionPositions: ArrayList<Int>? = null
-
     init {
         filteredData = data
         setHasStableIds(true)
-    }
-
-    override fun getSectionForPosition(position: Int): Int {
-        return 0
-    }
-
-    override fun getSections(): Array<String> {
-        val sections: ArrayList<String> = ArrayList(36)
-        if (itemCount > 0) {
-            mSectionPositions = ArrayList(36)
-            val amiiboManager = settings.amiiboManager
-            if (null != amiiboManager) {
-                filteredData.indices.forEach {
-                    val amiiboId = filteredData[it]?.id
-                    var amiibo = amiiboManager.amiibos[amiiboId]
-                    if (null == amiibo)
-                        amiibo = Amiibo(amiiboManager, amiiboId!!, null, null)
-                    var heading: String? = null
-                    var section: String? = null
-                    when (SORT.valueOf(settings.sort)) {
-                        SORT.NAME -> heading = amiibo.name
-                        SORT.CHARACTER -> heading = amiibo.character?.name
-                        SORT.GAME_SERIES -> heading = amiibo.gameSeries?.name
-                        SORT.AMIIBO_SERIES -> heading = amiibo.amiiboSeries?.name
-                        SORT.AMIIBO_TYPE -> heading = amiibo.amiiboType?.name
-                        else -> {}
-                    }
-                    if (heading?.isNotEmpty() == true) {
-                        section = heading[0].toString().uppercase(Locale.getDefault())
-                    }
-                    if (null != section && !sections.contains(section)) {
-                        sections.add(section)
-                        mSectionPositions?.add(it)
-                    }
-                }
-            }
-        }
-        return sections.toTypedArray()
-    }
-
-    override fun getPositionForSection(sectionIndex: Int): Int {
-        return mSectionPositions?.get(sectionIndex) ?: 0
     }
 
     override fun getItemViewType(position: Int): Int {
@@ -164,6 +121,26 @@ class BrowserAdapter(
             VIEW.IMAGE -> ImageViewHolder(parent, settings, listener)
             VIEW.SIMPLE -> SimpleViewHolder(parent, settings, listener)
         }
+    }
+
+    override fun onUpdate(position: Int, popupTextView: TextView) {
+        val item = filteredData[position]
+        val amiiboId = item?.id
+        var amiibo: Amiibo? = null
+        val amiiboManager = settings.amiiboManager
+        if (null != amiiboManager) {
+            amiibo = amiiboManager.amiibos[amiiboId]
+            if (null == amiibo && null != amiiboId)
+                amiibo = Amiibo(amiiboManager, amiiboId, null, null)
+        }
+        popupTextView.text = amiibo?.let { when (SORT.valueOf(settings.sort)) {
+            SORT.NAME -> it.name
+            SORT.CHARACTER -> it.character?.name
+            SORT.GAME_SERIES -> it.gameSeries?.name
+            SORT.AMIIBO_SERIES -> it.amiiboSeries?.name
+            SORT.AMIIBO_TYPE -> it.amiiboType?.name
+            else -> { "" }
+        }.toString()[0].uppercase() } ?: ""
     }
 
     private fun handleClickEvent(holder: AmiiboViewHolder) {
@@ -291,15 +268,6 @@ class BrowserAdapter(
             override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap?>?) {
                 imageAmiibo?.setImageBitmap(resource)
                 imageAmiibo?.visibility = View.VISIBLE
-            }
-        }
-
-        private fun setIsHighlighted(isHighlighted: Boolean) {
-            val highlight = itemView.findViewById<View>(R.id.highlight)
-            if (isHighlighted) {
-                highlight.setBackgroundResource(R.drawable.rounded_view)
-            } else {
-                highlight.setBackgroundResource(0)
             }
         }
 
@@ -440,6 +408,15 @@ class BrowserAdapter(
                 }
             }
             if (hasSpoofData(amiiboHexId) && null != txtTagId) txtTagId.isEnabled = false
+        }
+
+        private fun setIsHighlighted(isHighlighted: Boolean) {
+            val highlight = itemView.findViewById<View>(R.id.highlight)
+            if (isHighlighted) {
+                highlight.setBackgroundResource(R.drawable.rounded_view)
+            } else {
+                highlight.setBackgroundResource(0)
+            }
         }
 
         fun setAmiiboInfoText(textView: TextView?, text: CharSequence?, hasTagInfo: Boolean) {

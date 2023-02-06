@@ -8,7 +8,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Filter
 import android.widget.Filterable
-import android.widget.SectionIndexer
 import android.widget.TextView
 import androidx.appcompat.widget.AppCompatImageView
 import androidx.core.view.isGone
@@ -25,12 +24,14 @@ import com.hiddenramblings.tagmo.browser.BrowserSettings
 import com.hiddenramblings.tagmo.browser.BrowserSettings.*
 import com.hiddenramblings.tagmo.browser.adapter.FoomiiboAdapter.FoomiiboViewHolder
 import com.hiddenramblings.tagmo.widget.BoldSpannable
+import com.qtalk.recyclerviewfastscroller.RecyclerViewFastScroller
 import java.util.*
 
 class FoomiiboAdapter(
     private val settings: BrowserSettings, private val listener: OnFoomiiboClickListener
-) : RecyclerView.Adapter<FoomiiboViewHolder>(), Filterable, BrowserSettingsListener,
-    SectionIndexer {
+) : RecyclerView.Adapter<FoomiiboViewHolder>(),
+    RecyclerViewFastScroller.OnPopupViewUpdate,
+    Filterable, BrowserSettingsListener {
     private var data: ArrayList<Amiibo> = arrayListOf()
     private var filteredData: ArrayList<Amiibo> = arrayListOf()
     private var filter: FoomiiboFilter? = null
@@ -93,47 +94,9 @@ class FoomiiboAdapter(
         return settings.amiiboView
     }
 
-    private var mSectionPositions: ArrayList<Int>? = null
-
     init {
         filteredData = data
         setHasStableIds(true)
-    }
-
-    override fun getSectionForPosition(position: Int): Int {
-        return 0
-    }
-
-    override fun getSections(): Array<String> {
-        val sections: ArrayList<String> = ArrayList(36)
-        if (itemCount > 0) {
-            mSectionPositions = ArrayList(36)
-            filteredData.indices.forEach {
-                val amiibo = filteredData[it]
-                var heading: String? = null
-                var section: String? = null
-                when (SORT.valueOf(settings.sort)) {
-                    SORT.NAME -> heading = amiibo.name
-                    SORT.CHARACTER -> heading = amiibo.character?.name
-                    SORT.GAME_SERIES -> heading = amiibo.gameSeries?.name
-                    SORT.AMIIBO_SERIES -> heading = amiibo.amiiboSeries?.name
-                    SORT.AMIIBO_TYPE -> heading = amiibo.amiiboType?.name
-                    else -> {}
-                }
-                if (heading?.isNotEmpty() == true) {
-                    section = heading[0].toString().uppercase(Locale.getDefault())
-                }
-                if (null != section && !sections.contains(section)) {
-                    sections.add(section)
-                    mSectionPositions?.add(it)
-                }
-            }
-        }
-        return sections.toTypedArray()
-    }
-
-    override fun getPositionForSection(sectionIndex: Int): Int {
-        return mSectionPositions?.get(sectionIndex) ?: 0
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): FoomiiboViewHolder {
@@ -143,6 +106,18 @@ class FoomiiboAdapter(
             VIEW.IMAGE -> ImageViewHolder(parent, settings, listener)
             VIEW.SIMPLE -> SimpleViewHolder(parent, settings, listener)
         }
+    }
+
+    override fun onUpdate(position: Int, popupTextView: TextView) {
+        val item = filteredData[position]
+        popupTextView.text = when (SORT.valueOf(settings.sort)) {
+            SORT.NAME -> item.name
+            SORT.CHARACTER -> item.character?.name
+            SORT.GAME_SERIES -> item.gameSeries?.name
+            SORT.AMIIBO_SERIES -> item.amiiboSeries?.name
+            SORT.AMIIBO_TYPE -> item.amiiboType?.name
+            else -> { "" }
+        }.toString()[0].uppercase()
     }
 
     private fun handleClickEvent(holder: FoomiiboViewHolder) {

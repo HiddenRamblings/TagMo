@@ -140,7 +140,6 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
                 if (layoutParams.height + y >= -0.5f) {
                     if (event.action == MotionEvent.ACTION_MOVE) {
                         layoutParams.height += y
-                        if (srcHeight != layoutParams.height) browserScroller?.requestLayout()
                     } else if (event.action == MotionEvent.ACTION_UP) {
                         if (layoutParams.height + y < 0f) {
                             layoutParams.height = 0
@@ -153,7 +152,7 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
                         }
                     }
                     browserScroller?.let {
-                        it.requestLayout()
+                        if (srcHeight != layoutParams.height) it.requestLayout()
                         prefs.foomiiboOffset(it.layoutParams.height) }
                 }
             }

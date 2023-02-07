@@ -34,11 +34,11 @@
         <com.qtalk.recyclerviewfastscroller.RecyclerViewFastScroller
             android:id="@+id/browser_scroller"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="360dp">
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/browser_content"
                 android:layout_width="match_parent"
-                android:layout_height="360dp"
+                android:layout_height="match_parent"
                 android:clipToPadding="false"
                 android:paddingTop="4dp"
                 android:scrollbars="vertical"

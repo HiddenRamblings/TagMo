@@ -188,6 +188,7 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
         val minHeight = (peekHeight + divider.height + requireContext().resources
             .getDimension(R.dimen.sliding_bar_margin))
         val layoutParams = browserScroller?.layoutParams
+        val srcHeight = layoutParams?.height
         if (null != layoutParams) {
             if (layoutParams.height > requireView().height - minHeight.toInt()) {
                 layoutParams.height = requireView().height - minHeight.toInt()
@@ -202,7 +203,7 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
         } else {
             divider.isVisible = true
         }
-        browserScroller?.requestLayout()
+        if (srcHeight != layoutParams?.height) browserScroller?.requestLayout()
     }
 
     override fun onResume() {

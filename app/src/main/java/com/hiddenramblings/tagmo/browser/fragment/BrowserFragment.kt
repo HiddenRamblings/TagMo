@@ -151,9 +151,10 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
                             if (layoutParams.height > view.height - minHeight.toInt())
                                 layoutParams.height = view.height - minHeight.toInt()
                         }
-                        if (srcHeight != layoutParams.height) browserScroller?.requestLayout()
                     }
-                    browserScroller?.let { prefs.foomiiboOffset(it.layoutParams.height) }
+                    browserScroller?.let {
+                        it.requestLayout()
+                        prefs.foomiiboOffset(it.layoutParams.height) }
                 }
             }
             true
@@ -202,6 +203,7 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
         } else {
             divider.isVisible = true
         }
+        browserScroller?.requestLayout()
     }
 
     override fun onResume() {

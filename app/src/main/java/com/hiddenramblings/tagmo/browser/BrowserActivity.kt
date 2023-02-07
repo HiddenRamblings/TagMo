@@ -221,6 +221,29 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
             requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
         }
         if (null == settings) settings = BrowserSettings().initialize()
+        if (!BuildConfig.WEAR_OS) {
+            updateManager = UpdateManager(this)
+            settings?.lastUpdatedGit = System.currentTimeMillis()
+            if (BuildConfig.GOOGLE_PLAY) {
+                updateManager?.setPlayUpdateListener(object : PlayUpdateListener {
+                    override fun onPlayUpdateFound(appUpdateInfo: AppUpdateInfo?) {
+                        appUpdate = appUpdateInfo
+                        if (BuildConfig.WEAR_OS)
+                            onCreateWearOptionsMenu()
+                        else invalidateOptionsMenu()
+                    }
+                })
+            } else {
+                updateManager?.setUpdateListener(object : GitUpdateListener {
+                    override fun onUpdateFound(downloadUrl: String?) {
+                        updateUrl = downloadUrl
+                        if (BuildConfig.WEAR_OS)
+                            onCreateWearOptionsMenu()
+                        else invalidateOptionsMenu()
+                    }
+                })
+            }
+        }
         settings?.addChangeListener(this)
         val intent = intent
         if (null != intent && componentName == FilterComponent) {
@@ -1903,26 +1926,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
             onViewChanged()
         }
         if (System.currentTimeMillis() >= oldBrowserSettings.lastUpdatedGit + 3600000) {
-            updateManager = UpdateManager(this)
-            if (BuildConfig.GOOGLE_PLAY) {
-                updateManager?.setPlayUpdateListener(object : PlayUpdateListener {
-                    override fun onPlayUpdateFound(appUpdateInfo: AppUpdateInfo?) {
-                        appUpdate = appUpdateInfo
-                        if (BuildConfig.WEAR_OS)
-                            onCreateWearOptionsMenu()
-                        else invalidateOptionsMenu()
-                    }
-                })
-            } else {
-                updateManager?.setUpdateListener(object : GitUpdateListener {
-                    override fun onUpdateFound(downloadUrl: String?) {
-                        updateUrl = downloadUrl
-                        if (BuildConfig.WEAR_OS)
-                            onCreateWearOptionsMenu()
-                        else invalidateOptionsMenu()
-                    }
-                })
-            }
+            updateManager?.refreshUpdateStatus(this)
             newBrowserSettings.lastUpdatedGit = System.currentTimeMillis()
         }
         prefs.browserRootFolder(Storage.getRelativePath(

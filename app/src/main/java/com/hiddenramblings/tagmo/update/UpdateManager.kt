@@ -57,24 +57,9 @@ class UpdateManager internal constructor(activity: BrowserActivity) {
     private val scopeIO = CoroutineScope(Dispatchers.IO)
 
     init {
-        if (!BuildConfig.WEAR_OS) {
-            if (BuildConfig.GOOGLE_PLAY) configureManager(activity) else configureUpdates(activity)
-        }
-    }
-
-    private fun configureManager(activity: BrowserActivity) {
-        if (null == appUpdateManager) appUpdateManager = AppUpdateManagerFactory.create(activity)
-        val appUpdateInfoTask = appUpdateManager!!.appUpdateInfo
-        appUpdateInfoTask.addOnSuccessListener { appUpdateInfo: AppUpdateInfo ->
-            isUpdateAvailable = (appUpdateInfo.updateAvailability()
-                    == UpdateAvailability.UPDATE_AVAILABLE
-                    && appUpdateInfo.isUpdateTypeAllowed(AppUpdateType.IMMEDIATE))
-            if (isUpdateAvailable) listenerPlay?.onPlayUpdateFound(appUpdateInfo)
-        }
-    }
-
-    private fun configureUpdates(activity: BrowserActivity) {
-        scopeIO.launch(Dispatchers.IO) {
+        if (BuildConfig.GOOGLE_PLAY) {
+            configurePlay(activity)
+        } else {
             if (Debug.isNewer(Build.VERSION_CODES.LOLLIPOP)) {
                 activity.applicationContext.packageManager.packageInstaller.run {
                     mySessions.forEach {
@@ -87,6 +72,27 @@ class UpdateManager internal constructor(activity: BrowserActivity) {
             activity.externalCacheDir?.listFiles {
                     _: File?, name: String -> name.lowercase().endsWith(".apk")
             }?.forEach { if (!it.isDirectory) it.delete() }
+            configureGit(activity)
+        }
+    }
+
+    fun refreshUpdateStatus(activity: BrowserActivity) {
+        if (BuildConfig.GOOGLE_PLAY) configurePlay(activity) else configureGit(activity)
+    }
+
+    private fun configurePlay(activity: BrowserActivity) {
+        if (null == appUpdateManager) appUpdateManager = AppUpdateManagerFactory.create(activity)
+        val appUpdateInfoTask = appUpdateManager?.appUpdateInfo
+        appUpdateInfoTask?.addOnSuccessListener { appUpdateInfo: AppUpdateInfo ->
+            isUpdateAvailable = (appUpdateInfo.updateAvailability()
+                    == UpdateAvailability.UPDATE_AVAILABLE
+                    && appUpdateInfo.isUpdateTypeAllowed(AppUpdateType.IMMEDIATE))
+            if (isUpdateAvailable) listenerPlay?.onPlayUpdateFound(appUpdateInfo)
+        }
+    }
+
+    private fun configureGit(activity: BrowserActivity) {
+        scopeIO.launch(Dispatchers.IO) {
             JSONExecutor(activity, TAGMO_GIT_API, "releases/tags/master")
                 .setResultListener(object : ResultListener {
                     override fun onResults(result: String?) {

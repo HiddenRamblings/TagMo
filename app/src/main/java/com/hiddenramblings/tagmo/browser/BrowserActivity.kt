@@ -478,13 +478,13 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                     if (null != appUpdate) {
                         findViewById<View>(R.id.build_layout).setOnClickListener {
                             closePrefsDrawer()
-                            updateManager?.downloadPlayUpdate(appUpdate)
+                            updateManager?.startPlayUpdateFlow(appUpdate)
                         }
                     }
                     if (null != updateUrl) {
                         findViewById<View>(R.id.build_layout).setOnClickListener {
                             closePrefsDrawer()
-                            updateManager?.installUpdateCompat(updateUrl!!)
+                            updateManager?.requestInstallUpdate(updateUrl!!)
                         }
                     }
                 }
@@ -777,8 +777,8 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
 
     fun onReportProblemClick() {
         if (updateManager?.hasPendingUpdate() == true) {
-            if (null != appUpdate) updateManager?.downloadPlayUpdate(appUpdate)
-            if (null != updateUrl) updateManager?.installUpdateCompat(updateUrl)
+            if (null != appUpdate) updateManager?.startPlayUpdateFlow(appUpdate)
+            if (null != updateUrl) updateManager?.requestInstallUpdate(updateUrl)
             return
         }
         loadingExecutor.execute {
@@ -1639,8 +1639,8 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                 prefsDrawer?.openDrawer(GravityCompat.START)
             }
         } else if (item.itemId == R.id.install_update) {
-            if (null != appUpdate) updateManager?.downloadPlayUpdate(appUpdate)
-            if (null != updateUrl) updateManager?.installUpdateCompat(updateUrl)
+            if (null != appUpdate) updateManager?.startPlayUpdateFlow(appUpdate)
+            if (null != updateUrl) updateManager?.requestInstallUpdate(updateUrl)
         }
         return onMenuItemClicked(item)
     }

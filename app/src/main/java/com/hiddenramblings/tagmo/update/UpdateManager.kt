@@ -172,7 +172,7 @@ class UpdateManager internal constructor(activity: BrowserActivity) {
         }
     }
 
-    fun installUpdateCompat(apkUrl: String?) {
+    fun requestInstallUpdate(apkUrl: String?) {
         if (null == apkUrl) return
         if (Debug.isNewer(Build.VERSION_CODES.O)) {
             if (browserActivity.packageManager.canRequestPackageInstalls()) {
@@ -206,7 +206,7 @@ class UpdateManager internal constructor(activity: BrowserActivity) {
         }
     }
 
-    fun downloadPlayUpdate(appUpdateInfo: AppUpdateInfo?) {
+    fun startPlayUpdateFlow(appUpdateInfo: AppUpdateInfo?) {
         try {
             appUpdateManager?.startUpdateFlowForResult( // Pass the intent that is returned by 'getAppUpdateInfo()'.
                 appUpdateInfo!!,  // Or 'AppUpdateType.FLEXIBLE' for flexible updates.

@@ -34,6 +34,7 @@ import com.hiddenramblings.tagmo.eightbit.io.Debug
 import com.hiddenramblings.tagmo.eightbit.net.JSONExecutor
 import com.hiddenramblings.tagmo.eightbit.net.JSONExecutor.ResultListener
 import com.hiddenramblings.tagmo.eightbit.os.Storage
+import com.hiddenramblings.tagmo.eightbit.os.Version
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -60,7 +61,7 @@ class UpdateManager internal constructor(activity: BrowserActivity) {
         if (BuildConfig.GOOGLE_PLAY) {
             configurePlay(activity)
         } else {
-            if (Debug.isNewer(Build.VERSION_CODES.LOLLIPOP)) {
+            if (Version.isLollipop) {
                 activity.applicationContext.packageManager.packageInstaller.run {
                     mySessions.forEach {
                         try {
@@ -117,7 +118,7 @@ class UpdateManager internal constructor(activity: BrowserActivity) {
                 }
                 if (!apk.name.lowercase().endsWith(".apk")) apk.delete()
                 browserActivity.run {
-                    if (Debug.isNewer(Build.VERSION_CODES.N)) {
+                    if (Version.isNougat) {
                         val apkUri = Storage.getFileUri(apk)
                         applicationContext.contentResolver.openInputStream(apkUri).use { apkStream ->
                             val session = applicationContext.packageManager.packageInstaller.run {
@@ -135,7 +136,7 @@ class UpdateManager internal constructor(activity: BrowserActivity) {
                             val pi = PendingIntent.getBroadcast(
                                 applicationContext, Random.nextInt(),
                                 Intent(applicationContext, UpdateReceiver::class.java),
-                                if (Debug.isNewer(Build.VERSION_CODES.S))
+                                if (Version.isSnowCone)
                                     PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_MUTABLE
                                 else PendingIntent.FLAG_UPDATE_CURRENT
                             )
@@ -174,7 +175,7 @@ class UpdateManager internal constructor(activity: BrowserActivity) {
 
     fun requestInstallUpdate(apkUrl: String?) {
         if (null == apkUrl) return
-        if (Debug.isNewer(Build.VERSION_CODES.O)) {
+        if (Version.isOreo) {
             if (browserActivity.packageManager.canRequestPackageInstalls()) {
                 installUpdateTask(apkUrl)
             } else {

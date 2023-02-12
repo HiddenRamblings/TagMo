@@ -2,8 +2,7 @@ package com.hiddenramblings.tagmo
 
 import android.content.ComponentName
 import android.content.Intent
-import android.os.Build
-import com.hiddenramblings.tagmo.eightbit.io.Debug
+import com.hiddenramblings.tagmo.eightbit.os.Version
 
 object NFCIntent {
     @JvmStatic
@@ -40,7 +39,7 @@ object NFCIntent {
     const val SITE_GITLAB_README = "https://tagmo.gitlab.io/"
     @JvmStatic
     fun getIntent(intent: Intent): Intent {
-        return if (Debug.isNewer(Build.VERSION_CODES.N))
+        return if (Version.isNougat)
             intent.addCategory(Intent.CATEGORY_OPENABLE).setType("*/*")
             .addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
             .addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION)

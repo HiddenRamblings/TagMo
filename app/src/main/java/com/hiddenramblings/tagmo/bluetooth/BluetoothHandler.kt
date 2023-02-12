@@ -34,7 +34,7 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.hiddenramblings.tagmo.BuildConfig
 import com.hiddenramblings.tagmo.R
-import com.hiddenramblings.tagmo.eightbit.io.Debug.isNewer
+import com.hiddenramblings.tagmo.eightbit.os.Version
 
 class BluetoothHandler(
     context: Context, registry: ActivityResultRegistry, listener: BluetoothListener
@@ -120,7 +120,7 @@ class BluetoothHandler(
     }
 
     private fun requestBluetooth(context: Context) {
-        if (isNewer(Build.VERSION_CODES.S)) {
+        if (Version.isSnowCone) {
             onRequestBluetoothS.launch(PERMISSIONS_BLUETOOTH)
         } else {
             val mBluetoothAdapter = getBluetoothAdapter(context)
@@ -153,7 +153,7 @@ class BluetoothHandler(
                     .setCancelable(false)
                     .setPositiveButton(R.string.accept) { dialog: DialogInterface, _: Int ->
                         dialog.dismiss()
-                        if (isNewer(Build.VERSION_CODES.Q)) {
+                        if (Version.isAndroid10) {
                             onRequestLocationQ.launch(PERMISSIONS_LOCATION)
                         } else {
                             onRequestLocation.launch(PERMISSIONS_LOCATION)
@@ -174,7 +174,7 @@ class BluetoothHandler(
                         .setCancelable(false)
                         .setPositiveButton(R.string.accept) { dialog: DialogInterface, _: Int ->
                             dialog.dismiss()
-                            if (isNewer(Build.VERSION_CODES.Q))
+                            if (Version.isAndroid10)
                                 onRequestLocationQ.launch(PERMISSIONS_LOCATION)
                             else onRequestLocation.launch(PERMISSIONS_LOCATION)
                         }
@@ -182,7 +182,7 @@ class BluetoothHandler(
                             listener.onPermissionsFailed() }
                         .show()
                 } else {
-                    if (isNewer(Build.VERSION_CODES.Q))
+                    if (Version.isAndroid10)
                         onRequestLocationQ.launch(PERMISSIONS_LOCATION)
                     else onRequestLocation.launch(PERMISSIONS_LOCATION)
                 }
@@ -215,7 +215,7 @@ class BluetoothHandler(
             }
             return mBluetoothAdapter
         } else {
-            mBluetoothAdapter = if (isNewer(Build.VERSION_CODES.JELLY_BEAN_MR2)) {
+            mBluetoothAdapter = if (Version.isJellyBeanMR2) {
                 (context.getSystemService(Context.BLUETOOTH_SERVICE) as BluetoothManager).adapter
             } else {
                 @Suppress("DEPRECATION")

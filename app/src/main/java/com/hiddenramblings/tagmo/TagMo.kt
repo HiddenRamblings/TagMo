@@ -2,7 +2,6 @@ package com.hiddenramblings.tagmo
 
 import android.app.Application
 import android.content.Context
-import android.os.Build
 import android.text.Spanned
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatDelegate
@@ -10,8 +9,8 @@ import androidx.core.text.HtmlCompat
 import com.github.anrwatchdog.ANRError
 import com.github.anrwatchdog.ANRWatchDog
 import com.hiddenramblings.tagmo.eightbit.content.ScaledContext
-import com.hiddenramblings.tagmo.eightbit.io.Debug.isNewer
-import com.hiddenramblings.tagmo.eightbit.io.Debug.processException
+import com.hiddenramblings.tagmo.eightbit.io.Debug
+import com.hiddenramblings.tagmo.eightbit.os.Version
 import me.weishu.reflection.Reflection
 import org.lsposed.hiddenapibypass.HiddenApiBypass
 import java.io.PrintWriter
@@ -38,9 +37,9 @@ class TagMo : Application() {
             appContext = ScaledContext(appContext).watch(2f)
             appContext.setTheme(R.style.AppTheme)
         }
-        if (isNewer(Build.VERSION_CODES.P))
+        if (Version.isPie)
             HiddenApiBypass.addHiddenApiExemptions("LBluetooth")
-        else if (isNewer(Build.VERSION_CODES.LOLLIPOP))
+        else if (Version.isLollipop)
             Reflection.unseal(base)
     }
 
@@ -52,7 +51,7 @@ class TagMo : Application() {
             ANRWatchDog(30000).setANRListener { error: ANRError ->
                 val exception = StringWriter()
                 error.printStackTrace(PrintWriter(exception))
-                processException(this, exception.toString())
+                Debug.processException(this, exception.toString())
             }.start()
         }
         Thread.setDefaultUncaughtExceptionHandler { _: Thread?, error: Throwable ->
@@ -62,7 +61,7 @@ class TagMo : Application() {
             try {
                 Toast.makeText(this, R.string.logcat_crash, Toast.LENGTH_SHORT).show()
             } catch (ignored: Exception) { }
-            processException(this, exception.toString())
+            Debug.processException(this, exception.toString())
             exitProcess(0)
         }
         setThemePreference()

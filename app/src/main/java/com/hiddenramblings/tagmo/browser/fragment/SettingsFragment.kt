@@ -7,7 +7,6 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Color
 import android.net.Uri
-import android.os.Build
 import android.os.Bundle
 import android.text.Spannable
 import android.text.SpannableStringBuilder
@@ -18,15 +17,12 @@ import android.widget.TextView
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
-import androidx.preference.CheckBoxPreference
-import androidx.preference.ListPreference
-import androidx.preference.Preference
-import androidx.preference.PreferenceFragmentCompat
-import androidx.preference.SwitchPreferenceCompat
+import androidx.preference.*
 import com.google.android.material.snackbar.Snackbar
 import com.hiddenramblings.tagmo.*
 import com.hiddenramblings.tagmo.NFCIntent.FilterComponent
 import com.hiddenramblings.tagmo.NFCIntent.getIntent
+import com.hiddenramblings.tagmo.R
 import com.hiddenramblings.tagmo.amiibo.AmiiboManager
 import com.hiddenramblings.tagmo.amiibo.AmiiboManager.Companion.parse
 import com.hiddenramblings.tagmo.amiibo.AmiiboManager.Companion.parseAmiiboAPI
@@ -36,6 +32,7 @@ import com.hiddenramblings.tagmo.browser.BrowserActivity
 import com.hiddenramblings.tagmo.eightbit.io.Debug
 import com.hiddenramblings.tagmo.eightbit.material.IconifiedSnackbar
 import com.hiddenramblings.tagmo.eightbit.net.JSONExecutor
+import com.hiddenramblings.tagmo.eightbit.os.Version
 import com.hiddenramblings.tagmo.nfctech.TagArray
 import com.hiddenramblings.tagmo.security.SecurityHandler
 import com.hiddenramblings.tagmo.widget.Toasty
@@ -187,7 +184,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
                     (requireActivity() as BrowserActivity).reloadTabCollection = true
                     super@SettingsFragment.onPreferenceTreeClick(it)
                 }
-            enableFlaskSupport.isVisible = Debug.isNewer(Build.VERSION_CODES.JELLY_BEAN_MR2)
+            enableFlaskSupport.isVisible = Version.isJellyBeanMR2
         }
         val databaseSourceSetting = findPreference<ListPreference>(getString(R.string.setting_database_source))
         if (null != databaseSourceSetting) {
@@ -620,7 +617,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
 
     private fun showFileChooser(title: String, resultCode: Int) {
         Intent(
-            if (Debug.isNewer(Build.VERSION_CODES.KITKAT))
+            if (Version.isKitKat)
                 Intent.ACTION_OPEN_DOCUMENT
             else Intent.ACTION_GET_CONTENT
         ).apply {
@@ -628,10 +625,10 @@ class SettingsFragment : PreferenceFragmentCompat() {
             putExtra("android.content.extra.FANCY", true)
             when (resultCode) {
                 RESULT_KEYS -> {
-                    if (Debug.isNewer(Build.VERSION_CODES.JELLY_BEAN_MR2))
+                    if (Version.isJellyBeanMR2)
                         putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true)
                     try {
-                        if (Debug.isNewer(Build.VERSION_CODES.KITKAT)) {
+                        if (Version.isKitKat) {
                             putExtra(Intent.EXTRA_MIME_TYPES,
                                 resources.getStringArray(R.array.mimetype_bin)
                             )
@@ -642,7 +639,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
                     }
                 }
                 RESULT_IMPORT_AMIIBO_DATABASE -> try {
-                    if (Debug.isNewer(Build.VERSION_CODES.KITKAT)) {
+                    if (Version.isKitKat) {
                         putExtra(Intent.EXTRA_MIME_TYPES,
                             resources.getStringArray(R.array.mimetype_json)
                         )

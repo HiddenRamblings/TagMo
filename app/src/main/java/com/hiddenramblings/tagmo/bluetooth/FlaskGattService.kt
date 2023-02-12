@@ -15,6 +15,7 @@ import android.util.Base64
 import androidx.annotation.RequiresApi
 import com.hiddenramblings.tagmo.amiibo.Amiibo
 import com.hiddenramblings.tagmo.eightbit.io.Debug
+import com.hiddenramblings.tagmo.eightbit.os.Version
 import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
@@ -271,7 +272,7 @@ class FlaskGattService : Service() {
 
         override fun onServicesDiscovered(gatt: BluetoothGatt, status: Int) {
             if (status == BluetoothGatt.GATT_SUCCESS) {
-                if (Debug.isNewer(Build.VERSION_CODES.LOLLIPOP))
+                if (Version.isLollipop)
                     mBluetoothGatt!!.requestMtu(512) // Maximum: 517
                 else listener?.onServicesDiscovered()
             } else {
@@ -412,7 +413,7 @@ class FlaskGattService : Service() {
                 UUID.fromString("00002902-0000-1000-8000-00805f9b34fb")
             )
             val value = BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE
-            if (Debug.isNewer(Build.VERSION_CODES.TIRAMISU)) {
+            if (Version.isTiramisu) {
                 mBluetoothGatt!!.writeDescriptor(descriptorTX, value)
             } else @Suppress("DEPRECATION") {
                 descriptorTX.value = value
@@ -424,7 +425,7 @@ class FlaskGattService : Service() {
                 UUID.fromString("00002902-0000-1000-8000-00805f9b34fb")
             )
             val value = BluetoothGattDescriptor.ENABLE_INDICATION_VALUE
-            if (Debug.isNewer(Build.VERSION_CODES.TIRAMISU)) {
+            if (Version.isTiramisu) {
                 mBluetoothGatt!!.writeDescriptor(descriptorTX, value)
             } else @Suppress("DEPRECATION") {
                 descriptorTX.value = value
@@ -537,7 +538,7 @@ class FlaskGattService : Service() {
                     try {
                         mCharacteristicTX!!.writeType =
                             BluetoothGattCharacteristic.WRITE_TYPE_NO_RESPONSE
-                        if (Debug.isNewer(Build.VERSION_CODES.TIRAMISU)) {
+                        if (Version.isTiramisu) {
                             mBluetoothGatt!!.writeCharacteristic(
                                 mCharacteristicTX!!, chunk.encodeToByteArray(),
                                 BluetoothGattCharacteristic.WRITE_TYPE_NO_RESPONSE
@@ -564,7 +565,7 @@ class FlaskGattService : Service() {
                     try {
                         mCharacteristicTX!!.writeType =
                             BluetoothGattCharacteristic.WRITE_TYPE_NO_RESPONSE
-                        if (Debug.isNewer(Build.VERSION_CODES.TIRAMISU)) {
+                        if (Version.isTiramisu) {
                             mBluetoothGatt!!.writeCharacteristic(
                                 mCharacteristicTX!!, chunk,
                                 BluetoothGattCharacteristic.WRITE_TYPE_NO_RESPONSE

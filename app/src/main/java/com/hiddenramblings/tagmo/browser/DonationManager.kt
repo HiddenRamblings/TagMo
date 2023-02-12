@@ -8,7 +8,6 @@ import android.content.res.Resources
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.net.Uri
-import android.os.Build
 import android.util.TypedValue
 import android.widget.Button
 import android.widget.LinearLayout
@@ -21,8 +20,8 @@ import com.android.billingclient.api.QueryProductDetailsParams.Product
 import com.hiddenramblings.tagmo.BuildConfig
 import com.hiddenramblings.tagmo.R
 import com.hiddenramblings.tagmo.TagMo
-import com.hiddenramblings.tagmo.eightbit.io.Debug
 import com.hiddenramblings.tagmo.eightbit.material.IconifiedSnackbar
+import com.hiddenramblings.tagmo.eightbit.os.Version
 import kotlinx.coroutines.*
 import java.util.*
 
@@ -196,7 +195,7 @@ class DonationManager internal constructor(private val activity: BrowserActivity
     private fun getDonationButton(skuDetail: ProductDetails): Button {
         val button = Button(activity.applicationContext)
         button.setBackgroundResource(R.drawable.rounded_view)
-        if (Debug.isNewer(Build.VERSION_CODES.LOLLIPOP)) {
+        if (Version.isLollipop) {
             button.elevation = TypedValue.applyDimension(
                 TypedValue.COMPLEX_UNIT_DIP,
                 10f,
@@ -236,7 +235,7 @@ class DonationManager internal constructor(private val activity: BrowserActivity
     private fun getSubscriptionButton(skuDetail: ProductDetails): Button {
         val button = Button(activity.applicationContext)
         button.setBackgroundResource(R.drawable.rounded_view)
-        if (Debug.isNewer(Build.VERSION_CODES.LOLLIPOP)) {
+        if (Version.isLollipop) {
             button.elevation = TypedValue.applyDimension(
                 TypedValue.COMPLEX_UNIT_DIP,
                 10f,

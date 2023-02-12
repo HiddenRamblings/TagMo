@@ -21,6 +21,7 @@ import com.hiddenramblings.tagmo.amiibo.AmiiboFile
 import com.hiddenramblings.tagmo.amiibo.AmiiboManager
 import com.hiddenramblings.tagmo.amiibo.KeyManager
 import com.hiddenramblings.tagmo.eightbit.io.Debug
+import com.hiddenramblings.tagmo.eightbit.os.Version
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
@@ -139,7 +140,7 @@ object TagArray {
 
     fun bytesToLong(bytes: ByteArray?): Long {
         val buffer = ByteBuffer.allocate(
-            if (Debug.isNewer(Build.VERSION_CODES.N)) java.lang.Long.BYTES else 8
+            if (Version.isNougat) java.lang.Long.BYTES else 8
         )
         if (bytes != null) {
             buffer.put(bytes)

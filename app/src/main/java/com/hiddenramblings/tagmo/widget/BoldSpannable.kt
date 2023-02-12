@@ -3,7 +3,6 @@ package com.hiddenramblings.tagmo.widget
 import android.graphics.Typeface
 import android.text.Spannable
 import android.text.SpannableStringBuilder
-import android.text.TextUtils
 import android.text.style.StyleSpan
 import java.util.*
 

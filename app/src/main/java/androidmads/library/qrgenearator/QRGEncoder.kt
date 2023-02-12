@@ -29,6 +29,7 @@ import com.google.zxing.EncodeHintType
 import com.google.zxing.MultiFormatWriter
 import com.hiddenramblings.tagmo.charset.CharsetCompat
 import com.hiddenramblings.tagmo.eightbit.io.Debug
+import com.hiddenramblings.tagmo.eightbit.os.Version
 import java.util.*
 
 class QRGEncoder(data: String?, bundle: Bundle?, type: Int, private var dimension: Int) {
@@ -119,7 +120,7 @@ class QRGEncoder(data: String?, bundle: Bundle?, type: Int, private var dimensio
                 val phone = trim(data)
                 if (phone != null) {
                     contents = "tel:$phone"
-                    displayContents = if (Debug.isNewer(Build.VERSION_CODES.LOLLIPOP))
+                    displayContents = if (Version.isLollipop)
                         PhoneNumberUtils.formatNumber(phone, Locale.getDefault().country)
                     else
                         @Suppress("DEPRECATION") PhoneNumberUtils.formatNumber(phone)
@@ -130,7 +131,7 @@ class QRGEncoder(data: String?, bundle: Bundle?, type: Int, private var dimensio
                 val sms = trim(data)
                 if (sms != null) {
                     contents = "sms:$sms"
-                    displayContents = if (Debug.isNewer(Build.VERSION_CODES.LOLLIPOP))
+                    displayContents = if (Version.isLollipop)
                         PhoneNumberUtils.formatNumber(sms, Locale.getDefault().country)
                     else
                         @Suppress("DEPRECATION") PhoneNumberUtils.formatNumber(sms)
@@ -167,7 +168,7 @@ class QRGEncoder(data: String?, bundle: Bundle?, type: Int, private var dimensio
                     newContents.append("TEL:").append(escapeVCard(it)) //.append(';')
                     newContents.append("\n")
                     newDisplayContents.append('\n').append(
-                        if (Debug.isNewer(Build.VERSION_CODES.LOLLIPOP))
+                        if (Version.isLollipop)
                             PhoneNumberUtils.formatNumber(it, Locale.getDefault().country)
                         else
                             @Suppress("DEPRECATION") PhoneNumberUtils.formatNumber(it)

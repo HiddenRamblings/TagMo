@@ -18,17 +18,16 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageInstaller
-import android.os.Build
 import android.os.Parcelable
 import android.widget.Toast
 import com.hiddenramblings.tagmo.BuildConfig
 import com.hiddenramblings.tagmo.browser.BrowserActivity
-import com.hiddenramblings.tagmo.eightbit.io.Debug
+import com.hiddenramblings.tagmo.eightbit.os.Version
 import java.net.URISyntaxException
 
 class UpdateReceiver : BroadcastReceiver() {
     private inline fun <reified T : Parcelable> Intent.parcelable(key: String): T? = when {
-        Debug.isNewer(Build.VERSION_CODES.TIRAMISU) ->
+        Version.isTiramisu ->
             getParcelableExtra(key, T::class.java)
         else -> @Suppress("DEPRECATION") getParcelableExtra(key) as? T
     }
@@ -45,14 +44,14 @@ class UpdateReceiver : BroadcastReceiver() {
                     .getLaunchIntentForPackage(BuildConfig.APPLICATION_ID)
             } catch (ignored: Exception) { }
             startLauncherActivity(context, mainIntent)
-        } else if (!BuildConfig.GOOGLE_PLAY && Debug.isNewer(Build.VERSION_CODES.LOLLIPOP)) {
+        } else if (!BuildConfig.GOOGLE_PLAY && Version.isLollipop) {
             when (intent.getIntExtra(PackageInstaller.EXTRA_STATUS, -1)) {
                 PackageInstaller.STATUS_PENDING_USER_ACTION -> {
                     val activityIntent = intent.parcelable<Intent>(Intent.EXTRA_INTENT)
                     if (null != activityIntent) {
                         try {
                             val intentUri = activityIntent.toUri(0)
-                            if (Debug.isNewer(Build.VERSION_CODES.LOLLIPOP_MR1)) {
+                            if (Version.isLollipopMR) {
                                 startLauncherActivity(
                                     context, Intent.parseUri(intentUri, Intent.URI_ALLOW_UNSAFE)
                                 )

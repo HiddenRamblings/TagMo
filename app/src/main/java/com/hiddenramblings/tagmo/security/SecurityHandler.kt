@@ -16,14 +16,13 @@ package com.hiddenramblings.tagmo.security
 
 import android.app.Activity
 import android.content.Intent
-import android.os.Build
 import com.google.android.gms.common.GoogleApiAvailability
 import com.google.android.gms.security.ProviderInstaller
-import com.hiddenramblings.tagmo.eightbit.io.Debug
+import com.hiddenramblings.tagmo.eightbit.os.Version
 
 class SecurityHandler(activity: Activity?, listener: ProviderInstallListener?) {
     init {
-        if (Debug.isNewer(Build.VERSION_CODES.M)) {
+        if (Version.isMarshmallow) {
             listener?.onProviderInstalled()
         } else {
             ProviderInstaller.installIfNeededAsync(activity!!,

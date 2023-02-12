@@ -6,7 +6,6 @@ import android.nfc.NfcAdapter
 import android.nfc.Tag
 import android.nfc.TagLostException
 import android.nfc.tech.NfcA
-import android.os.Build
 import android.os.Bundle
 import android.os.Parcelable
 import androidx.appcompat.app.AlertDialog
@@ -17,6 +16,7 @@ import com.hiddenramblings.tagmo.R
 import com.hiddenramblings.tagmo.browser.BrowserActivity
 import com.hiddenramblings.tagmo.eightbit.io.Debug
 import com.hiddenramblings.tagmo.eightbit.material.IconifiedSnackbar
+import com.hiddenramblings.tagmo.eightbit.os.Version
 import com.hiddenramblings.tagmo.nfctech.TagArray.getTagTechnology
 import com.hiddenramblings.tagmo.nfctech.TagArray.isElite
 import com.hiddenramblings.tagmo.nfctech.TagArray.isPowerTag
@@ -24,7 +24,7 @@ import com.hiddenramblings.tagmo.widget.Toasty
 
 class ScanTag {
     private inline fun <reified T : Parcelable> Intent.parcelable(key: String): T? = when {
-        Debug.isNewer(Build.VERSION_CODES.TIRAMISU) ->
+        Version.isTiramisu ->
             getParcelableExtra(key, T::class.java)
         else -> @Suppress("DEPRECATION") getParcelableExtra(key) as? T
     }

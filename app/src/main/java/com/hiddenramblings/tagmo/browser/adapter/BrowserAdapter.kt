@@ -3,7 +3,6 @@ package com.hiddenramblings.tagmo.browser.adapter
 import android.annotation.SuppressLint
 import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
-import android.os.Build
 import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
@@ -28,8 +27,8 @@ import com.hiddenramblings.tagmo.amiibo.AmiiboFileComparator
 import com.hiddenramblings.tagmo.amiibo.AmiiboManager.Companion.hasSpoofData
 import com.hiddenramblings.tagmo.browser.BrowserSettings
 import com.hiddenramblings.tagmo.browser.BrowserSettings.*
-import com.hiddenramblings.tagmo.eightbit.io.Debug.isNewer
 import com.hiddenramblings.tagmo.eightbit.os.Storage
+import com.hiddenramblings.tagmo.eightbit.os.Version
 import com.hiddenramblings.tagmo.widget.BoldSpannable
 import com.qtalk.recyclerviewfastscroller.RecyclerViewFastScroller
 import java.util.*
@@ -358,7 +357,7 @@ class BrowserAdapter(
                         txtPath.context.theme.resolveAttribute(
                             android.R.attr.textColor, a, true
                         )
-                        if (isNewer(Build.VERSION_CODES.Q) && a.isColorType) {
+                        if (Version.isAndroid10 && a.isColorType) {
                             txtPath.setTextColor(a.data)
                         } else if (a.type >= TypedValue.TYPE_FIRST_COLOR_INT
                             && a.type <= TypedValue.TYPE_LAST_COLOR_INT
@@ -388,7 +387,7 @@ class BrowserAdapter(
                         txtPath.context.theme.resolveAttribute(
                             android.R.attr.textColor, a, true
                         )
-                        if (isNewer(Build.VERSION_CODES.Q) && a.isColorType) {
+                        if (Version.isAndroid10 && a.isColorType) {
                             txtPath.setTextColor(a.data)
                         } else if (a.type >= TypedValue.TYPE_FIRST_COLOR_INT
                             && a.type <= TypedValue.TYPE_LAST_COLOR_INT

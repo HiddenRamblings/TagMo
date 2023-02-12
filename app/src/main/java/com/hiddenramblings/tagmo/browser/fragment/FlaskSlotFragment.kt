@@ -49,6 +49,7 @@ import com.hiddenramblings.tagmo.browser.adapter.FlaskSlotAdapter
 import com.hiddenramblings.tagmo.browser.adapter.WriteTagAdapter
 import com.hiddenramblings.tagmo.eightbit.io.Debug
 import com.hiddenramblings.tagmo.eightbit.material.IconifiedSnackbar
+import com.hiddenramblings.tagmo.eightbit.os.Version
 import com.hiddenramblings.tagmo.nfctech.TagArray
 import com.hiddenramblings.tagmo.widget.Toasty
 import com.shawnlin.numberpicker.NumberPicker
@@ -876,7 +877,7 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
         showScanningNotice()
         deviceProfile = null
         val devices: ArrayList<BluetoothDevice> = arrayListOf()
-        if (Debug.isNewer(Build.VERSION_CODES.LOLLIPOP)) {
+        if (Version.isLollipop) {
             val scanner = mBluetoothAdapter?.bluetoothLeScanner
             val settings = ScanSettings.Builder().setScanMode(
                 ScanSettings.SCAN_MODE_LOW_LATENCY
@@ -1127,7 +1128,7 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
                 mBluetoothAdapter
             else bluetoothHandler?.getBluetoothAdapter(requireContext())
         if (null != mBluetoothAdapter) {
-            if (Debug.isNewer(Build.VERSION_CODES.LOLLIPOP)) {
+            if (Version.isLollipop) {
                 if (null != scanCallbackFlaskLP) mBluetoothAdapter!!.bluetoothLeScanner.stopScan(
                     scanCallbackFlaskLP
                 )

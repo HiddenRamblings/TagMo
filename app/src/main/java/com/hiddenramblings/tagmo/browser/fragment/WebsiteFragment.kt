@@ -22,11 +22,9 @@ import com.hiddenramblings.tagmo.R
 import com.hiddenramblings.tagmo.TagMo
 import com.hiddenramblings.tagmo.amiibo.AmiiboManager.Companion.getAmiiboManager
 import com.hiddenramblings.tagmo.browser.BrowserActivity
-import com.hiddenramblings.tagmo.eightbit.io.Debug.isNewer
-import com.hiddenramblings.tagmo.eightbit.io.Debug.isOlder
-import com.hiddenramblings.tagmo.eightbit.io.Debug.verbose
-import com.hiddenramblings.tagmo.eightbit.io.Debug.warn
+import com.hiddenramblings.tagmo.eightbit.io.Debug
 import com.hiddenramblings.tagmo.eightbit.os.Storage
+import com.hiddenramblings.tagmo.eightbit.os.Version
 import com.hiddenramblings.tagmo.nfctech.TagArray
 import com.hiddenramblings.tagmo.security.SecurityHandler
 import com.hiddenramblings.tagmo.widget.Toasty
@@ -81,10 +79,10 @@ class WebsiteFragment : Fragment() {
         webViewSettings.javaScriptEnabled = true
         webViewSettings.domStorageEnabled = true
         webViewSettings.cacheMode = WebSettings.LOAD_NO_CACHE
-        if (isOlder(Build.VERSION_CODES.KITKAT))
+        if (Version.isOlder(Build.VERSION_CODES.KITKAT))
             @Suppress("DEPRECATION")
             webViewSettings.pluginState = WebSettings.PluginState.ON
-        if (isNewer(Build.VERSION_CODES.LOLLIPOP)) {
+        if (Version.isLollipop) {
             val assetLoader = WebViewAssetLoader.Builder().addPathHandler(
                 "/assets/",
                 AssetsPathHandler(requireContext())
@@ -129,7 +127,7 @@ class WebsiteFragment : Fragment() {
         webView.addJavascriptInterface(download, "Android")
         webView.setDownloadListener { url: String, _: String?, _: String?, mimeType: String, _: Long ->
             if (url.startsWith("blob") || url.startsWith("data")) {
-                verbose(WebsiteFragment::class.java, url)
+                Debug.verbose(WebsiteFragment::class.java, url)
                 webView.loadUrl(download.getBase64StringFromBlob(url, mimeType))
             }
         }
@@ -212,7 +210,7 @@ class WebsiteFragment : Fragment() {
             try {
                 decompress()
             } catch (e: IOException) {
-                warn(e)
+                Debug.warn(e)
             } finally {
                 dialog?.dismiss()
                 archive.delete()
@@ -231,7 +229,7 @@ class WebsiteFragment : Fragment() {
             os.write(tagData)
             os.flush()
         } catch (e: IOException) {
-            warn(e)
+            Debug.warn(e)
         }
     }
 
@@ -245,11 +243,11 @@ class WebsiteFragment : Fragment() {
             val amiiboManager = getAmiiboManager(requireContext().applicationContext)
             input.setText(TagArray.decipherFilename(amiiboManager, tagData, true))
         } catch (e: IOException) {
-            warn(e)
+            Debug.warn(e)
         } catch (e: JSONException) {
-            warn(e)
+            Debug.warn(e)
         } catch (e: ParseException) {
-            warn(e)
+            Debug.warn(e)
         }
         val backupDialog: Dialog = dialog.setView(view).create()
         view.findViewById<View>(R.id.button_save).setOnClickListener {

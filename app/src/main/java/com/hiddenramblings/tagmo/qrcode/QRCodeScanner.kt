@@ -52,6 +52,7 @@ import com.hiddenramblings.tagmo.amiibo.Amiibo
 import com.hiddenramblings.tagmo.amiibo.AmiiboManager
 import com.hiddenramblings.tagmo.eightbit.io.Debug
 import com.hiddenramblings.tagmo.eightbit.os.Storage
+import com.hiddenramblings.tagmo.eightbit.os.Version
 import com.hiddenramblings.tagmo.nfctech.TagArray
 import com.hiddenramblings.tagmo.widget.Toasty
 import kotlinx.coroutines.*
@@ -115,7 +116,7 @@ class QRCodeScanner : AppCompatActivity() {
 
         amiiboPreview = findViewById(R.id.amiiboPreview)
         barcodePreview = findViewById(R.id.barcodePreview)
-        if (Debug.isNewer(Build.VERSION_CODES.LOLLIPOP))
+        if (Version.isLollipop)
             cameraPreview = findViewById(R.id.cameraPreview)
         qrTypeSpinner = findViewById(R.id.txtTypeValue)
         val adapter = ArrayAdapter.createFromResource(
@@ -159,7 +160,7 @@ class QRCodeScanner : AppCompatActivity() {
 
     private val isDocumentStorage: Boolean
         get() = if (
-            Debug.isNewer(Build.VERSION_CODES.LOLLIPOP) && null != prefs.browserRootDocument()
+            Version.isLollipop && null != prefs.browserRootDocument()
         ) {
             try {
                 DocumentFile.fromTreeUri(this, Uri.parse(prefs.browserRootDocument()))
@@ -298,7 +299,7 @@ class QRCodeScanner : AppCompatActivity() {
             if (null != photoUri) {
                 scopeIO.launch(Dispatchers.IO) {
                     var rotation = 0
-                    val bitmap: Bitmap? = if (Debug.isNewer(Build.VERSION_CODES.P)) {
+                    val bitmap: Bitmap? = if (Version.isPie) {
                         val source: ImageDecoder.Source = ImageDecoder.createSource(
                             this@QRCodeScanner.contentResolver, photoUri
                         )
@@ -332,15 +333,15 @@ class QRCodeScanner : AppCompatActivity() {
         get() {
             val width: Int
             val height: Int
-            if (Debug.isNewer(Build.VERSION_CODES.S)) {
+            if (Version.isSnowCone) {
                 val bounds: Rect = windowManager.currentWindowMetrics.bounds
                 width = bounds.width()
                 height = bounds.height()
             } else @Suppress("DEPRECATION") {
-                if (Debug.isNewer(Build.VERSION_CODES.R))
+                if (Version.isRedVelvet)
                     display?.getRealMetrics(metrics)
                         ?: windowManager.defaultDisplay.getRealMetrics(metrics)
-                else if (Debug.isNewer(Build.VERSION_CODES.JELLY_BEAN_MR1))
+                else if (Version.isJellyBeanMR)
                     windowManager.defaultDisplay.getRealMetrics(metrics)
                 else
                     windowManager.defaultDisplay.getMetrics(metrics)
@@ -429,17 +430,17 @@ class QRCodeScanner : AppCompatActivity() {
 
     @Throws(Exception::class)
     fun encodeQR(text: String, type: Int) : Bitmap? {
-        val dimension = if (Debug.isNewer(Build.VERSION_CODES.S)) {
+        val dimension = if (Version.isSnowCone) {
             val bounds: Rect = windowManager.currentWindowMetrics.bounds
             val params = if (bounds.width() < bounds.height())
                 bounds.width()
             else bounds.height()
             ((params * 3 / 4) / (resources.configuration.densityDpi / 160)) + 0.5
         } else @Suppress("DEPRECATION") {
-            if (Debug.isNewer(Build.VERSION_CODES.R))
+            if (Version.isRedVelvet)
                 display?.getRealMetrics(metrics)
                     ?: windowManager.defaultDisplay.getRealMetrics(metrics)
-            else if (Debug.isNewer(Build.VERSION_CODES.JELLY_BEAN_MR1))
+            else if (Version.isJellyBeanMR)
                 windowManager.defaultDisplay.getRealMetrics(metrics)
             else
                 windowManager.defaultDisplay.getMetrics(metrics)
@@ -472,7 +473,7 @@ class QRCodeScanner : AppCompatActivity() {
             }
             R.id.mnu_camera -> {
                 txtMiiValue.text = ""
-                if (Debug.isNewer(Build.VERSION_CODES.LOLLIPOP)) {
+                if (Version.isLollipop) {
                     onRequestCamera.launch(Manifest.permission.CAMERA)
                 } else {
                     val values = ContentValues()
@@ -488,14 +489,14 @@ class QRCodeScanner : AppCompatActivity() {
             }
             R.id.mnu_gallery -> {
                 txtMiiValue.text = ""
-                if (Debug.isNewer(Build.VERSION_CODES.LOLLIPOP) && null != cameraProvider) {
+                if (Version.isLollipop && null != cameraProvider) {
                     if (null != previewUseCase) cameraProvider!!.unbind(previewUseCase)
                     if (null != analysisUseCase) cameraProvider!!.unbind(analysisUseCase)
                     cameraPreview?.isGone = true
                 }
                 onPickImage.launch(
                     Intent.createChooser(Intent(
-                        if (Debug.isNewer(Build.VERSION_CODES.KITKAT))
+                        if (Version.isKitKat)
                             Intent.ACTION_OPEN_DOCUMENT
                         else Intent.ACTION_GET_CONTENT
                     )
@@ -507,7 +508,7 @@ class QRCodeScanner : AppCompatActivity() {
             }
             R.id.mnu_generate -> {
                 txtMiiValue.text = ""
-                if (Debug.isNewer(Build.VERSION_CODES.LOLLIPOP) && null != cameraProvider) {
+                if (Version.isLollipop && null != cameraProvider) {
                     if (null != previewUseCase) cameraProvider!!.unbind(previewUseCase)
                     if (null != analysisUseCase) cameraProvider!!.unbind(analysisUseCase)
                     cameraPreview?.isGone = true

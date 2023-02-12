@@ -19,7 +19,6 @@ import android.app.ActivityManager
 import android.content.*
 import android.net.Uri
 import android.os.Build
-import android.os.Build.VERSION_CODES
 import android.util.Log
 import com.heinrichreimersoftware.androidissuereporter.IssueReporterLauncher
 import com.hiddenramblings.tagmo.BuildConfig
@@ -45,16 +44,6 @@ object Debug {
         } catch (e: Exception) {
             Build.MANUFACTURER == "OnePlus"
         }
-
-    @JvmStatic
-    fun isNewer(versionCode: Int): Boolean {
-        return Build.VERSION.SDK_INT >= versionCode
-    }
-
-    @JvmStatic
-    fun isOlder(versionCode: Int): Boolean {
-        return Build.VERSION.SDK_INT < versionCode
-    }
 
     private fun hasDebugging(): Boolean {
         return !mPrefs.disableDebug()
@@ -257,9 +246,9 @@ object Debug {
         log.append(separator)
         log.append("Android ")
         var codeName = "UNKNOWN"
-        for (field in VERSION_CODES::class.java.fields) {
+        for (field in Build.VERSION_CODES::class.java.fields) {
             try {
-                if (field.getInt(VERSION_CODES::class.java) == Build.VERSION.SDK_INT)
+                if (field.getInt(Build.VERSION_CODES::class.java) == Build.VERSION.SDK_INT)
                     codeName = field.name
             } catch (e: IllegalAccessException) {
                 e.printStackTrace()

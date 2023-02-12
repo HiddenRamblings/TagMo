@@ -6,7 +6,6 @@ import android.content.*
 import android.nfc.NfcAdapter
 import android.nfc.Tag
 import android.nfc.TagLostException
-import android.os.Build
 import android.os.Bundle
 import android.os.Parcelable
 import android.provider.Settings
@@ -31,6 +30,7 @@ import com.hiddenramblings.tagmo.amiibo.EliteTag
 import com.hiddenramblings.tagmo.amiibo.KeyManager
 import com.hiddenramblings.tagmo.eightbit.io.Debug
 import com.hiddenramblings.tagmo.eightbit.material.IconifiedSnackbar
+import com.hiddenramblings.tagmo.eightbit.os.Version
 import com.hiddenramblings.tagmo.nfctech.*
 import com.hiddenramblings.tagmo.widget.Toasty
 import com.shawnlin.numberpicker.NumberPicker
@@ -40,13 +40,13 @@ import java.util.concurrent.Executors
 
 class NfcActivity : AppCompatActivity() {
     private inline fun <reified T : Parcelable> Intent.parcelable(key: String): T? = when {
-        Debug.isNewer(Build.VERSION_CODES.TIRAMISU) ->
+        Version.isTiramisu ->
             getParcelableExtra(key, T::class.java)
         else -> @Suppress("DEPRECATION") getParcelableExtra(key) as? T
     }
     private inline fun <reified T : Parcelable>
             Intent.parcelableArrayList(key: String): ArrayList<T>? = when {
-        Debug.isNewer(Build.VERSION_CODES.TIRAMISU) ->
+        Version.isTiramisu ->
             getParcelableArrayListExtra(key, T::class.java)
         else -> @Suppress("DEPRECATION") getParcelableArrayListExtra(key)
     }
@@ -584,7 +584,7 @@ class NfcActivity : AppCompatActivity() {
             AlertDialog.Builder(this)
                 .setMessage(R.string.nfc_available)
                 .setPositiveButton(R.string.yes) { _: DialogInterface?, _: Int ->
-                    if (Debug.isNewer(Build.VERSION_CODES.Q))
+                    if (Version.isAndroid10)
                         onNFCActivity.launch(Intent(Settings.Panel.ACTION_NFC))
                     else onNFCActivity.launch(Intent(Settings.ACTION_NFC_SETTINGS))
                 }
@@ -592,7 +592,7 @@ class NfcActivity : AppCompatActivity() {
                 .show()
         } else {
             // monitor nfc status
-            if (Debug.isNewer(Build.VERSION_CODES.JELLY_BEAN_MR2)) {
+            if (Version.isJellyBeanMR2) {
                 val filter = IntentFilter(NfcAdapter.ACTION_ADAPTER_STATE_CHANGED)
                 this.registerReceiver(mReceiver, filter)
             }
@@ -604,7 +604,7 @@ class NfcActivity : AppCompatActivity() {
         try {
             nfcAdapter?.disableForegroundDispatch(this)
         } catch (ignored: RuntimeException) { }
-        if (Debug.isNewer(Build.VERSION_CODES.JELLY_BEAN_MR2)) {
+        if (Version.isJellyBeanMR2) {
             try {
                 unregisterReceiver(mReceiver)
             } catch (ignored: IllegalArgumentException) { }
@@ -615,7 +615,7 @@ class NfcActivity : AppCompatActivity() {
         val nfcPendingIntent = PendingIntent.getActivity(
             applicationContext,
             0, Intent(applicationContext, this.javaClass),
-            if (Debug.isNewer(Build.VERSION_CODES.S))
+            if (Version.isSnowCone)
                 PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_MUTABLE
             else PendingIntent.FLAG_UPDATE_CURRENT
         )

@@ -1,18 +1,16 @@
 package com.hiddenramblings.tagmo.browser
 
 import android.net.Uri
-import android.os.Build
 import android.os.Parcel
 import android.os.Parcelable
-import android.text.TextUtils
 import com.hiddenramblings.tagmo.Preferences
 import com.hiddenramblings.tagmo.TagMo.Companion.appContext
 import com.hiddenramblings.tagmo.amiibo.Amiibo
 import com.hiddenramblings.tagmo.amiibo.AmiiboFile
 import com.hiddenramblings.tagmo.amiibo.AmiiboManager
 import com.hiddenramblings.tagmo.amiibo.games.GamesManager
-import com.hiddenramblings.tagmo.eightbit.io.Debug
 import com.hiddenramblings.tagmo.eightbit.os.Storage
+import com.hiddenramblings.tagmo.eightbit.os.Version
 import java.io.File
 import java.util.*
 
@@ -28,7 +26,7 @@ open class BrowserSettings : Parcelable {
 
         companion object {
             fun valueOf(value: Int): SORT {
-                if (Debug.isNewer(Build.VERSION_CODES.N)) {
+                if (Version.isNougat) {
                     val optional = Arrays.stream(values()).filter {
                             SORT: SORT -> SORT.value == value
                     }.findFirst()
@@ -52,7 +50,7 @@ open class BrowserSettings : Parcelable {
 
         companion object {
             fun valueOf(value: Int): VIEW {
-                if (Debug.isNewer(Build.VERSION_CODES.N)) {
+                if (Version.isNougat) {
                     val optional =
                         Arrays.stream(values()).filter { VIEW: VIEW -> VIEW.value == value }
                             .findFirst()
@@ -243,11 +241,11 @@ open class BrowserSettings : Parcelable {
     protected constructor(parcel: Parcel) {
         amiiboFiles = parcel.createTypedArrayList(AmiiboFile.CREATOR)!!
         folders = arrayListOf()
-        if (Debug.isNewer(Build.VERSION_CODES.TIRAMISU))
+        if (Version.isTiramisu)
             parcel.readList(folders, File::class.java.classLoader, File::class.java)
         else
             @Suppress("DEPRECATION") parcel.readList(folders, File::class.java.classLoader)
-        browserRootFolder = if (Debug.isNewer(Build.VERSION_CODES.TIRAMISU))
+        browserRootFolder = if (Version.isTiramisu)
             parcel.readSerializable(File::class.java.classLoader, File::class.java)
         else
             @Suppress("DEPRECATION") parcel.readSerializable() as File?

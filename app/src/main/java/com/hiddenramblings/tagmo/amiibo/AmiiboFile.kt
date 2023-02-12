@@ -1,10 +1,9 @@
 package com.hiddenramblings.tagmo.amiibo
 
-import android.os.Build
 import android.os.Parcel
 import android.os.Parcelable
 import androidx.documentfile.provider.DocumentFile
-import com.hiddenramblings.tagmo.eightbit.io.Debug
+import com.hiddenramblings.tagmo.eightbit.os.Version
 import java.io.File
 
 open class AmiiboFile : Parcelable {
@@ -38,7 +37,7 @@ open class AmiiboFile : Parcelable {
     }
 
     protected constructor(parcel: Parcel) {
-        filePath = if (Debug.isNewer(Build.VERSION_CODES.TIRAMISU))
+        filePath = if (Version.isTiramisu)
             parcel.readSerializable(null, File::class.java)
         else
             @Suppress("DEPRECATION") parcel.readSerializable() as File?

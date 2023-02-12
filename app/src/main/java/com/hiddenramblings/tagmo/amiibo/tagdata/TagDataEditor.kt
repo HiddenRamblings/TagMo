@@ -6,7 +6,6 @@ import android.content.DialogInterface
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
-import android.os.Build
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -33,6 +32,7 @@ import com.hiddenramblings.tagmo.amiibo.AmiiboManager
 import com.hiddenramblings.tagmo.amiibo.KeyManager
 import com.hiddenramblings.tagmo.amiibo.tagdata.AppData.Companion.appIds
 import com.hiddenramblings.tagmo.eightbit.io.Debug
+import com.hiddenramblings.tagmo.eightbit.os.Version
 import com.hiddenramblings.tagmo.nfctech.Foomiibo
 import com.hiddenramblings.tagmo.nfctech.TagArray
 import com.hiddenramblings.tagmo.widget.Toasty
@@ -905,7 +905,7 @@ class TagDataEditor : AppCompatActivity() {
 
         init {
             this.data = ArrayList(data.entries)
-            if (Debug.isNewer(Build.VERSION_CODES.N)) {
+            if (Version.isNougat) {
                 Collections.sort(this.data, java.util.Map.Entry.comparingByKey())
             } else {
                 this.data.sortWith { (key): Map.Entry<Int, String>, (key1): Map.Entry<Int, String> ->
@@ -920,7 +920,7 @@ class TagDataEditor : AppCompatActivity() {
 
         init {
             this.data = ArrayList(data.entries)
-            if (Debug.isNewer(Build.VERSION_CODES.N)) {
+            if (Version.isNougat) {
                 Collections.sort(this.data, java.util.Map.Entry.comparingByKey())
             } else {
                 this.data.sortWith { (key): Map.Entry<Int, String>, (key1): Map.Entry<Int, String> ->

@@ -3,7 +3,6 @@ package com.hiddenramblings.tagmo.nfctech
 import android.net.Uri
 import com.hiddenramblings.tagmo.R
 import com.hiddenramblings.tagmo.TagMo.Companion.appContext
-import com.hiddenramblings.tagmo.amiibo.AmiiboManager
 import com.hiddenramblings.tagmo.eightbit.io.Debug
 import com.hiddenramblings.tagmo.nfctech.Foomiibo.Companion.getDataSignature
 import java.io.*

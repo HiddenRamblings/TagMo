@@ -23,7 +23,6 @@ import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import com.hiddenramblings.tagmo.BuildConfig
 import com.hiddenramblings.tagmo.TagMo.Companion.appContext
-import com.hiddenramblings.tagmo.eightbit.io.Debug.isNewer
 import java.io.File
 
 object Storage : Environment() {
@@ -166,9 +165,9 @@ object Storage : Environment() {
 
     private fun setFile(internal: Boolean): File? {
         isInternalPreferred = internal
-        return if (isNewer(Build.VERSION_CODES.R))
+        return if (Version.isRedVelvet)
             setFileRedVelvet(internal)
-        else if (isNewer(Build.VERSION_CODES.LOLLIPOP))
+        else if (Version.isLollipop)
             setFileLollipop(internal)
         else setFileGeneric(internal)
     }
@@ -184,7 +183,7 @@ object Storage : Environment() {
     }
 
     fun getFileUri(file: File?): Uri {
-        return if (isNewer(Build.VERSION_CODES.N))
+        return if (Version.isNougat)
             FileProvider.getUriForFile(appContext, PROVIDER, file!!)
         else Uri.fromFile(file)
     }

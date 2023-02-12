@@ -13,6 +13,7 @@ import android.content.Intent
 import android.os.*
 import androidx.annotation.RequiresApi
 import com.hiddenramblings.tagmo.eightbit.io.Debug
+import com.hiddenramblings.tagmo.eightbit.os.Version
 import com.hiddenramblings.tagmo.nfctech.NfcByte
 import java.util.*
 
@@ -133,7 +134,7 @@ class PuckGattService : Service() {
 
         override fun onServicesDiscovered(gatt: BluetoothGatt, status: Int) {
             if (status == BluetoothGatt.GATT_SUCCESS) {
-                if (Debug.isNewer(Build.VERSION_CODES.LOLLIPOP))
+                if (Version.isLollipop)
                     mBluetoothGatt!!.requestMtu(512) // Maximum: 517
                 else listener?.onServicesDiscovered()
             } else {
@@ -274,7 +275,7 @@ class PuckGattService : Service() {
                 UUID.fromString("00002902-0000-1000-8000-00805f9b34fb")
             )
             val value = BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE
-            if (Debug.isNewer(Build.VERSION_CODES.TIRAMISU)) {
+            if (Version.isTiramisu) {
                 mBluetoothGatt!!.writeDescriptor(descriptorTX, value)
             } else @Suppress("DEPRECATION") {
                 descriptorTX.value = value
@@ -286,7 +287,7 @@ class PuckGattService : Service() {
                 UUID.fromString("00002902-0000-1000-8000-00805f9b34fb")
             )
             val value = BluetoothGattDescriptor.ENABLE_INDICATION_VALUE
-            if (Debug.isNewer(Build.VERSION_CODES.TIRAMISU)) {
+            if (Version.isTiramisu) {
                 mBluetoothGatt!!.writeDescriptor(descriptorTX, value)
             } else @Suppress("DEPRECATION") {
                 descriptorTX.value = value
@@ -401,7 +402,7 @@ class PuckGattService : Service() {
                 puckHandler.postDelayed({
                     mCharacteristicTX!!.writeType =
                         BluetoothGattCharacteristic.WRITE_TYPE_NO_RESPONSE
-                    if (Debug.isNewer(Build.VERSION_CODES.TIRAMISU)) {
+                    if (Version.isTiramisu) {
                         mBluetoothGatt!!.writeCharacteristic(
                             mCharacteristicTX!!, chunk,
                             BluetoothGattCharacteristic.WRITE_TYPE_NO_RESPONSE

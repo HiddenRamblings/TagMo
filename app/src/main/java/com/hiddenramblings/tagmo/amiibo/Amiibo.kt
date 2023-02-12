@@ -1,11 +1,9 @@
 package com.hiddenramblings.tagmo.amiibo
 
-import android.os.Build
 import android.os.Parcel
 import android.os.Parcelable
-import android.text.TextUtils
 import com.hiddenramblings.tagmo.amiibo.tagdata.AmiiboData
-import com.hiddenramblings.tagmo.eightbit.io.Debug
+import com.hiddenramblings.tagmo.eightbit.os.Version
 import java.io.IOException
 
 open class Amiibo : Comparable<Amiibo>, Parcelable {
@@ -136,7 +134,7 @@ open class Amiibo : Comparable<Amiibo>, Parcelable {
     protected constructor(parcel: Parcel) {
         name = parcel.readString()
         id = parcel.readLong()
-        releaseDates = if (Debug.isNewer(Build.VERSION_CODES.TIRAMISU))
+        releaseDates = if (Version.isTiramisu)
             parcel.readSerializable(null, AmiiboReleaseDates::class.java)
         else
             @Suppress("DEPRECATION") parcel.readSerializable() as AmiiboReleaseDates?

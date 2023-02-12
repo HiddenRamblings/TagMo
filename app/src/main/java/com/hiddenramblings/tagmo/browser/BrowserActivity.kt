@@ -73,8 +73,6 @@ import com.hiddenramblings.tagmo.amiibo.games.GamesManager
 import com.hiddenramblings.tagmo.amiibo.games.GamesManager.Companion.getGamesManager
 import com.hiddenramblings.tagmo.amiibo.tagdata.TagDataEditor
 import com.hiddenramblings.tagmo.browser.BrowserSettings.*
-import com.hiddenramblings.tagmo.update.UpdateManager.PlayUpdateListener
-import com.hiddenramblings.tagmo.update.UpdateManager.GitUpdateListener
 import com.hiddenramblings.tagmo.browser.adapter.BrowserAdapter
 import com.hiddenramblings.tagmo.browser.adapter.FoldersAdapter
 import com.hiddenramblings.tagmo.browser.adapter.FoomiiboAdapter
@@ -85,6 +83,7 @@ import com.hiddenramblings.tagmo.browser.fragment.SettingsFragment
 import com.hiddenramblings.tagmo.eightbit.io.Debug
 import com.hiddenramblings.tagmo.eightbit.material.IconifiedSnackbar
 import com.hiddenramblings.tagmo.eightbit.os.Storage
+import com.hiddenramblings.tagmo.eightbit.os.Version
 import com.hiddenramblings.tagmo.eightbit.view.AnimatedLinearLayout
 import com.hiddenramblings.tagmo.hexcode.HexCodeViewer
 import com.hiddenramblings.tagmo.nfctech.NfcActivity
@@ -93,6 +92,8 @@ import com.hiddenramblings.tagmo.nfctech.TagArray
 import com.hiddenramblings.tagmo.nfctech.TagReader
 import com.hiddenramblings.tagmo.qrcode.QRCodeScanner
 import com.hiddenramblings.tagmo.update.UpdateManager
+import com.hiddenramblings.tagmo.update.UpdateManager.GitUpdateListener
+import com.hiddenramblings.tagmo.update.UpdateManager.PlayUpdateListener
 import com.hiddenramblings.tagmo.widget.Toasty
 import com.wajahatkarim3.easyflipviewpager.CardFlipPageTransformer2
 import eightbitlab.com.blurview.BlurView
@@ -216,7 +217,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
         txtAmiiboType = findViewById(R.id.txtAmiiboType)
         txtAmiiboSeries = findViewById(R.id.txtAmiiboSeries)
         imageAmiibo = findViewById(R.id.imageAmiibo)
-        if (Debug.isOlder(Build.VERSION_CODES.M)) {
+        if (Version.isOlder(Build.VERSION_CODES.M)) {
             requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
             requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
         }
@@ -361,7 +362,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
             }
         })
         TabLayoutMediator(findViewById(R.id.navigation_tabs), viewPager!!, true,
-            Debug.isNewer(Build.VERSION_CODES.JELLY_BEAN_MR2)
+            Version.isJellyBeanMR2
         ) { tab: TabLayout.Tab, position: Int ->
             val hasFlaskEnabled = prefs.flaskEnabled()
             if (BuildConfig.WEAR_OS) {
@@ -396,12 +397,12 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
             }
         }.attach()
         val coordinator = findViewById<CoordinatorLayout>(R.id.coordinator)
-        if (Debug.isNewer(Build.VERSION_CODES.JELLY_BEAN_MR1)) {
+        if (Version.isJellyBeanMR) {
             (amiiboContainer as BlurView?)!!.setupWith(
                 coordinator,
-                if (Debug.isNewer(Build.VERSION_CODES.S))
+                if (Version.isSnowCone)
                     RenderEffectBlur()
-                else if (Debug.isNewer(Build.VERSION_CODES.JELLY_BEAN_MR1))
+                else if (Version.isJellyBeanMR)
                     @Suppress("DEPRECATION") RenderScriptBlur(this)
                 else
                     SupportRenderScriptBlur(this)
@@ -514,7 +515,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
             )
         }
 
-        val popup = if (Debug.isNewer(Build.VERSION_CODES.LOLLIPOP_MR1)) PopupMenu(
+        val popup = if (Version.isLollipopMR) PopupMenu(
             this, nfcFab, Gravity.END, 0, R.style.PopupMenu
         ) else PopupMenu(this, nfcFab)
         try {
@@ -606,7 +607,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
     @SuppressLint("NotifyDataSetChanged")
     fun onTabCollectionChanged() {
         if (viewPager?.currentItem != 0) viewPager?.setCurrentItem(0, false)
-        if (Debug.isNewer(Build.VERSION_CODES.TIRAMISU))
+        if (Version.isTiramisu)
             onApplicationRecreate()
         else pagerAdapter.notifyDataSetChanged()
     }
@@ -620,7 +621,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
     }
 
     private fun requestStoragePermission() {
-        if (Debug.isNewer(Build.VERSION_CODES.R)) {
+        if (Version.isRedVelvet) {
             if (BuildConfig.GOOGLE_PLAY) {
                 onDocumentEnabled()
             } else {
@@ -634,7 +635,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                     requestScopedStorage()
                 }
             }
-        } else if (Debug.isNewer(Build.VERSION_CODES.M)) {
+        } else if (Version.isMarshmallow) {
             onRequestStorage.launch(PERMISSIONS_STORAGE)
         } else {
             onStorageEnabled()
@@ -1325,7 +1326,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
     }
 
     val isDocumentStorage: Boolean
-        get() = Debug.isNewer(Build.VERSION_CODES.LOLLIPOP)
+        get() = Version.isLollipop
                 && null != settings?.browserRootDocument && try {
             DocumentFile.fromTreeUri(this, settings!!.browserRootDocument!!)
             true
@@ -1335,7 +1336,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
 
     @Throws(ActivityNotFoundException::class)
     private fun onDocumentRequested() {
-        if (Debug.isNewer(Build.VERSION_CODES.LOLLIPOP)) {
+        if (Version.isLollipop) {
             onDocumentTree.launch(Intent(Intent.ACTION_OPEN_DOCUMENT_TREE)
                 .putExtra("android.content.extra.SHOW_ADVANCED", true)
                 .putExtra("android.content.extra.FANCY", true)
@@ -1372,7 +1373,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                     }
                     bottomSheetBehavior?.setState(BottomSheetBehavior.STATE_COLLAPSED)
                 }
-                if (Debug.isNewer(Build.VERSION_CODES.R) && !BuildConfig.GOOGLE_PLAY) {
+                if (Version.isRedVelvet && !BuildConfig.GOOGLE_PLAY) {
                     switchStorageType?.isVisible = true
                     switchStorageType?.setText(R.string.grant_file_permission)
                     switchStorageType?.setOnClickListener {
@@ -1407,7 +1408,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                 } else {
                     switchStorageRoot?.isGone = true
                 }
-                if (Debug.isNewer(Build.VERSION_CODES.R)) {
+                if (Version.isRedVelvet) {
                     switchStorageType?.isVisible = true
                     switchStorageType?.setText(R.string.force_document_storage)
                     switchStorageType?.setOnClickListener {
@@ -1495,7 +1496,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
             }
             R.id.mnu_joy_con -> {
                 Toasty(this).Short(R.string.notice_incomplete)
-                if (Debug.isNewer(Build.VERSION_CODES.JELLY_BEAN_MR2)) onShowJoyConFragment()
+                if (Version.isJellyBeanMR2) onShowJoyConFragment()
             }
             R.id.send_donation -> {
                 showDonationPanel()
@@ -1544,7 +1545,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
             menuViewImage = toolbar.menu.findItem(R.id.view_image)
             menuRecursiveFiles = toolbar.menu.findItem(R.id.recursive)
             toolbar.menu.findItem(R.id.mnu_joy_con).isVisible =
-                Debug.isNewer(Build.VERSION_CODES.JELLY_BEAN_MR2)
+                Version.isJellyBeanMR2
         }
         onSortChanged()
         onViewChanged()
@@ -1582,7 +1583,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
         menuViewImage = menu.findItem(R.id.view_image)
         menuRecursiveFiles = menu.findItem(R.id.recursive)
         menu.findItem(R.id.mnu_joy_con).isVisible =
-            Debug.isNewer(Build.VERSION_CODES.JELLY_BEAN_MR2)
+            Version.isJellyBeanMR2
         if (null == settings) return false
         onSortChanged()
         onViewChanged()
@@ -1835,7 +1836,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
     ) { result: ActivityResult ->
         if (result.resultCode != RESULT_OK || result.data == null) return@registerForActivityResult
         val treeUri = result.data!!.data
-        if (Debug.isNewer(Build.VERSION_CODES.KITKAT))
+        if (Version.isKitKat)
             contentResolver.takePersistableUriPermission(treeUri!!,
                 Intent.FLAG_GRANT_READ_URI_PERMISSION
                     or Intent.FLAG_GRANT_WRITE_URI_PERMISSION
@@ -2228,11 +2229,11 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
         get() {
             val metrics = DisplayMetrics()
             val columns = (getSystemService(WINDOW_SERVICE) as WindowManager).run {
-                if (Debug.isNewer(Build.VERSION_CODES.S)) {
+                if (Version.isSnowCone) {
                     val bounds: Rect = currentWindowMetrics.bounds
                     ((bounds.width() / (resources.configuration.densityDpi / 160)) + 0.5) / 112
                 } else @Suppress("DEPRECATION") {
-                    if (Debug.isNewer(Build.VERSION_CODES.JELLY_BEAN_MR1))
+                    if (Version.isJellyBeanMR)
                         defaultDisplay.getRealMetrics(metrics)
                     else
                         defaultDisplay.getMetrics(metrics)

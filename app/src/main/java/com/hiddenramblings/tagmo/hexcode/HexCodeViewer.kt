@@ -6,7 +6,6 @@ import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
-import android.os.Build
 import android.os.Bundle
 import android.view.MenuItem
 import android.view.View
@@ -25,6 +24,7 @@ import com.hiddenramblings.tagmo.amiibo.Amiibo
 import com.hiddenramblings.tagmo.amiibo.KeyManager
 import com.hiddenramblings.tagmo.eightbit.io.Debug
 import com.hiddenramblings.tagmo.eightbit.os.Storage
+import com.hiddenramblings.tagmo.eightbit.os.Version
 import com.hiddenramblings.tagmo.nfctech.TagArray
 import com.hiddenramblings.tagmo.widget.Toasty
 import java.io.File
@@ -112,7 +112,7 @@ class HexCodeViewer : AppCompatActivity() {
                     holder.itemView.measuredWidth,
                     holder.itemView.measuredHeight
                 )
-                if (Debug.isNewer(Build.VERSION_CODES.P)) {
+                if (Version.isPie) {
                     bitmapCache.put(i.toString(), holder.itemView.drawToBitmap())
                 } else @Suppress("DEPRECATION") {
                     holder.itemView.isDrawingCacheEnabled = true

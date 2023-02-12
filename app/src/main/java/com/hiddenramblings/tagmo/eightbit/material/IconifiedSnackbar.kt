@@ -22,6 +22,7 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.content.ContextCompat
+import androidx.core.view.updatePadding
 import androidx.transition.TransitionManager
 import com.google.android.material.snackbar.Snackbar
 import com.hiddenramblings.tagmo.R
@@ -124,30 +125,31 @@ class IconifiedSnackbar @JvmOverloads constructor(activity: Activity, layout: Vi
     }
 
     fun buildTickerBar(msg: String?, drawable: Int, length: Int): Snackbar {
-        val snackbar = buildSnackbar(null, msg, drawable, length, null)
-            .addCallback(object : Snackbar.Callback() {
-                val top = layout?.paddingTop ?: 0
-                val bottom = layout?.paddingBottom ?: 0
-                override fun onDismissed(snackbar: Snackbar, event: Int) {
-                    if (null == layout) {
-                        super.onDismissed(snackbar, event)
-                        return
-                    }
-                    TransitionManager.beginDelayedTransition(layout)
-                    layout.setPadding(0, top, 0, bottom)
+        val snackbar = buildSnackbar(
+            null, msg, drawable, length, null
+        ).addCallback(object : Snackbar.Callback() {
+            val top = layout?.paddingTop ?: 0
+            val bottom = layout?.paddingBottom ?: 0
+            override fun onDismissed(snackbar: Snackbar, event: Int) {
+                if (null == layout) {
                     super.onDismissed(snackbar, event)
+                    return
                 }
+                TransitionManager.beginDelayedTransition(layout)
+                layout.updatePadding(top = top, bottom = bottom)
+                super.onDismissed(snackbar, event)
+            }
 
-                override fun onShown(snackbar: Snackbar) {
-                    if (null == layout) {
-                        super.onShown(snackbar)
-                        return
-                    }
-                    val adjusted = top + snackbar.view.measuredHeight
-                    layout.setPadding(0, adjusted, 0, bottom)
+            override fun onShown(snackbar: Snackbar) {
+                if (null == layout) {
                     super.onShown(snackbar)
+                    return
                 }
-            })
+                val adjusted = top + snackbar.view.measuredHeight
+                layout.updatePadding(top = adjusted, bottom = bottom)
+                super.onShown(snackbar)
+            }
+        })
         val params = snackbar.view.layoutParams as CoordinatorLayout.LayoutParams
         params.gravity = Gravity.TOP
         snackbar.view.layoutParams = params

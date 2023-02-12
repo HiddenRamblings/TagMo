@@ -229,9 +229,8 @@ class BrowserAdapter(
         @SuppressLint("NotifyDataSetChanged")
         override fun publishResults(charSequence: CharSequence?, filterResults: FilterResults) {
             if (filteredData === filterResults.values) return
-            filteredData = filterResults.values as ArrayList<AmiiboFile?>
-            if (itemCount > 0)
-                Collections.sort(filteredData, AmiiboFileComparator(settings))
+            filterResults.values.let { filteredData = it as ArrayList<AmiiboFile?> }
+            if (itemCount > 0) Collections.sort(filteredData, AmiiboFileComparator(settings))
             notifyDataSetChanged()
         }
     }

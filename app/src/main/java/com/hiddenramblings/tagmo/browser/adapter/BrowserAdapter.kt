@@ -134,12 +134,12 @@ class BrowserAdapter(
         }
         popupTextView.text = amiibo?.let { when (SORT.valueOf(settings.sort)) {
             SORT.NAME -> it.name
-            SORT.CHARACTER -> it.character?.name
-            SORT.GAME_SERIES -> it.gameSeries?.name
-            SORT.AMIIBO_SERIES -> it.amiiboSeries?.name
-            SORT.AMIIBO_TYPE -> it.amiiboType?.name
-            else -> { "" }
-        }.toString()[0].uppercase() } ?: ""
+            SORT.CHARACTER -> it.character?.name ?: "?"
+            SORT.GAME_SERIES -> it.gameSeries?.name ?: "?"
+            SORT.AMIIBO_SERIES -> it.amiiboSeries?.name ?: "?"
+            SORT.AMIIBO_TYPE -> it.amiiboType?.name ?: "?"
+            else -> { "?" }
+        }.toString()[0].uppercase() } ?: "?"
     }
 
     private fun handleClickEvent(holder: AmiiboViewHolder) {

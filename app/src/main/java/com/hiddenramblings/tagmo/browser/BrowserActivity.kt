@@ -217,7 +217,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
         txtAmiiboType = findViewById(R.id.txtAmiiboType)
         txtAmiiboSeries = findViewById(R.id.txtAmiiboSeries)
         imageAmiibo = findViewById(R.id.imageAmiibo)
-        if (Version.isOlder(Build.VERSION_CODES.M)) {
+        if (Version.isLowerThan(Build.VERSION_CODES.M)) {
             requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
             requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
         }
@@ -400,12 +400,11 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
         if (Version.isJellyBeanMR) {
             (amiiboContainer as BlurView?)!!.setupWith(
                 coordinator,
-                if (Version.isSnowCone)
-                    RenderEffectBlur()
-                else if (Version.isJellyBeanMR)
-                    @Suppress("DEPRECATION") RenderScriptBlur(this)
-                else
-                    SupportRenderScriptBlur(this)
+                @Suppress("DEPRECATION") when {
+                    Version.isSnowCone -> RenderEffectBlur()
+                    Version.isJellyBeanMR -> RenderScriptBlur(this)
+                    else -> SupportRenderScriptBlur(this)
+                }
             )
                 .setFrameClearDrawable(window.decorView.background)
                 .setBlurRadius(2f).setBlurAutoUpdate(true)

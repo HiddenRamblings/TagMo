@@ -17,8 +17,9 @@ package com.hiddenramblings.tagmo.eightbit.os
 import android.os.Build
 
 object Version {
+
     @JvmStatic
-    fun isOlder(versionCode: Int): Boolean {
+    fun isLowerThan(versionCode: Int): Boolean {
         return Build.VERSION.SDK_INT < versionCode
     }
 

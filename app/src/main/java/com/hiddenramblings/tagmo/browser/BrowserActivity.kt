@@ -503,14 +503,22 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
         val foomiiboHandler = Handler(Looper.getMainLooper())
         foomiiboOptions.findViewById<View>(R.id.clear_foomiibo_set).setOnClickListener {
             collapseBottomSheet()
+            if (fragmentBrowser?.isDetached == true) {
+                Toasty(this).Short(R.string.activity_unavailable)
+                return@setOnClickListener
+            }
             foomiiboHandler.postDelayed(
-                { fragmentBrowser?.clearFoomiiboSet() }, TagMo.uiDelay.toLong()
+                {
+                    if (isBrowserAvailable) fragmentBrowser?.clearFoomiiboSet()
+                }, TagMo.uiDelay.toLong()
             )
         }
         foomiiboOptions.findViewById<View>(R.id.build_foomiibo_set).setOnClickListener {
             collapseBottomSheet()
             foomiiboHandler.postDelayed(
-                { fragmentBrowser?.buildFoomiiboSet() }, TagMo.uiDelay.toLong()
+                {
+                    if (isBrowserAvailable) fragmentBrowser?.buildFoomiiboSet()
+                }, TagMo.uiDelay.toLong()
             )
         }
 
@@ -592,6 +600,12 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
             })
             colorAnimation?.start()
         }
+    }
+
+    private val isBrowserAvailable : Boolean get() {
+        val isDetached = null == fragmentBrowser || fragmentBrowser?.isDetached == true
+        if (isDetached) Toasty(this).Short(R.string.activity_unavailable)
+        return !isDetached
     }
 
     fun onApplicationRecreate() {

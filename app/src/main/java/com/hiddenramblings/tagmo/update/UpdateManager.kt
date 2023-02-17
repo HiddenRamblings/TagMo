@@ -73,12 +73,12 @@ class UpdateManager internal constructor(activity: BrowserActivity) {
             activity.externalCacheDir?.listFiles {
                     _: File?, name: String -> name.lowercase().endsWith(".apk")
             }?.forEach { if (!it.isDirectory) it.delete() }
-            configureGit(activity)
+            configureGit()
         }
     }
 
     fun refreshUpdateStatus(activity: BrowserActivity) {
-        if (BuildConfig.GOOGLE_PLAY) configurePlay(activity) else configureGit(activity)
+        if (BuildConfig.GOOGLE_PLAY) configurePlay(activity) else configureGit()
     }
 
     private fun configurePlay(activity: BrowserActivity) {
@@ -92,14 +92,9 @@ class UpdateManager internal constructor(activity: BrowserActivity) {
         }
     }
 
-    private fun configureGit(activity: BrowserActivity) {
+    private fun configureGit() {
         scopeIO.launch(Dispatchers.IO) {
-            JSONExecutor(activity, TAGMO_GIT_API, "releases/tags/master")
-                .setResultListener(object : ResultListener {
-                    override fun onResults(result: String?) {
-                        result?.let { parseUpdateJSON(it) }
-                    }
-                })
+            URL(TAGMO_GIT_API).readText().also { parseUpdateJSON(it) }
         }
     }
 
@@ -241,6 +236,6 @@ class UpdateManager internal constructor(activity: BrowserActivity) {
     }
 
     companion object {
-        private const val TAGMO_GIT_API = "https://api.github.com/repos/HiddenRamblings/TagMo/"
+        private const val TAGMO_GIT_API = "https://api.github.com/repos/HiddenRamblings/TagMo/releases/tags/master"
     }
 }

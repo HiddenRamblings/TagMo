@@ -103,19 +103,19 @@ class UpdateManager internal constructor(activity: BrowserActivity) {
         }
     }
 
-    fun installUpdateTask(apkUrl: String?) {
+    fun installDownload(apkUrl: String?) {
         if (null == apkUrl) return
         scopeIO.launch(Dispatchers.IO) {
             val apk = File(
                 browserActivity.externalCacheDir,
                 apkUrl.substring(apkUrl.lastIndexOf(File.separator) + 1)
             )
-            try {
-                URL(apkUrl).openStream().use { stream ->
-                    FileOutputStream(apk).use {
-                        stream.copyTo(it)
-                    }
+            URL(apkUrl).openStream().use { stream ->
+                FileOutputStream(apk).use {
+                    stream.copyTo(it)
                 }
+            }
+            try {
                 if (!apk.name.lowercase().endsWith(".apk")) apk.delete()
                 browserActivity.run {
                     if (Version.isNougat) {
@@ -173,11 +173,11 @@ class UpdateManager internal constructor(activity: BrowserActivity) {
         }
     }
 
-    fun requestInstallUpdate(apkUrl: String?) {
+    fun requestDownload(apkUrl: String?) {
         if (null == apkUrl) return
         if (Version.isOreo) {
             if (browserActivity.packageManager.canRequestPackageInstalls()) {
-                installUpdateTask(apkUrl)
+                installDownload(apkUrl)
             } else {
                 Preferences(browserActivity.applicationContext).downloadUrl(apkUrl)
                 browserActivity.onRequestInstall.launch(
@@ -187,7 +187,7 @@ class UpdateManager internal constructor(activity: BrowserActivity) {
                 )
             }
         } else {
-            installUpdateTask(apkUrl)
+            installDownload(apkUrl)
         }
     }
 

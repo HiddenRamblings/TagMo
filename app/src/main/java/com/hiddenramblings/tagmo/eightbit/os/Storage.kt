@@ -21,6 +21,7 @@ import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
+import androidx.core.net.toUri
 import com.hiddenramblings.tagmo.BuildConfig
 import com.hiddenramblings.tagmo.TagMo.Companion.appContext
 import java.io.File
@@ -182,10 +183,10 @@ object Storage : Environment() {
         return getFile(internal)?.absolutePath
     }
 
-    fun getFileUri(file: File?): Uri {
+    fun getFileUri(file: File): Uri {
         return if (Version.isNougat)
-            FileProvider.getUriForFile(appContext, PROVIDER, file!!)
-        else Uri.fromFile(file)
+            FileProvider.getUriForFile(appContext, PROVIDER, file)
+        else file.toUri()
     }
 
     fun getRelativePath(file: File?, internal: Boolean): String {

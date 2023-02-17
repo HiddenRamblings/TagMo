@@ -484,7 +484,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                     if (null != updateUrl) {
                         findViewById<View>(R.id.build_layout).setOnClickListener {
                             closePrefsDrawer()
-                            updateManager?.requestInstallUpdate(updateUrl!!)
+                            updateManager?.requestDownload(updateUrl!!)
                         }
                     }
                 }
@@ -792,7 +792,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
     fun onReportProblemClick() {
         if (updateManager?.hasPendingUpdate() == true) {
             if (null != appUpdate) updateManager?.startPlayUpdateFlow(appUpdate)
-            if (null != updateUrl) updateManager?.requestInstallUpdate(updateUrl)
+            if (null != updateUrl) updateManager?.requestDownload(updateUrl)
             return
         }
         loadingExecutor.execute {
@@ -1654,7 +1654,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
             }
         } else if (item.itemId == R.id.install_update) {
             if (null != appUpdate) updateManager?.startPlayUpdateFlow(appUpdate)
-            if (null != updateUrl) updateManager?.requestInstallUpdate(updateUrl)
+            if (null != updateUrl) updateManager?.requestDownload(updateUrl)
         }
         return onMenuItemClicked(item)
     }
@@ -2661,7 +2661,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
     ) {
         if (null != prefs.downloadUrl()) {
             if (packageManager.canRequestPackageInstalls())
-                updateManager?.installUpdateTask(prefs.downloadUrl())
+                updateManager?.installDownload(prefs.downloadUrl())
             prefs.remove(prefs.downloadUrl)
         }
     }

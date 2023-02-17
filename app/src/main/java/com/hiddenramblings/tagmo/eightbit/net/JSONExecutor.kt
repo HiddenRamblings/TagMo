@@ -22,6 +22,9 @@ import com.hiddenramblings.tagmo.browser.BrowserActivity
 import com.hiddenramblings.tagmo.charset.CharsetCompat
 import com.hiddenramblings.tagmo.eightbit.io.Debug
 import com.hiddenramblings.tagmo.security.SecurityHandler
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import java.io.BufferedReader
 import java.io.IOException
 import java.io.InputStreamReader
@@ -31,6 +34,8 @@ import javax.net.ssl.HttpsURLConnection
 
 class JSONExecutor(activity: Activity, server: String, path: String) {
     var listener: ResultListener? = null
+
+    private val scopeIO = CoroutineScope(Dispatchers.IO)
 
     init {
         SecurityHandler(activity, object : SecurityHandler.ProviderInstallListener {
@@ -63,7 +68,7 @@ class JSONExecutor(activity: Activity, server: String, path: String) {
     }
 
     fun retrieveJSON(server: String, path: String) {
-        Executors.newSingleThreadExecutor().execute {
+        scopeIO.launch(Dispatchers.IO) {
             try {
                 var conn = URL(server + path).openConnection() as HttpsURLConnection
                 conn.requestMethod = "GET"
@@ -82,7 +87,7 @@ class JSONExecutor(activity: Activity, server: String, path: String) {
                 }
                 if (statusCode != HttpsURLConnection.HTTP_OK) {
                     conn.disconnect()
-                    return@execute
+                    return@launch
                 }
                 conn.inputStream.use { inStream ->
                     BufferedReader(

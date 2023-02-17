@@ -2,6 +2,8 @@ package com.hiddenramblings.tagmo.amiibo
 
 import android.os.Parcel
 import android.os.Parcelable
+import com.hiddenramblings.tagmo.Preferences
+import com.hiddenramblings.tagmo.TagMo
 import com.hiddenramblings.tagmo.amiibo.tagdata.AmiiboData
 import com.hiddenramblings.tagmo.eightbit.os.Version
 import java.io.IOException
@@ -52,7 +54,10 @@ open class Amiibo : Comparable<Amiibo>, Parcelable {
     val unknownId: Long
         get() = id and UNKNOWN_MASK
     val imageUrl: String
-        get() = String.format(AMIIBO_IMAGE, head, tail)
+        get() = String.format(
+            if (Preferences(TagMo.appContext).databaseSource() == 0) RENDER_IMAGE else AMIIBO_IMAGE,
+            head, tail
+        )
     val flaskTail: String
         get() = idToHex(id).substring(8, 16).toInt(16).toString(36)
 
@@ -141,7 +146,8 @@ open class Amiibo : Comparable<Amiibo>, Parcelable {
     }
 
     companion object {
-        private const val AMIIBO_IMAGE = (AmiiboManager.RENDER_RAW + "images/icon_%08x-%08x.png")
+        private const val AMIIBO_IMAGE = "${AmiiboManager.AMIIBO_RAW}/images/icon_%08x-%08x.png"
+        private const val RENDER_IMAGE = "${AmiiboManager.RENDER_RAW}/images/icon_%08x-%08x.png"
         const val HEAD_MASK = -0x100000000L
         const val TAIL_MASK = 0x00000000FFFFFFFFL
         const val HEAD_BITSHIFT = 4 * 8

@@ -507,9 +507,9 @@ class SettingsFragment : PreferenceFragmentCompat() {
         scopeIO.launch(Dispatchers.IO) {
             try {
                 val url: URL = if (prefs.databaseSource() == 0) {
-                    URL(AmiiboManager.RENDER_RAW + "database/amiibo.json")
+                    URL("${AmiiboManager.RENDER_RAW}/database/amiibo.json")
                 } else {
-                    URL(AmiiboManager.AMIIBO_API + "amiibo/")
+                    URL("${AmiiboManager.AMIIBO_API}/amiibo/")
                 }
                 var conn = url.openConnection() as HttpsURLConnection
                 conn.requestMethod = "GET"
@@ -523,7 +523,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
                     statusCode = conn.responseCode
                 } else if (statusCode != HttpsURLConnection.HTTP_OK && isRenderAPI(conn)) {
                     conn.disconnect()
-                    conn = fixServerLocation(URL(AmiiboManager.AMIIBO_API + "amiibo/"))
+                    conn = fixServerLocation(URL("${AmiiboManager.AMIIBO_API}/amiibo/"))
                     statusCode = conn.responseCode
                 }
                 if (statusCode == HttpsURLConnection.HTTP_OK) {
@@ -736,7 +736,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
     }
 
     private fun isRenderAPI(conn: HttpsURLConnection): Boolean {
-        val render = AmiiboManager.RENDER_RAW + "database/amiibo.json"
+        val render = "${AmiiboManager.RENDER_RAW}/database/amiibo.json"
         return render == conn.url.toString()
     }
 

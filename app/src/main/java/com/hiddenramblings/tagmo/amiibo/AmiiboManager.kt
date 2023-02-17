@@ -82,8 +82,9 @@ class AmiiboManager {
 
     companion object {
         const val AMIIBO_DATABASE_FILE = "amiibo.json"
-        const val RENDER_RAW = "https://raw.githubusercontent.com/8bitDream/AmiiboAPI/render/"
+        const val RENDER_RAW = "https://raw.githubusercontent.com/8bitDream/AmiiboAPI/render"
         const val AMIIBO_API = "https://amiiboapi.com/api/"
+        const val AMIIBO_RAW = "https://raw.githubusercontent.com/N3evin/AmiiboAPI/master"
         @Throws(IOException::class, JSONException::class, ParseException::class)
         fun parse(context: Context, uri: Uri?): AmiiboManager? {
             return if (uri != null) {

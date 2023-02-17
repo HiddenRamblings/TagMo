@@ -29,7 +29,6 @@ import java.io.BufferedReader
 import java.io.IOException
 import java.io.InputStreamReader
 import java.net.URL
-import java.util.concurrent.Executors
 import javax.net.ssl.HttpsURLConnection
 
 class JSONExecutor(activity: Activity, server: String, path: String) {
@@ -70,7 +69,7 @@ class JSONExecutor(activity: Activity, server: String, path: String) {
     fun retrieveJSON(server: String, path: String) {
         scopeIO.launch(Dispatchers.IO) {
             try {
-                var conn = URL(server + path).openConnection() as HttpsURLConnection
+                var conn = URL("$server/$path").openConnection() as HttpsURLConnection
                 conn.requestMethod = "GET"
                 conn.useCaches = false
                 conn.defaultUseCaches = false
@@ -82,7 +81,7 @@ class JSONExecutor(activity: Activity, server: String, path: String) {
                     statusCode = conn.responseCode
                 } else if (statusCode != HttpsURLConnection.HTTP_OK && isRenderAPI(conn)) {
                     conn.disconnect()
-                    conn = fixServerLocation(URL(AmiiboManager.AMIIBO_API + "amiibo/"))
+                    conn = fixServerLocation(URL("${AmiiboManager.AMIIBO_API}/amiibo/"))
                     statusCode = conn.responseCode
                 }
                 if (statusCode != HttpsURLConnection.HTTP_OK) {
@@ -109,7 +108,7 @@ class JSONExecutor(activity: Activity, server: String, path: String) {
     }
 
     private fun isRenderAPI(urlConnection: HttpsURLConnection): Boolean {
-        val render = AmiiboManager.RENDER_RAW + "database/amiibo.json"
+        val render = "${AmiiboManager.RENDER_RAW}/database/amiibo.json"
         return render == urlConnection.url.toString()
     }
 

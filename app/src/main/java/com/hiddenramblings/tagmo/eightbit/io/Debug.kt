@@ -25,6 +25,7 @@ import com.hiddenramblings.tagmo.BuildConfig
 import com.hiddenramblings.tagmo.Preferences
 import com.hiddenramblings.tagmo.R
 import com.hiddenramblings.tagmo.TagMo
+import com.hiddenramblings.tagmo.eightbit.net.GitHubRequest
 import java.io.*
 import java.util.*
 
@@ -192,18 +193,6 @@ object Debug {
         if (hasDebugging()) Log.d(ex.javaClass.simpleName, context.getString(resource), ex)
     }
 
-    private const val hex = "6768705f74314953736669344f4c415831537365" +
-                            "7167636a4f5a42783641736b6f33314f7650697a"
-    private val token: String get() {
-        val output = StringBuilder()
-        var i = 0
-        while (i < hex.length) {
-            output.append(hex.substring(i, i + 2).toInt(16).toChar())
-            i += 2
-        }
-        return output.toString()
-    }
-
     private const val issueUrl = ("https://github.com/HiddenRamblings/TagMo/issues/new?"
             + "labels=logcat&template=bug_report.yml&title=[Bug]%3A+")
 
@@ -335,7 +324,7 @@ object Debug {
         return try {
             IssueReporterLauncher.forTarget(username, project)
                 .theme(R.style.AppTheme_NoActionBar)
-                .guestToken(token)
+                .guestToken(GitHubRequest.token)
                 .guestEmailRequired(false)
                 .publicIssueUrl(issueUrl)
                 .titleTextDefault(context.getString(R.string.git_issue_title, BuildConfig.COMMIT))

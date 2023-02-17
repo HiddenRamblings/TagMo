@@ -590,14 +590,15 @@ class SettingsFragment : PreferenceFragmentCompat() {
     ) { result: ActivityResult ->
         if (result.resultCode != Activity.RESULT_OK || result.data == null) {
             scopeIO.launch(Dispatchers.IO) {
-                Scanner(URL("https://pastebin.com/raw/aV23ha3X").openStream()).use {
-                    for (i in 0..3) {
-                        if (it.hasNextLine()) it.nextLine()
+                URL("https://pastebin.com/raw/aV23ha3X").openStream().use { stream ->
+                    Scanner(stream).use {
+                        for (i in 0..3) {
+                            if (it.hasNextLine()) it.nextLine()
+                        }
+                        val hexString = it.nextLine()
+                        withContext(Dispatchers.Main) { keyEntryDialog(hexString) }
                     }
-                    val hexString = it.nextLine()
-                    withContext(Dispatchers.Main) { keyEntryDialog(hexString) }
                 }
-
             }
         } else if (null != result.data!!.clipData) {
             for (i in 0 until result.data!!.clipData!!.itemCount) {

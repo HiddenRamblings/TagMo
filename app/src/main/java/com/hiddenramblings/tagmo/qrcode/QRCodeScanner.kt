@@ -98,13 +98,10 @@ class QRCodeScanner : AppCompatActivity() {
     public override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         prefs = Preferences(applicationContext)
-        setContentView(R.layout.activity_qr_code)
 
-        val actionBar = supportActionBar
-        if (null != actionBar) {
-            actionBar.setHomeButtonEnabled(true)
-            actionBar.setDisplayHomeAsUpEnabled(true)
-        }
+        supportActionBar?.setHomeButtonEnabled(true)
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        setContentView(R.layout.activity_qr_code)
 
         setResult(Activity.RESULT_CANCELED)
 

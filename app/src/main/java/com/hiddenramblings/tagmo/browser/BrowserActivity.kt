@@ -94,6 +94,7 @@ import com.hiddenramblings.tagmo.qrcode.QRCodeScanner
 import com.hiddenramblings.tagmo.update.UpdateManager
 import com.hiddenramblings.tagmo.update.UpdateManager.GitUpdateListener
 import com.hiddenramblings.tagmo.update.UpdateManager.PlayUpdateListener
+import com.hiddenramblings.tagmo.wave9.DimensionActivity
 import com.hiddenramblings.tagmo.widget.Toasty
 import com.wajahatkarim3.easyflipviewpager.CardFlipPageTransformer2
 import eightbitlab.com.blurview.BlurView
@@ -185,14 +186,12 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
     public override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         prefs = Preferences(applicationContext)
-        if (null != supportActionBar) {
-            if (BuildConfig.WEAR_OS) {
-                supportActionBar?.hide()
-            } else {
-                supportActionBar?.setDisplayShowHomeEnabled(true)
-                supportActionBar?.setDisplayHomeAsUpEnabled(true)
-                supportActionBar?.setHomeAsUpIndicator(R.drawable.ic_baseline_menu_24)
-            }
+        if (BuildConfig.WEAR_OS) {
+            supportActionBar?.hide()
+        } else {
+            supportActionBar?.setDisplayShowHomeEnabled(true)
+            supportActionBar?.setDisplayHomeAsUpEnabled(true)
+            supportActionBar?.setHomeAsUpIndicator(R.drawable.ic_baseline_menu_24)
         }
         setContentView(R.layout.activity_browser)
         keyManager = KeyManager(this)
@@ -778,6 +777,9 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                 }
                 R.id.mnu_lego -> {
                     Toasty(this).Short(R.string.notice_incomplete)
+                    onReturnableIntent.launch(
+                        Intent(this, DimensionActivity::class.java)
+                    )
                     return@setOnMenuItemClickListener true
                 }
                 R.id.mnu_qr_code -> {
@@ -2040,6 +2042,10 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
         if (resultData?.hasExtra(NFCIntent.EXTRA_SIGNATURE) == true)
             showElitePage(resultData.extras)
     }
+
+    private val onReturnableIntent = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) { }
 
     private val onQRCodeScanner = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()

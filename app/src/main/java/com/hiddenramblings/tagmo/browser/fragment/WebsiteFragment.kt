@@ -3,10 +3,7 @@ package com.hiddenramblings.tagmo.browser.fragment
 import android.annotation.SuppressLint
 import android.app.Dialog
 import android.app.ProgressDialog
-import android.os.Build
-import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
+import android.os.*
 import android.util.Base64
 import android.view.LayoutInflater
 import android.view.View
@@ -116,13 +113,12 @@ class WebsiteFragment : Fragment() {
                         }
                     })
             }
+        } else {
+            @Suppress("DEPRECATION")
+            webViewSettings.allowFileAccessFromFileURLs = true
+            @Suppress("DEPRECATION")
+            webViewSettings.allowUniversalAccessFromFileURLs = true
         }
-        @Suppress("DEPRECATION")
-        webViewSettings.allowFileAccessFromFileURLs =
-            Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP
-        @Suppress("DEPRECATION")
-        webViewSettings.allowUniversalAccessFromFileURLs =
-            Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP
         val download = JavaScriptInterface()
         webView.addJavascriptInterface(download, "Android")
         webView.setDownloadListener { url: String, _: String?, _: String?, mimeType: String, _: Long ->

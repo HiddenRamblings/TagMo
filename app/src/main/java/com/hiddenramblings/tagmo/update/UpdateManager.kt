@@ -31,8 +31,6 @@ import com.google.android.play.core.install.model.UpdateAvailability
 import com.hiddenramblings.tagmo.*
 import com.hiddenramblings.tagmo.browser.BrowserActivity
 import com.hiddenramblings.tagmo.eightbit.io.Debug
-import com.hiddenramblings.tagmo.eightbit.net.JSONExecutor
-import com.hiddenramblings.tagmo.eightbit.net.JSONExecutor.ResultListener
 import com.hiddenramblings.tagmo.eightbit.os.Storage
 import com.hiddenramblings.tagmo.eightbit.os.Version
 import kotlinx.coroutines.CoroutineScope

@@ -22,12 +22,13 @@ import com.hiddenramblings.tagmo.nfctech.TagArray.isElite
 import com.hiddenramblings.tagmo.nfctech.TagArray.isPowerTag
 import com.hiddenramblings.tagmo.widget.Toasty
 
+private inline fun <reified T : Parcelable> Intent.parcelable(key: String): T? = when {
+    Version.isTiramisu ->
+        getParcelableExtra(key, T::class.java)
+    else -> @Suppress("DEPRECATION") getParcelableExtra(key) as? T
+}
+
 class ScanTag {
-    private inline fun <reified T : Parcelable> Intent.parcelable(key: String): T? = when {
-        Version.isTiramisu ->
-            getParcelableExtra(key, T::class.java)
-        else -> @Suppress("DEPRECATION") getParcelableExtra(key) as? T
-    }
     private var hasTestedElite = false
     private var isEliteDevice = false
     private fun closeTagSilently(mifare: NTAG215?) {

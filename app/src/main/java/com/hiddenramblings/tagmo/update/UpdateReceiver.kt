@@ -25,12 +25,13 @@ import com.hiddenramblings.tagmo.browser.BrowserActivity
 import com.hiddenramblings.tagmo.eightbit.os.Version
 import java.net.URISyntaxException
 
+private inline fun <reified T : Parcelable> Intent.parcelable(key: String): T? = when {
+    Version.isTiramisu ->
+        getParcelableExtra(key, T::class.java)
+    else -> @Suppress("DEPRECATION") getParcelableExtra(key) as? T
+}
+
 class UpdateReceiver : BroadcastReceiver() {
-    private inline fun <reified T : Parcelable> Intent.parcelable(key: String): T? = when {
-        Version.isTiramisu ->
-            getParcelableExtra(key, T::class.java)
-        else -> @Suppress("DEPRECATION") getParcelableExtra(key) as? T
-    }
 
     override fun onReceive(context: Context, intent: Intent) {
         val action = intent.action

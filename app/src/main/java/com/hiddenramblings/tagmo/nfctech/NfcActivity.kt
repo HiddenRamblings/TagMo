@@ -37,19 +37,19 @@ import com.shawnlin.numberpicker.NumberPicker
 import java.io.IOException
 import java.util.concurrent.Executors
 
+private inline fun <reified T : Parcelable> Intent.parcelable(key: String): T? = when {
+    Version.isTiramisu ->
+        getParcelableExtra(key, T::class.java)
+    else -> @Suppress("DEPRECATION") getParcelableExtra(key) as? T
+}
+private inline fun <reified T : Parcelable>
+        Intent.parcelableArrayList(key: String): ArrayList<T>? = when {
+    Version.isTiramisu ->
+        getParcelableArrayListExtra(key, T::class.java)
+    else -> @Suppress("DEPRECATION") getParcelableArrayListExtra(key)
+}
 
 class NfcActivity : AppCompatActivity() {
-    private inline fun <reified T : Parcelable> Intent.parcelable(key: String): T? = when {
-        Version.isTiramisu ->
-            getParcelableExtra(key, T::class.java)
-        else -> @Suppress("DEPRECATION") getParcelableExtra(key) as? T
-    }
-    private inline fun <reified T : Parcelable>
-            Intent.parcelableArrayList(key: String): ArrayList<T>? = when {
-        Version.isTiramisu ->
-            getParcelableArrayListExtra(key, T::class.java)
-        else -> @Suppress("DEPRECATION") getParcelableArrayListExtra(key)
-    }
 
     private lateinit var prefs: Preferences
     private lateinit var txtMessage: TextView
@@ -88,12 +88,11 @@ class NfcActivity : AppCompatActivity() {
     public override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         prefs = Preferences(applicationContext)
+
+        supportActionBar?.setHomeButtonEnabled(true)
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
         setContentView(R.layout.activity_nfc)
-        val actionBar = supportActionBar
-        if (null != actionBar) {
-            actionBar.setHomeButtonEnabled(true)
-            actionBar.setDisplayHomeAsUpEnabled(true)
-        }
+
         nfcAdapter = NfcAdapter.getDefaultAdapter(this)
         keyManager = KeyManager(this)
         txtMessage = findViewById(R.id.txtMessage)
@@ -102,7 +101,9 @@ class NfcActivity : AppCompatActivity() {
         imgNfcCircle = findViewById(R.id.imgNfcCircle)
         bankPicker = findViewById(R.id.number_picker)
         bankTextView = findViewById(R.id.bank_number_details)
+
         configureInterface()
+
         bankPicker.setBackgroundResource(R.drawable.picker_border)
         nfcAnimation = AnimationUtils.loadAnimation(this, R.anim.nfc_scanning)
     }

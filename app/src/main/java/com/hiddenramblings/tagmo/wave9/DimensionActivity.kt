@@ -11,14 +11,15 @@ import android.nfc.tech.NfcA
 import android.os.Build
 import android.os.Bundle
 import android.os.Parcelable
-import android.os.PersistableBundle
 import android.view.Menu
 import android.view.MenuItem
 import android.webkit.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.webkit.*
 import com.hiddenramblings.tagmo.R
+import com.hiddenramblings.tagmo.TagMo
 import com.hiddenramblings.tagmo.eightbit.os.Version
+import com.hiddenramblings.tagmo.widget.Toasty
 
 private inline fun <reified T : Parcelable> Intent.parcelable(key: String): T? = when {
     Version.isTiramisu ->
@@ -50,24 +51,25 @@ class DimensionActivity : AppCompatActivity() {
 
         mWebView = findViewById(R.id.webview_content)
 
-        mPendingIntent =
-            PendingIntent.getActivity(
-                this,
-                0,
-                Intent(this, javaClass).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP),
-                if (Version.isSnowCone)
-                    PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_MUTABLE
-                else PendingIntent.FLAG_UPDATE_CURRENT
-            )
-        val ndef = IntentFilter("android.nfc.action.NDEF_DISCOVERED")
+        mPendingIntent = PendingIntent.getActivity(
+            this,
+            0,
+            Intent(this, javaClass).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP),
+            if (Version.isSnowCone)
+                PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_MUTABLE
+            else PendingIntent.FLAG_UPDATE_CURRENT
+        )
+        val ndef = IntentFilter("android.nfc.action.NDEF_DISCOVERED").apply {
+            addDataType("*/*")
+        }
         try {
-            ndef.addDataType("*/*")
             mFilters = arrayOf(ndef)
             mTechLists = arrayOf(arrayOf(NfcA::class.java.name))
             nfc = NfcAdapter.getDefaultAdapter(this)
         } catch (e: IntentFilter.MalformedMimeTypeException) {
             throw RuntimeException("fail", e)
         }
+
         val webViewSettings = mWebView.settings
         mWebView.isScrollbarFadingEnabled = true
         webViewSettings.allowFileAccess = true
@@ -97,15 +99,10 @@ class DimensionActivity : AppCompatActivity() {
                     allowedHosts.add("appassets.androidplatform.net")
                     allowedHosts.add("android_asset")
                     allowedHosts.add("127.0.0.1")
-                    if (allowedHosts.contains(request.url.host)) return false
-                    val allowedSubstring: ArrayList<String> = ArrayList()
-                    allowedSubstring.add("192.168.")
-                    request.url.host?.let {
-                        val iterator: Iterator<String> = allowedSubstring.iterator()
-                        while (iterator.hasNext()) {
-                            if (it.startsWith(iterator.next())) return false
-                        }
-                    }
+                    allowedHosts.add("cdn.jsdelivr.net")
+                    if (allowedHosts.contains(request.url.host) ||
+                        request.url.host?.startsWith("192.168.") == true)
+                        return false
 
                     view.evaluateJavascript(
                         "(function(){var err = 'ACCESS TO URL ${request.url} DENIED';" +
@@ -140,6 +137,9 @@ class DimensionActivity : AppCompatActivity() {
                 "https://appassets.androidplatform.net/assets/wave9/index.html"
             else "file:///android_asset/wave9/index.html"
         )
+        mWebView.postDelayed({
+            Toasty(this).Short(R.string.notice_incomplete)
+        }, TagMo.uiDelay.toLong())
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -148,12 +148,8 @@ class DimensionActivity : AppCompatActivity() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
-            android.R.id.home -> {
-                finish()
-            }
-            else -> {
-                return super.onOptionsItemSelected(item)
-            }
+            android.R.id.home -> finish()
+            else -> return super.onOptionsItemSelected(item)
         }
         return true
     }
@@ -172,7 +168,7 @@ class DimensionActivity : AppCompatActivity() {
 
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
-        this.tag = intent.parcelable<Parcelable>("android.nfc.extra.TAG") as Tag?
+        this.tag = intent.parcelable<Parcelable>(NfcAdapter.EXTRA_TAG) as Tag?
         val params: Array<Any> = arrayOf(0)
         val stringBuilder = StringBuilder()
         stringBuilder.append("javascript:try{(window.$jsInterface.tagDetected||")

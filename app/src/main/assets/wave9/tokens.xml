@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <tokens>
+        <item id="01" name="Batman"				world="DC Comics">
+            Batman
+        </item>
+        <item id="02" name="Gandalf"			world="Lord of the Rings">
+            Gandalf
+        </item>
+        <item id="03" name="Wyldstyle"			world="The LEGO Movie">
+            Wyldstyle
+        </item>
+        <item id="04" name="Aquaman"			world="DC Comics">
+            Aquaman
+        </item>
+        <item id="05" name="Bad Cop"			world="The LEGO Movie">
+            Bad Co
+        </item>
+        <item id="06" name="Bane"				world="DC Comics">
+            Bane
+        </item>
+        <item id="07" name="Bart"				world="The Simpsons">
+            Bart
+        </item>
+        <item id="08" name="Benny"				world="The LEGO Movie">
+            Benny
+        </item>
+        <item id="09" name="Chell"				world="Portal 2">
+            Chell
+        </item>
+        <item id="10" name="Cole"				world="Ninjago">
+            Cole
+        </item>
+        <item id="11" name="Cragger"			world="Legends of Chima">
+            Cragger
+        </item>
+        <item id="12" name="Cyborg"				world="DC Comics">
+            Cyborg
+        </item>
+        <item id="13" name="Cyberman"			world="Doctor Who">
+            Cyberman
+        </item>
+        <item id="14" name="Doc Brown"			world="Back to the Future">
+            Doc Brow
+        </item>
+        <item id="15" name="The Doctor"			world="Doctor Who">
+            The Docto
+        </item>
+        <item id="16" name="Emmet"				world="The LEGO Movie">
+            Emmet
+        </item>
+        <item id="17" name="Eris"				world="Legends of Chima">
+            Eris
+        </item>
+        <item id="18" name="Gimli"				world="Lord of the Rings">
+            Gimli
+        </item>
+        <item id="19" name="Smeagol"			world="Lord of the Rings">
+            Smeagol
+        </item>
+        <item id="20" name="Harley Quinn"		world="DC Comics">
+            Harley Quin
+        </item>
+        <item id="21" name="Homer"				world="The Simpsons">
+            Homer
+        </item>
+        <item id="22" name="Jay"				world="Ninjago">
+            Jay
+        </item>
+        <item id="23" name="Joker"				world="DC Comics">
+            Joker
+        </item>
+        <item id="24" name="Kai"				world="Ninjago">
+            Kai
+        </item>
+        <item id="25" name="ACU"				world="Jurrasic Park">
+            ACU
+        </item>
+        <item id="26" name="Gamer Kid"			world="Midway Arcade">
+            Gamer Ki
+        </item>
+        <item id="27" name="Krusty"				world="The Simpsons">
+            Krusty
+        </item>
+        <item id="28" name="Laval"				world="Legends of Chima">
+            Laval
+        </item>
+        <item id="29" name="Legolas"			world="Lord of the Rings">
+            Legolas
+        </item>
+        <item id="30" name="Lloyd"				world="Ninjago">
+            Lloyd
+        </item>
+        <item id="31" name="Marty Mcfly"		world="Back to the Future">
+            Marty Mcfl
+        </item>
+        <item id="32" name="Nya"				world="Ninjago">
+            Nya
+        </item>
+        <item id="33" name="Owen"				world="Jurrasic Park">
+            Owen
+        </item>
+        <item id="34" name="Peter Venkman"		world="Ghostbusters">
+            Peter Venkma
+        </item>
+        <item id="35" name="Slimer"				world="Ghostbusters">
+            Slimer
+        </item>
+        <item id="36" name="Scooby Doo"			world="Scooby-Doo">
+            Scooby Do
+        </item>
+        <item id="37" name="SenseiWu"			world="Ninjago">
+            SenseiWu
+        </item>
+        <item id="38" name="Shaggy"				world="Scooby-Doo">
+            Shaggy
+        </item>
+        <item id="39" name="Stay Puft"			world="Ghostbusters">
+            Stay Puf
+        </item>
+        <item id="40" name="Superman"			world="DC Comics">
+            Superman
+        </item>
+        <item id="42" name="Unikitty"			world="The LEGO Movie">
+            Unikitty
+        </item>
+        <item id="42" name="Wicked Witch"		world="Wizard of OZ">
+            Wicked Witc
+        </item>
+        <item id="43" name="Superwoman"			world="DC Comics">
+            Superwoman
+        </item>
+        <item id="44" name="Zane"				world="Ninjago">
+            Zane
+        </item>
+    </tokens>
+</resources>

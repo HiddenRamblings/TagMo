@@ -116,6 +116,7 @@
         <activity
             android:name=".wave9.DimensionActivity"
             android:label="@string/lego_dimensions"
+            android:permission="android.permission.BIND_NFC_SERVICE"
             android:configChanges="orientation|screenLayout|screenSize|smallestScreenSize"
             android:launchMode="singleTop" />
         <service

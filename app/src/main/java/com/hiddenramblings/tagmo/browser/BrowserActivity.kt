@@ -506,19 +506,15 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                 Toasty(this).Short(R.string.activity_unavailable)
                 return@setOnClickListener
             }
-            foomiiboHandler.postDelayed(
-                {
-                    if (isBrowserAvailable) fragmentBrowser?.clearFoomiiboSet()
-                }, TagMo.uiDelay.toLong()
-            )
+            foomiiboHandler.postDelayed({
+                if (isBrowserAvailable) fragmentBrowser?.clearFoomiiboSet()
+            }, TagMo.uiDelay.toLong())
         }
         foomiiboOptions.findViewById<View>(R.id.build_foomiibo_set).setOnClickListener {
             collapseBottomSheet()
-            foomiiboHandler.postDelayed(
-                {
-                    if (isBrowserAvailable) fragmentBrowser?.buildFoomiiboSet()
-                }, TagMo.uiDelay.toLong()
-            )
+            foomiiboHandler.postDelayed({
+                if (isBrowserAvailable) fragmentBrowser?.buildFoomiiboSet()
+            }, TagMo.uiDelay.toLong())
         }
 
         val popup = if (Version.isLollipopMR) PopupMenu(
@@ -776,7 +772,6 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                     return@setOnMenuItemClickListener true
                 }
                 R.id.mnu_lego -> {
-                    Toasty(this).Short(R.string.notice_incomplete)
                     onReturnableIntent.launch(
                         Intent(this, DimensionActivity::class.java)
                     )
@@ -1510,8 +1505,8 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                 settings?.notifyChanges()
             }
             R.id.mnu_joy_con -> {
-                Toasty(this).Short(R.string.notice_incomplete)
                 if (Version.isJellyBeanMR2) onShowJoyConFragment()
+                Toasty(this).Short(R.string.notice_incomplete)
             }
             R.id.send_donation -> {
                 showDonationPanel()
@@ -1597,8 +1592,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
         menuViewLarge = menu.findItem(R.id.view_large)
         menuViewImage = menu.findItem(R.id.view_image)
         menuRecursiveFiles = menu.findItem(R.id.recursive)
-        menu.findItem(R.id.mnu_joy_con).isVisible =
-            Version.isJellyBeanMR2
+        menu.findItem(R.id.mnu_joy_con).isVisible = Version.isJellyBeanMR2
         if (null == settings) return false
         onSortChanged()
         onViewChanged()
@@ -2626,8 +2620,8 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
         if (BuildConfig.WEAR_OS) {
             isStorageEnabled = permissions[Manifest.permission.READ_EXTERNAL_STORAGE] == true
         } else {
-            for ((_, value) in permissions) {
-                if (!value) isStorageEnabled = false
+            permissions.entries.forEach {
+                if (!it.value) isStorageEnabled = false
             }
         }
         if (isStorageEnabled) onStorageEnabled() else onDocumentEnabled()

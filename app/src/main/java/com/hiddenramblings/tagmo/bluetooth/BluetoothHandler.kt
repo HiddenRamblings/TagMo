@@ -53,9 +53,9 @@ class BluetoothHandler(
             ActivityResultContracts.RequestMultiplePermissions()
         ) { permissions: Map<String, Boolean> ->
             var isLocationAvailable = false
-            for ((key, value) in permissions) {
-                if (key == Manifest.permission.ACCESS_FINE_LOCATION && value)
-                    isLocationAvailable = true
+            permissions.entries.forEach {
+                if (it.key == Manifest.permission.ACCESS_FINE_LOCATION)
+                    isLocationAvailable = it.value
             }
             if (isLocationAvailable) requestBluetooth(context) else listener.onPermissionsFailed()
         }
@@ -67,9 +67,10 @@ class BluetoothHandler(
             "BluetoothS",
             ActivityResultContracts.RequestMultiplePermissions()
         ) { permissions: Map<String, Boolean> ->
-            var isBluetoothAvailable = false
-            for ((_, value) in permissions)
-                if (value) isBluetoothAvailable = true
+            var isBluetoothAvailable = true
+            permissions.entries.forEach {
+                if (!it.value) isBluetoothAvailable = false
+            }
             if (isBluetoothAvailable) {
                 val mBluetoothAdapter = getBluetoothAdapter(context)
                 if (null != mBluetoothAdapter) {
@@ -103,8 +104,10 @@ class BluetoothHandler(
             ActivityResultContracts.RequestMultiplePermissions()
         ) { permissions: Map<String, Boolean> ->
             var isLocationAvailable = false
-            for ((_, value) in permissions)
-                if (value) isLocationAvailable = true
+            permissions.entries.forEach {
+                if (it.key == Manifest.permission.ACCESS_FINE_LOCATION)
+                    isLocationAvailable = it.value
+            }
             if (isLocationAvailable) {
                 val mBluetoothAdapter = getBluetoothAdapter(context)
                 if (null != mBluetoothAdapter)

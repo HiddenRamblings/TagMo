@@ -626,7 +626,7 @@ class NfcActivity : AppCompatActivity() {
         filter.addAction(NfcAdapter.ACTION_TECH_DISCOVERED)
         filter.addAction(NfcAdapter.ACTION_TAG_DISCOVERED)
         try {
-            nfcAdapter!!.enableForegroundDispatch(
+            nfcAdapter?.enableForegroundDispatch(
                 this, nfcPendingIntent, arrayOf(filter), nfcTechList
             )
         } catch (ex: RuntimeException) {

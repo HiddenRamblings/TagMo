@@ -213,15 +213,15 @@ class WriteTagAdapter(private val settings: BrowserSettings?) :
     abstract class AmiiboViewHolder(
         itemView: View, private val settings: BrowserSettings?
     ) : RecyclerView.ViewHolder(itemView) {
-        val txtError: TextView
-        val txtName: TextView
-        val txtTagId: TextView
-        val txtAmiiboSeries: TextView
-        val txtAmiiboType: TextView
-        val txtGameSeries: TextView
+        val txtError: TextView?
+        val txtName: TextView?
+        val txtTagId: TextView?
+        val txtAmiiboSeries: TextView?
+        val txtAmiiboType: TextView?
+        val txtGameSeries: TextView?
 
         // public final TextView txtCharacter;
-        val txtPath: TextView
+        val txtPath: TextView?
         var imageAmiibo: AppCompatImageView? = null
         var amiiboFile: AmiiboFile? = null
         private val boldSpannable = BoldSpannable()
@@ -297,7 +297,7 @@ class WriteTagAdapter(private val settings: BrowserSettings?) :
                 if (hasTagInfo) {
                     setAmiiboInfoText(txtError, tagInfo, false)
                 } else {
-                    txtError.isGone = true
+                    txtError?.isGone = true
                 }
                 setAmiiboInfoText(
                     txtTagId,
@@ -316,60 +316,62 @@ class WriteTagAdapter(private val settings: BrowserSettings?) :
                     txtGameSeries,
                     boldSpannable.indexOf(gameSeries, query), hasTagInfo
                 )
-                if (null != item?.docUri) {
-                    itemView.isEnabled = true
-                    val relativeDocument = Storage.getRelativeDocument(
-                        item.docUri!!.uri
-                    )
-                    txtPath.text = boldSpannable.indexOf(relativeDocument, query)
-                    val a = TypedValue()
-                    txtPath.context.theme.resolveAttribute(
-                        android.R.attr.textColor, a, true
-                    )
-                    if (Version.isAndroid10 && a.isColorType) {
-                        txtPath.setTextColor(a.data)
-                    } else if (a.type >= TypedValue.TYPE_FIRST_COLOR_INT
-                        && a.type <= TypedValue.TYPE_LAST_COLOR_INT
-                    ) {
-                        txtPath.setTextColor(a.data)
+                if (null != txtPath) {
+                    if (null != item?.docUri) {
+                        itemView.isEnabled = true
+                        val relativeDocument = Storage.getRelativeDocument(
+                            item.docUri!!.uri
+                        )
+                        txtPath.text = boldSpannable.indexOf(relativeDocument, query)
+                        val a = TypedValue()
+                        txtPath.context.theme.resolveAttribute(
+                            android.R.attr.textColor, a, true
+                        )
+                        if (Version.isAndroid10 && a.isColorType) {
+                            txtPath.setTextColor(a.data)
+                        } else if (a.type >= TypedValue.TYPE_FIRST_COLOR_INT
+                            && a.type <= TypedValue.TYPE_LAST_COLOR_INT
+                        ) {
+                            txtPath.setTextColor(a.data)
+                        }
+                    } else if (null != item?.filePath) {
+                        itemView.isEnabled = true
+                        var relativeFile = Storage.getRelativePath(
+                            item.filePath, mPrefs.preferEmulated()
+                        )
+                        if (null != mPrefs.browserRootFolder())
+                            relativeFile = relativeFile.replace(mPrefs.browserRootFolder()!!, "")
+                        txtPath.text = boldSpannable.indexOf(relativeFile, query)
+                        val a = TypedValue()
+                        txtPath.context.theme.resolveAttribute(
+                            android.R.attr.textColor, a, true
+                        )
+                        if (Version.isAndroid10 && a.isColorType) {
+                            txtPath.setTextColor(a.data)
+                        } else if (a.type >= TypedValue.TYPE_FIRST_COLOR_INT
+                            && a.type <= TypedValue.TYPE_LAST_COLOR_INT
+                        ) {
+                            txtPath.setTextColor(a.data)
+                        }
+                    } else {
+                        itemView.isEnabled = false
+                        txtPath.text = ""
+                        txtPath.setTextColor(ContextCompat.getColor(txtPath.context, R.color.tag_text))
                     }
-                } else if (null != item?.filePath) {
-                    itemView.isEnabled = true
-                    var relativeFile = Storage.getRelativePath(
-                        item.filePath, mPrefs.preferEmulated()
-                    )
-                    if (null != mPrefs.browserRootFolder())
-                        relativeFile = relativeFile.replace(mPrefs.browserRootFolder()!!, "")
-                    txtPath.text = boldSpannable.indexOf(relativeFile, query)
-                    val a = TypedValue()
-                    txtPath.context.theme.resolveAttribute(
-                        android.R.attr.textColor, a, true
-                    )
-                    if (Version.isAndroid10 && a.isColorType) {
-                        txtPath.setTextColor(a.data)
-                    } else if (a.type >= TypedValue.TYPE_FIRST_COLOR_INT
-                        && a.type <= TypedValue.TYPE_LAST_COLOR_INT
-                    ) {
-                        txtPath.setTextColor(a.data)
-                    }
-                } else {
-                    itemView.isEnabled = false
-                    txtPath.text = ""
-                    txtPath.setTextColor(ContextCompat.getColor(txtPath.context, R.color.tag_text))
+                    txtPath.isVisible = true
                 }
-                txtPath.isVisible = true
             }
         }
 
-        fun setAmiiboInfoText(textView: TextView, text: CharSequence?, hasTagInfo: Boolean) {
-            textView.isGone = hasTagInfo
+        fun setAmiiboInfoText(textView: TextView?, text: CharSequence?, hasTagInfo: Boolean) {
+            textView?.isGone = hasTagInfo
             if (!hasTagInfo) {
                  if (!text.isNullOrEmpty()) {
-                    textView.text = text
-                    textView.isEnabled = true
+                    textView?.text = text
+                    textView?.isEnabled = true
                 } else {
-                    textView.setText(R.string.unknown)
-                    textView.isEnabled = false
+                    textView?.setText(R.string.unknown)
+                    textView?.isEnabled = false
                 }
             }
         }

@@ -396,10 +396,12 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
         } catch (ignored: Exception) { }
         if (settings.amiiboView != BrowserSettings.VIEW.IMAGE.value) {
             val activity = requireActivity() as BrowserActivity
-            val toolbar =
-                itemView!!.findViewById<View>(R.id.menu_options).findViewById<Toolbar>(R.id.toolbar)
-            activity.onCreateToolbarMenu(this, toolbar, tagData, itemView)
-            getGameCompatibility(itemView.findViewById(R.id.txtUsage), tagData)
+            itemView?.let { view ->
+                view.findViewById<View>(R.id.menu_options).findViewById<Toolbar>(R.id.toolbar).also {
+                    activity.onCreateToolbarMenu(this, it, tagData, view)
+                }
+                getGameCompatibility(view.findViewById(R.id.txtUsage), tagData)
+            }
         }
     }
 

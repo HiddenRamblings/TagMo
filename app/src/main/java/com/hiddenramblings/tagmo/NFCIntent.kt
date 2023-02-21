@@ -7,9 +7,9 @@ import com.hiddenramblings.tagmo.eightbit.os.Version
 object NFCIntent {
     @JvmStatic
     val FilterComponent = ComponentName(
-        BuildConfig.APPLICATION_ID,
-        "com.hiddenramblings.tagmo.NFCIntentFilter"
+        BuildConfig.APPLICATION_ID, "com.hiddenramblings.tagmo.NFCIntentFilter"
     )
+
     const val ACTION_EDIT_COMPLETE = BuildConfig.APPLICATION_ID + ".EDIT_COMPLETE"
     const val ACTION_SCAN_TAG = BuildConfig.APPLICATION_ID + ".SCAN_TAG"
     const val ACTION_WRITE_TAG_FULL = BuildConfig.APPLICATION_ID + ".WRITE_TAG_FULL"
@@ -36,7 +36,7 @@ object NFCIntent {
     const val EXTRA_ACTIVE_BANK = BuildConfig.APPLICATION_ID + ".EXTRA_ACTIVE_BANK"
     const val EXTRA_BANK_COUNT = BuildConfig.APPLICATION_ID + ".EXTRA_BANK_COUNT"
     const val EXTRA_CURRENT_BANK = BuildConfig.APPLICATION_ID + ".EXTRA_CURRENT_BANK"
-    const val SITE_GITLAB_README = "https://tagmo.gitlab.io/"
+
     @JvmStatic
     fun getIntent(intent: Intent): Intent {
         return if (Version.isNougat)

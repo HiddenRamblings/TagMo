@@ -145,9 +145,9 @@ class BrowserAdapter(
     private fun handleClickEvent(holder: AmiiboViewHolder) {
         if (null != holder.listener) {
             val uri = if (null != holder.amiiboFile?.docUri)
-                holder.amiiboFile!!.docUri!!.uri.toString() else null
+                holder.amiiboFile?.docUri?.uri.toString() else null
             val path = if (null != holder.amiiboFile?.filePath)
-                holder.amiiboFile!!.filePath!!.absolutePath else null
+                holder.amiiboFile?.filePath?.absolutePath else null
             if (settings.amiiboView != VIEW.IMAGE.value) {
                 if (amiiboPath.contains(uri) || amiiboPath.contains(path)) {
                     if (null != uri) amiiboPath.remove(uri)

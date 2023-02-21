@@ -14,7 +14,6 @@ import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.webkit.*
 import androidx.webkit.WebViewAssetLoader.AssetsPathHandler
-import com.hiddenramblings.tagmo.NFCIntent
 import com.hiddenramblings.tagmo.R
 import com.hiddenramblings.tagmo.TagMo
 import com.hiddenramblings.tagmo.amiibo.AmiiboManager.Companion.getAmiiboManager
@@ -39,6 +38,7 @@ class WebsiteFragment : Fragment() {
     private val webHandler = Handler(Looper.getMainLooper())
     private var mWebView: WebView? = null
     private var dialog: ProgressDialog? = null
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -133,10 +133,10 @@ class WebsiteFragment : Fragment() {
     fun loadWebsite(address: String?) {
         var website = address
         if (null != mWebView) {
-            if (null == website) website = NFCIntent.SITE_GITLAB_README
+            if (null == website) website = WEBSITE_README
             val webViewSettings = mWebView?.settings
             if (null != webViewSettings) {
-                if (website.startsWith(NFCIntent.SITE_GITLAB_README)) {
+                if (website.startsWith(WEBSITE_README)) {
                     webViewSettings.userAgentString = webViewSettings.userAgentString?.replace(
                         ("(?i)" + Pattern.quote("android")).toRegex(), "TagMo"
                     )
@@ -311,5 +311,9 @@ class WebsiteFragment : Fragment() {
                 }
             }
         }
+    }
+
+    companion object {
+        private const val WEBSITE_README = "https://tagmo.gitlab.io/"
     }
 }

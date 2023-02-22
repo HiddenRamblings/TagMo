@@ -482,6 +482,8 @@ class NfcActivity : AppCompatActivity() {
                     }
                     else -> throw Exception(getString(R.string.error_state, mode))
                 }
+            } catch (ex: Exception) {
+                throw ex
             } finally {
                 closeTagSilently(mifare)
             }

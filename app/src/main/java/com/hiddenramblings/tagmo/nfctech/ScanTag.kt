@@ -93,6 +93,8 @@ class ScanTag {
                 }
                 hasTestedElite = false
                 isEliteDevice = false
+            } catch (ex: Exception) {
+                throw ex
             } finally {
                 closeTagSilently(mifare)
             }

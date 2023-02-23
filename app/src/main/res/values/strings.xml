@@ -400,6 +400,8 @@
     <string name="invalid_tag_key">Key file detected. Tag skipped.</string>
     <string name="invalid_app_data">Invalid app data</string>
 
+    <string name="invalid_read_result">Invalid read result size</string>
+
     <string name="uid_key_missing">No available key for UID</string>
     <string name="p10_key_missing">No available key for P10_ID</string>
     <string name="power_tag_verify">Power Tag identified: %1$s</string>

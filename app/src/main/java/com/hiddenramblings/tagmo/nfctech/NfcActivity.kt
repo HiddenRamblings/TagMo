@@ -512,8 +512,7 @@ class NfcActivity : AppCompatActivity() {
                                 showMessage(R.string.speed_scan)
                                 closeTagSilently(mifare)
                             }
-                            getString(R.string.nfc_null_array) == error ||
-                                    getString(R.string.nfc_read_result) == error -> {
+                            isEliteLockedCause(error) -> {
                                 runOnUiThread {
                                     getErrorDialog(this@NfcActivity,
                                         R.string.possible_lock, R.string.prepare_unlock
@@ -557,6 +556,12 @@ class NfcActivity : AppCompatActivity() {
                 } catch (ignored: IOException) { }
             }
         }
+    }
+
+    private fun isEliteLockedCause(error: String?) : Boolean {
+        return getString(R.string.nfc_null_array) == error ||
+                getString(R.string.nfc_read_result) == error ||
+                getString(R.string.invalid_read_result) == error
     }
 
     private fun getErrorDialog(

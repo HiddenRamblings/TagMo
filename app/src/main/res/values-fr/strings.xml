@@ -308,6 +308,8 @@
     <string name="invalid_data_size">Taille du Tag&#160;: %1$d, Attendu&#160;: %2$d</string>
     <string name="invalid_app_data">Données d’application invalides</string>
 
+    <string name="invalid_read_result">Taille des données lues invalide</string>
+
     <string name="uid_key_missing">Aucune clé disponible pour l’UID</string>
     <string name="p10_key_missing">Aucune clé disponible pour le P10_ID</string>
     <string name="power_tag_verify">Power Tag identifié&#160;: %1$s</string>

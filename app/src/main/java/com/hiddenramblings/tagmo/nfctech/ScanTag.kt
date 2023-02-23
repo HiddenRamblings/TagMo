@@ -116,8 +116,7 @@ class ScanTag {
                             }
                             closeTagSilently(mifare)
                         }
-                        activity.getString(R.string.nfc_null_array) == error ||
-                                activity.getString(R.string.nfc_read_result) == error -> {
+                        isEliteLockedCause(activity, error) -> {
                             activity.runOnUiThread {
                                 getErrorDialog(activity,
                                     R.string.possible_lock, R.string.prepare_unlock
@@ -158,6 +157,12 @@ class ScanTag {
                 activity.onReportProblemClick()
             }
         }
+    }
+
+    private fun isEliteLockedCause(activity: BrowserActivity, error: String?) : Boolean {
+        return activity.getString(R.string.nfc_null_array) == error ||
+                activity.getString(R.string.nfc_read_result) == error ||
+                activity.getString(R.string.invalid_read_result) == error
     }
 
     private fun getErrorDialog(

@@ -7,7 +7,6 @@ import android.nfc.NfcAdapter
 import android.nfc.Tag
 import android.nfc.TagLostException
 import android.os.Bundle
-import android.os.Parcelable
 import android.provider.Settings
 import android.view.Menu
 import android.view.MenuItem
@@ -22,32 +21,17 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.AppCompatImageView
 import androidx.core.view.isGone
 import androidx.core.view.isVisible
-import com.hiddenramblings.tagmo.NFCIntent
-import com.hiddenramblings.tagmo.Preferences
-import com.hiddenramblings.tagmo.R
+import com.hiddenramblings.tagmo.*
 import com.hiddenramblings.tagmo.amiibo.AmiiboFile
 import com.hiddenramblings.tagmo.amiibo.EliteTag
 import com.hiddenramblings.tagmo.amiibo.KeyManager
 import com.hiddenramblings.tagmo.eightbit.io.Debug
 import com.hiddenramblings.tagmo.eightbit.material.IconifiedSnackbar
 import com.hiddenramblings.tagmo.eightbit.os.Version
-import com.hiddenramblings.tagmo.nfctech.*
 import com.hiddenramblings.tagmo.widget.Toasty
 import com.shawnlin.numberpicker.NumberPicker
 import java.io.IOException
 import java.util.concurrent.Executors
-
-private inline fun <reified T : Parcelable> Intent.parcelable(key: String): T? = when {
-    Version.isTiramisu ->
-        getParcelableExtra(key, T::class.java)
-    else -> @Suppress("DEPRECATION") getParcelableExtra(key) as? T
-}
-private inline fun <reified T : Parcelable>
-        Intent.parcelableArrayList(key: String): ArrayList<T>? = when {
-    Version.isTiramisu ->
-        getParcelableArrayListExtra(key, T::class.java)
-    else -> @Suppress("DEPRECATION") getParcelableArrayListExtra(key)
-}
 
 class NfcActivity : AppCompatActivity() {
 

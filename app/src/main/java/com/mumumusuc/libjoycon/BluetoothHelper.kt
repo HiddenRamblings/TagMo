@@ -12,6 +12,7 @@ import android.os.Build
 import android.os.ParcelFileDescriptor
 import android.os.ParcelUuid
 import android.util.Log
+import com.hiddenramblings.tagmo.parcelable
 import me.weishu.reflection.Reflection
 import java.lang.reflect.InvocationTargetException
 
@@ -48,14 +49,14 @@ class BluetoothHelper : BluetoothProfile.ServiceListener {
                     }
                     BluetoothDevice.ACTION_FOUND -> {
                         val dev =
-                            intent.getParcelableExtra<BluetoothDevice>(BluetoothDevice.EXTRA_DEVICE)
+                            intent.parcelable<BluetoothDevice>(BluetoothDevice.EXTRA_DEVICE)
                         debug("device found -> $dev")
                         mCallback?.onStateChanged(dev?.name, dev?.address, BT_STATE_FOUND_DEVICE)
                     }
                     BluetoothAdapter.ACTION_CONNECTION_STATE_CHANGED -> {
                         val state = intent.getIntExtra(BluetoothAdapter.EXTRA_CONNECTION_STATE, -1)
                         val dev =
-                            intent.getParcelableExtra<BluetoothDevice>(BluetoothDevice.EXTRA_DEVICE)
+                            intent.parcelable<BluetoothDevice>(BluetoothDevice.EXTRA_DEVICE)
                         debug("connection state change -> device = $dev, state = $state")
                         when (state) {
                             BluetoothAdapter.STATE_CONNECTED -> {
@@ -83,7 +84,7 @@ class BluetoothHelper : BluetoothProfile.ServiceListener {
                     BluetoothDevice.ACTION_BOND_STATE_CHANGED -> {
                         val state = intent.getIntExtra(BluetoothDevice.EXTRA_BOND_STATE, -1)
                         val dev =
-                            intent.getParcelableExtra<BluetoothDevice>(BluetoothDevice.EXTRA_DEVICE)
+                            intent.parcelable<BluetoothDevice>(BluetoothDevice.EXTRA_DEVICE)
                         debug("bond state change -> device = $dev, state = $state")
                         when (state) {
                             BluetoothDevice.BOND_BONDED -> {
@@ -111,7 +112,7 @@ class BluetoothHelper : BluetoothProfile.ServiceListener {
                     BluetoothHidHost.ACTION_HANDSHAKE -> {
                         val status = intent.getIntExtra(BluetoothHidHost.EXTRA_STATUS, -1)
                         val dev =
-                            intent.getParcelableExtra<BluetoothDevice>(BluetoothDevice.EXTRA_DEVICE)
+                            intent.parcelable<BluetoothDevice>(BluetoothDevice.EXTRA_DEVICE)
                         debug("ACTION_HANDSHAKE -> device = $dev, status = $status")
                     }
                 }

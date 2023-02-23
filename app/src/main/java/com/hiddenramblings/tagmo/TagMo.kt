@@ -2,6 +2,8 @@ package com.hiddenramblings.tagmo
 
 import android.app.Application
 import android.content.Context
+import android.content.Intent
+import android.os.Parcelable
 import android.text.Spanned
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatDelegate
@@ -16,6 +18,15 @@ import org.lsposed.hiddenapibypass.HiddenApiBypass
 import java.io.PrintWriter
 import java.io.StringWriter
 import kotlin.system.exitProcess
+
+inline fun <reified T : Parcelable> Intent.parcelable(key: String): T? = when {
+    Version.isTiramisu -> getParcelableExtra(key, T::class.java)
+    else -> @Suppress("DEPRECATION") getParcelableExtra(key) as? T
+}
+inline fun <reified T : Parcelable> Intent.parcelableArrayList(key: String): ArrayList<T>? = when {
+    Version.isTiramisu -> getParcelableArrayListExtra(key, T::class.java)
+    else -> @Suppress("DEPRECATION") getParcelableArrayListExtra(key)
+}
 
 class TagMo : Application() {
     private val isWatchingANR = !BuildConfig.DEBUG && !BuildConfig.GOOGLE_PLAY

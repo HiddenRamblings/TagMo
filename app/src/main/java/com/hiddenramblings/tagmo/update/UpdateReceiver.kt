@@ -23,13 +23,8 @@ import android.widget.Toast
 import com.hiddenramblings.tagmo.BuildConfig
 import com.hiddenramblings.tagmo.browser.BrowserActivity
 import com.hiddenramblings.tagmo.eightbit.os.Version
+import com.hiddenramblings.tagmo.parcelable
 import java.net.URISyntaxException
-
-private inline fun <reified T : Parcelable> Intent.parcelable(key: String): T? = when {
-    Version.isTiramisu ->
-        getParcelableExtra(key, T::class.java)
-    else -> @Suppress("DEPRECATION") getParcelableExtra(key) as? T
-}
 
 class UpdateReceiver : BroadcastReceiver() {
 

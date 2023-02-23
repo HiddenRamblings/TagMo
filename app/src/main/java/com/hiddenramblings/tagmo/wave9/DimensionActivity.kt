@@ -19,13 +19,8 @@ import androidx.webkit.*
 import com.hiddenramblings.tagmo.R
 import com.hiddenramblings.tagmo.TagMo
 import com.hiddenramblings.tagmo.eightbit.os.Version
+import com.hiddenramblings.tagmo.parcelable
 import com.hiddenramblings.tagmo.widget.Toasty
-
-private inline fun <reified T : Parcelable> Intent.parcelable(key: String): T? = when {
-    Version.isTiramisu ->
-        getParcelableExtra(key, T::class.java)
-    else -> @Suppress("DEPRECATION") getParcelableExtra(key) as? T
-}
 
 class DimensionActivity : AppCompatActivity() {
 

@@ -518,7 +518,7 @@ class NfcActivity : AppCompatActivity() {
                                     }.show()
                                 }
                             }
-                            Debug.hasException(e, NTAG215.CONNECT) -> {
+                            Debug.hasException(e, NTAG215::class.java.name, "connect") -> {
                                 runOnUiThread {
                                     getErrorDialog(this@NfcActivity,
                                         R.string.possible_blank, R.string.prepare_blank
@@ -534,7 +534,7 @@ class NfcActivity : AppCompatActivity() {
                         }
                     }
                     else -> {
-                        if (Debug.hasException(e, NTAG215.CONNECT))
+                        if (Debug.hasException(e, NTAG215::class.java.name, "connect"))
                             error = getString(R.string.error_tag_faulty) + "\n" + error
                         showError(error)
                     }

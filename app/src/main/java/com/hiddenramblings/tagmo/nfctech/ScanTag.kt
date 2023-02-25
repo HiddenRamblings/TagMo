@@ -118,7 +118,7 @@ class ScanTag {
                                 }.show()
                             }
                         }
-                        Debug.hasException(e, NTAG215.CONNECT) -> {
+                        Debug.hasException(e, NTAG215::class.java.name, "connect") -> {
                             activity.runOnUiThread {
                                 getErrorDialog(activity,
                                     R.string.possible_blank, R.string.prepare_blank
@@ -134,7 +134,7 @@ class ScanTag {
                         }
                     }
                 } else {
-                    if (Debug.hasException(e, NTAG215.CONNECT))
+                    if (Debug.hasException(e, NTAG215::class.java.name, "connect"))
                         error = activity.getString(R.string.error_tag_faulty) + "\n" + error
                     Toasty(activity).Short(error)
                 }

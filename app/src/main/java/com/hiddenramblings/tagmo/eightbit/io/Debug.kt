@@ -65,10 +65,15 @@ object Debug {
         return e.cause?.javaClass?.name ?: e.javaClass.name
     }
 
-    fun hasException(e: Exception, target: String): Boolean {
+    fun hasException(e: Exception, className: String, methodName: String): Boolean {
         if (e.stackTrace.isNullOrEmpty()) return false
         for (trace in e.stackTrace) {
-            if (null != trace && ("${trace.className}.${trace.methodName}") == target) return true
+            if (null != trace) {
+                if (trace.className.endsWith(className) && trace.methodName == methodName) {
+                    warn(javaClass, "${trace.className}.${trace.methodName}")
+                    return true
+                }
+            }
         }
         return false
     }

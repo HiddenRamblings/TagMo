@@ -11,7 +11,7 @@
         android:title="@string/amiibo_backup"/>
     <item
         android:id="@+id/mnu_validate"
-        android:icon="@drawable/ic_baseline_compare_24dp"
+        android:icon="@drawable/ic_compare_24dp"
         android:title="@string/validate_data"/>
     <item
         android:id="@+id/mnu_lego"
@@ -19,6 +19,6 @@
         android:title="@string/lego_dimensions"/>
     <item
         android:id="@+id/mnu_qr_code"
-        android:icon="@drawable/ic_baseline_qr_code_2_24"
+        android:icon="@drawable/ic_qr_code_2_24"
         android:title="@string/qr_code_scanner"/>
 </menu>

@@ -9,7 +9,7 @@
         app:showAsAction="collapseActionView|always"/>
     <item
         android:id="@+id/refresh"
-        android:icon="@drawable/ic_refresh_white_24dp"
+        android:icon="@drawable/ic_refresh_24dp"
         android:title="@string/refresh_browser"
         app:showAsAction="always"/>
     <item
@@ -66,7 +66,7 @@
     </item>
     <item
         android:id="@+id/install_update"
-        android:icon="@drawable/ic_baseline_software_update_24"
+        android:icon="@drawable/ic_software_update_24"
         android:title="@string/install"
         app:showAsAction="always"/>
     <item
@@ -100,7 +100,7 @@
         </menu>
     </item>
     <item
-        android:icon="@drawable/ic_baseline_display_settings_24"
+        android:icon="@drawable/ic_display_settings_24"
         android:title="@string/display_options"
         app:showAsAction="never">
         <menu>

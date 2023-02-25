@@ -1021,7 +1021,7 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
         if (isFragmentVisible) {
             statusBar = IconifiedSnackbar(requireActivity()).buildSnackbar(
                 R.string.flask_scanning,
-                R.drawable.ic_baseline_bluetooth_searching_24dp,
+                R.drawable.ic_bluetooth_searching_24dp,
                 Snackbar.LENGTH_INDEFINITE
             )
             statusBar!!.show()
@@ -1049,7 +1049,7 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
         if (isFragmentVisible) {
             statusBar = IconifiedSnackbar(requireActivity()).buildSnackbar(
                 R.string.flask_disconnect,
-                R.drawable.ic_baseline_bluetooth_searching_24dp,
+                R.drawable.ic_bluetooth_searching_24dp,
                 Snackbar.LENGTH_INDEFINITE
             )
             statusBar!!.setAction(R.string.scan) { selectBluetoothDevice() }

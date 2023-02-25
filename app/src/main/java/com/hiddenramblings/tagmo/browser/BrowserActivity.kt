@@ -191,7 +191,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
         } else {
             supportActionBar?.setDisplayShowHomeEnabled(true)
             supportActionBar?.setDisplayHomeAsUpEnabled(true)
-            supportActionBar?.setHomeAsUpIndicator(R.drawable.ic_baseline_menu_24)
+            supportActionBar?.setHomeAsUpIndicator(R.drawable.ic_menu_24)
         }
         setContentView(R.layout.activity_browser)
         keyManager = KeyManager(this)
@@ -724,7 +724,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
             ).show()
         } catch (e: Exception) {
             IconifiedSnackbar(this, viewPager).buildSnackbar(
-                e.message, R.drawable.ic_baseline_bug_report_24dp, Snackbar.LENGTH_LONG
+                e.message, R.drawable.ic_bug_report_24dp, Snackbar.LENGTH_LONG
             ).show()
         }
     }
@@ -1192,7 +1192,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                     } catch (e: Exception) {
                         IconifiedSnackbar(this, viewPager).buildSnackbar(
                             e.message,
-                            R.drawable.ic_baseline_bug_report_24dp, Snackbar.LENGTH_LONG
+                            R.drawable.ic_bug_report_24dp, Snackbar.LENGTH_LONG
                         ).show()
                     }
                     return@setOnMenuItemClickListener true
@@ -1282,7 +1282,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                         ).show()
                     } catch (e: Exception) {
                         IconifiedSnackbar(this, viewPager).buildSnackbar(
-                            e.message, R.drawable.ic_baseline_bug_report_24dp, Snackbar.LENGTH_LONG
+                            e.message, R.drawable.ic_bug_report_24dp, Snackbar.LENGTH_LONG
                         ).show()
                     }
                     return@setOnMenuItemClickListener true

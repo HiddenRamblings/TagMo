@@ -28,6 +28,7 @@ import com.hiddenramblings.tagmo.amiibo.KeyManager
 import com.hiddenramblings.tagmo.eightbit.io.Debug
 import com.hiddenramblings.tagmo.eightbit.material.IconifiedSnackbar
 import com.hiddenramblings.tagmo.eightbit.os.Version
+import com.hiddenramblings.tagmo.nfctech.TagArray.technology
 import com.hiddenramblings.tagmo.widget.Toasty
 import com.shawnlin.numberpicker.NumberPicker
 import java.io.IOException
@@ -220,12 +221,17 @@ class NfcActivity : AppCompatActivity() {
         var update: ByteArray? = ByteArray(0)
         try {
             val tag = intent.parcelable<Tag>(NfcAdapter.EXTRA_TAG)
+            tagTech = tag.technology()
+            showMessage(R.string.tag_scanning, tagTech)
             mifare = if (NFCIntent.ACTION_BLIND_SCAN == mode || isEliteIntent)
                 NTAG215.getBlind(tag)
             else NTAG215[tag]
-            tagTech = TagArray.getTagTechnology(tag)
-            showMessage(R.string.tag_scanning, tagTech)
-            mifare?.connect()
+            mifare?.connect() ?: if (prefs.eliteEnabled()) {
+                mifare = NTAG215.getBlind(tag)
+                mifare?.connect()
+            } else {
+                throw Exception(getString(R.string.error_tag_protocol, tagTech))
+            }
             if (!hasTestedElite) {
                 hasTestedElite = true
                 if (TagArray.isPowerTag(mifare)) {
@@ -667,7 +673,7 @@ class NfcActivity : AppCompatActivity() {
         if (NfcAdapter.ACTION_NDEF_DISCOVERED == intent.action
             || NfcAdapter.ACTION_TECH_DISCOVERED == intent.action
             || NfcAdapter.ACTION_TAG_DISCOVERED == intent.action) {
-            val tech = if (null != tagTech) tagTech!! else getString(R.string.nfc_tag)
+            val tech = tagTech ?: getString(R.string.nfc_tag)
             showMessage(R.string.tag_detected, tech)
             Executors.newSingleThreadExecutor().execute { onTagDiscovered(intent) }
         }

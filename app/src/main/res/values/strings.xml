@@ -330,6 +330,7 @@
 
     <string name="error_no_data">No data to write</string>
     <string name="error_tag_protocol">NTAG215 required, found %1$s!</string>
+    <string name="error_tag_unavailable">NTAG215 connection cannot be established!</string>
     <string name="error_state">State error. Invalid action: %1$s</string>
     <string name="error_length">Must be 8 characters</string>
     <string name="error_input">Invalid input</string>

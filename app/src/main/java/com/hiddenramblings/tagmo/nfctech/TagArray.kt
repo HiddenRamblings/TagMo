@@ -32,14 +32,14 @@ import java.util.*
 
 object TagArray {
     @JvmStatic
-    fun getTagTechnology(tag: Tag?): String {
+    fun Tag?.technology(): String {
         val context = TagMo.appContext
         var type = context.getString(R.string.unknown_type)
-        if (null == tag) return type
-        tag.techList.forEach {
+        if (null == this) return type
+        techList.forEach {
             when {
                 MifareClassic::class.java.name == it -> {
-                    type = when (MifareClassic.get(tag).type) {
+                    type = when (MifareClassic.get(this).type) {
                         MifareClassic.TYPE_CLASSIC -> context.getString(R.string.mifare_classic)
                         MifareClassic.TYPE_PLUS -> context.getString(R.string.mifare_plus)
                         MifareClassic.TYPE_PRO -> context.getString(R.string.mifare_pro)
@@ -48,7 +48,7 @@ object TagArray {
                     return type
                 }
                 MifareUltralight::class.java.name == it -> {
-                    type = when (MifareUltralight.get(tag).type) {
+                    type = when (MifareUltralight.get(this).type) {
                         MifareUltralight.TYPE_ULTRALIGHT -> context.getString(R.string.mifare_ultralight)
                         MifareUltralight.TYPE_ULTRALIGHT_C -> context.getString(R.string.mifare_ultralight_c)
                         else -> context.getString(R.string.mifare_ultralight)

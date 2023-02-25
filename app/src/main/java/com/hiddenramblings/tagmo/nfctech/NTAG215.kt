@@ -4,6 +4,8 @@ import android.nfc.Tag
 import android.nfc.tech.MifareUltralight
 import android.nfc.tech.NfcA
 import android.nfc.tech.TagTechnology
+import com.hiddenramblings.tagmo.R
+import com.hiddenramblings.tagmo.TagMo
 import com.hiddenramblings.tagmo.eightbit.io.Debug
 import java.io.IOException
 
@@ -314,9 +316,12 @@ class NTAG215 : TagTechnology {
             else null
         }
 
-        fun getBlind(tag: Tag?): NTAG215? {
+        @Throws(IOException::class)
+        fun getBlind(tag: Tag?): NTAG215 {
             val nfcA = NfcA.get(tag)
-            return nfcA?.let { NTAG215(it) }
+            return nfcA?.let { NTAG215(it) } ?: throw IOException(
+                TagMo.appContext.getString(R.string.error_tag_unavailable)
+            )
         }
 
         private fun validatePageIndex(pageIndex: Int) {

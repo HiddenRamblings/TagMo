@@ -67,13 +67,11 @@ object Debug {
 
     fun hasException(e: Exception, className: String, methodName: String): Boolean {
         if (e.stackTrace.isNullOrEmpty()) return false
-        for (trace in e.stackTrace) {
-            if (null != trace) {
-                if (trace.className.endsWith(className) && trace.methodName == methodName) {
-                    warn(javaClass, "${trace.className}.${trace.methodName}")
-                    return true
-                }
-            }
+        e.stackTrace.forEach {
+            if (it.className == className && it.methodName == methodName)
+                return true
+            else
+                warn(javaClass, "${it.className}.${it.methodName}")
         }
         return false
     }

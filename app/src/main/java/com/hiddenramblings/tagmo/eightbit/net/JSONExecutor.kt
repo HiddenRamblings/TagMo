@@ -32,9 +32,8 @@ import java.net.URL
 import javax.net.ssl.HttpsURLConnection
 
 class JSONExecutor(activity: Activity, server: String, path: String) {
-    var listener: ResultListener? = null
 
-    private val scopeIO = CoroutineScope(Dispatchers.IO)
+    var listener: ResultListener? = null
 
     init {
         SecurityHandler(activity, object : SecurityHandler.ProviderInstallListener {
@@ -67,7 +66,7 @@ class JSONExecutor(activity: Activity, server: String, path: String) {
     }
 
     fun retrieveJSON(server: String, path: String) {
-        scopeIO.launch(Dispatchers.IO) {
+        CoroutineScope(Dispatchers.IO).launch(Dispatchers.IO) {
             try {
                 var conn = URL("$server/$path").openConnection() as HttpsURLConnection
                 conn.requestMethod = "GET"

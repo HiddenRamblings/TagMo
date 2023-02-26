@@ -54,9 +54,6 @@ class SettingsFragment : PreferenceFragmentCompat() {
     var imageNetworkSetting: ListPreference? = null
     private lateinit var keyManager: KeyManager
 
-    private val scopeDefault = CoroutineScope(Dispatchers.Default)
-    private val scopeIO = CoroutineScope(Dispatchers.IO)
-
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         setPreferencesFromResource(R.xml.preference_screen, rootKey)
     }
@@ -332,7 +329,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
     }
 
     private fun validateKeys(data: Uri?) {
-        scopeIO.launch(Dispatchers.IO) {
+        CoroutineScope(Dispatchers.IO).launch(Dispatchers.IO) {
             try {
                 requireContext().contentResolver.openInputStream(data!!).use { strm ->
                     keyManager.evaluateKey(strm!!)
@@ -416,7 +413,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
 
     private fun updateAmiiboDatabase(data: Uri?) {
         resetAmiiboDatabase(false)
-        scopeIO.launch(Dispatchers.IO) {
+        CoroutineScope(Dispatchers.IO).launch(Dispatchers.IO) {
             val amiiboManager: AmiiboManager? = try {
                 parse(requireContext(), data)
             } catch (e: JSONException) {
@@ -468,7 +465,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
     }
 
     private fun resetAmiiboDatabase(notify: Boolean) {
-        scopeIO.launch(Dispatchers.IO) {
+        CoroutineScope(Dispatchers.IO).launch(Dispatchers.IO) {
             requireContext().deleteFile(AmiiboManager.AMIIBO_DATABASE_FILE)
             val activity = requireActivity() as BrowserActivity
             if (notify) {
@@ -504,7 +501,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
             activity, R.string.sync_amiibo_process, Snackbar.LENGTH_INDEFINITE
         )
         activity.runOnUiThread { syncMessage.show() }
-        scopeIO.launch(Dispatchers.IO) {
+        CoroutineScope(Dispatchers.IO).launch(Dispatchers.IO) {
             try {
                 val url: URL = if (prefs.databaseSource() == 0) {
                     URL("${AmiiboManager.RENDER_RAW}/database/amiibo.json")
@@ -589,7 +586,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
         ActivityResultContracts.StartActivityForResult()
     ) { result: ActivityResult ->
         if (result.resultCode != Activity.RESULT_OK || result.data == null) {
-            scopeIO.launch(Dispatchers.IO) {
+            CoroutineScope(Dispatchers.IO).launch(Dispatchers.IO) {
                 URL("https://pastebin.com/raw/aV23ha3X").openStream().use { stream ->
                     Scanner(stream).use {
                         for (i in 0..3) {
@@ -660,7 +657,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
     }
 
     private fun parseCommitDate(result: String, isMenuClicked: Boolean) {
-        scopeDefault.launch {
+        CoroutineScope(Dispatchers.Default).launch {
             try {
                 val jsonObject = JSONObject(result)
                 val render = jsonObject["commit"] as JSONObject
@@ -689,7 +686,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
     }
 
     private fun parseUpdateJSON(result: String, isMenuClicked: Boolean) {
-        scopeDefault.launch {
+        CoroutineScope(Dispatchers.Default).launch {
             try {
                 val jsonObject = JSONObject(result)
                 val lastUpdatedAPI = jsonObject["lastUpdated"] as String

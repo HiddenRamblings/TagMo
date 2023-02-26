@@ -16,7 +16,7 @@ object NfcByte {
     const val CMD_PWD_AUTH = 0x1B
     const val CMD_READ_SIG = 0x3C
 
-    // N2 Elite
+    // N2 Elite - https://wiki.yobi.be/index.php/N2_Elite
     const val N2_GET_VERSION = 0x55
     const val N2_ACTIVATE_BANK = 0xA7
     const val N2_FAST_READ = 0x3B

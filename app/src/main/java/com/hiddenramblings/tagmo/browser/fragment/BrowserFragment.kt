@@ -62,9 +62,6 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
     private lateinit var settings: BrowserSettings
     private val resultData: ArrayList<ByteArray> = arrayListOf()
 
-    private val scopeDefault = CoroutineScope(Dispatchers.Default)
-    private val scopeIO = CoroutineScope(Dispatchers.IO)
-
     val onUpdateTagResult = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
     ) { result: ActivityResult ->
@@ -263,7 +260,7 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
         val dialog = ProgressDialog.show(
             requireActivity(), "", "", true
         )
-        scopeIO.launch(Dispatchers.IO) {
+        CoroutineScope(Dispatchers.IO).launch(Dispatchers.IO) {
             deleteDir(dialog, directory)
             withContext(Dispatchers.Main) {
                 dialog.dismiss()
@@ -314,7 +311,7 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
         val dialog = ProgressDialog.show(
             requireActivity(), "", "", true
         )
-        scopeIO.launch(Dispatchers.IO) {
+        CoroutineScope(Dispatchers.IO).launch(Dispatchers.IO) {
             deleteDir(null, directory)
             directory.mkdirs()
             amiiboManager.amiibos.values.forEach {
@@ -331,7 +328,7 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
     }
 
     private fun getGameCompatibility(txtUsage: TextView, tagData: ByteArray) {
-        scopeDefault.launch {
+        CoroutineScope(Dispatchers.Default).launch {
             val usage: String? = try {
                 val amiiboId = Amiibo.dataToId(tagData)
                 val gamesManager = getGamesManager(requireContext())

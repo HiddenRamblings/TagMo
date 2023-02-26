@@ -87,13 +87,6 @@ class NTAG215 : TagTechnology {
         return tagMifare?.tag ?: tagNfcA?.tag
     }
 
-    /*
-     * byte 1: currently active slot
-     * byte 2: number of active banks
-     * byte 3: button pressed?
-     * byte 4: FW version?
-     * see: http://wiki.yobi.be/wiki/N2_Elite#0x55:_N2_GET_INFO
-     */
     fun getVersion(isGeneric: Boolean): ByteArray? {
         val command =
             if (isGeneric) byteArrayOf(NfcByte.CMD_GET_VERSION.toByte()) else byteArrayOf(NfcByte.N2_GET_VERSION.toByte())
@@ -109,10 +102,9 @@ class NTAG215 : TagTechnology {
         }
 
     fun readSignature(isGeneric: Boolean): ByteArray? {
-        val command = if (isGeneric) byteArrayOf(
-            NfcByte.CMD_READ_SIG.toByte(),
-            0x00.toByte()
-        ) else byteArrayOf(NfcByte.N2_READ_SIG.toByte())
+        val command = if (isGeneric)
+            byteArrayOf(NfcByte.CMD_READ_SIG.toByte(), 0x00.toByte())
+        else byteArrayOf(NfcByte.N2_READ_SIG.toByte())
         return transceive(command)
     }
 

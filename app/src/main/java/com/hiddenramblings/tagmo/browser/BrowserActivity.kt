@@ -179,8 +179,6 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
     private val statsHandler = Handler(Looper.getMainLooper())
     private val sheetHandler = Handler(Looper.getMainLooper())
 
-    private val scopeDefault = CoroutineScope(Dispatchers.Default)
-    private val scopeIO = CoroutineScope(Dispatchers.IO)
     private val loadingExecutor = Executors.newSingleThreadExecutor()
 
     public override fun onCreate(savedInstanceState: Bundle?) {
@@ -421,9 +419,9 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                     .setTitle(R.string.conversion_title)
                     .setMessage(R.string.conversion_message)
                     .setPositiveButton(R.string.proceed) { _: DialogInterface?, _: Int ->
-                        startActivity(Intent(Intent.ACTION_DELETE)
-                            .setData(Uri.parse("package:com.hiddenramblings.tagmo"))
-                        )
+                        startActivity(Intent(Intent.ACTION_DELETE).setData(
+                            Uri.parse("package:com.hiddenramblings.tagmo")
+                        ))
                     }.show()
             } catch (ignored: PackageManager.NameNotFoundException) { }
         }
@@ -1308,7 +1306,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
         val label = findViewById<TextView>(R.id.txtUsageLabel)
         if (null != gamesManager) {
             label.isVisible = true
-            scopeDefault.launch {
+            CoroutineScope(Dispatchers.Default).launch {
                 val usage: String? = try {
                     val amiiboId = Amiibo.dataToId(tagData)
                     gamesManager.getGamesCompatibility(amiiboId)
@@ -1706,7 +1704,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
 
     fun loadPTagKeyManager() {
         if (prefs.powerTagEnabled()) {
-            scopeIO.launch(Dispatchers.IO) {
+            CoroutineScope(Dispatchers.IO).launch(Dispatchers.IO) {
                 try {
                     powerTagManager
                 } catch (e: Exception) {
@@ -1720,7 +1718,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
     }
 
     private fun loadAmiiboManager() {
-        scopeIO.launch(Dispatchers.IO) {
+        CoroutineScope(Dispatchers.IO).launch(Dispatchers.IO) {
             var amiiboManager: AmiiboManager?
             try {
                 amiiboManager = getAmiiboManager(applicationContext)
@@ -1776,7 +1774,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
     }
 
     private fun loadFolders(rootFolder: File?) {
-        scopeIO.launch(Dispatchers.IO) {
+        CoroutineScope(Dispatchers.IO).launch(Dispatchers.IO) {
             val folders = listFolders(rootFolder)
             folders.sortWith(compareBy(String.CASE_INSENSITIVE_ORDER) { it?.path ?: "" })
             withContext(Dispatchers.Main) {
@@ -1794,7 +1792,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
     }
 
     private fun loadAmiiboFiles(rootFolder: File?, recursiveFiles: Boolean) {
-        scopeIO.launch(Dispatchers.IO) {
+        CoroutineScope(Dispatchers.IO).launch(Dispatchers.IO) {
             val amiiboFiles = listAmiibos(keyManager, rootFolder, recursiveFiles)
             val download = Storage.getDownloadDir("TagMo")
             if (isDirectoryHidden(rootFolder, download, recursiveFiles))
@@ -1811,7 +1809,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
 
     @SuppressLint("NewApi")
     private fun loadAmiiboDocuments(rootFolder: DocumentFile?, recursiveFiles: Boolean) {
-        scopeIO.launch(Dispatchers.IO) {
+        CoroutineScope(Dispatchers.IO).launch(Dispatchers.IO) {
             val amiiboFiles = listAmiiboDocuments(
                 this@BrowserActivity, keyManager, rootFolder!!, recursiveFiles
             )
@@ -2582,7 +2580,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
     }
 
     private fun locateKeyFiles() {
-        scopeIO.launch(Dispatchers.IO) {
+        CoroutineScope(Dispatchers.IO).launch(Dispatchers.IO) {
             Storage.getDownloadDir(null).listFiles {
                     _: File?, name: String -> keyNameMatcher(name)
             }.also { files ->

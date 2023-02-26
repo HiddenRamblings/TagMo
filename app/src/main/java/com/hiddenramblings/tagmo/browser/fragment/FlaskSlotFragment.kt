@@ -105,8 +105,6 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
     private var currentCount = 0
     private var deviceDialog: AlertDialog? = null
 
-    private val scopeIO = CoroutineScope(Dispatchers.IO)
-
     private enum class STATE {
         NONE, SCANNING, CONNECT, MISSING, PURCHASE
     }
@@ -153,7 +151,7 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
                         }
 
                         override fun onFlaskListRetrieved(jsonArray: JSONArray) {
-                            scopeIO.launch(Dispatchers.IO) {
+                            CoroutineScope(Dispatchers.IO).launch(Dispatchers.IO) {
                                 currentCount = jsonArray.length()
                                 val flaskAmiibos: ArrayList<Amiibo?> = arrayListOf()
                                 for (i in 0 until currentCount) {
@@ -187,7 +185,7 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
                         }
 
                         override fun onFlaskRangeRetrieved(jsonArray: JSONArray) {
-                            scopeIO.launch(Dispatchers.IO) {
+                            CoroutineScope(Dispatchers.IO).launch(Dispatchers.IO) {
                                 val flaskAmiibos: ArrayList<Amiibo?> = arrayListOf()
                                 for (i in 0 until jsonArray.length()) {
                                     try {
@@ -329,7 +327,7 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
                         override fun onPuckListRetrieved(
                             slotData: ArrayList<ByteArray?>, active: Int
                         ) {
-                            scopeIO.launch(Dispatchers.IO) {
+                            CoroutineScope(Dispatchers.IO).launch(Dispatchers.IO) {
                                 currentCount = slotData.size
                                 val flaskAmiibos: ArrayList<Amiibo?> = arrayListOf()
                                 for (i in 0 until currentCount) {

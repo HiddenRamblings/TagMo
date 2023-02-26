@@ -53,8 +53,6 @@ class UpdateManager internal constructor(activity: BrowserActivity) {
     private val browserActivity: BrowserActivity = activity
     private var isUpdateAvailable = false
 
-    private val scopeIO = CoroutineScope(Dispatchers.IO)
-
     init {
         if (BuildConfig.GOOGLE_PLAY) {
             configurePlay(activity)
@@ -91,14 +89,14 @@ class UpdateManager internal constructor(activity: BrowserActivity) {
     }
 
     private fun configureGit() {
-        scopeIO.launch(Dispatchers.IO) {
+        CoroutineScope(Dispatchers.IO).launch(Dispatchers.IO) {
             URL(TAGMO_GIT_API).readText().also { parseUpdateJSON(it) }
         }
     }
 
     fun installDownload(apkUrl: String?) {
         if (null == apkUrl) return
-        scopeIO.launch(Dispatchers.IO) {
+        CoroutineScope(Dispatchers.IO).launch(Dispatchers.IO) {
             val apk = File(
                 browserActivity.externalCacheDir,
                 apkUrl.substring(apkUrl.lastIndexOf(File.separator) + 1)

@@ -54,8 +54,6 @@ class ImageActivity : AppCompatActivity() {
     private var amiiboManager: AmiiboManager? = null
     private var amiibo: Amiibo? = null
 
-    private val scopeIO = CoroutineScope(Dispatchers.IO)
-
     public override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val prefs = Preferences(applicationContext)
@@ -110,7 +108,7 @@ class ImageActivity : AppCompatActivity() {
             )
         }
 
-        scopeIO.launch(Dispatchers.IO) {
+        CoroutineScope(Dispatchers.IO).launch(Dispatchers.IO) {
                 var amiiboManager: AmiiboManager? = null
                 try {
                     amiiboManager = AmiiboManager.getAmiiboManager(applicationContext)

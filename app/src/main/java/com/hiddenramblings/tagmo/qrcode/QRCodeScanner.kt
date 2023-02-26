@@ -93,8 +93,6 @@ class QRCodeScanner : AppCompatActivity() {
 
     private val metrics = DisplayMetrics()
 
-    private val scopeIO = CoroutineScope(Dispatchers.IO)
-
     public override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         prefs = Preferences(applicationContext)
@@ -126,7 +124,7 @@ class QRCodeScanner : AppCompatActivity() {
         txtMiiLabel = findViewById(R.id.txtMiiLabel)
         txtMiiValue = findViewById(R.id.txtMiiValue)
 
-        scopeIO.launch(Dispatchers.IO) {
+        CoroutineScope(Dispatchers.IO).launch(Dispatchers.IO) {
             var amiiboManager: AmiiboManager? = null
             try {
                 amiiboManager = AmiiboManager.getAmiiboManager(applicationContext)
@@ -294,7 +292,7 @@ class QRCodeScanner : AppCompatActivity() {
             }
             captureUri = null
             if (null != photoUri) {
-                scopeIO.launch(Dispatchers.IO) {
+                CoroutineScope(Dispatchers.IO).launch(Dispatchers.IO) {
                     var rotation = 0
                     val bitmap: Bitmap? = if (Version.isPie) {
                         val source: ImageDecoder.Source = ImageDecoder.createSource(

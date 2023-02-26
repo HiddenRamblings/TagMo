@@ -92,8 +92,6 @@ class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
     private var amiibos: ArrayList<EliteTag?> = arrayListOf()
     private var clickedPosition = 0
 
-    private val scopeIO = CoroutineScope(Dispatchers.IO)
-
     private enum class CLICKED {
         NOTHING, WRITE_DATA, EDIT_DATA, HEX_CODE, BANK_BACKUP, VERIFY_TAG, ERASE_BANK
     }
@@ -323,7 +321,7 @@ class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
     }
 
     private fun updateEliteAdapter(amiiboList: ArrayList<String>?) {
-        scopeIO.launch(Dispatchers.IO) {
+        CoroutineScope(Dispatchers.IO).launch(Dispatchers.IO) {
             var amiiboManager = settings.amiiboManager
             if (null == amiiboManager) {
                 try {

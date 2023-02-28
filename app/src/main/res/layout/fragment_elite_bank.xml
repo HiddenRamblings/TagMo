@@ -25,7 +25,7 @@
             android:layout_height="match_parent"
             android:clipToPadding="false"
             android:paddingHorizontal="4dp"
-            android:paddingBottom="@dimen/button_height_min"/>
+            android:paddingBottom="@dimen/recyclerview_padding"/>
     </LinearLayout>
 
     <LinearLayout

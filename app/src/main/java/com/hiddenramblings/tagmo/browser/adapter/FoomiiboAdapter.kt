@@ -111,7 +111,7 @@ class FoomiiboAdapter(
     override fun onUpdate(position: Int, popupTextView: TextView) {
         val item = filteredData[position]
         popupTextView.text = when (SORT.valueOf(settings.sort)) {
-            SORT.NAME -> item.name
+            SORT.NAME -> item.name ?: "?"
             SORT.CHARACTER -> item.character?.name ?: "?"
             SORT.GAME_SERIES -> item.gameSeries?.name ?: "?"
             SORT.AMIIBO_SERIES -> item.amiiboSeries?.name ?: "?"

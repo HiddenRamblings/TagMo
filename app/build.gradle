@@ -145,6 +145,7 @@ dependencies {
     annotationProcessor 'com.github.bumptech.glide:compiler:4.14.2'
 
     implementation 'com.github.8bitDream:android-issue-reporter:15cdc1024d'
+    implementation 'com.github.8bitDream:NumberPicker:80b06ed3ba'
     implementation 'com.github.8bitDream:RecyclerView-FastScroller:2284dc5693'
 
     implementation 'com.google.android.flexbox:flexbox:3.0.0'
@@ -159,7 +160,6 @@ dependencies {
     // Current (3.0.5) requires kotlin and incompatible with Wear
     implementation 'com.robertlevonyan.view:MaterialChipView:3.0.4'
 
-    implementation 'io.github.ShawnLin013:number-picker:2.4.13'
     implementation 'io.github.vicmikhailau:MaskedEditText:4.0.7'
 
     implementation 'org.lsposed.hiddenapibypass:hiddenapibypass:4.3'

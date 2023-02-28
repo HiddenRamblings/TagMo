@@ -99,7 +99,7 @@
                 android:layout_height="match_parent"
                 android:clipToPadding="false"
                 android:paddingTop="4dp"
-                android:paddingBottom="@dimen/button_height_min"
+                android:paddingBottom="@dimen/recyclerview_padding"
                 android:scrollbars="vertical"
                 android:scrollbarSize="0dp"
                 android:scrollbarStyle="outsideOverlay"/>

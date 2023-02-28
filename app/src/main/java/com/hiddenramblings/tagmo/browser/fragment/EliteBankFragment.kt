@@ -191,9 +191,7 @@ class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
                 if (mainLayout.bottom >= view.top) {
                     val bottomHeight: Int = (view.measuredHeight - bottomSheet!!.peekHeight)
                     mainLayout.setPadding(
-                        0,
-                        0,
-                        0,
+                        0, 0, 0,
                         if (slideOffset > 0) (bottomHeight * slideOffset).toInt() else 0
                     )
                 }
@@ -214,17 +212,18 @@ class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
         bankAdapter = EliteBankAdapter(settings, this)
         eliteContent?.adapter = bankAdapter
         settings.addChangeListener(bankAdapter)
-        eliteBankCount.setOnValueChangedListener { _: NumberPicker?, _: Int, valueNew: Int ->
-            writeOpenBanks?.text = getString(R.string.write_open_banks, valueNew)
-            eraseOpenBanks?.text = getString(R.string.erase_open_banks, valueNew)
-        }
+        eliteBankCount.setOnValueChangedListener (object : NumberPicker.OnValueChangeListener {
+            override fun onValueChange(picker: NumberPicker?, oldVal: Int, newVal: Int) {
+                writeOpenBanks?.text = getString(R.string.write_open_banks, newVal)
+                eraseOpenBanks?.text = getString(R.string.erase_open_banks, newVal)
+            }
+        })
         if (settings.amiiboView == BrowserSettings.VIEW.IMAGE.value)
             amiiboFilesView?.layoutManager = GridLayoutManager(activity, activity.columnCount)
         else
             amiiboFilesView?.layoutManager = LinearLayoutManager(activity)
         writeTagAdapter = WriteTagAdapter(settings)
         amiiboFilesView?.adapter = writeTagAdapter
-        settings.addChangeListener(writeTagAdapter)
         switchMenuOptions?.setOnClickListener {
             if (bankOptionsMenu?.isShown == true) {
                 onBottomSheetChanged(SHEET.AMIIBO)
@@ -253,6 +252,7 @@ class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
             }
         })
         writeOpenBanks?.setOnClickListener {
+            settings.addChangeListener(writeTagAdapter)
             onBottomSheetChanged(SHEET.WRITE)
             searchView?.setQuery(settings.query, true)
             searchView?.clearFocus()
@@ -392,6 +392,7 @@ class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
                 bankOptionsMenu?.isGone = true
                 securityOptions?.isVisible = true
                 writeBankLayout?.isGone = true
+                eliteContent?.requestLayout()
             }
             SHEET.AMIIBO -> {
                 amiiboCard?.isVisible = true
@@ -399,6 +400,7 @@ class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
                 bankOptionsMenu?.isGone = true
                 securityOptions?.isGone = true
                 writeBankLayout?.isGone = true
+                eliteContent?.requestLayout()
             }
             SHEET.MENU -> {
                 amiiboCard?.isGone = true
@@ -406,6 +408,7 @@ class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
                 bankOptionsMenu?.isVisible = true
                 securityOptions?.isVisible = true
                 writeBankLayout?.isGone = true
+                eliteContent?.requestLayout()
             }
             SHEET.WRITE -> {
                 amiiboCard?.isGone = true
@@ -413,9 +416,9 @@ class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
                 bankOptionsMenu?.isGone = true
                 securityOptions?.isGone = true
                 writeBankLayout?.isVisible = true
+                eliteContent?.requestLayout()
             }
         }
-        eliteContent!!.requestLayout()
     }
 
     private val onActivateActivity = registerForActivityResult(
@@ -567,14 +570,16 @@ class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
     }
 
     private fun displayWriteDialog(position: Int) {
+        settings.addChangeListener(writeTagAdapter)
         onBottomSheetChanged(SHEET.WRITE)
-        searchView!!.setQuery(settings.query, true)
-        searchView!!.clearFocus()
-        writeTagAdapter!!.setListener(object : WriteTagAdapter.OnAmiiboClickListener {
+        searchView?.setQuery(settings.query, true)
+        searchView?.clearFocus()
+        writeTagAdapter?.setListener(object : WriteTagAdapter.OnAmiiboClickListener {
             override fun onAmiiboClicked(amiiboFile: AmiiboFile?) {
                 if (null != amiiboFile) {
                     onBottomSheetChanged(SHEET.AMIIBO)
                     writeAmiiboFile(amiiboFile, position)
+                    settings.removeChangeListener(writeTagAdapter)
                 }
             }
 
@@ -868,11 +873,12 @@ class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
                     putExtra(NFCIntent.EXTRA_AMIIBO_FILES, amiiboList)
                 })
                 onBottomSheetChanged(SHEET.MENU)
+                settings.removeChangeListener(writeTagAdapter)
                 dialog.dismiss()
             }
             .setNegativeButton(R.string.cancel) { dialog: DialogInterface, _: Int ->
-                amiiboList.clear()
                 onBottomSheetChanged(SHEET.MENU)
+                settings.removeChangeListener(writeTagAdapter)
                 dialog.dismiss()
             }
             .show()

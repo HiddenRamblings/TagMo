@@ -133,7 +133,7 @@ class BrowserAdapter(
                 amiibo = Amiibo(amiiboManager, amiiboId, null, null)
         }
         popupTextView.text = amiibo?.let { when (SORT.valueOf(settings.sort)) {
-            SORT.NAME -> it.name
+            SORT.NAME -> it.name ?: "?"
             SORT.CHARACTER -> it.character?.name ?: "?"
             SORT.GAME_SERIES -> it.gameSeries?.name ?: "?"
             SORT.AMIIBO_SERIES -> it.amiiboSeries?.name ?: "?"

@@ -47,8 +47,10 @@ class WriteTagAdapter(private val settings: BrowserSettings?) :
         setHasStableIds(true)
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     fun setListener(listener: OnAmiiboClickListener?, listSize: Int) {
         amiiboList.clear()
+        notifyDataSetChanged()
         this.listener = listener
         this.listSize = listSize
     }

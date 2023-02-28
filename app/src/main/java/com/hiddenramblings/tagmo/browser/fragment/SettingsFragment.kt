@@ -668,8 +668,8 @@ class SettingsFragment : PreferenceFragmentCompat() {
                 val activity = requireActivity() as BrowserActivity
                 if (isMenuClicked) {
                     onDownloadRequested(lastUpdated)
-                } else if (null == activity.settings!!.lastUpdatedAPI
-                    || activity.settings!!.lastUpdatedAPI != lastUpdated
+                } else if (null == activity.settings?.lastUpdatedAPI
+                    || activity.settings?.lastUpdatedAPI != lastUpdated
                 ) {
                     withContext(Dispatchers.Main) {
                         try {

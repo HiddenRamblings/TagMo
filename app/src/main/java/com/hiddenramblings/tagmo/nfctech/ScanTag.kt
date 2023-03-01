@@ -19,6 +19,7 @@ import com.hiddenramblings.tagmo.nfctech.TagArray.isPowerTag
 import com.hiddenramblings.tagmo.nfctech.TagArray.technology
 import com.hiddenramblings.tagmo.parcelable
 import com.hiddenramblings.tagmo.widget.Toasty
+import java.io.IOException
 
 class ScanTag {
     private var hasTestedElite = false
@@ -36,12 +37,8 @@ class ScanTag {
             val tag = intent.parcelable<Tag>(NfcAdapter.EXTRA_TAG)
             val tagTech = tag.technology()
             mifare = NTAG215[tag]
-            mifare?.connect() ?: if (prefs.eliteEnabled()) {
-                mifare = NTAG215.getBlind(tag)
-                mifare.connect()
-            } else {
-                throw Exception(activity.getString(R.string.error_tag_protocol, tagTech))
-            }
+            mifare?.connect()
+                ?: throw Exception(activity.getString(R.string.error_tag_protocol, tagTech))
             if (!hasTestedElite) {
                 hasTestedElite = true
                 if (!isPowerTag(mifare)) {

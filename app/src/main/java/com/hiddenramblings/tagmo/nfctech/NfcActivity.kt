@@ -226,12 +226,8 @@ class NfcActivity : AppCompatActivity() {
             mifare = if (NFCIntent.ACTION_BLIND_SCAN == mode || isEliteIntent)
                 NTAG215.getBlind(tag)
             else NTAG215[tag]
-            mifare?.connect() ?: if (prefs.eliteEnabled()) {
-                mifare = NTAG215.getBlind(tag)
-                mifare?.connect()
-            } else {
-                throw Exception(getString(R.string.error_tag_protocol, tagTech))
-            }
+            mifare?.connect()
+                ?: throw Exception(getString(R.string.error_tag_protocol, tagTech))
             if (!hasTestedElite) {
                 hasTestedElite = true
                 if (TagArray.isPowerTag(mifare)) {

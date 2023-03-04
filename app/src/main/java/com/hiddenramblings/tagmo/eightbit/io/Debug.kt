@@ -35,6 +35,19 @@ object Debug {
         get() = TagMo.appContext
     private val mPrefs = Preferences(context)
 
+    private val manufacturer : String
+        get() {
+            return try {
+                @SuppressLint("PrivateApi")
+                val c = Class.forName("android.os.SystemProperties")
+                val get = c.getMethod("get", String::class.java)
+                val name = get.invoke(c, "ro.product.manufacturer") as String
+                name.ifEmpty { "Unknown" }
+            } catch (e: Exception) {
+                Build.MANUFACTURER
+            }
+        }
+
     val isOxygenOS: Boolean
         get() = try {
             @SuppressLint("PrivateApi")
@@ -43,7 +56,7 @@ object Debug {
             val name = get.invoke(c, "ro.vendor.oplus.market.name") as String
             name.isNotEmpty()
         } catch (e: Exception) {
-            Build.MANUFACTURER == "OnePlus"
+            manufacturer == "OnePlus"
         }
 
     private fun hasDebugging(): Boolean {
@@ -235,7 +248,8 @@ object Debug {
         val log = StringBuilder(separator)
         log.append(TagMo.getVersionLabel(true))
         log.append(separator)
-        log.append("Android ")
+        log.append(manufacturer)
+        log.append(" ")
         var codeName = "UNKNOWN"
         for (field in Build.VERSION_CODES::class.java.fields) {
             try {

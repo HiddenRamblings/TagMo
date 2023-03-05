@@ -419,19 +419,19 @@ class SettingsFragment : PreferenceFragmentCompat() {
             } catch (e: JSONException) {
                 Debug.warn(e)
                 withContext(Dispatchers.Main) {
-                    Toasty(requireActivity()).Short(R.string.amiibo_failure_parse)
+                    Toasty(requireContext()).Short(R.string.amiibo_failure_parse)
                 }
                 return@launch
             } catch (e: ParseException) {
                 Debug.warn(e)
                 withContext(Dispatchers.Main) {
-                    Toasty(requireActivity()).Short(R.string.amiibo_failure_parse)
+                    Toasty(requireContext()).Short(R.string.amiibo_failure_parse)
                 }
                 return@launch
             } catch (e: IOException) {
                 Debug.warn(e)
                 withContext(Dispatchers.Main) {
-                    Toasty(requireActivity()).Short(R.string.amiibo_failure_parse)
+                    Toasty(requireContext()).Short(R.string.amiibo_failure_parse)
                 }
                 return@launch
             }
@@ -440,19 +440,19 @@ class SettingsFragment : PreferenceFragmentCompat() {
                     saveDatabase(amiiboManager, requireContext().applicationContext)
                 } else {
                     withContext(Dispatchers.Main) {
-                        Toasty(requireActivity()).Short(R.string.amiibo_failure_update)
+                        Toasty(requireContext()).Short(R.string.amiibo_failure_update)
                     }
                 }
             } catch (e: JSONException) {
                 Debug.warn(e)
                 withContext(Dispatchers.Main) {
-                    Toasty(requireActivity()).Short(R.string.amiibo_failure_update)
+                    Toasty(requireContext()).Short(R.string.amiibo_failure_update)
                 }
                 return@launch
             } catch (e: IOException) {
                 Debug.warn(e)
                 withContext(Dispatchers.Main) {
-                    Toasty(requireActivity()).Short(R.string.amiibo_failure_update)
+                    Toasty(requireContext()).Short(R.string.amiibo_failure_update)
                 }
                 return@launch
             }
@@ -577,7 +577,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
 
             override fun onProviderInstallFailed() {
                 onImageNetworkChange(imageNetworkSetting, GlideTagModule.IMAGE_NETWORK_NEVER)
-                Toasty(requireActivity()).Short(R.string.fail_ssl_update)
+                Toasty(requireContext()).Short(R.string.fail_ssl_update)
             }
         })
     }

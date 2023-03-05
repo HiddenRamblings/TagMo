@@ -329,17 +329,17 @@ class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
                 } catch (e: IOException) {
                     Debug.warn(e)
                     withContext(Dispatchers.Main) {
-                        Toasty(requireActivity()).Short(R.string.amiibo_info_parse_error)
+                        Toasty(requireContext()).Short(R.string.amiibo_info_parse_error)
                     }
                 } catch (e: JSONException) {
                     Debug.warn(e)
                     withContext(Dispatchers.Main) {
-                        Toasty(requireActivity()).Short(R.string.amiibo_info_parse_error)
+                        Toasty(requireContext()).Short(R.string.amiibo_info_parse_error)
                     }
                 } catch (e: ParseException) {
                     Debug.warn(e)
                     withContext(Dispatchers.Main) {
-                        Toasty(requireActivity()).Short(R.string.amiibo_info_parse_error)
+                        Toasty(requireContext()).Short(R.string.amiibo_info_parse_error)
                     }
                 }
                 val uiAmiiboManager = amiiboManager
@@ -509,9 +509,9 @@ class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
             CLICKED.BANK_BACKUP -> displayBackupDialog(tagData)
             CLICKED.VERIFY_TAG -> try {
                 TagArray.validateData(tagData)
-                Toasty(requireActivity()).Dialog(R.string.validation_success)
+                Toasty(requireContext()).Dialog(R.string.validation_success)
             } catch (e: Exception) {
-                Toasty(requireActivity()).Dialog(e.message)
+                Toasty(requireContext()).Dialog(e.message)
             }
             else -> {}
         }
@@ -615,7 +615,7 @@ class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
                             "TagMo", "Backups"
                     ), input.text.toString(), tagData)
                 }
-                Toasty(requireActivity()).Long(getString(R.string.wrote_file, fileName))
+                Toasty(requireContext()).Long(getString(R.string.wrote_file, fileName))
                 activity.loadAmiiboBackground()
             } catch (e: Exception) {
                 e.message?.let { Toasty(requireActivity()).Short(it) }

@@ -140,7 +140,7 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
                                 serviceFlask!!.deviceAmiibo
                             } catch (uoe: UnsupportedOperationException) {
                                 disconnectService()
-                                Toasty(requireActivity()).Short(R.string.device_invalid)
+                                Toasty(requireContext()).Short(R.string.device_invalid)
                             }
                         }
 
@@ -267,7 +267,7 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
                     })
                 } else {
                     stopGattService()
-                    Toasty(requireActivity()).Short(R.string.device_invalid)
+                    Toasty(requireContext()).Short(R.string.device_invalid)
                 }
             }
         }
@@ -305,7 +305,7 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
                                 // servicePuck!!.getDeviceSlots(32);
                             } catch (uoe: UnsupportedOperationException) {
                                 disconnectService()
-                                Toasty(requireActivity()).Short(R.string.device_invalid)
+                                Toasty(requireContext()).Short(R.string.device_invalid)
                             }
                         }
 

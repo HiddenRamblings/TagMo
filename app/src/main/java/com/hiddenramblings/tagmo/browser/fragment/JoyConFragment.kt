@@ -56,12 +56,12 @@ class JoyConFragment : DialogFragment(), BluetoothListener {
 
     override fun onPermissionsFailed() {
         dismiss()
-        Toasty(requireActivity()).Long(R.string.fail_permissions)
+        Toasty(requireContext()).Long(R.string.fail_permissions)
     }
 
     override fun onAdapterMissing() {
         dismiss()
-        Toasty(requireActivity()).Long(R.string.fail_bluetooth_adapter)
+        Toasty(requireContext()).Long(R.string.fail_bluetooth_adapter)
     }
 
     @SuppressLint("MissingPermission")

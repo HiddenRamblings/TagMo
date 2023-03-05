@@ -35,6 +35,7 @@ import androidx.core.content.ContextCompat
 import com.hiddenramblings.tagmo.BuildConfig
 import com.hiddenramblings.tagmo.R
 import com.hiddenramblings.tagmo.eightbit.os.Version
+import com.hiddenramblings.tagmo.widget.Toasty
 
 class BluetoothHandler(
     context: Context, registry: ActivityResultRegistry, listener: BluetoothListener
@@ -236,8 +237,13 @@ class BluetoothHandler(
                                 listener.onAdapterMissing() }
                             .show()
                     } else {
-                        @Suppress("DEPRECATION")
-                        mBluetoothAdapter!!.enable()
+                        try {
+                            @Suppress("DEPRECATION")
+                            mBluetoothAdapter!!.enable()
+                        } catch (se: SecurityException) {
+                            Toasty(context).Long(R.string.fail_permissions)
+                            return null
+                        }
                     }
                 }
                 return mBluetoothAdapter

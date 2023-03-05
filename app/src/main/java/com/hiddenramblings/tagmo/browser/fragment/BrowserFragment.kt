@@ -245,26 +245,24 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
                             Snackbar.LENGTH_SHORT
                         ).show()
                     } else {
-                        Toasty(requireActivity()).Short(R.string.delete_virtual)
+                        Toasty(requireContext()).Short(R.string.delete_virtual)
                     }
                     dialog.dismiss()
                 }
                 .setNegativeButton(R.string.cancel) { dialog: DialogInterface, _: Int -> dialog.dismiss() }
                 .show()
         } catch (e: Exception) {
-            Toasty(requireActivity()).Short(R.string.delete_virtual)
+            Toasty(requireContext()).Short(R.string.delete_virtual)
         }
     }
 
     fun clearFoomiiboSet() {
-        val dialog = ProgressDialog.show(
-            requireActivity(), "", "", true
-        )
+        val dialog = ProgressDialog.show(activity, "", "", true)
         CoroutineScope(Dispatchers.IO).launch(Dispatchers.IO) {
             deleteDir(dialog, directory)
             withContext(Dispatchers.Main) {
                 dialog.dismiss()
-                if (requireActivity() is BrowserActivity)
+                if (activity is BrowserActivity)
                     (requireActivity() as BrowserActivity).onRefresh(false)
             }
         }
@@ -305,12 +303,10 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
     fun buildFoomiiboSet() {
         val amiiboManager = if (this::settings.isInitialized) settings.amiiboManager else null
         if (null == amiiboManager) {
-            Toasty(requireActivity()).Short(R.string.amiibo_failure_read)
+            Toasty(requireContext()).Short(R.string.amiibo_failure_read)
             return
         }
-        val dialog = ProgressDialog.show(
-            requireActivity(), "", "", true
-        )
+        val dialog = ProgressDialog.show(activity, "", "", true)
         CoroutineScope(Dispatchers.IO).launch(Dispatchers.IO) {
             deleteDir(null, directory)
             directory.mkdirs()
@@ -322,7 +318,8 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
             }
             withContext(Dispatchers.Main) {
                 dialog.dismiss()
-                (requireActivity() as BrowserActivity).onRefresh(false)
+                if (activity is BrowserActivity)
+                    (requireActivity() as BrowserActivity).onRefresh(false)
             }
         }
     }

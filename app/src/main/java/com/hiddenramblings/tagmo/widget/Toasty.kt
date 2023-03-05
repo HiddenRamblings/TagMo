@@ -1,21 +1,23 @@
 package com.hiddenramblings.tagmo.widget
 
-import android.app.Activity
+import android.content.Context
+import android.os.Handler
+import android.os.Looper
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import com.hiddenramblings.tagmo.R
-import java.lang.ref.WeakReference
 
-class Toasty(activity: Activity) {
-    private val mActivity: WeakReference<Activity>
+
+class Toasty(context: Context) {
+    private val mContext: Context
 
     init {
-        mActivity = WeakReference(activity)
+        mContext = context
     }
 
     private fun show(msgRes: Int, length: Int) {
-        mActivity.get()!!.runOnUiThread {
-            Toast.makeText(mActivity.get(), msgRes, length).show()
+        Handler(Looper.getMainLooper()).post {
+            Toast.makeText(mContext, msgRes, length).show()
         }
     }
 
@@ -28,8 +30,8 @@ class Toasty(activity: Activity) {
     }
 
     private fun show(msg: String, length: Int) {
-        mActivity.get()!!.runOnUiThread {
-            Toast.makeText(mActivity.get(), msg, length).show()
+        Handler(Looper.getMainLooper()).post {
+            Toast.makeText(mContext, msg, length).show()
         }
     }
 
@@ -42,8 +44,8 @@ class Toasty(activity: Activity) {
     }
 
     fun Dialog(msg: String?) {
-        mActivity.get()!!.runOnUiThread {
-            AlertDialog.Builder(mActivity.get()!!)
+        Handler(Looper.getMainLooper()).post {
+            AlertDialog.Builder(mContext)
                 .setMessage(msg)
                 .setPositiveButton(R.string.close, null)
                 .show()
@@ -51,8 +53,8 @@ class Toasty(activity: Activity) {
     }
 
     fun Dialog(msgRes: Int) {
-        mActivity.get()!!.runOnUiThread {
-            AlertDialog.Builder(mActivity.get()!!)
+        Handler(Looper.getMainLooper()).post {
+            AlertDialog.Builder(mContext)
                 .setMessage(msgRes)
                 .setPositiveButton(R.string.close, null)
                 .show()

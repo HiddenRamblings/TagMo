@@ -309,7 +309,7 @@
     <string name="flask_remove">Wiping slot data&#8230;</string>
     <string name="fail_bluetooth_adapter">Bluetooth adapter unavailable!</string>
     <string name="tiramisu_bluetooth">Android 13 requires manually enabling Bluetooth. Open Settings to enable Bluetooth?</string>
-    <string name="fail_permissions">Required permission denied!</string>
+    <string name="fail_permissions">Required permission denied by user!</string>
     <string name="location_disclosure">Location is required for Bluetooth LE scan. In accordance with Google Play policy, TagMo is required to notify you that location data may be collected in the background.  TagMo does not read, store, or share location data. As such, this notice is strictly a formality.</string>
 
     <string name="paired_devices">Paired Bluetooth Devices</string>

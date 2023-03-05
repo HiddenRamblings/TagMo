@@ -74,7 +74,7 @@ class BluetoothHandler(
             if (isBluetoothAvailable) {
                 val mBluetoothAdapter = getBluetoothAdapter(context)
                 if (null != mBluetoothAdapter) {
-//                    if (Debug.hasMinimum(Build.VERSION_CODES.Q)) {
+//                    if (Version.isAndroid10) {
 //                        onRequestBackgroundQ.launch(Manifest.permission.ACCESS_BACKGROUND_LOCATION);
 //                    }
                     listener.onAdapterEnabled(mBluetoothAdapter)
@@ -91,7 +91,7 @@ class BluetoothHandler(
         ) {
             val mBluetoothAdapter = getBluetoothAdapter(context)
             if (null != mBluetoothAdapter) {
-//                if (Debug.hasMinimum(Build.VERSION_CODES.Q)) {
+//                if (Version.isAndroid10) {
 //                    onRequestBackgroundQ.launch(Manifest.permission.ACCESS_BACKGROUND_LOCATION);
 //                }
                 listener.onAdapterEnabled(mBluetoothAdapter)
@@ -128,7 +128,7 @@ class BluetoothHandler(
         } else {
             val mBluetoothAdapter = getBluetoothAdapter(context)
             if (null != mBluetoothAdapter) {
-//                if (Debug.hasMinimum(Build.VERSION_CODES.Q)) {
+//                if (Version.isAndroid10) {
 //                    onRequestBackgroundQ.launch(Manifest.permission.ACCESS_BACKGROUND_LOCATION);
 //                }
                 listener.onAdapterEnabled(mBluetoothAdapter)
@@ -139,7 +139,7 @@ class BluetoothHandler(
     }
 
     fun requestPermissions(context: Activity) {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+        if (Version.isLowerThan(Build.VERSION_CODES.M)) {
             val mBluetoothAdapter = getBluetoothAdapter(context)
             if (null != mBluetoothAdapter)
                 listener.onAdapterEnabled(mBluetoothAdapter)
@@ -198,14 +198,12 @@ class BluetoothHandler(
         if (null == context) return null
         if (null != mBluetoothAdapter) {
             if (!mBluetoothAdapter!!.isEnabled) {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                if (Version.isTiramisu) {
                     AlertDialog.Builder(context)
                         .setMessage(R.string.tiramisu_bluetooth)
                         .setCancelable(false)
                         .setPositiveButton(R.string.proceed) { dialog: DialogInterface, _: Int ->
-                            context.startActivity(
-                                Intent(Settings.ACTION_BLUETOOTH_SETTINGS)
-                            )
+                            context.startActivity(Intent(Settings.ACTION_BLUETOOTH_SETTINGS))
                             dialog.dismiss()
                         }
                         .setNegativeButton(R.string.cancel) { _: DialogInterface?, _: Int ->
@@ -226,14 +224,12 @@ class BluetoothHandler(
             }
             if (null != mBluetoothAdapter) {
                 if (!mBluetoothAdapter!!.isEnabled) {
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                    if (Version.isTiramisu) {
                         AlertDialog.Builder(context)
                             .setMessage(R.string.tiramisu_bluetooth)
                             .setCancelable(false)
                             .setPositiveButton(R.string.proceed) { dialog: DialogInterface, _: Int ->
-                                context.startActivity(
-                                    Intent(Settings.ACTION_BLUETOOTH_SETTINGS)
-                                )
+                                context.startActivity(Intent(Settings.ACTION_BLUETOOTH_SETTINGS))
                                 dialog.dismiss()
                             }
                             .setNegativeButton(R.string.cancel) { _: DialogInterface?, _: Int ->

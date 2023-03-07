@@ -49,7 +49,7 @@ class JSONExecutor(activity: Activity, server: String, path: String) {
                 if (activity is BrowserActivity) {
                     Preferences(activity.getApplicationContext())
                         .imageNetwork(GlideTagModule.IMAGE_NETWORK_NEVER)
-                    activity.runOnUiThread { activity.settings?.notifyChanges() }
+                    CoroutineScope(Dispatchers.Main).launch { activity.settings?.notifyChanges() }
                 }
                 listener?.onResults(null)
             }

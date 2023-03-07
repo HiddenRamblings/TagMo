@@ -250,7 +250,7 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
                         }
 
                         override fun onFlaskProcessFinish() {
-                            requireActivity().runOnUiThread {
+                            CoroutineScope(Dispatchers.Main).launch {
                                 if (processDialog?.isShowing == true) processDialog?.dismiss()
                             }
                         }
@@ -259,7 +259,7 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
                             fragmentHandler.postDelayed(
                                 { showDisconnectNotice() }, TagMo.uiDelay.toLong()
                             )
-                            activity?.runOnUiThread {
+                            CoroutineScope(Dispatchers.Main).launch {
                                 bottomSheet?.setState(BottomSheetBehavior.STATE_COLLAPSED)
                             }
                             stopGattService()
@@ -362,9 +362,8 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
 
                         override fun onPuckFilesDownload(tagData: ByteArray) {}
                         override fun onPuckProcessFinish() {
-                            requireActivity().runOnUiThread {
-                                if (null != processDialog && processDialog!!.isShowing)
-                                    processDialog!!.dismiss()
+                            CoroutineScope(Dispatchers.Main).launch {
+                                if (processDialog?.isShowing == true) processDialog?.dismiss()
                             }
                         }
 
@@ -372,7 +371,7 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
                             fragmentHandler.postDelayed(
                                 { showDisconnectNotice() }, TagMo.uiDelay.toLong()
                             )
-                            activity?.runOnUiThread {
+                            CoroutineScope(Dispatchers.Main).launch {
                                 bottomSheet?.setState(BottomSheetBehavior.STATE_COLLAPSED)
                             }
                             stopGattService()
@@ -1216,9 +1215,7 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
                 else -> {}
             }
         }, TagMo.uiDelay.toLong())
-        if (null == deviceAddress)
-            onBottomSheetChanged(SHEET.LOCKED)
-        else onBottomSheetChanged(SHEET.MENU)
+        onBottomSheetChanged(if (null == deviceAddress) SHEET.LOCKED else SHEET.MENU)
     }
 
     override fun onAmiiboClicked(amiibo: Amiibo?, position: Int) {

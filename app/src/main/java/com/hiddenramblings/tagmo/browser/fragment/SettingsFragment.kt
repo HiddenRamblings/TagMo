@@ -322,9 +322,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
             imageNetworkSetting.value = newValue
             imageNetworkSetting.summary = imageNetworkSetting.entry
             val activity = requireActivity() as BrowserActivity
-            if (null != activity.settings) {
-                activity.runOnUiThread { activity.settings!!.notifyChanges() }
-            }
+            activity.runOnUiThread { activity.settings?.notifyChanges() }
         }
     }
 
@@ -403,7 +401,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
         keySummary.append(unfixedBuilder)
         keySummary.append("\n")
         keySummary.append(fixedBuilder)
-        requireActivity().runOnUiThread { importKeys!!.summary = keySummary }
+        requireActivity().runOnUiThread { importKeys?.summary = keySummary }
     }
 
     private fun rebuildAmiiboDatabase() {

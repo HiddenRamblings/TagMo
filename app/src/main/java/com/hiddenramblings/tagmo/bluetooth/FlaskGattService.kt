@@ -111,8 +111,7 @@ class FlaskGattService : Service() {
                     response = StringBuilder()
                     response.append(output.split(">".toRegex()).toTypedArray()[1])
                 } else if (output.startsWith("tag.")
-                    || output.startsWith("{")
-                    || response.isNotEmpty()) {
+                    || output.startsWith("{") || response.isNotEmpty()) {
                     response.append(output)
                 }
                 val progress =
@@ -143,13 +142,11 @@ class FlaskGattService : Service() {
                                 progress.indexOf("{"),
                                 progress.lastIndexOf("}") + 1
                             )
-                            if (null != listener) {
-                                try {
-                                    listener?.onFlaskActiveChanged(JSONObject(getAmiibo))
-                                } catch (e: JSONException) {
-                                    Debug.warn(e)
-                                    listener?.onFlaskActiveChanged(null)
-                                }
+                            try {
+                                listener?.onFlaskActiveChanged(JSONObject(getAmiibo))
+                            } catch (e: JSONException) {
+                                Debug.warn(e)
+                                listener?.onFlaskActiveChanged(null)
                             }
                         } catch (ex: StringIndexOutOfBoundsException) {
                             Debug.warn(ex)
@@ -191,15 +188,13 @@ class FlaskGattService : Service() {
                                     activeAmiibo
                                 }
                             } else {
-                                listener?.onFlaskListRetrieved(
-                                    JSONArray(escapedList)
-                                )
+                                listener?.onFlaskListRetrieved(JSONArray(escapedList))
                             }
                         } catch (e: JSONException) {
                             Debug.warn(e)
                         }
                         response = StringBuilder()
-                        if (rangeIndex == 0 && null != listener) listener!!.onFlaskProcessFinish()
+                        if (rangeIndex == 0) listener?.onFlaskProcessFinish()
                     }
                 } else if (progress.startsWith("tag.remove")) {
                     if (progress.endsWith(">") || progress.endsWith("\n")) {

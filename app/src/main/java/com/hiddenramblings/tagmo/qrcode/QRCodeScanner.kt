@@ -166,50 +166,52 @@ class QRCodeScanner : AppCompatActivity() {
         } else false
 
     @Throws(Exception::class)
-    private fun decodeAmiibo(qrData: ByteArray?) {
+    private suspend fun decodeAmiibo(qrData: ByteArray?) {
         if (null == qrData) return
         if (null != amiiboManager) {
             val amiibo = amiiboManager!!.amiibos[Amiibo.dataToId(qrData)]
-            if (null != amiibo) { runOnUiThread {
-                txtMiiLabel.text = getText(R.string.qr_amiibo)
-                txtMiiValue.text = amiibo.name
-                GlideApp.with(amiiboPreview).load(Amiibo.getImageUrl(amiibo.id)).into(amiiboPreview)
-                amiiboPreview.setOnClickListener {
-                    val view = layoutInflater.inflate(R.layout.dialog_save_item, null)
-                    val dialog = AlertDialog.Builder(this)
-                    val input = view.findViewById<EditText>(R.id.save_item_entry)
-                    input.setText(TagArray.decipherFilename(amiibo, qrData, true))
-                    val backupDialog: Dialog = dialog.setView(view).create()
-                    view.findViewById<View>(R.id.button_save).setOnClickListener {
-                        try {
-                            val fileName: String = input.text.toString()
-                            if (isDocumentStorage) {
-                                val rootDocument = DocumentFile.fromTreeUri(
-                                    this, Uri.parse(prefs.browserRootDocument())
-                                ) ?: throw NullPointerException()
-                                TagArray.writeBytesToDocument(
-                                    this, rootDocument, fileName, qrData
+            if (null != amiibo) {
+                withContext(Dispatchers.Main) {
+                    txtMiiLabel.text = getText(R.string.qr_amiibo)
+                    txtMiiValue.text = amiibo.name
+                    GlideApp.with(amiiboPreview).load(Amiibo.getImageUrl(amiibo.id)).into(amiiboPreview)
+                    amiiboPreview.setOnClickListener {
+                        val view = layoutInflater.inflate(R.layout.dialog_save_item, null)
+                        val dialog = AlertDialog.Builder(this@QRCodeScanner)
+                        val input = view.findViewById<EditText>(R.id.save_item_entry)
+                        input.setText(TagArray.decipherFilename(amiibo, qrData, true))
+                        val backupDialog: Dialog = dialog.setView(view).create()
+                        view.findViewById<View>(R.id.button_save).setOnClickListener {
+                            try {
+                                val fileName: String = input.text.toString()
+                                if (isDocumentStorage) {
+                                    val rootDocument = DocumentFile.fromTreeUri(
+                                        this@QRCodeScanner, Uri.parse(prefs.browserRootDocument())
+                                    ) ?: throw NullPointerException()
+                                    TagArray.writeBytesToDocument(
+                                        this@QRCodeScanner, rootDocument, fileName, qrData
+                                    )
+                                } else {
+                                    TagArray.writeBytesToFile(Storage.getDownloadDir(
+                                        "TagMo", "Backups"
+                                    ), fileName, qrData)
+                                }
+                                Toasty(this@QRCodeScanner).Long(
+                                    getString(R.string.wrote_file, fileName)
                                 )
-                            } else {
-                                TagArray.writeBytesToFile(Storage.getDownloadDir(
-                                    "TagMo", "Backups"
-                                ), fileName, qrData)
+                                setResult(Activity.RESULT_OK)
+                            } catch (e: Exception) {
+                                e.message?.let { Toasty(this@QRCodeScanner).Short(it) }
                             }
-                            Toasty(this@QRCodeScanner).Long(
-                                getString(R.string.wrote_file, fileName)
-                            )
-                            setResult(Activity.RESULT_OK)
-                        } catch (e: Exception) {
-                            e.message?.let { Toasty(this).Short(it) }
+                            backupDialog.dismiss()
                         }
-                        backupDialog.dismiss()
+                        view.findViewById<View>(R.id.button_cancel).setOnClickListener {
+                            backupDialog.dismiss()
+                        }
+                        backupDialog.show()
                     }
-                    view.findViewById<View>(R.id.button_cancel).setOnClickListener {
-                        backupDialog.dismiss()
-                    }
-                    backupDialog.show()
                 }
-            }}
+            }
         }
     }
 
@@ -220,7 +222,7 @@ class QRCodeScanner : AppCompatActivity() {
     ), "AES")
 
     @Throws(Exception::class)
-    private fun decryptMii(qrData: ByteArray?) {
+    private suspend fun decryptMii(qrData: ByteArray?) {
         if (null == qrData) return
         val nonce = qrData.copyOfRange(0, 8)
         val empty = byteArrayOf(0, 0, 0, 0)
@@ -232,7 +234,7 @@ class QRCodeScanner : AppCompatActivity() {
             else IvParameterSpec(nonce.plus(empty))
         )
         val content = cipher.doFinal(qrData, 0, 0x58)
-        runOnUiThread {
+        withContext(Dispatchers.Main) {
             txtMiiValue.text = TagArray.bytesToHex(
                 content.copyOfRange(0, 12).plus(nonce).plus(content.copyOfRange(12, content.size))
             )
@@ -246,28 +248,32 @@ class QRCodeScanner : AppCompatActivity() {
     }
 
     private fun processBarcode(barcode: Barcode) {
-        runOnUiThread {
-            qrTypeSpinner.setSelection(barcode.valueType)
-            txtRawValue.setText(barcode.rawValue, TextView.BufferType.EDITABLE)
-            txtRawBytes.setText(
-                TagArray.bytesToHex(barcode.rawBytes), TextView.BufferType.EDITABLE
-            )
-            clearPreviews(false)
-            qrTypeSpinner.requestFocus()
-        }
-        try {
-            decodeAmiibo(barcode.rawBytes)
-        } catch (ex: Exception) {
-            Debug.warn(ex)
-        }
-        if (txtMiiValue.text.isNullOrEmpty()) {
-            txtMiiLabel.text = getText(R.string.qr_mii)
+        CoroutineScope(Dispatchers.IO).launch(Dispatchers.IO) {
+            withContext(Dispatchers.Main) {
+                qrTypeSpinner.setSelection(barcode.valueType)
+                txtRawValue.setText(barcode.rawValue, TextView.BufferType.EDITABLE)
+                txtRawBytes.setText(
+                    TagArray.bytesToHex(barcode.rawBytes), TextView.BufferType.EDITABLE
+                )
+                clearPreviews(false)
+                qrTypeSpinner.requestFocus()
+            }
             try {
-                decryptMii(barcode.rawBytes)
+                decodeAmiibo(barcode.rawBytes)
             } catch (ex: Exception) {
                 Debug.warn(ex)
-                runOnUiThread {
-                    txtMiiValue.text = ex.localizedMessage
+            }
+            if (txtMiiValue.text.isNullOrEmpty()) {
+                withContext(Dispatchers.Main) {
+                    txtMiiLabel.text = getText(R.string.qr_mii)
+                }
+                try {
+                    decryptMii(barcode.rawBytes)
+                } catch (ex: Exception) {
+                    Debug.warn(ex)
+                    withContext(Dispatchers.Main) {
+                        txtMiiValue.text = ex.localizedMessage
+                    }
                 }
             }
         }
@@ -402,7 +408,7 @@ class QRCodeScanner : AppCompatActivity() {
                 this, ViewModelProvider.AndroidViewModelFactory.getInstance(application)
             )[CameraXViewModel::class.java].processCameraProvider.observe(this) {
                 cameraProvider = it
-                runOnUiThread {
+                CoroutineScope(Dispatchers.Main).launch {
                     clearPreviews(true)
                     cameraPreview?.isVisible = true
                 }
@@ -515,12 +521,14 @@ class QRCodeScanner : AppCompatActivity() {
                 try {
                     val bitmap = encodeQR(text, qrTypeSpinner.selectedItemPosition)
                     if (null != bitmap) {
-                        runOnUiThread { barcodePreview.setImageBitmap(bitmap) }
+                        CoroutineScope(Dispatchers.Main).launch {
+                            barcodePreview.setImageBitmap(bitmap)
+                        }
                         scanBarcodes(InputImage.fromBitmap(bitmap, 0))
                     }
                 } catch (ex: Exception) {
                     Debug.warn(ex)
-                    runOnUiThread {
+                    CoroutineScope(Dispatchers.Main).launch {
                         qrTypeSpinner.setSelection(0)
                         txtRawValue.setText("", TextView.BufferType.EDITABLE)
                         txtRawBytes.setText("", TextView.BufferType.EDITABLE)

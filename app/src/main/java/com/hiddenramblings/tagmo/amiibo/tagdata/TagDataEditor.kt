@@ -128,8 +128,6 @@ class TagDataEditor : AppCompatActivity() {
     private var txtStatDefenseU: EditText? = null
     private var appDataSSBU: AppDataSSBU? = null
 
-    private val loadingScope = CoroutineScope(Dispatchers.Main + Job())
-
     public override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_tag_data)
@@ -231,7 +229,7 @@ class TagDataEditor : AppCompatActivity() {
             datePickerDialog.show()
         }
         updateAmiiboView(tagData)
-        loadingScope.launch {
+        CoroutineScope(Dispatchers.Main + Job()).launch {
             withContext(Dispatchers.IO) {
                 var amiiboManager: AmiiboManager? = null
                 try {

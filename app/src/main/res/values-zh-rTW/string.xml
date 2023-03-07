@@ -58,7 +58,6 @@
     <string name="unlock">解鎖</string>
     <string name="scan">掃描</string>
     <string name="browser">瀏覽器</string>
-    <string name="purchase">購買</string>
     <string name="save">儲存</string>
     <string name="cache">快取</string>
     <string name="write">寫入</string>
@@ -296,8 +295,8 @@
     <string name="slots_full">所有的Bluup Flask slots都已佔用</string>
     <string name="slots_empty">Bluup Flask的儲存空間沒有任何項目</string>
     <string name="create_blank">建立空白的虛擬 NFC tag</string>
-    <string name="flask_erase_confirm">將Bluup Flask所有的slots進行抹除？</string>
-    <string name="flask_write_confirm">將所有選取項目寫入 Bluup Flask?</string>
+    <string name="gatt_erase_confirm">將Bluup Flask所有的slots進行抹除？</string>
+    <string name="gatt_write_confirm">將所有選取項目寫入 Bluup Flask?</string>
     <string name="flask_upload">正在上傳二進位檔案&#8230;</string>
     <string name="flask_remove">正在抹除slot數據&#8230;</string>
     <string name="fail_bluetooth_adapter">沒有可用的藍牙裝置!</string>

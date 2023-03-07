@@ -106,7 +106,7 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
     private var deviceDialog: AlertDialog? = null
 
     private enum class STATE {
-        NONE, SCANNING, CONNECT, MISSING, PURCHASE
+        NONE, SCANNING, CONNECT, MISSING, TIMEOUT
     }
 
     private var noticeState = STATE.NONE
@@ -275,7 +275,7 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
         override fun onServiceDisconnected(name: ComponentName) {
             stopGattService()
             if (!isServiceDiscovered) {
-                showPurchaseNotice()
+                showTimeoutNotice()
             }
         }
     }
@@ -388,7 +388,7 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
         override fun onServiceDisconnected(name: ComponentName) {
             stopGattService()
             if (!isServiceDiscovered) {
-                showPurchaseNotice()
+                showTimeoutNotice()
             }
         }
     }
@@ -597,7 +597,7 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
         }
         eraseSlots?.setOnClickListener {
             AlertDialog.Builder(requireContext())
-                .setMessage(R.string.flask_erase_confirm)
+                .setMessage(R.string.gatt_erase_confirm)
                 .setPositiveButton(R.string.proceed) { _: DialogInterface?, _: Int ->
                     showProcessingNotice(false)
                     serviceFlask?.clearStorage(currentCount)
@@ -944,7 +944,7 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
         fragmentHandler.postDelayed({
             if (null == deviceProfile) {
                 dismissGattDiscovery()
-                showPurchaseNotice()
+                showTimeoutNotice()
             }
         }, 30000)
     }
@@ -957,6 +957,11 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
         }
         if (null != deviceDialog && deviceDialog!!.isShowing) return
         val view = this.layoutInflater.inflate(R.layout.dialog_devices, null) as LinearLayout
+        view.findViewById<AppCompatButton>(R.id.purchase_flask).setOnClickListener {
+            startActivity(Intent(
+                Intent.ACTION_VIEW, Uri.parse("https://www.bluuplabs.com/flask/")
+            ))
+        }
         deviceDialog = AlertDialog.Builder(requireActivity()).setView(view).show()
         for (device in mBluetoothAdapter!!.bondedDevices) {
             val deviceType = if (device.name.lowercase().startsWith("flask")) 1 else 0
@@ -969,7 +974,7 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
 
     private fun writeAmiiboCollection(amiiboList: ArrayList<AmiiboFile?>) {
         AlertDialog.Builder(requireContext())
-            .setMessage(R.string.flask_write_confirm)
+            .setMessage(R.string.gatt_write_confirm)
             .setPositiveButton(R.string.proceed) { dialog: DialogInterface, _: Int ->
                 showProcessingNotice(true)
                 amiiboList.indices.forEach {
@@ -1077,19 +1082,17 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
         processDialog?.window?.decorView?.keepScreenOn = true
     }
 
-    private fun showPurchaseNotice() {
+    private fun showTimeoutNotice() {
         dismissSnackbarNotice()
-        noticeState = STATE.PURCHASE
+        noticeState = STATE.TIMEOUT
         if (isFragmentVisible) {
             statusBar = IconifiedSnackbar(requireActivity()).buildSnackbar(
                 R.string.flask_missing,
                 R.drawable.ic_bluup_flask_24dp,
                 Snackbar.LENGTH_INDEFINITE
             )
-            statusBar!!.setAction(R.string.purchase) {
-                startActivity(Intent(
-                    Intent.ACTION_VIEW, Uri.parse("https://www.bluuplabs.com/flask/")
-                ))
+            statusBar!!.setAction(R.string.retry) {
+                selectBluetoothDevice()
                 statusBar!!.dismiss()
             }
             statusBar!!.show()
@@ -1204,7 +1207,7 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
         if (null != statusBar && statusBar!!.isShown) return
         fragmentHandler.postDelayed({
             when (noticeState) {
-                STATE.SCANNING, STATE.PURCHASE -> {
+                STATE.SCANNING, STATE.TIMEOUT -> {
                     showScanningNotice()
                     selectBluetoothDevice()
                 }

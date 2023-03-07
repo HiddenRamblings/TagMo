@@ -58,7 +58,7 @@
     <string name="unlock">Unlock</string>
     <string name="scan">Scan</string>
     <string name="browser">Browser</string>
-    <string name="purchase">Purchase</string>
+    <string name="retry">Retry</string>
     <string name="save">Save</string>
     <string name="cache">Cache</string>
     <string name="write">Write</string>
@@ -291,6 +291,7 @@
     <string name="tag_update_only">Previously written tags require \&#34;Update\&#34;</string>
 
     <string name="custom_tab_back">Back to TagMo</string>
+    <string name="flask_purchase">Purchase a Bluup Flask</string>
     <string name="flask_missing">No nearby GATT devices located!</string>
     <string name="device_invalid">Not a valid GATT device!</string>
     <string name="flask_scanning">Scanning for Bluetooth GATT&#8230;</string>
@@ -303,8 +304,8 @@
     <string name="slots_full">All Bluup Flask slots filled</string>
     <string name="slots_empty">Device storage is empty</string>
     <string name="create_blank">Create blank virtual NFC tag</string>
-    <string name="flask_erase_confirm">Erase all slots from Bluup Flask?</string>
-    <string name="flask_write_confirm">Write selections to Bluup Flask?</string>
+    <string name="gatt_erase_confirm">Erase all slots from GATT device?</string>
+    <string name="gatt_write_confirm">Write selections to GATT device?</string>
     <string name="flask_upload">Uploading binary&#8230;</string>
     <string name="flask_remove">Wiping slot data&#8230;</string>
     <string name="fail_bluetooth_adapter">Bluetooth adapter unavailable!</string>

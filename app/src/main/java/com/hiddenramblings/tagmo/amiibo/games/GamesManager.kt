@@ -52,15 +52,15 @@ class GamesManager {
             val amiibo3DS = games3DS[amiibo.id]
             val amiiboWiiU = gamesWiiU[amiibo.id]
             val amiiboSwitch = gamesSwitch[amiibo.id]
-            if (null != amiibo3DS && amiibo3DS.hasUsage(name)) {
+            if (amiibo3DS?.hasUsage(name) == true) {
                 amiiboIds.add(amiibo.id)
                 continue
             }
-            if (null != amiiboWiiU && amiiboWiiU.hasUsage(name)) {
+            if (amiiboWiiU?.hasUsage(name) == true) {
                 amiiboIds.add(amiibo.id)
                 continue
             }
-            if (null != amiiboSwitch && amiiboSwitch.hasUsage(name)) {
+            if (amiiboSwitch?.hasUsage(name) == true) {
                 amiiboIds.add(amiibo.id)
             }
         }
@@ -69,11 +69,11 @@ class GamesManager {
 
     fun isGameSupported(amiibo: Amiibo, name: String?): Boolean {
         val amiibo3DS = games3DS[amiibo.id]
-        if (null != amiibo3DS && amiibo3DS.hasUsage(name)) return true
+        if (amiibo3DS?.hasUsage(name) == true) return true
         val amiiboWiiU = gamesWiiU[amiibo.id]
-        if (null != amiiboWiiU && amiiboWiiU.hasUsage(name)) return true
+        if (amiiboWiiU?.hasUsage(name) == true) return true
         val amiiboSwitch = gamesSwitch[amiibo.id]
-        return null != amiiboSwitch && amiiboSwitch.hasUsage(name)
+        return amiiboSwitch?.hasUsage(name) == true
     }
 
     companion object {

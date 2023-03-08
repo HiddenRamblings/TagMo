@@ -83,8 +83,7 @@ class ScanTag {
             }
         } catch (e: Exception) {
             Debug.warn(e)
-            var error: String? = Debug.getExceptionCause(e)
-            if (null != error) {
+            Debug.getExceptionCause(e)?.let { error ->
                 if (prefs.eliteEnabled()) {
                     when {
                         e is TagLostException -> {
@@ -131,11 +130,11 @@ class ScanTag {
                         }
                     }
                 } else {
-                    if (Debug.hasException(e, NTAG215::class.java.name, "connect"))
-                        error = activity.getString(R.string.error_tag_faulty) + "\n" + error
-                    Toasty(activity).Short(error)
+                    val message = if (Debug.hasException(e, NTAG215::class.java.name, "connect"))
+                         "${activity.getString(R.string.error_tag_faulty)}\n$error" else error
+                    Toasty(activity).Short(message)
                 }
-            } else {
+            } ?: {
                 Toasty(activity).Short(R.string.error_unknown)
                 activity.onReportProblemClick()
             }

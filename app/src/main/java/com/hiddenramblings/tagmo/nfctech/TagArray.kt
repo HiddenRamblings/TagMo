@@ -73,10 +73,9 @@ object TagArray {
     @JvmStatic
     fun isPowerTag(mifare: NTAG215?): Boolean {
         if (mPrefs.powerTagEnabled()) {
-            val signature = mifare?.transceive(NfcByte.POWERTAG_SIG)
-            return null != signature && compareRange(
-                signature, NfcByte.POWERTAG_SIGNATURE, NfcByte.POWERTAG_SIGNATURE.size
-            )
+            return mifare?.transceive(NfcByte.POWERTAG_SIG)?.let {
+                compareRange(it, NfcByte.POWERTAG_SIGNATURE, NfcByte.POWERTAG_SIGNATURE.size)
+            } ?: false
         }
         return false
     }
@@ -86,10 +85,9 @@ object TagArray {
         if (mPrefs.eliteEnabled()) {
             val signature = mifare?.readSignature(false)
             val page10 = hexToByteArray("FFFFFFFFFF")
-            return null != signature && compareRange(
-                signature, page10,
-                32 - page10.size, signature.size
-            )
+            return signature?.let {
+                compareRange(it, page10, 32 - page10.size, it.size)
+            } ?: false
         }
         return false
     }
@@ -284,8 +282,8 @@ object TagArray {
     ): String {
         try {
             val amiiboId = Amiibo.dataToId(tagData)
-            if (null != amiiboManager) {
-                return decipherFilename(amiiboManager.amiibos[amiiboId]!!, tagData, verified)
+            amiiboManager?.let {
+                return decipherFilename(it.amiibos[amiiboId]!!, tagData, verified)
             }
         } catch (ex: Exception) {
             Debug.warn(ex)
@@ -328,10 +326,9 @@ object TagArray {
 
     @JvmStatic
     @Throws(Exception::class)
-    fun getValidatedData(keyManager: KeyManager?, file: AmiiboFile): ByteArray {
-        return if (null != file.data) file.data!! else (
-                if (null != file.docUri) getValidatedDocument(keyManager, file.docUri!!
-        ) else getValidatedFile(keyManager, file.filePath!!))!!
+    fun getValidatedData(keyManager: KeyManager?, file: AmiiboFile): ByteArray? {
+        return file.data ?: file.docUri?.let { getValidatedDocument(keyManager, it) }
+        ?: file.filePath?.let { getValidatedFile(keyManager, it) }
     }
 
     @JvmStatic
@@ -359,10 +356,8 @@ object TagArray {
         val newFile = directory.createFile(
             context.resources.getStringArray(R.array.mimetype_bin)[0], name
         )
-        if (null != newFile) {
-            context.contentResolver.openOutputStream(newFile.uri).use {
-                it?.write(tagData)
-            }
+        newFile?.let { file ->
+            context.contentResolver.openOutputStream(file.uri).use { it?.write(tagData) }
         }
         return newFile?.name
     }

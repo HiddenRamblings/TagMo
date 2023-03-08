@@ -244,8 +244,8 @@ class QRGEncoder(data: String?, bundle: Bundle?, type: Int, private var dimensio
     val bitmap: Bitmap?
         get() = if (!encoded) null else try {
             val hints: MutableMap<EncodeHintType?, Any?> = EnumMap(EncodeHintType::class.java)
-            guessAppropriateEncoding(contents).let {
-                if (null != it) hints[EncodeHintType.CHARACTER_SET] = it
+            guessAppropriateEncoding(contents)?.let {
+                hints[EncodeHintType.CHARACTER_SET] = it
             }
             val writer = MultiFormatWriter()
             val result = writer.encode(contents, format, dimension, dimension, hints)
@@ -270,12 +270,12 @@ class QRGEncoder(data: String?, bundle: Bundle?, type: Int, private var dimensio
     fun getBitmap(margin: Int?): Bitmap? {
         return if (!encoded) null else try {
             val hints: MutableMap<EncodeHintType?, Any?> = EnumMap(EncodeHintType::class.java)
-            guessAppropriateEncoding(contents).let {
-                if (null != it) hints[EncodeHintType.CHARACTER_SET] = it
+            guessAppropriateEncoding(contents)?.let {
+                hints[EncodeHintType.CHARACTER_SET] = it
             }
             // Setting the margin width
-            margin.let {
-                if (null != it) hints[EncodeHintType.MARGIN] = margin
+            margin?.let {
+                hints[EncodeHintType.MARGIN] = margin
             }
             val writer = MultiFormatWriter()
             val result = writer.encode(contents, format, dimension, dimension, hints)

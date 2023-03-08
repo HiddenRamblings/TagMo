@@ -83,8 +83,8 @@ class DonationManager internal constructor(private val activity: BrowserActivity
 
     private val purchasesUpdatedListener =
         PurchasesUpdatedListener { billingResult: BillingResult, purchases: List<Purchase>? ->
-            if (billingResult.responseCode == BillingClient.BillingResponseCode.OK && null != purchases) {
-                purchases.forEach {
+            if (billingResult.responseCode == BillingClient.BillingResponseCode.OK) {
+                purchases?.forEach {
                     handlePurchase(it)
                 }
             }
@@ -105,20 +105,21 @@ class DonationManager internal constructor(private val activity: BrowserActivity
         }
     private val subHistoryListener = PurchaseHistoryResponseListener {
             billingResult: BillingResult, purchases: List<PurchaseHistoryRecord>? ->
-            if (billingResult.responseCode == BillingClient.BillingResponseCode.OK && null != purchases) {
-                purchases.forEach {
+            if (billingResult.responseCode == BillingClient.BillingResponseCode.OK) {
+                purchases?.forEach {
                     subsPurchased.addAll(it.products)
                 }
                 billingClient?.queryPurchasesAsync(
-                    QueryPurchasesParams.newBuilder()
-                        .setProductType(BillingClient.ProductType.SUBS).build(), subsOwnedListener
+                    QueryPurchasesParams.newBuilder().setProductType(
+                        BillingClient.ProductType.SUBS
+                    ).build(), subsOwnedListener
                 )
             }
         }
     private val iapHistoryListener = PurchaseHistoryResponseListener {
             billingResult: BillingResult, purchases: List<PurchaseHistoryRecord>? ->
-            if (billingResult.responseCode == BillingClient.BillingResponseCode.OK && null != purchases) {
-                purchases.forEach {
+            if (billingResult.responseCode == BillingClient.BillingResponseCode.OK) {
+                purchases?.forEach {
                     for (sku in it.products) {
                         if (sku.split("_").toTypedArray()[1].toInt() >= 10) {
                             break

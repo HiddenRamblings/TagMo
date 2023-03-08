@@ -126,11 +126,10 @@ class BrowserAdapter(
         val item = filteredData[position]
         val amiiboId = item?.id
         var amiibo: Amiibo? = null
-        val amiiboManager = settings.amiiboManager
-        if (null != amiiboManager) {
-            amiibo = amiiboManager.amiibos[amiiboId]
+        settings.amiiboManager?.let {
+            amiibo = it.amiibos[amiiboId]
             if (null == amiibo && null != amiiboId)
-                amiibo = Amiibo(amiiboManager, amiiboId, null, null)
+                amiibo = Amiibo(it, amiiboId, null, null)
         }
         popupTextView.text = amiibo?.let { when (SORT.valueOf(settings.sort)) {
             SORT.NAME -> it.name ?: "?"
@@ -144,17 +143,15 @@ class BrowserAdapter(
 
     private fun handleClickEvent(holder: AmiiboViewHolder) {
         if (null != holder.listener) {
-            val uri = if (null != holder.amiiboFile?.docUri)
-                holder.amiiboFile?.docUri?.uri.toString() else null
-            val path = if (null != holder.amiiboFile?.filePath)
-                holder.amiiboFile?.filePath?.absolutePath else null
+            val uri = holder.amiiboFile?.docUri?.uri.toString()
+            val path = holder.amiiboFile?.filePath?.absolutePath
             if (settings.amiiboView != VIEW.IMAGE.value) {
                 if (amiiboPath.contains(uri) || amiiboPath.contains(path)) {
-                    if (null != uri) amiiboPath.remove(uri)
-                    if (null != path) amiiboPath.remove(path)
+                    uri.let { amiiboPath.remove(it) }
+                    path?.let { amiiboPath.remove(it) }
                 } else {
-                    if (null != uri) amiiboPath.add(uri)
-                    if (null != path) amiiboPath.add(path)
+                    amiiboPath.add(uri)
+                    path?.let { amiiboPath.add(it) }
                 }
             } else {
                 amiiboPath.clear()
@@ -168,16 +165,14 @@ class BrowserAdapter(
         holder.imageAmiibo?.setOnClickListener {
             if (settings.amiiboView == VIEW.IMAGE.value) {
                 handleClickEvent(holder)
-            } else if (null != holder.listener) {
-                holder.listener.onAmiiboImageClicked(holder.amiiboFile)
+            } else {
+                holder.listener?.onAmiiboImageClicked(holder.amiiboFile)
             }
         }
         holder.bind(getItem(holder.bindingAdapterPosition))
     }
 
-    fun refresh() {
-        getFilter().filter(settings.query)
-    }
+    fun refresh() { getFilter().filter(settings.query) }
 
     override fun getFilter(): AmiiboFilter {
         if (null == filter) {
@@ -200,20 +195,25 @@ class BrowserAdapter(
             val queryText = query.trim { it <= ' ' }.lowercase(Locale.getDefault())
             val amiiboManager = settings.amiiboManager
             val amiiboFiles = settings.amiiboFiles
-            amiiboFiles.forEach {
-                var add = false
-                if (null != amiiboManager) {
-                    var amiibo = amiiboManager.amiibos[it!!.id]
-                    if (null == amiibo) amiibo = Amiibo(
-                        amiiboManager, it.id, null, null
-                    )
-                    add = settings.amiiboContainsQuery(amiibo, queryText)
+            amiiboFiles.forEach { amiiboFile ->
+                amiiboFile?.let { file ->
+                    var add = false
+                    amiiboManager?.let {
+                        var amiibo = it.amiibos[file.id]
+                        if (null == amiibo)
+                            amiibo = Amiibo(it, file.id, null, null)
+                        add = settings.amiiboContainsQuery(amiibo, queryText)
+                    }
+                    if (!add) {
+                        file.docUri?.let { uri ->
+                            add = pathContainsQuery(uri.toString(), queryText)
+                        }
+                        file.filePath?.let { path ->
+                            add = pathContainsQuery(path.absolutePath, queryText)
+                        }
+                    }
+                    if (add) tempList.add(file)
                 }
-                if (!add && null != it?.docUri)
-                    add = pathContainsQuery(it.docUri.toString(), queryText)
-                if (!add && null != it?.filePath)
-                    add = pathContainsQuery(it.filePath!!.absolutePath, queryText)
-                if (add) tempList.add(it!!)
             }
             filterResults.count = tempList.size
             filterResults.values = tempList
@@ -294,22 +294,22 @@ class BrowserAdapter(
             val amiiboId = item?.id
             var amiibo: Amiibo? = null
             val amiiboManager = settings.amiiboManager
-            if (null != amiiboManager) {
-                amiibo = amiiboManager.amiibos[amiiboId]
+            amiiboManager?.let {
+                amiibo = it.amiibos[amiiboId]
                 if (null == amiibo && null != amiiboId)
-                    amiibo = Amiibo(amiiboManager, amiiboId, null, null)
+                    amiibo = Amiibo(it, amiiboId, null, null)
             }
-            if (null != amiibo) {
-                amiiboHexId = Amiibo.idToHex(amiibo.id)
-                amiiboImageUrl = amiibo.imageUrl
-                if (null != amiibo.name) amiiboName = amiibo.name!!
-                if (null != amiibo.amiiboSeries) amiiboSeries = amiibo.amiiboSeries!!.name
-                if (null != amiibo.amiiboType) amiiboType = amiibo.amiiboType!!.name
-                if (null != amiibo.gameSeries) gameSeries = amiibo.gameSeries!!.name
-            } else if (null != amiiboId) {
-                amiiboHexId = Amiibo.idToHex(amiiboId)
+            amiibo?.let {
+                amiiboHexId = Amiibo.idToHex(it.id)
+                amiiboImageUrl = it.imageUrl
+                it.name?.let { name -> amiiboName = name }
+                it.amiiboSeries?.let { series -> amiiboSeries = series.name }
+                it.amiiboType?.let { type -> amiiboType = type.name }
+                it.gameSeries?.let { series -> gameSeries = series.name }
+            } ?: amiiboId?.let {
+                amiiboHexId = Amiibo.idToHex(it)
                 tagInfo = "ID: $amiiboHexId"
-                amiiboImageUrl = Amiibo.getImageUrl(amiiboId)
+                amiiboImageUrl = Amiibo.getImageUrl(it)
             }
             imageAmiibo?.let {
                 GlideApp.with(it).clear(it)
@@ -342,9 +342,9 @@ class BrowserAdapter(
                     txtGameSeries,
                     boldSpannable.indexOf(gameSeries, query), hasTagInfo
                 )
-                if (null != txtPath) {
-                    if (null != item?.docUri) {
-                        val relativeDocument = Storage.getRelativeDocument(item.docUri!!.uri)
+                txtPath?.run {
+                    item?.docUri?.let {
+                        val relativeDocument = Storage.getRelativeDocument(it.uri)
                         val expanded = amiiboPath.contains(relativeDocument)
                         itemView.findViewById<View>(R.id.menu_options).visibility =
                             if (expanded) View.VISIBLE else View.GONE
@@ -352,60 +352,53 @@ class BrowserAdapter(
                             if (expanded) View.VISIBLE else View.GONE
                         if (expanded) listener?.onAmiiboRebind(itemView, amiiboFile)
                         itemView.isEnabled = true
-                        txtPath.text = boldSpannable.indexOf(relativeDocument, query)
+                        text = boldSpannable.indexOf(relativeDocument, query)
                         val a = TypedValue()
-                        txtPath.context.theme.resolveAttribute(
+                        context.theme.resolveAttribute(
                             android.R.attr.textColor, a, true
                         )
                         if (Version.isAndroid10 && a.isColorType) {
-                            txtPath.setTextColor(a.data)
+                            setTextColor(a.data)
                         } else if (a.type >= TypedValue.TYPE_FIRST_COLOR_INT
                             && a.type <= TypedValue.TYPE_LAST_COLOR_INT
                         ) {
-                            txtPath.setTextColor(a.data)
+                            setTextColor(a.data)
                         }
                         setIsHighlighted(relativeDocument.startsWith("/Foomiibo/"))
-                    } else if (null != item?.filePath) {
-                        val expanded = amiiboPath.contains(item.filePath!!.absolutePath)
+                    } ?: item?.filePath?.let {
+                        val expanded = amiiboPath.contains(it.absolutePath)
                         itemView.findViewById<View>(R.id.menu_options).visibility =
                             if (expanded) View.VISIBLE else View.GONE
                         itemView.findViewById<View>(R.id.txtUsage).visibility =
                             if (expanded) View.VISIBLE else View.GONE
                         if (expanded) listener?.onAmiiboRebind(itemView, amiiboFile)
-                        var relativeFile = Storage.getRelativePath(
-                            item.filePath,
-                            mPrefs.preferEmulated()
-                        )
-                        if (null != mPrefs.browserRootFolder()) {
-                            relativeFile = relativeFile.replace(
-                                mPrefs.browserRootFolder()!!, ""
-                            )
+                        var relativeFile = Storage.getRelativePath(it, mPrefs.preferEmulated())
+                        mPrefs.browserRootFolder()?.let { path ->
+                            relativeFile = relativeFile.replace(path, "")
                         }
                         itemView.isEnabled = true
-                        txtPath.text = boldSpannable.indexOf(relativeFile, query)
+                        text = boldSpannable.indexOf(relativeFile, query)
                         val a = TypedValue()
-                        txtPath.context.theme.resolveAttribute(
+                        context.theme.resolveAttribute(
                             android.R.attr.textColor, a, true
                         )
                         if (Version.isAndroid10 && a.isColorType) {
-                            txtPath.setTextColor(a.data)
+                            setTextColor(a.data)
                         } else if (a.type >= TypedValue.TYPE_FIRST_COLOR_INT
                             && a.type <= TypedValue.TYPE_LAST_COLOR_INT
                         ) {
-                            txtPath.setTextColor(a.data)
+                            setTextColor(a.data)
                         }
                         setIsHighlighted(relativeFile.startsWith("/Foomiibo/"))
-                    } else {
+                    } ?: {
                         itemView.isEnabled = false
-                        txtPath.text = ""
-                        txtPath.setTextColor(
-                            ContextCompat.getColor(txtPath.context, R.color.tag_text)
-                        )
+                        text = ""
+                        setTextColor(ContextCompat.getColor(context, R.color.tag_text))
                     }
-                    txtPath.isVisible = true
+                    isVisible = true
                 }
             }
-            if (hasSpoofData(amiiboHexId) && null != txtTagId) txtTagId.isEnabled = false
+            if (hasSpoofData(amiiboHexId)) txtTagId?.isEnabled = false
         }
 
         private fun setIsHighlighted(isHighlighted: Boolean) {

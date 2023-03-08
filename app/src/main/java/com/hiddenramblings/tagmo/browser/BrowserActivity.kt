@@ -244,13 +244,16 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
         }
         settings?.addChangeListener(this)
         val intent = intent
-        if (null != intent && componentName == FilterComponent) {
-            startActivity(Intent(this, BrowserActivity::class.java).apply {
-                intent.action?.let { action = it}
-                intent.extras?.let { putExtras(it) }
-                intent.data?.let { data = it }
-            })
+        intent?.let {
+            if (componentName == FilterComponent) {
+                startActivity(Intent(this, BrowserActivity::class.java).apply {
+                    it.action?.let { action = it}
+                    it.extras?.let { putExtras(it) }
+                    it.data?.let { data = it }
+                })
+            }
         }
+
         viewPager?.keepScreenOn = BuildConfig.WEAR_OS
         viewPager?.adapter = pagerAdapter
         val cardFlipPageTransformer = CardFlipPageTransformer2()
@@ -290,12 +293,10 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                             amiibosView = fragmentBrowser?.browserContent
                             foomiiboView = fragmentBrowser?.foomiiboView
                             bottomSheet = bottomSheetBehavior
-                            if (null != foomiiboView) {
-                                foomiiboView?.layoutManager =
-                                    if (settings?.amiiboView == VIEW.IMAGE.value)
-                                        GridLayoutManager(this@BrowserActivity, columnCount)
-                                    else LinearLayoutManager(this@BrowserActivity)
-                            }
+                            foomiiboView?.layoutManager =
+                                if (settings?.amiiboView == VIEW.IMAGE.value)
+                                    GridLayoutManager(this@BrowserActivity, columnCount)
+                                else LinearLayoutManager(this@BrowserActivity)
                         }
                     }
                 } else {
@@ -341,20 +342,16 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                             amiibosView = fragmentBrowser?.browserContent
                             foomiiboView = fragmentBrowser?.foomiiboView
                             bottomSheet = bottomSheetBehavior
-                            if (null != foomiiboView) {
-                                foomiiboView?.layoutManager =
-                                    if (settings?.amiiboView == VIEW.IMAGE.value)
-                                        GridLayoutManager(this@BrowserActivity, columnCount)
-                                    else LinearLayoutManager(this@BrowserActivity)
-                            }
+                            foomiiboView?.layoutManager =
+                                if (settings?.amiiboView == VIEW.IMAGE.value)
+                                    GridLayoutManager(this@BrowserActivity, columnCount)
+                                else LinearLayoutManager(this@BrowserActivity)
                         }
                     }
                 }
-                if (null != amiibosView) {
-                    amiibosView?.layoutManager = if (settings?.amiiboView == VIEW.IMAGE.value)
-                        GridLayoutManager(this@BrowserActivity, columnCount)
-                    else LinearLayoutManager(this@BrowserActivity)
-                }
+                amiibosView?.layoutManager = if (settings?.amiiboView == VIEW.IMAGE.value)
+                    GridLayoutManager(this@BrowserActivity, columnCount)
+                else LinearLayoutManager(this@BrowserActivity)
                 if (BuildConfig.WEAR_OS) onCreateWearOptionsMenu() else invalidateOptionsMenu()
             }
         })
@@ -472,16 +469,16 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                         val repository = "https://github.com/HiddenRamblings/TagMo"
                         showWebsite(repository)
                     }
-                    if (null != appUpdate) {
+                    appUpdate?.let { update ->
                         findViewById<View>(R.id.build_layout).setOnClickListener {
                             closePrefsDrawer()
-                            updateManager?.startPlayUpdateFlow(appUpdate)
+                            updateManager?.startPlayUpdateFlow(update)
                         }
                     }
-                    if (null != updateUrl) {
+                    updateUrl?.let { update ->
                         findViewById<View>(R.id.build_layout).setOnClickListener {
                             closePrefsDrawer()
-                            updateManager?.requestDownload(updateUrl!!)
+                            updateManager?.requestDownload(update)
                         }
                     }
                 }
@@ -522,11 +519,10 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
             for (field in popup.javaClass.declaredFields) {
                 if ("mPopup" == field.name) {
                     field.isAccessible = true
-                    val menuPopupHelper = field[popup]
-                    if (null != menuPopupHelper) {
-                        val setForceIcons = Class.forName(menuPopupHelper.javaClass.name)
+                    field[popup]?.let {
+                        val setForceIcons = Class.forName(it.javaClass.name)
                             .getMethod("setForceShowIcon", Boolean::class.javaPrimitiveType)
-                        setForceIcons.invoke(menuPopupHelper, true)
+                        setForceIcons.invoke(it, true)
                     }
                     break
                 }
@@ -543,12 +539,14 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
         if (null != intent && null != intent.action && Intent.ACTION_VIEW == intent.action) {
             try {
                 if (null != intent.clipData) {
-                    for (i in 0 until intent.clipData!!.itemCount) {
-                        val uri = intent.clipData!!.getItemAt(i).uri
-                        val data = TagReader.readTagDocument(uri)
-                        updateAmiiboView(data, AmiiboFile(
-                            uri.path?.let { File(it) }, Amiibo.dataToId(data), data
-                        ))
+                    intent.clipData?.run {
+                        for (i in 0 until this.itemCount) {
+                            val uri = this.getItemAt(i).uri
+                            val data = TagReader.readTagDocument(uri)
+                            updateAmiiboView(data, AmiiboFile(
+                                uri.path?.let { File(it) }, Amiibo.dataToId(data), data
+                            ))
+                        }
                     }
                 } else if (null != intent.data) {
                     val uri = intent.data
@@ -620,7 +618,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
 
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
     private fun onShowJoyConFragment() {
-        if (null != joyConDialog && joyConDialog!!.isShowing) return
+        if (joyConDialog?.isShowing == true) return
         val fragmentJoyCon = newInstance()
         fragmentJoyCon.show(supportFragmentManager, "dialog")
         joyConDialog = fragmentJoyCon.dialog
@@ -786,8 +784,8 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
 
     fun onReportProblemClick() {
         if (updateManager?.hasPendingUpdate() == true) {
-            if (null != appUpdate) updateManager?.startPlayUpdateFlow(appUpdate)
-            if (null != updateUrl) updateManager?.requestDownload(updateUrl)
+            appUpdate?.let { updateManager?.startPlayUpdateFlow(it) }
+            updateUrl?.let { updateManager?.requestDownload(it) }
             return
         }
         loadingExecutor.execute {
@@ -826,55 +824,59 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
         amiiboManager.amiibos.values.forEach { amiibo ->
             when (filterType) {
                 FILTER.CHARACTER -> {
-                    val character = amiibo.character
-                    if (null != character && Amiibo.matchesGameSeriesFilter(
-                            amiibo.gameSeries, settings!!.getFilter(FILTER.GAME_SERIES)
-                        ) && Amiibo.matchesAmiiboSeriesFilter(
-                            amiibo.amiiboSeries, settings!!.getFilter(FILTER.AMIIBO_SERIES)
-                        ) && Amiibo.matchesAmiiboTypeFilter(
-                            amiibo.amiiboType, settings!!.getFilter(FILTER.AMIIBO_TYPE)
-                        )
-                    ) {
-                        if (character.name == filter) items.add(amiibo.id)
+                    amiibo.character?.let {
+                        if (Amiibo.matchesGameSeriesFilter(
+                                amiibo.gameSeries, settings!!.getFilter(FILTER.GAME_SERIES)
+                            ) && Amiibo.matchesAmiiboSeriesFilter(
+                                amiibo.amiiboSeries, settings!!.getFilter(FILTER.AMIIBO_SERIES)
+                            ) && Amiibo.matchesAmiiboTypeFilter(
+                                amiibo.amiiboType, settings!!.getFilter(FILTER.AMIIBO_TYPE)
+                            )
+                        ) {
+                            if (it.name == filter) items.add(amiibo.id)
+                        }
                     }
                 }
                 FILTER.GAME_SERIES -> {
-                    val gameSeries = amiibo.gameSeries
-                    if (null != gameSeries && Amiibo.matchesCharacterFilter(
-                            amiibo.character, settings!!.getFilter(FILTER.CHARACTER)
-                        ) && Amiibo.matchesAmiiboSeriesFilter(
-                            amiibo.amiiboSeries, settings!!.getFilter(FILTER.AMIIBO_SERIES)
-                        ) && Amiibo.matchesAmiiboTypeFilter(
-                            amiibo.amiiboType, settings!!.getFilter(FILTER.AMIIBO_TYPE)
-                        )
-                    ) {
-                        if (gameSeries.name == filter) items.add(amiibo.id)
+                    amiibo.gameSeries?.let {
+                        if (Amiibo.matchesCharacterFilter(
+                                amiibo.character, settings!!.getFilter(FILTER.CHARACTER)
+                            ) && Amiibo.matchesAmiiboSeriesFilter(
+                                amiibo.amiiboSeries, settings!!.getFilter(FILTER.AMIIBO_SERIES)
+                            ) && Amiibo.matchesAmiiboTypeFilter(
+                                amiibo.amiiboType, settings!!.getFilter(FILTER.AMIIBO_TYPE)
+                            )
+                        ) {
+                            if (it.name == filter) items.add(amiibo.id)
+                        }
                     }
                 }
                 FILTER.AMIIBO_SERIES -> {
-                    val amiiboSeries = amiibo.amiiboSeries
-                    if (null != amiiboSeries && Amiibo.matchesGameSeriesFilter(
-                            amiibo.gameSeries, settings!!.getFilter(FILTER.GAME_SERIES)
-                        ) && Amiibo.matchesCharacterFilter(
-                            amiibo.character, settings!!.getFilter(FILTER.CHARACTER)
-                        ) && Amiibo.matchesAmiiboTypeFilter(
-                            amiibo.amiiboType, settings!!.getFilter(FILTER.AMIIBO_TYPE)
-                        )
-                    ) {
-                        if (amiiboSeries.name == filter) items.add(amiibo.id)
+                    amiibo.amiiboSeries?.let {
+                        if (Amiibo.matchesGameSeriesFilter(
+                                amiibo.gameSeries, settings!!.getFilter(FILTER.GAME_SERIES)
+                            ) && Amiibo.matchesCharacterFilter(
+                                amiibo.character, settings!!.getFilter(FILTER.CHARACTER)
+                            ) && Amiibo.matchesAmiiboTypeFilter(
+                                amiibo.amiiboType, settings!!.getFilter(FILTER.AMIIBO_TYPE)
+                            )
+                        ) {
+                            if (it.name == filter) items.add(amiibo.id)
+                        }
                     }
                 }
                 FILTER.AMIIBO_TYPE -> {
-                    val amiiboType = amiibo.amiiboType
-                    if (null != amiiboType && Amiibo.matchesGameSeriesFilter(
-                            amiibo.gameSeries, settings!!.getFilter(FILTER.GAME_SERIES)
-                        ) && Amiibo.matchesCharacterFilter(
-                            amiibo.character, settings!!.getFilter(FILTER.CHARACTER)
-                        ) && Amiibo.matchesAmiiboSeriesFilter(
-                            amiibo.amiiboSeries, settings!!.getFilter(FILTER.AMIIBO_SERIES)
-                        )
-                    ) {
-                        if (amiiboType.name == filter) items.add(amiibo.id)
+                    amiibo.amiiboType?.let {
+                        if (Amiibo.matchesGameSeriesFilter(
+                                amiibo.gameSeries, settings!!.getFilter(FILTER.GAME_SERIES)
+                            ) && Amiibo.matchesCharacterFilter(
+                                amiibo.character, settings!!.getFilter(FILTER.CHARACTER)
+                            ) && Amiibo.matchesAmiiboSeriesFilter(
+                                amiibo.amiiboSeries, settings!!.getFilter(FILTER.AMIIBO_SERIES)
+                            )
+                        ) {
+                            if (it.name == filter) items.add(amiibo.id)
+                        }
                     }
                 }
                 FILTER.GAME_TITLES -> if (Amiibo.matchesGameSeriesFilter(
@@ -887,12 +889,9 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                         amiibo.amiiboType, settings!!.getFilter(FILTER.AMIIBO_TYPE)
                     )
                 ) {
-                    if (null != gamesManager) items.addAll(
-                        gamesManager.getGameAmiiboIds(
-                            amiiboManager,
-                            filter
-                        )
-                    )
+                    gamesManager?.let {
+                        items.addAll(it.getGameAmiiboIds(amiiboManager, filter))
+                    }
                 }
             }
         }
@@ -905,16 +904,17 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
         settings?.amiiboManager ?: return true
         val items: ArrayList<String> = arrayListOf()
         settings?.amiiboManager?.amiibos?.values?.forEach {
-            val character = it.character
-            if (null != character && Amiibo.matchesGameSeriesFilter(
-                    it.gameSeries, settings!!.getFilter(FILTER.GAME_SERIES)
-                ) && Amiibo.matchesAmiiboSeriesFilter(
-                    it.amiiboSeries, settings!!.getFilter(FILTER.AMIIBO_SERIES)
-                ) && Amiibo.matchesAmiiboTypeFilter(
-                    it.amiiboType, settings!!.getFilter(FILTER.AMIIBO_TYPE)
-                )
-            ) {
-                items.add(character.name)
+            it.character?.let { character ->
+                if (Amiibo.matchesGameSeriesFilter(
+                        it.gameSeries, settings!!.getFilter(FILTER.GAME_SERIES)
+                    ) && Amiibo.matchesAmiiboSeriesFilter(
+                        it.amiiboSeries, settings!!.getFilter(FILTER.AMIIBO_SERIES)
+                    ) && Amiibo.matchesAmiiboTypeFilter(
+                        it.amiiboType, settings!!.getFilter(FILTER.AMIIBO_TYPE)
+                    )
+                ) {
+                    items.add(character.name)
+                }
             }
         }
         items.sorted().forEach {
@@ -939,16 +939,17 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
         settings?.amiiboManager ?: return false
         val items: ArrayList<String> = arrayListOf()
         settings?.amiiboManager?.amiibos?.values?.forEach {
-            val gameSeries = it.gameSeries
-            if (null != gameSeries && Amiibo.matchesCharacterFilter(
-                    it.character, settings!!.getFilter(FILTER.CHARACTER)
-                ) && Amiibo.matchesAmiiboSeriesFilter(
-                    it.amiiboSeries, settings!!.getFilter(FILTER.AMIIBO_SERIES)
-                ) && Amiibo.matchesAmiiboTypeFilter(
-                    it.amiiboType, settings!!.getFilter(FILTER.AMIIBO_TYPE)
-                )
-            ) {
-                items.add(gameSeries.name)
+            it.gameSeries?.let { gameSeries ->
+                if (Amiibo.matchesCharacterFilter(
+                        it.character, settings!!.getFilter(FILTER.CHARACTER)
+                    ) && Amiibo.matchesAmiiboSeriesFilter(
+                        it.amiiboSeries, settings!!.getFilter(FILTER.AMIIBO_SERIES)
+                    ) && Amiibo.matchesAmiiboTypeFilter(
+                        it.amiiboType, settings!!.getFilter(FILTER.AMIIBO_TYPE)
+                    )
+                ) {
+                    items.add(gameSeries.name)
+                }
             }
         }
         items.sorted().forEach {
@@ -973,16 +974,17 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
         val amiiboManager = settings?.amiiboManager ?: return true
         val items: ArrayList<String> = arrayListOf()
         amiiboManager.amiibos.values.forEach {
-            val amiiboSeries = it.amiiboSeries
-            if (null != amiiboSeries && Amiibo.matchesGameSeriesFilter(
-                    it.gameSeries, settings!!.getFilter(FILTER.GAME_SERIES)
-                ) && Amiibo.matchesCharacterFilter(
-                    it.character, settings!!.getFilter(FILTER.CHARACTER)
-                ) && Amiibo.matchesAmiiboTypeFilter(
-                    it.amiiboType, settings!!.getFilter(FILTER.AMIIBO_TYPE)
-                )
-            ) {
-                items.add(amiiboSeries.name)
+            it.amiiboSeries?.let { amiiboSeries ->
+                if (Amiibo.matchesGameSeriesFilter(
+                        it.gameSeries, settings!!.getFilter(FILTER.GAME_SERIES)
+                    ) && Amiibo.matchesCharacterFilter(
+                        it.character, settings!!.getFilter(FILTER.CHARACTER)
+                    ) && Amiibo.matchesAmiiboTypeFilter(
+                        it.amiiboType, settings!!.getFilter(FILTER.AMIIBO_TYPE)
+                    )
+                ) {
+                    items.add(amiiboSeries.name)
+                }
             }
         }
         items.sorted().forEach {
@@ -1007,16 +1009,17 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
         val amiiboManager = settings?.amiiboManager ?: return true
         val items: ArrayList<AmiiboType> = arrayListOf()
         amiiboManager.amiibos.values.forEach {
-            val amiiboType = it.amiiboType
-            if (null != amiiboType && Amiibo.matchesGameSeriesFilter(
-                    it.gameSeries, settings!!.getFilter(FILTER.GAME_SERIES)
-                ) && Amiibo.matchesCharacterFilter(
-                    it.character, settings!!.getFilter(FILTER.CHARACTER)
-                ) && Amiibo.matchesAmiiboSeriesFilter(
-                    it.amiiboSeries, settings!!.getFilter(FILTER.AMIIBO_SERIES)
-                )
-            ) {
-                items.add(amiiboType)
+            it.amiiboType?.let { amiiboType ->
+                if (Amiibo.matchesGameSeriesFilter(
+                        it.gameSeries, settings!!.getFilter(FILTER.GAME_SERIES)
+                    ) && Amiibo.matchesCharacterFilter(
+                        it.character, settings!!.getFilter(FILTER.CHARACTER)
+                    ) && Amiibo.matchesAmiiboSeriesFilter(
+                        it.amiiboSeries, settings!!.getFilter(FILTER.AMIIBO_SERIES)
+                    )
+                ) {
+                    items.add(amiiboType)
+                }
             }
         }
         items.sorted().forEach {
@@ -1080,16 +1083,14 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
         backup.isEnabled = available
         val delete = toolbar.menu.findItem(R.id.mnu_delete)
         delete.isVisible = null != amiiboFile
-        if (null != amiiboFile) {
-            if (null != amiiboFile.docUri) {
-                val relativeDocument = Storage.getRelativeDocument(amiiboFile.docUri?.uri)
+        amiiboFile?.let {
+            it.docUri?.let { doc ->
+                val relativeDocument = Storage.getRelativeDocument(doc.uri)
                 cached = relativeDocument.startsWith("/Foomiibo/")
-            } else if (null != amiiboFile.filePath) {
-                var relativeFile = Storage.getRelativePath(
-                    amiiboFile.filePath, prefs.preferEmulated()
-                )
-                if (null != prefs.browserRootFolder()) {
-                    relativeFile = relativeFile.replace(prefs.browserRootFolder()!!, "")
+            } ?: it.filePath?.let { path ->
+                var relativeFile = Storage.getRelativePath(path, prefs.preferEmulated())
+                prefs.browserRootFolder()?.let { root ->
+                    relativeFile = relativeFile.replace(root, "")
                 }
                 cached = relativeFile.startsWith("/Foomiibo/")
             }
@@ -1302,24 +1303,22 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
     }
 
     private fun getGameCompatibility(txtUsage: TextView, tagData: ByteArray?) {
-        val gamesManager = settings?.gamesManager
-        val label = findViewById<TextView>(R.id.txtUsageLabel)
-        if (null != gamesManager) {
-            label.isVisible = true
-            CoroutineScope(Dispatchers.Default).launch {
-                val usage: String? = try {
-                    val amiiboId = Amiibo.dataToId(tagData)
-                    gamesManager.getGamesCompatibility(amiiboId)
-                } catch (ex: Exception) {
-                    Debug.warn(ex)
-                    null
+        findViewById<TextView>(R.id.txtUsageLabel).run {
+            settings?.gamesManager?.let {
+                isVisible = true
+                CoroutineScope(Dispatchers.Default).launch {
+                    val usage: String? = try {
+                        val amiiboId = Amiibo.dataToId(tagData)
+                        it.getGamesCompatibility(amiiboId)
+                    } catch (ex: Exception) {
+                        Debug.warn(ex)
+                        null
+                    }
+                    withContext(Dispatchers.Main) {
+                        txtUsage.text = usage
+                    }
                 }
-                withContext(Dispatchers.Main) {
-                    txtUsage.text = usage
-                }
-            }
-        } else {
-            label.isGone = true
+            } ?: { isGone = true }
         }
     }
 
@@ -1334,13 +1333,14 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
     }
 
     val isDocumentStorage: Boolean
-        get() = Version.isLollipop
-                && null != settings?.browserRootDocument && try {
-            DocumentFile.fromTreeUri(this, settings!!.browserRootDocument!!)
-            true
-        } catch (iae: IllegalArgumentException) {
-            false
-        }
+        get() = Version.isLollipop && settings?.browserRootDocument?.let {
+            try {
+                DocumentFile.fromTreeUri(this, it)
+                true
+            } catch (iae: IllegalArgumentException) {
+                false
+            }
+        } ?: false
 
     @Throws(ActivityNotFoundException::class)
     private fun onDocumentRequested() {
@@ -1403,7 +1403,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
             } else {
                 val internal = prefs.preferEmulated()
                 val storage = Storage.getFile(internal)
-                if (null != storage && storage.exists() && Storage.hasPhysicalStorage()) {
+                if (storage?.exists() == true && Storage.hasPhysicalStorage()) {
                     switchStorageRoot?.isVisible = true
                     switchStorageRoot?.setText(if (internal) R.string.emulated_storage_root else R.string.physical_storage_root)
                     switchStorageRoot?.setOnClickListener {
@@ -1647,8 +1647,8 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                 prefsDrawer?.openDrawer(GravityCompat.START)
             }
         } else if (item.itemId == R.id.install_update) {
-            if (null != appUpdate) updateManager?.startPlayUpdateFlow(appUpdate)
-            if (null != updateUrl) updateManager?.requestDownload(updateUrl)
+            appUpdate?.let { updateManager?.startPlayUpdateFlow(it) }
+            updateUrl?.let { updateManager?.requestDownload(it) }
         }
         return onMenuItemClicked(item)
     }
@@ -1676,10 +1676,8 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
     override fun onAmiiboRebind(itemView: View, amiiboFile: AmiiboFile?) {
         if (amiiboFile?.filePath == null) return
         try {
-            val tagData = if (null != amiiboFile.data)
-                amiiboFile.data
-            else
-                TagArray.getValidatedFile(keyManager, amiiboFile.filePath)
+            val tagData = amiiboFile.data
+                ?: TagArray.getValidatedFile(keyManager, amiiboFile.filePath)
             if (settings?.amiiboView != VIEW.IMAGE.value) {
                 onCreateToolbarMenu(
                     itemView.findViewById<View>(R.id.menu_options).findViewById(R.id.toolbar),
@@ -1940,11 +1938,8 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
         prefs.browserRootFolder(Storage.getRelativePath(
             newBrowserSettings.browserRootFolder, prefs.preferEmulated()
         ))
-        prefs.browserRootDocument(
-            if (null != newBrowserSettings.browserRootDocument)
-                newBrowserSettings.browserRootDocument.toString()
-            else null
-        )
+        prefs.browserRootDocument(newBrowserSettings.browserRootDocument?.toString())
+
         prefs.query(newBrowserSettings.query)
         prefs.sort(newBrowserSettings.sort)
         prefs.filterCharacter(newBrowserSettings.getFilter(FILTER.CHARACTER))
@@ -1960,8 +1955,8 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
     }
 
     private fun onSortChanged() {
-        if (null != settings) {
-            when (SORT.valueOf(settings!!.sort)) {
+        settings?.let {
+            when (SORT.valueOf(it.sort)) {
                 SORT.ID -> menuSortId?.isChecked = true
                 SORT.NAME -> menuSortName?.isChecked = true
                 SORT.CHARACTER -> menuSortCharacter?.isChecked = true
@@ -2066,15 +2061,13 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
     }
 
     private fun deleteAmiiboFile(amiiboFile: AmiiboFile?) {
-        if (null != amiiboFile?.filePath) {
-            val relativeFile = Storage.getRelativePath(
-                amiiboFile.filePath, prefs.preferEmulated()
-            )
+        amiiboFile?.filePath?.let {
+            val relativeFile = Storage.getRelativePath(it, prefs.preferEmulated())
             AlertDialog.Builder(this)
                 .setMessage(getString(R.string.warn_delete_file, relativeFile))
                 .setPositiveButton(R.string.delete) { dialog: DialogInterface, _: Int ->
                     amiiboContainer?.isGone = true
-                    amiiboFile.filePath?.delete()
+                    it.delete()
                     IconifiedSnackbar(this, viewPager).buildSnackbar(
                         getString(R.string.delete_file, relativeFile), Snackbar.LENGTH_SHORT
                     ).show()
@@ -2083,19 +2076,17 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                 }
                 .setNegativeButton(R.string.cancel) { dialog: DialogInterface, _: Int -> dialog.dismiss() }
                 .show()
-        } else {
-            Toasty(this).Short(R.string.delete_missing)
-        }
+        } ?: Toasty(this).Short(R.string.delete_missing)
     }
 
     private fun deleteAmiiboDocument(amiiboFile: AmiiboFile?) {
-        if (null != amiiboFile?.docUri) {
-            val relativeDocument = Storage.getRelativeDocument(amiiboFile.docUri!!.uri)
+        amiiboFile?.docUri?.let {
+            val relativeDocument = Storage.getRelativeDocument(it.uri)
             AlertDialog.Builder(this)
                 .setMessage(getString(R.string.warn_delete_file, relativeDocument))
                 .setPositiveButton(R.string.delete) { dialog: DialogInterface, _: Int ->
                     amiiboContainer?.isGone = true
-                    amiiboFile.docUri?.delete()
+                    it.delete()
                     IconifiedSnackbar(this, viewPager).buildSnackbar(
                         getString(R.string.delete_file, relativeDocument), Snackbar.LENGTH_SHORT
                     ).show()
@@ -2104,9 +2095,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                 }
                 .setNegativeButton(R.string.cancel) { dialog: DialogInterface, _: Int -> dialog.dismiss() }
                 .show()
-        } else {
-            deleteAmiiboFile(amiiboFile)
-        }
+        } ?: deleteAmiiboFile(amiiboFile)
     }
 
     private val imageTarget: CustomTarget<Bitmap?> = object : CustomTarget<Bitmap?>() {
@@ -2151,7 +2140,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
             var amiiboType = ""
             var gameSeries = ""
             // String character = "";
-            val amiiboImageUrl: String?
+            var amiiboImageUrl: String? = null
             if (tagData?.isNotEmpty() == true) {
                 try {
                     amiiboId = Amiibo.dataToId(tagData)
@@ -2159,31 +2148,34 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                     Debug.info(e)
                 }
             }
-            if (amiiboId == -1L) {
-                tagInfo = getString(R.string.read_error)
-                amiiboImageUrl = null
-            } else if (amiiboId == 0L) {
-                tagInfo = getString(R.string.blank_tag)
-                amiiboImageUrl = null
-            } else {
-                var amiibo: Amiibo? = null
-                val amiiboManager = settings?.amiiboManager
-                if (null != amiiboManager) {
-                    amiibo = amiiboManager.amiibos[amiiboId]
-                    if (null == amiibo)
-                        amiibo = Amiibo(amiiboManager, amiiboId, null, null)
+            when (amiiboId) {
+                -1L -> {
+                    tagInfo = getString(R.string.read_error)
+                    amiiboImageUrl = null
                 }
-                if (null != amiibo) {
-                    amiiboHexId = Amiibo.idToHex(amiibo.id)
-                    amiiboImageUrl = amiibo.imageUrl
-                    if (null != amiibo.name) amiiboName = amiibo.name!!
-                    if (null != amiibo.amiiboSeries) amiiboSeries = amiibo.amiiboSeries!!.name
-                    if (null != amiibo.amiiboType) amiiboType = amiibo.amiiboType!!.name
-                    if (null != amiibo.gameSeries) gameSeries = amiibo.gameSeries!!.name
-                } else {
-                    amiiboHexId = Amiibo.idToHex(amiiboId)
-                    tagInfo = "ID: $amiiboHexId"
-                    amiiboImageUrl = Amiibo.getImageUrl(amiiboId)
+                0L -> {
+                    tagInfo = getString(R.string.blank_tag)
+                    amiiboImageUrl = null
+                }
+                else -> {
+                    var amiibo: Amiibo? = null
+                    settings?.amiiboManager?.let {
+                        amiibo = it.amiibos[amiiboId]
+                        if (null == amiibo)
+                            amiibo = Amiibo(it, amiiboId, null, null)
+                    }
+                    amiibo?.let {
+                        amiiboHexId = Amiibo.idToHex(it.id)
+                        amiiboImageUrl = it.imageUrl
+                        it.name?.let { name -> amiiboName = name }
+                        it.amiiboSeries?.let { series -> amiiboSeries = series.name }
+                        it.amiiboType?.let { type -> amiiboType = type.name }
+                        it.gameSeries?.let { series -> gameSeries = series.name }
+                    } ?: {
+                        amiiboHexId = Amiibo.idToHex(amiiboId)
+                        tagInfo = "ID: $amiiboHexId"
+                        amiiboImageUrl = Amiibo.getImageUrl(amiiboId)
+                    }
                 }
             }
             val hasTagInfo = null != tagInfo
@@ -2217,14 +2209,14 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                 Debug.warn(ex)
             }
             if (hasSpoofData(amiiboHexId)) txtTagId?.isEnabled = false
-            if (null != imageAmiibo) {
-                imageAmiibo!!.isGone = true
-                GlideApp.with(imageAmiibo!!).clear(imageAmiibo!!)
+            imageAmiibo?.let {
+                it.isGone = true
+                GlideApp.with(it).clear(it)
                 if (!amiiboImageUrl.isNullOrEmpty()) {
-                    GlideApp.with(imageAmiibo!!).asBitmap().load(amiiboImageUrl).into(imageTarget)
+                    GlideApp.with(it).asBitmap().load(amiiboImageUrl).into(imageTarget)
                 }
                 val amiiboTagId = amiiboId
-                imageAmiibo!!.setOnClickListener {
+                it.setOnClickListener {
                     startActivity(Intent(
                         this@BrowserActivity, ImageActivity::class.java
                     ).putExtras(Bundle().apply {
@@ -2279,11 +2271,10 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
             val amiiboTitleStats = findViewById<TextView>(R.id.stats_amiibo_titles)
             val amiiboManager = settings!!.amiiboManager
             val hasAmiibo = null != amiiboManager
-            if (null != foomiiboSlider) {
-                val foomiiboStats = foomiiboSlider.findViewById<TextView>(R.id.divider_text)
+            foomiiboSlider?.let {
+                val foomiiboStats = it.findViewById<TextView>(R.id.divider_text)
                 foomiiboStats.text = getString(
-                    R.string.number_foomiibo,
-                    if (hasAmiibo) amiiboManager!!.amiibos.size else 0
+                    R.string.number_foomiibo, if (hasAmiibo) amiiboManager!!.amiibos.size else 0
                 )
             }
             characterStats.text = getString(
@@ -2381,44 +2372,41 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
             val size = settings?.amiiboFiles?.size ?: 0
             if (size <= 0) return@post
             currentFolderView?.gravity = Gravity.CENTER
-            val amiiboManager = settings?.amiiboManager
-            if (null != amiiboManager) {
+            settings?.amiiboManager?.also {
                 var count = 0
                 if (!settings?.query.isNullOrEmpty()) {
-                    val stats = getAdapterStats(amiiboManager)
+                    val stats = getAdapterStats(it)
                     currentFolderView?.text = getString(
                         R.string.amiibo_collected,
                         stats[0], stats[1], getQueryCount(settings?.query)
                     )
                 } else if (settings?.isFilterEmpty != true) {
-                    val stats = getAdapterStats(amiiboManager)
+                    val stats = getAdapterStats(it)
                     currentFolderView?.text = getString(
                         R.string.amiibo_collected,
                         stats[0], stats[1], filteredCount
                     )
                 } else {
-                    amiiboManager.amiibos.values.forEach { amiibo ->
-                        settings?.amiiboFiles?.forEach {
-                            if (amiibo.id == it?.id) count += 1
+                    it.amiibos.values.forEach { amiibo ->
+                        settings?.amiiboFiles?.forEach { amiiboFile ->
+                            if (amiibo.id == amiiboFile?.id) count += 1
                         }
                     }
                     currentFolderView?.text = getString(
                         R.string.amiibo_collected,
-                        size, count, amiiboManager.amiibos.size
+                        size, count, it.amiibos.size
                     )
                 }
-            } else {
-                currentFolderView?.text = getString(R.string.files_displayed, size)
-            }
+            } ?: { currentFolderView?.text = getString(R.string.files_displayed, size) }
         }
     }
 
     private fun setFolderText(textSettings: BrowserSettings?) {
-        if (null != textSettings) {
+        textSettings?.also {
             val relativePath: String = if (isDocumentStorage) {
-                Storage.getRelativeDocument(textSettings.browserRootDocument)
+                Storage.getRelativeDocument(it.browserRootDocument)
             } else {
-                val rootFolder = textSettings.browserRootFolder
+                val rootFolder = it.browserRootFolder
                 val relativeRoot = Storage.getRelativePath(
                     rootFolder, prefs.preferEmulated()
                 )
@@ -2427,9 +2415,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
             currentFolderView?.gravity = Gravity.CENTER_VERTICAL
             currentFolderView?.text = relativePath
             statsHandler.postDelayed({ setAmiiboStats() }, 3000)
-        } else {
-            setAmiiboStats()
-        }
+        } ?: { setAmiiboStats() }
     }
 
     private fun showFakeSnackbar(msg: String) {
@@ -2476,7 +2462,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
     private fun hideBrowserInterface() {
         val params = nfcFab.layoutParams as CoordinatorLayout.LayoutParams
         val behavior = params.behavior as FloatingActionButton.Behavior?
-        if (null != behavior) behavior.isAutoHideEnabled = false
+        behavior?.isAutoHideEnabled = false
         nfcFab.hide()
         hideBottomSheet()
     }
@@ -2485,7 +2471,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
         nfcFab.show()
         val params = nfcFab.layoutParams as CoordinatorLayout.LayoutParams
         val behavior = params.behavior as FloatingActionButton.Behavior?
-        if (null != behavior) behavior.isAutoHideEnabled = true
+        behavior?.isAutoHideEnabled = true
     }
 
     fun showDonationPanel() {
@@ -2657,9 +2643,9 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
     val onRequestInstall = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
     ) {
-        if (null != prefs.downloadUrl()) {
+        prefs.downloadUrl()?.let {
             if (packageManager.canRequestPackageInstalls())
-                updateManager?.installDownload(prefs.downloadUrl())
+                updateManager?.installDownload(it)
             prefs.remove(prefs.downloadUrl)
         }
     }
@@ -2681,7 +2667,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
         onBackPressedDispatcher.addCallback(object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
                 if (BuildConfig.WEAR_OS) {
-                    if (null != bottomSheet && BottomSheetBehavior.STATE_EXPANDED == bottomSheet?.state) {
+                    if (bottomSheet?.state == BottomSheetBehavior.STATE_EXPANDED) {
                         bottomSheet?.setState(BottomSheetBehavior.STATE_COLLAPSED)
                     } else if (amiiboContainer?.isVisible == true) {
                         amiiboContainer?.isGone = true
@@ -2694,7 +2680,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                     }
                 } else {
                     if (!closePrefsDrawer()) {
-                        if (null != bottomSheet && BottomSheetBehavior.STATE_EXPANDED == bottomSheet?.state) {
+                        if (bottomSheet?.state == BottomSheetBehavior.STATE_EXPANDED) {
                             bottomSheet?.setState(BottomSheetBehavior.STATE_COLLAPSED)
                         } else if (amiiboContainer?.isVisible == true) {
                             amiiboContainer?.isGone = true

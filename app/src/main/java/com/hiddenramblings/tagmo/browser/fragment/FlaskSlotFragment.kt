@@ -145,9 +145,9 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
                         }
 
                         override fun onFlaskStatusChanged(jsonObject: JSONObject?) {
-                            if (null != processDialog && processDialog!!.isShowing)
-                                processDialog!!.dismiss()
-                            serviceFlask!!.deviceAmiibo
+                            if (processDialog?.isShowing == true)
+                                processDialog?.dismiss()
+                            serviceFlask?.deviceAmiibo
                         }
 
                         override fun onFlaskListRetrieved(jsonArray: JSONArray) {
@@ -200,13 +200,13 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
                                     }
                                 }
                                 val adapter = flaskContent?.adapter as FlaskSlotAdapter?
-                                if (null != adapter) {
-                                    adapter.addFlaskAmiibo(flaskAmiibos)
+                                adapter?.apply {
+                                    addFlaskAmiibo(flaskAmiibos)
                                     withContext(Dispatchers.Main) {
-                                        adapter.notifyItemRangeInserted(
+                                        notifyItemRangeInserted(
                                             currentCount, flaskAmiibos.size
                                         )
-                                        currentCount = adapter.itemCount
+                                        currentCount = itemCount
                                     }
                                 }
                             }
@@ -312,8 +312,8 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
                         override fun onPuckActiveChanged(slot: Int) {
                             CoroutineScope(Dispatchers.IO).launch(Dispatchers.IO) {
                                 val adapter = flaskContent?.adapter as FlaskSlotAdapter?
-                                if (null != adapter) {
-                                    val amiibo = adapter.getItem(slot)
+                                adapter?.apply {
+                                    val amiibo = getItem(slot)
                                     getActiveAmiibo(amiibo, amiiboTile)
                                     if (bottomSheet?.state == BottomSheetBehavior.STATE_COLLAPSED)
                                         getActiveAmiibo(amiibo, amiiboCard)
@@ -683,8 +683,8 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
 
     private fun resetActiveSlot() {
         val adapter = flaskContent?.adapter as FlaskSlotAdapter?
-        if (null != adapter) {
-            val amiibo = adapter.getItem(0)
+        adapter?.apply {
+            val amiibo = getItem(0)
             if (amiibo is FlaskTag) {
                 serviceFlask?.setActiveAmiibo(
                     amiibo.name, String(TagArray.longToBytes(amiibo.id))
@@ -735,9 +735,9 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
                 amiiboHexId = Amiibo.idToHex(active.id)
                 amiiboName = active.name
                 amiiboImageUrl = active.imageUrl
-                if (null != active.amiiboSeries) amiiboSeries = active.amiiboSeries!!.name
-                if (null != active.amiiboType) amiiboType = active.amiiboType!!.name
-                if (null != active.gameSeries) gameSeries = active.gameSeries!!.name
+                active.amiiboSeries?.let { amiiboSeries = it.name }
+                active.amiiboType?.let { amiiboType = it.name }
+                active.gameSeries?.let { gameSeries = it.name }
                 setAmiiboInfoText(txtName, amiiboName)
                 setAmiiboInfoText(txtTagId, amiiboHexId)
                 setAmiiboInfoText(txtAmiiboSeries, amiiboSeries)
@@ -751,19 +751,21 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
             } else if (amiiboView === amiiboCard && null == amiiboImageUrl) {
                 imageAmiibo!!.setImageResource(0)
                 imageAmiibo.visibility = View.INVISIBLE
-            } else if (null != imageAmiibo) {
-                GlideApp.with(imageAmiibo).clear(imageAmiibo)
-                if (!amiiboImageUrl.isNullOrEmpty()) {
-                    GlideApp.with(imageAmiibo).asBitmap().load(amiiboImageUrl).into(
-                        if (amiiboView === amiiboCard) amiiboCardTarget else amiiboTileTarget
-                    )
-                }
-                imageAmiibo.setOnClickListener {
-                    startActivity(Intent(requireContext(), ImageActivity::class.java)
-                        .putExtras(Bundle().apply {
-                            putLong(NFCIntent.EXTRA_AMIIBO_ID, active!!.id)
-                        })
-                    )
+            } else {
+                imageAmiibo?.apply {
+                    GlideApp.with(this).clear(this)
+                    if (!amiiboImageUrl.isNullOrEmpty()) {
+                        GlideApp.with(this).asBitmap().load(amiiboImageUrl).into(
+                            if (amiiboView === amiiboCard) amiiboCardTarget else amiiboTileTarget
+                        )
+                    }
+                    setOnClickListener {
+                        startActivity(Intent(requireContext(), ImageActivity::class.java)
+                            .putExtras(Bundle().apply {
+                                putLong(NFCIntent.EXTRA_AMIIBO_ID, active!!.id)
+                            })
+                        )
+                    }
                 }
             }
         }
@@ -792,8 +794,8 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
                 }
                 if (Thread.currentThread().isInterrupted) return null
                 var selectedAmiibo: Amiibo? = null
-                if (null != amiiboManager) {
-                    for (amiibo in amiiboManager.amiibos.values) {
+                amiiboManager?.let {
+                    for (amiibo in it.amiibos.values) {
                         try {
                             val flaskTail = Amiibo.idToHex(amiibo.id)
                                 .substring(8, 16).toInt(16).toString(36)
@@ -828,11 +830,11 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
         }
         if (Thread.currentThread().isInterrupted) return null
         var selectedAmiibo: Amiibo? = null
-        if (null != amiiboManager) {
+        amiiboManager?.let {
             try {
                 val headData = ByteBuffer.wrap(tagData!!)
                 val amiiboId = headData.getLong(0x28)
-                selectedAmiibo = amiiboManager.amiibos[amiiboId]
+                selectedAmiibo = it.amiibos[amiiboId]
             } catch (e: Exception) {
                 Debug.info(e)
             }
@@ -871,10 +873,7 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
 
     @SuppressLint("MissingPermission", "NewApi")
     private fun scanBluetoothServices(deviceDialog: AlertDialog) {
-        mBluetoothAdapter =
-            if (null != mBluetoothAdapter)
-                mBluetoothAdapter
-            else bluetoothHandler?.getBluetoothAdapter(requireContext())
+        mBluetoothAdapter = mBluetoothAdapter ?: bluetoothHandler?.getBluetoothAdapter(requireContext())
         if (null == mBluetoothAdapter) {
             setBottomSheetHidden(true)
             Toasty(requireActivity()).Long(R.string.fail_bluetooth_adapter)
@@ -954,7 +953,7 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
             Toasty(requireActivity()).Long(R.string.fail_bluetooth_adapter)
             return
         }
-        if (null != deviceDialog && deviceDialog!!.isShowing) return
+        if (deviceDialog?.isShowing == true) return
         val view = this.layoutInflater.inflate(R.layout.dialog_devices, null) as LinearLayout
         view.findViewById<AppCompatButton>(R.id.purchase_flask).setOnClickListener {
             startActivity(Intent(
@@ -994,25 +993,22 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
     }
 
     private fun uploadAmiiboFile(amiiboFile: AmiiboFile?, complete: Boolean = true) {
-        if (null != amiiboFile) {
+        amiiboFile?.let { file ->
             var amiibo: Amiibo? = null
-            val amiiboManager = settings.amiiboManager
-            if (null != amiiboManager) {
+            settings.amiiboManager?.let {
                 try {
-                    val amiiboId = Amiibo.dataToId(amiiboFile.data)
-                    amiibo = amiiboManager.amiibos[amiiboId]
-                    if (null == amiibo) amiibo = Amiibo(amiiboManager, amiiboId, null, null)
+                    val amiiboId = Amiibo.dataToId(file.data)
+                    amiibo = it.amiibos[amiiboId]
+                    if (null == amiibo) amiibo = Amiibo(it, amiiboId, null, null)
                 } catch (e: Exception) {
                     Debug.warn(e)
                 }
             }
-            if (null != amiibo && null != amiiboFile.data) {
-                if (null != serviceFlask) serviceFlask!!.uploadAmiiboFile(
-                    amiiboFile.data!!, amiibo, complete
-                )
-                if (null != servicePuck) servicePuck!!.uploadSlotAmiibo(
-                    amiiboFile.data!!, flaskSlotCount.value - 1
-                )
+            amiibo?.let {
+                file.data?.let { data ->
+                    serviceFlask?.uploadAmiiboFile(data, it, complete)
+                    servicePuck?.uploadSlotAmiibo(data, flaskSlotCount.value - 1)
+                }
             }
         }
     }
@@ -1024,7 +1020,7 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
 
     private fun dismissSnackbarNotice(finite: Boolean = false) {
         if (finite) noticeState = STATE.NONE
-        if (null != statusBar && statusBar!!.isShown) statusBar!!.dismiss()
+        if (statusBar?.isShown == true) statusBar?.dismiss()
     }
 
     private fun showScanningNotice() {
@@ -1112,8 +1108,7 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
 
     fun disconnectService() {
         dismissSnackbarNotice(true)
-        if (null != serviceFlask) serviceFlask!!.disconnect()
-        if (null != servicePuck) servicePuck!!.disconnect() else stopGattService()
+        serviceFlask?.disconnect() ?: servicePuck?.disconnect() ?: stopGattService()
     }
 
     fun stopGattService() {
@@ -1133,31 +1128,22 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
 
     @SuppressLint("MissingPermission")
     private fun dismissGattDiscovery() {
-        mBluetoothAdapter =
-            if (null != mBluetoothAdapter)
-                mBluetoothAdapter
-            else bluetoothHandler?.getBluetoothAdapter(requireContext())
-        if (null != mBluetoothAdapter) {
+        mBluetoothAdapter = mBluetoothAdapter ?: bluetoothHandler?.getBluetoothAdapter(requireContext())
+        mBluetoothAdapter?.let {
             if (Version.isLollipop) {
-                if (null != scanCallbackFlaskLP) mBluetoothAdapter!!.bluetoothLeScanner.stopScan(
-                    scanCallbackFlaskLP
-                )
-                if (null != scanCallbackPuckLP) mBluetoothAdapter!!.bluetoothLeScanner.stopScan(
-                    scanCallbackPuckLP
-                )
+                scanCallbackFlaskLP?.let { scan -> it.bluetoothLeScanner.stopScan(scan) }
+                scanCallbackPuckLP?.let { scan -> it.bluetoothLeScanner.stopScan(scan) }
             } else @Suppress("DEPRECATION") {
-                if (null != scanCallbackFlask) mBluetoothAdapter!!.stopLeScan(scanCallbackFlask)
-                if (null != scanCallbackPuck) mBluetoothAdapter!!.stopLeScan(scanCallbackPuck)
+                scanCallbackFlask?.let { scan -> it.stopLeScan(scan) }
+                scanCallbackPuck?.let { scan -> it.stopLeScan(scan) }
             }
         }
     }
 
     private fun handleImageClicked(amiiboFile: AmiiboFile?) {
-        if (null != amiiboFile) {
+        amiiboFile?.let {
             this.startActivity(Intent(requireContext(), ImageActivity::class.java).apply {
-                putExtras(Bundle().apply {
-                    putLong(NFCIntent.EXTRA_AMIIBO_ID, amiiboFile.id)
-                })
+                putExtras(Bundle().apply { putLong(NFCIntent.EXTRA_AMIIBO_ID, it.id) })
             })
         }
     }
@@ -1165,18 +1151,13 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
     private val isBluetoothEnabled: Boolean
         get() {
             if (null != mBluetoothAdapter && mBluetoothAdapter?.isEnabled == true) return true
-            if (null != context) {
-                bluetoothHandler = if (null != bluetoothHandler)
-                    bluetoothHandler
-                else BluetoothHandler(
-                    requireContext(),
-                    requireActivity().activityResultRegistry,
+            context?.run {
+                bluetoothHandler = bluetoothHandler ?: BluetoothHandler(
+                    this, requireActivity().activityResultRegistry,
                     this@FlaskSlotFragment
                 )
                 bluetoothHandler?.requestPermissions(requireActivity())
-            } else {
-                fragmentHandler.postDelayed({ isBluetoothEnabled }, 125)
-            }
+            } ?: fragmentHandler.postDelayed({ isBluetoothEnabled }, 125)
             return false
         }
 
@@ -1203,7 +1184,7 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
     override fun onResume() {
         isFragmentVisible = true
         super.onResume()
-        if (null != statusBar && statusBar!!.isShown) return
+        if (statusBar?.isShown == true) return
         fragmentHandler.postDelayed({
             when (noticeState) {
                 STATE.SCANNING, STATE.TIMEOUT -> {
@@ -1226,17 +1207,13 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
             toolbar?.menu?.findItem(R.id.mnu_backup)?.isVisible = false
             toolbar?.setOnMenuItemClickListener { item: MenuItem ->
                 if (item.itemId == R.id.mnu_activate) {
-                    if (null != serviceFlask) {
-                        serviceFlask!!.setActiveAmiibo(
-                            amiibo.name, String(TagArray.longToBytes(amiibo.id))
-                        )
-                    }
-                    if (null != servicePuck) {
-                        servicePuck!!.setActiveSlot(position)
-                    }
+                    serviceFlask?.setActiveAmiibo(
+                        amiibo.name, String(TagArray.longToBytes(amiibo.id))
+                    )
+                    servicePuck?.setActiveSlot(position)
                     return@setOnMenuItemClickListener true
                 } else if (item.itemId == R.id.mnu_delete) {
-                    serviceFlask!!.deleteAmiibo(
+                    serviceFlask?.deleteAmiibo(
                         amiibo.name, String(TagArray.longToBytes(amiibo.id))
                     )
                     bottomSheet?.state = BottomSheetBehavior.STATE_COLLAPSED
@@ -1244,32 +1221,22 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
                 }
                 false
             }
-        } else if (null != amiibo) {
+        } else amiibo?.let {
             toolbar?.menu?.findItem(R.id.mnu_backup)?.isVisible = true
             toolbar?.setOnMenuItemClickListener { item: MenuItem ->
                 when (item.itemId) {
                     R.id.mnu_activate -> {
-                        if (null != serviceFlask) {
-                            serviceFlask!!.setActiveAmiibo(
-                                amiibo.name, amiibo.flaskTail
-                            )
-                        }
-                        if (null != servicePuck) {
-                            servicePuck!!.setActiveSlot(position)
-                        }
+                        serviceFlask?.setActiveAmiibo(it.name, it.flaskTail)
+                        servicePuck?.setActiveSlot(position)
                         return@setOnMenuItemClickListener true
                     }
                     R.id.mnu_delete -> {
-                        serviceFlask!!.deleteAmiibo(
-                            amiibo.name, amiibo.flaskTail
-                        )
+                        serviceFlask?.deleteAmiibo(it.name, it.flaskTail)
                         bottomSheet?.state = BottomSheetBehavior.STATE_COLLAPSED
                         return@setOnMenuItemClickListener true
                     }
                     R.id.mnu_backup -> {
-                        serviceFlask!!.downloadAmiibo(
-                            amiibo.name, amiibo.flaskTail
-                        )
+                        serviceFlask?.downloadAmiibo(it.name, it.flaskTail)
                         bottomSheet?.state = BottomSheetBehavior.STATE_COLLAPSED
                         return@setOnMenuItemClickListener true
                     }
@@ -1280,11 +1247,9 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
     }
 
     override fun onAmiiboImageClicked(amiibo: Amiibo?) {
-        if (null != amiibo) {
+        amiibo?.let {
             this.startActivity(Intent(requireContext(), ImageActivity::class.java)
-                .putExtras(Bundle().apply {
-                    putLong(NFCIntent.EXTRA_AMIIBO_ID, amiibo.id)
-                })
+                .putExtras(Bundle().apply { putLong(NFCIntent.EXTRA_AMIIBO_ID, it.id) })
             )
         }
     }

@@ -93,9 +93,8 @@ class JSONExecutor(activity: Activity, server: String, path: String) {
                     ).use { streamReader ->
                         val responseStrBuilder = StringBuilder()
                         var inputStr: String?
-                        while (null != streamReader.readLine()
-                                .also { inputStr = it }
-                        ) responseStrBuilder.append(inputStr)
+                        while (null != streamReader.readLine().also { inputStr = it })
+                            responseStrBuilder.append(inputStr)
                         listener?.onResults(responseStrBuilder.toString())
                         conn.disconnect()
                     }

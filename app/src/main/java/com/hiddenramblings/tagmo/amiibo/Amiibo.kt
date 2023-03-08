@@ -175,30 +175,23 @@ open class Amiibo : Comparable<Amiibo>, Parcelable {
         }
 
         fun matchesCharacterFilter(character: Character?, characterFilter: String): Boolean {
-            return if (null != character) {
-                characterFilter.isEmpty() || character.name == characterFilter
-            } else true
+            return character?.let { characterFilter.isEmpty() || it.name == characterFilter }
+                ?: true
         }
 
         fun matchesGameSeriesFilter(gameSeries: GameSeries?, gameSeriesFilter: String): Boolean {
-            return if (null != gameSeries) {
-                gameSeriesFilter.isEmpty() || gameSeries.name == gameSeriesFilter
-            } else true
+            return gameSeries?.let { gameSeriesFilter.isEmpty() || it.name == gameSeriesFilter }
+                ?: true
         }
 
-        fun matchesAmiiboSeriesFilter(
-            amiiboSeries: AmiiboSeries?,
-            amiiboSeriesFilter: String
-        ): Boolean {
-            return if (null != amiiboSeries) {
-                amiiboSeriesFilter.isEmpty() || amiiboSeries.name == amiiboSeriesFilter
-            } else true
+        fun matchesAmiiboSeriesFilter(amiiboSeries: AmiiboSeries?, amiiboSeriesFilter: String): Boolean {
+            return amiiboSeries?.let { amiiboSeriesFilter.isEmpty() || it.name == amiiboSeriesFilter }
+                ?: true
         }
 
         fun matchesAmiiboTypeFilter(amiiboType: AmiiboType?, amiiboTypeFilter: String): Boolean {
-            return if (null != amiiboType) {
-                amiiboTypeFilter.isEmpty() || amiiboType.name == amiiboTypeFilter
-            } else true
+            return amiiboType?.let { amiiboTypeFilter.isEmpty() || it.name == amiiboTypeFilter }
+                ?: true
         }
 
         @JvmField

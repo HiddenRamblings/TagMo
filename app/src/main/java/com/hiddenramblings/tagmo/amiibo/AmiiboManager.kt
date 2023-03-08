@@ -318,11 +318,10 @@ class AmiiboManager {
             val amiiboFiles = ArrayList<AmiiboFile?>()
             val files = rootFolder?.listFiles { _: File?, name: String -> binFileMatches(name) }
             if (!files.isNullOrEmpty()) {
-                files.forEach {
+                files.forEach { file ->
                     try {
-                        TagArray.getValidatedFile(keyManager, it).also { data ->
-                            if (null != data)
-                                amiiboFiles.add(AmiiboFile(it, Amiibo.dataToId(data), data))
+                        TagArray.getValidatedFile(keyManager, file).also { data ->
+                            data?.let { amiiboFiles.add(AmiiboFile(file, Amiibo.dataToId(it), it)) }
                         }
                     } catch (e: Exception) {
                         Debug.info(e)
@@ -347,12 +346,12 @@ class AmiiboManager {
             val amiiboFiles = ArrayList<AmiiboFile?>()
             val uris = context?.let { AmiiboDocument(it).listFiles(rootFolder.uri, recursiveFiles) }
             if (uris.isNullOrEmpty()) return amiiboFiles
-            uris.forEach {
+            uris.forEach { uri ->
                 try {
-                    TagArray.getValidatedDocument(keyManager, it).also { data ->
-                        if (null != data) {
+                    TagArray.getValidatedDocument(keyManager, uri).also { data ->
+                        data?.let {
                             amiiboFiles.add(AmiiboFile(
-                                DocumentFile.fromSingleUri(context, it), Amiibo.dataToId(data), data
+                                DocumentFile.fromSingleUri(context, uri), Amiibo.dataToId(it), it
                             ))
                         }
                     }

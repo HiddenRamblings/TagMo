@@ -44,10 +44,10 @@ class JoyConFragment : DialogFragment(), BluetoothListener {
     private val isBluetoothEnabled: Unit
         get() {
             if (null != bluetoothHelper) return
-            bluetoothHandler = if (null != bluetoothHandler) bluetoothHandler else BluetoothHandler(
+            bluetoothHandler = bluetoothHandler ?: BluetoothHandler(
                 requireContext(), requireActivity().activityResultRegistry, this@JoyConFragment
             )
-            bluetoothHandler!!.requestPermissions(requireActivity())
+            bluetoothHandler?.requestPermissions(requireActivity())
         }
 
     private fun delayedBluetoothEnable() {
@@ -78,8 +78,8 @@ class JoyConFragment : DialogFragment(), BluetoothListener {
                 break
             }
         }
-        if (null != adapter && hasProController) {
-            adapter.bondedDevices.forEach {
+        if (hasProController) {
+            adapter?.bondedDevices?.forEach {
                 if (it.name == "Pro Controller") {
                     bluetoothHelper = BluetoothHelper()
                     bluetoothHelper!!.register(requireContext(), object : StateChangedCallback {
@@ -113,10 +113,8 @@ class JoyConFragment : DialogFragment(), BluetoothListener {
     }
 
     override fun onCancel(dialog: DialogInterface) {
-        if (null != bluetoothHelper) {
-            bluetoothHelper!!.unregister(requireContext())
-            bluetoothHelper = null
-        }
+        bluetoothHelper?.unregister(requireContext())
+        bluetoothHelper = null
         super.onCancel(dialog)
     }
 

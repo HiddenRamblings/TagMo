@@ -155,8 +155,8 @@ class WriteTagAdapter(private val settings: BrowserSettings?) :
         holder.imageAmiibo?.setOnClickListener {
             if (settings!!.amiiboView == VIEW.IMAGE.value)
                 handleClickEvent(holder, clickPosition)
-            else if (null != listener)
-                listener!!.onAmiiboImageClicked(holder.amiiboFile)
+            else
+                listener?.onAmiiboImageClicked(holder.amiiboFile)
         }
         holder.bind(getItem(clickPosition)!!)
         setIsHighlighted(holder, amiiboList.contains(holder.amiiboFile))
@@ -179,18 +179,25 @@ class WriteTagAdapter(private val settings: BrowserSettings?) :
             val tempList: ArrayList<AmiiboFile> = arrayListOf()
             val queryText = settings?.query!!.trim { it <= ' ' }.lowercase(Locale.getDefault())
             val amiiboManager = settings.amiiboManager
-            amiiboFiles.forEach {
-                var add = false
-                if (null != amiiboManager) {
-                    var amiibo = amiiboManager.amiibos[it?.id]
-                    if (null == amiibo) amiibo = Amiibo(amiiboManager, it!!.id, null, null)
-                    add = settings.amiiboContainsQuery(amiibo, queryText)
+            amiiboFiles.forEach { amiiboFile ->
+                amiiboFile?.let { file ->
+                    var add = false
+                    amiiboManager?.let {
+                        var amiibo = it.amiibos[file.id]
+                        if (null == amiibo)
+                            amiibo = Amiibo(it, file.id, null, null)
+                        add = settings.amiiboContainsQuery(amiibo, queryText)
+                    }
+                    if (!add) {
+                        file.docUri?.let { uri ->
+                            add = pathContainsQuery(uri.toString(), queryText)
+                        }
+                        file.filePath?.let { path ->
+                            add = pathContainsQuery(path.absolutePath, queryText)
+                        }
+                    }
+                    if (add) tempList.add(file)
                 }
-                if (!add && null != it?.docUri) add =
-                    pathContainsQuery(it.docUri.toString(), queryText)
-                if (!add && null != it?.filePath) add =
-                    pathContainsQuery(it.filePath!!.absolutePath, queryText)
-                if (add) tempList.add(it!!)
             }
             filterResults.count = tempList.size
             filterResults.values = tempList
@@ -206,8 +213,7 @@ class WriteTagAdapter(private val settings: BrowserSettings?) :
         override fun publishResults(charSequence: CharSequence?, filterResults: FilterResults) {
             if (filteredData === filterResults.values) return
             filteredData = filterResults.values as ArrayList<AmiiboFile?>
-            if (null != settings)
-                Collections.sort(filteredData, AmiiboFileComparator(settings))
+            settings?.let { Collections.sort(filteredData, AmiiboFileComparator(it)) }
             notifyDataSetChanged()
         }
     }
@@ -270,31 +276,30 @@ class WriteTagAdapter(private val settings: BrowserSettings?) :
             var amiiboImageUrl: String? = null
             val amiiboId = item?.id
             var amiibo: Amiibo? = null
-            val amiiboManager = settings!!.amiiboManager
-            if (null != amiiboManager) {
-                amiibo = amiiboManager.amiibos[amiiboId]
+            settings?.amiiboManager?.let {
+                amiibo = it.amiibos[amiiboId]
                 if (null == amiibo && null != amiiboId)
-                    amiibo = Amiibo(amiiboManager, amiiboId, null, null)
+                    amiibo = Amiibo(it, amiiboId, null, null)
             }
-            if (null != amiibo) {
-                amiiboHexId = Amiibo.idToHex(amiibo.id)
-                amiiboImageUrl = amiibo.imageUrl
-                if (null != amiibo.name) amiiboName = amiibo.name!!
-                if (null != amiibo.amiiboSeries) amiiboSeries = amiibo.amiiboSeries!!.name
-                if (null != amiibo.amiiboType) amiiboType = amiibo.amiiboType!!.name
-                if (null != amiibo.gameSeries) gameSeries = amiibo.gameSeries!!.name
-            } else if (null != amiiboId) {
-                tagInfo = "ID: " + Amiibo.idToHex(amiiboId)
-                amiiboImageUrl = Amiibo.getImageUrl(amiiboId)
+            amiibo?.let {
+                amiiboHexId = Amiibo.idToHex(it.id)
+                amiiboImageUrl = it.imageUrl
+                it.name?.let { name -> amiiboName = name }
+                it.amiiboSeries?.let { series -> amiiboSeries = series.name }
+                it.amiiboType?.let { type -> amiiboType = type.name }
+                it.gameSeries?.let { series -> gameSeries = series.name }
+            } ?: amiiboId?.let {
+                tagInfo = "ID: " + Amiibo.idToHex(it)
+                amiiboImageUrl = Amiibo.getImageUrl(it)
             }
-            if (null != imageAmiibo) {
-                GlideApp.with(imageAmiibo!!).clear(imageAmiibo!!)
+            imageAmiibo?.let {
+                GlideApp.with(it).clear(it)
                 if (!amiiboImageUrl.isNullOrEmpty())
-                    GlideApp.with(imageAmiibo!!).asBitmap().load(amiiboImageUrl).into(target)
+                    GlideApp.with(it).asBitmap().load(amiiboImageUrl).into(target)
             }
-            val query = settings.query?.lowercase(Locale.getDefault())
+            val query = settings?.query?.lowercase(Locale.getDefault())
             setAmiiboInfoText(txtName, amiiboName, false)
-            if (settings.amiiboView != VIEW.IMAGE.value) {
+            if (settings?.amiiboView != VIEW.IMAGE.value) {
                 val hasTagInfo = null != tagInfo
                 if (hasTagInfo) {
                     setAmiiboInfoText(txtError, tagInfo, false)
@@ -318,49 +323,47 @@ class WriteTagAdapter(private val settings: BrowserSettings?) :
                     txtGameSeries,
                     boldSpannable.indexOf(gameSeries, query), hasTagInfo
                 )
-                if (null != txtPath) {
-                    if (null != item?.docUri) {
+                txtPath?.run {
+                    item?.docUri?.let {
                         itemView.isEnabled = true
-                        val relativeDocument = Storage.getRelativeDocument(
-                            item.docUri!!.uri
-                        )
-                        txtPath.text = boldSpannable.indexOf(relativeDocument, query)
+                        val relativeDocument = Storage.getRelativeDocument(it.uri)
+                        text = boldSpannable.indexOf(relativeDocument, query)
                         val a = TypedValue()
-                        txtPath.context.theme.resolveAttribute(
+                        context.theme.resolveAttribute(
                             android.R.attr.textColor, a, true
                         )
                         if (Version.isAndroid10 && a.isColorType) {
-                            txtPath.setTextColor(a.data)
+                            setTextColor(a.data)
                         } else if (a.type >= TypedValue.TYPE_FIRST_COLOR_INT
                             && a.type <= TypedValue.TYPE_LAST_COLOR_INT
                         ) {
-                            txtPath.setTextColor(a.data)
+                            setTextColor(a.data)
                         }
-                    } else if (null != item?.filePath) {
+                    } ?: item?.filePath?.let {
                         itemView.isEnabled = true
-                        var relativeFile = Storage.getRelativePath(
-                            item.filePath, mPrefs.preferEmulated()
-                        )
-                        if (null != mPrefs.browserRootFolder())
-                            relativeFile = relativeFile.replace(mPrefs.browserRootFolder()!!, "")
-                        txtPath.text = boldSpannable.indexOf(relativeFile, query)
+                        var relativeFile = Storage.getRelativePath(it, mPrefs.preferEmulated())
+                        mPrefs.browserRootFolder()?.let { path ->
+                            relativeFile = relativeFile.replace(path, "")
+                        }
+
+                        text = boldSpannable.indexOf(relativeFile, query)
                         val a = TypedValue()
-                        txtPath.context.theme.resolveAttribute(
+                        context.theme.resolveAttribute(
                             android.R.attr.textColor, a, true
                         )
                         if (Version.isAndroid10 && a.isColorType) {
-                            txtPath.setTextColor(a.data)
+                            setTextColor(a.data)
                         } else if (a.type >= TypedValue.TYPE_FIRST_COLOR_INT
                             && a.type <= TypedValue.TYPE_LAST_COLOR_INT
                         ) {
-                            txtPath.setTextColor(a.data)
+                            setTextColor(a.data)
                         }
-                    } else {
+                    } ?: {
                         itemView.isEnabled = false
-                        txtPath.text = ""
-                        txtPath.setTextColor(ContextCompat.getColor(txtPath.context, R.color.tag_text))
+                        text = ""
+                        setTextColor(ContextCompat.getColor(context, R.color.tag_text))
                     }
-                    txtPath.isVisible = true
+                    isVisible = true
                 }
             }
         }

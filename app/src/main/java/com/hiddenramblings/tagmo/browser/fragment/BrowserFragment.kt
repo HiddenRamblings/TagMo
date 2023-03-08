@@ -130,8 +130,7 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
         if (BuildConfig.WEAR_OS && null != browserParams)
             browserParams.height = browserParams.height / 3
         view.findViewById<View>(R.id.list_divider).setOnTouchListener { v: View, event: MotionEvent ->
-            val layoutParams = browserScroller?.layoutParams
-            if (null != layoutParams) {
+            browserScroller?.layoutParams?.let { layoutParams ->
                 val srcHeight = layoutParams.height
                 val y = event.y.toInt()
                 if (layoutParams.height + y >= -0.5f) {
@@ -162,14 +161,15 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
     fun addFilterItemView(text: String?, tag: String?, listener: OnCloseClickListener?) {
         if (null == chipList) return
         var chipContainer = chipList?.findViewWithTag<FrameLayout>(tag)
-        if (null != chipContainer) chipList?.removeView(chipContainer)
+        chipContainer?.let { chipList?.removeView(it) }
         if (!text.isNullOrEmpty()) {
             chipContainer = layoutInflater.inflate(R.layout.chip_view, null) as FrameLayout
             chipContainer.tag = tag
-            val chip = chipContainer.findViewById<Chip>(R.id.chip)
-            chip.setText(text)
-            chip.closable = true
-            chip.onCloseClickListener = listener
+            chipContainer.findViewById<Chip>(R.id.chip).run {
+                setText(text)
+                closable = true
+                onCloseClickListener = listener
+            }
             chipList?.addView(chipContainer)
             chipList?.isVisible = true
         } else if (chipList?.childCount == 0) {
@@ -186,12 +186,12 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
             .getDimension(R.dimen.sliding_bar_margin))
         val layoutParams = browserScroller?.layoutParams
         val srcHeight = layoutParams?.height
-        if (null != layoutParams) {
-            if (layoutParams.height > requireView().height - minHeight.toInt()) {
-                layoutParams.height = requireView().height - minHeight.toInt()
+        layoutParams?.let {
+            if (it.height > requireView().height - minHeight.toInt()) {
+                it.height = requireView().height - minHeight.toInt()
             } else {
                 val valueY = prefs.foomiiboOffset()
-                layoutParams.height = if (valueY != -1) valueY else layoutParams.height
+                it.height = if (valueY != -1) valueY else it.height
             }
         }
         if (prefs.foomiiboDisabled()) {
@@ -357,12 +357,12 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
         } catch (ignored: Exception) { }
         val activity = requireActivity() as BrowserActivity
         val menuOptions = itemView?.findViewById<LinearLayout>(R.id.menu_options)
-        if (null != menuOptions) {
-            val toolbar = menuOptions.findViewById<Toolbar>(R.id.toolbar)
+        menuOptions?.let {
+            val toolbar = it.findViewById<Toolbar>(R.id.toolbar)
             if (settings.amiiboView != BrowserSettings.VIEW.IMAGE.value) {
-                if (!menuOptions.isVisible)
+                if (!it.isVisible)
                     activity.onCreateToolbarMenu(this, toolbar, tagData, itemView)
-                menuOptions.isGone = menuOptions.isVisible
+                it.isGone = it.isVisible
                 val txtUsage = itemView.findViewById<TextView>(R.id.txtUsage)
                 if (!txtUsage.isVisible) getGameCompatibility(txtUsage, tagData)
                 txtUsage.isGone = txtUsage.isVisible

@@ -74,14 +74,7 @@ class BluetoothHandler(
             }
             if (isBluetoothAvailable) {
                 val mBluetoothAdapter = getBluetoothAdapter(context)
-                if (null != mBluetoothAdapter) {
-//                    if (Version.isAndroid10) {
-//                        onRequestBackgroundQ.launch(Manifest.permission.ACCESS_BACKGROUND_LOCATION);
-//                    }
-                    listener.onAdapterEnabled(mBluetoothAdapter)
-                } else {
-                    listener.onAdapterMissing()
-                }
+                mBluetoothAdapter?.let { listener.onAdapterEnabled(it) } ?: listener.onAdapterMissing()
             } else {
                 listener.onAdapterMissing()
             }
@@ -91,14 +84,7 @@ class BluetoothHandler(
             ActivityResultContracts.StartActivityForResult()
         ) {
             val mBluetoothAdapter = getBluetoothAdapter(context)
-            if (null != mBluetoothAdapter) {
-//                if (Version.isAndroid10) {
-//                    onRequestBackgroundQ.launch(Manifest.permission.ACCESS_BACKGROUND_LOCATION);
-//                }
-                listener.onAdapterEnabled(mBluetoothAdapter)
-            } else {
-                listener.onAdapterMissing()
-            }
+            mBluetoothAdapter?.let { listener.onAdapterEnabled(it) } ?: listener.onAdapterMissing()
         }
         onRequestLocation = registry.register(
             "Location",
@@ -111,11 +97,8 @@ class BluetoothHandler(
             }
             if (isLocationAvailable) {
                 val mBluetoothAdapter = getBluetoothAdapter(context)
-                if (null != mBluetoothAdapter)
-                    listener.onAdapterEnabled(mBluetoothAdapter)
-                else onRequestBluetooth.launch(
-                    Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE)
-                )
+                mBluetoothAdapter?.let { listener.onAdapterEnabled(it) }
+                    ?: onRequestBluetooth.launch(Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE))
             } else {
                 listener.onPermissionsFailed()
             }
@@ -128,25 +111,16 @@ class BluetoothHandler(
             onRequestBluetoothS.launch(PERMISSIONS_BLUETOOTH)
         } else {
             val mBluetoothAdapter = getBluetoothAdapter(context)
-            if (null != mBluetoothAdapter) {
-//                if (Version.isAndroid10) {
-//                    onRequestBackgroundQ.launch(Manifest.permission.ACCESS_BACKGROUND_LOCATION);
-//                }
-                listener.onAdapterEnabled(mBluetoothAdapter)
-            } else {
-                onRequestBluetooth.launch(Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE))
-            }
+            mBluetoothAdapter?.let { listener.onAdapterEnabled(it) }
+                ?: onRequestBluetooth.launch(Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE))
         }
     }
 
     fun requestPermissions(context: Activity) {
         if (Version.isLowerThan(Build.VERSION_CODES.M)) {
             val mBluetoothAdapter = getBluetoothAdapter(context)
-            if (null != mBluetoothAdapter)
-                listener.onAdapterEnabled(mBluetoothAdapter)
-            else onRequestBluetooth.launch(
-                Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE)
-            )
+            mBluetoothAdapter?.let { listener.onAdapterEnabled(it) }
+                ?: onRequestBluetooth.launch(Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE))
         } else {
             if (ActivityCompat.shouldShowRequestPermissionRationale(
                     context, Manifest.permission.ACCESS_FINE_LOCATION

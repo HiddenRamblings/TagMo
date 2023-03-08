@@ -126,7 +126,7 @@ class PuckGattService : Service() {
     private val mGattCallback: BluetoothGattCallback = object : BluetoothGattCallback() {
         override fun onConnectionStateChange(gatt: BluetoothGatt, status: Int, newState: Int) {
             if (newState == BluetoothProfile.STATE_CONNECTED) {
-                mBluetoothGatt!!.discoverServices()
+                mBluetoothGatt?.discoverServices()
             } else if (newState == BluetoothProfile.STATE_DISCONNECTED) {
                 listener?.onGattConnectionLost()
             }
@@ -135,7 +135,7 @@ class PuckGattService : Service() {
         override fun onServicesDiscovered(gatt: BluetoothGatt, status: Int) {
             if (status == BluetoothGatt.GATT_SUCCESS) {
                 if (Version.isLollipop)
-                    mBluetoothGatt!!.requestMtu(512) // Maximum: 517
+                    gatt.requestMtu(512) // Maximum: 517
                 else listener?.onServicesDiscovered()
             } else {
                 Debug.warn(this.javaClass, "onServicesDiscovered received: $status")

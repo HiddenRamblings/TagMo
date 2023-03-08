@@ -64,11 +64,7 @@ object Debug {
     }
 
     fun getExceptionCause(e: Exception): String? {
-        val description =  when {
-            null != e.message -> e.message
-            null != e.cause -> e.cause.toString()
-            else -> null
-        }
+        val description =  e.message ?: e.cause?.toString()
         return if (null != description && description.contains(" : "))
             description.substring(description.indexOf(":") + 2)
         else description

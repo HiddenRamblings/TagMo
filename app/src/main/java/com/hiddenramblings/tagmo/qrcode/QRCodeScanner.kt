@@ -139,12 +139,11 @@ class QRCodeScanner : AppCompatActivity() {
             if (intent.hasExtra(NFCIntent.EXTRA_TAG_DATA)) {
                 val data = intent.getByteArrayExtra(NFCIntent.EXTRA_TAG_DATA)
                 try {
-                    val bitmap = encodeQR(TagArray.bytesToString(data), Barcode.TYPE_TEXT)
-                    if (null != bitmap) {
+                    encodeQR(TagArray.bytesToString(data), Barcode.TYPE_TEXT)?.let {
                         withContext(Dispatchers.Main) {
-                            barcodePreview.setImageBitmap(bitmap)
+                            barcodePreview.setImageBitmap(it)
                         }
-                        scanBarcodes(InputImage.fromBitmap(bitmap, 0))
+                        scanBarcodes(InputImage.fromBitmap(it, 0))
                     }
                 } catch (ex: Exception) {
                     Debug.warn(ex)
@@ -154,23 +153,20 @@ class QRCodeScanner : AppCompatActivity() {
     }
 
     private val isDocumentStorage: Boolean
-        get() = if (
-            Version.isLollipop && null != prefs.browserRootDocument()
-        ) {
+        get() = Version.isLollipop && prefs.browserRootDocument()?.let {
             try {
-                DocumentFile.fromTreeUri(this, Uri.parse(prefs.browserRootDocument()))
+                DocumentFile.fromTreeUri(this, Uri.parse(it))
                 true
             } catch (iae: IllegalArgumentException) {
                 false
             }
-        } else false
+        } ?: false
 
     @Throws(Exception::class)
     private suspend fun decodeAmiibo(qrData: ByteArray?) {
         if (null == qrData) return
-        if (null != amiiboManager) {
-            val amiibo = amiiboManager!!.amiibos[Amiibo.dataToId(qrData)]
-            if (null != amiibo) {
+        amiiboManager?.let {
+            it.amiibos[Amiibo.dataToId(qrData)]?.let { amiibo ->
                 withContext(Dispatchers.Main) {
                     txtMiiLabel.text = getText(R.string.qr_amiibo)
                     txtMiiValue.text = amiibo.name
@@ -290,10 +286,10 @@ class QRCodeScanner : AppCompatActivity() {
         if (result.resultCode == RESULT_OK && (null != captureUri || null != result.data)) {
             val photoUri: Uri? = when {
                 null != captureUri -> { captureUri }
-                null != result.data!!.clipData && result.data?.clipData!!.itemCount > 0 -> {
-                    result.data!!.clipData!!.getItemAt(0)!!.uri
+                null != result.data?.clipData && (result.data?.clipData?.itemCount ?: 0) > 0 -> {
+                    result.data?.clipData?.getItemAt(0)?.uri
                 }
-                null != result.data!!.data -> { result.data!!.data!! }
+                null != result.data?.data -> { result.data?.data }
                 else -> { null }
             }
             captureUri = null
@@ -359,16 +355,16 @@ class QRCodeScanner : AppCompatActivity() {
     @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
     private fun bindPreviewUseCase() {
         if (null == cameraProvider) return
-        if (null != previewUseCase) cameraProvider!!.unbind(previewUseCase)
+        previewUseCase?.let { cameraProvider?.unbind(it) }
 
         previewUseCase = Preview.Builder()
             .setTargetAspectRatio(screenAspectRatio)
             .setTargetRotation(cameraPreview!!.display.rotation)
             .build()
-        previewUseCase!!.setSurfaceProvider(cameraPreview!!.surfaceProvider)
+        previewUseCase?.setSurfaceProvider(cameraPreview!!.surfaceProvider)
 
         try {
-            cameraProvider!!.bindToLifecycle(this, cameraSelector!!, previewUseCase)
+            cameraProvider?.bindToLifecycle(this, cameraSelector!!, previewUseCase)
         } catch (illegalStateException: IllegalStateException) {
             Debug.error(illegalStateException)
         } catch (illegalArgumentException: IllegalArgumentException) {
@@ -379,7 +375,7 @@ class QRCodeScanner : AppCompatActivity() {
     @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
     private fun bindAnalyseUseCase() {
         if (null == cameraProvider) return
-        if (null != analysisUseCase) cameraProvider!!.unbind(analysisUseCase)
+        analysisUseCase?.let { cameraProvider?.unbind(it) }
 
         analysisUseCase = ImageAnalysis.Builder()
             .setTargetAspectRatio(screenAspectRatio)
@@ -391,7 +387,7 @@ class QRCodeScanner : AppCompatActivity() {
         }
 
         try {
-            cameraProvider!!.bindToLifecycle(this, cameraSelector!!, analysisUseCase)
+            cameraProvider?.bindToLifecycle(this, cameraSelector!!, analysisUseCase)
         } catch (illegalStateException: IllegalStateException) {
             Debug.error(illegalStateException)
         } catch (illegalArgumentException: IllegalArgumentException) {
@@ -491,8 +487,8 @@ class QRCodeScanner : AppCompatActivity() {
             R.id.mnu_gallery -> {
                 txtMiiValue.text = ""
                 if (Version.isLollipop && null != cameraProvider) {
-                    if (null != previewUseCase) cameraProvider!!.unbind(previewUseCase)
-                    if (null != analysisUseCase) cameraProvider!!.unbind(analysisUseCase)
+                    previewUseCase?.let { cameraProvider?.unbind(it) }
+                    analysisUseCase?.let { cameraProvider?.unbind(it) }
                     cameraPreview?.isGone = true
                 }
                 onPickImage.launch(
@@ -510,8 +506,8 @@ class QRCodeScanner : AppCompatActivity() {
             R.id.mnu_generate -> {
                 txtMiiValue.text = ""
                 if (Version.isLollipop && null != cameraProvider) {
-                    if (null != previewUseCase) cameraProvider!!.unbind(previewUseCase)
-                    if (null != analysisUseCase) cameraProvider!!.unbind(analysisUseCase)
+                    previewUseCase?.let { cameraProvider?.unbind(it) }
+                    analysisUseCase?.let { cameraProvider?.unbind(it) }
                     cameraPreview?.isGone = true
                 }
                 val text = if (!txtRawBytes.text.isNullOrEmpty())
@@ -519,12 +515,11 @@ class QRCodeScanner : AppCompatActivity() {
                 else txtRawValue.text.toString()
 
                 try {
-                    val bitmap = encodeQR(text, qrTypeSpinner.selectedItemPosition)
-                    if (null != bitmap) {
+                    encodeQR(text, qrTypeSpinner.selectedItemPosition)?.let {
                         CoroutineScope(Dispatchers.Main).launch {
-                            barcodePreview.setImageBitmap(bitmap)
+                            barcodePreview.setImageBitmap(it)
                         }
-                        scanBarcodes(InputImage.fromBitmap(bitmap, 0))
+                        scanBarcodes(InputImage.fromBitmap(it, 0))
                     }
                 } catch (ex: Exception) {
                     Debug.warn(ex)

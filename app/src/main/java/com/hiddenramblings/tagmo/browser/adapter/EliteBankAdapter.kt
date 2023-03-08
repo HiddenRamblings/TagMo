@@ -74,24 +74,17 @@ class EliteBankAdapter     // setHasStableIds(true);
             highlight.setBackgroundResource(0)
         }
         holder.itemView.setOnClickListener {
-            if (null != holder.listener) holder.listener.onAmiiboClicked(
-                holder.amiiboItem,
-                clickPosition
-            )
+            holder.listener?.onAmiiboClicked(holder.amiiboItem, clickPosition)
         }
         holder.imageAmiibo?.setOnClickListener {
-            if (null != holder.listener) {
-                if (settings.amiiboView == VIEW.IMAGE.value)
-                    holder.listener.onAmiiboClicked(holder.amiiboItem, clickPosition)
-                else holder.listener.onAmiiboImageClicked(holder.amiiboItem, clickPosition)
-            }
+            if (settings.amiiboView == VIEW.IMAGE.value)
+                holder.listener?.onAmiiboClicked(holder.amiiboItem, clickPosition)
+            else holder.listener?.onAmiiboImageClicked(holder.amiiboItem, clickPosition)
         }
         holder.itemView.setOnLongClickListener {
-            if (null != holder.listener) return@setOnLongClickListener holder.listener.onAmiiboLongClicked(
-                holder.amiiboItem,
-                clickPosition
-            )
-            false
+            return@setOnLongClickListener holder.listener?.onAmiiboLongClicked(
+                holder.amiiboItem, clickPosition
+            ) ?: false
         }
         holder.bind(getItem(clickPosition))
     }
@@ -160,10 +153,10 @@ class EliteBankAdapter     // setHasStableIds(true);
                 amiiboItem!!.index = absoluteAdapterPosition
                 amiiboHexId = Amiibo.idToHex(amiibo!!.id)
                 amiiboImageUrl = amiibo.imageUrl
-                if (null != amiibo.name) amiiboName = amiibo.name
-                if (null != amiibo.amiiboSeries) amiiboSeries = amiibo.amiiboSeries!!.name
-                if (null != amiibo.amiiboType) amiiboType = amiibo.amiiboType!!.name
-                if (null != amiibo.gameSeries) gameSeries = amiibo.gameSeries!!.name
+                amiibo.name?.let { name -> amiiboName = name }
+                amiibo.amiiboSeries?.let { series -> amiiboSeries = series.name }
+                amiibo.amiiboType?.let { type -> amiiboType = type.name }
+                amiibo.gameSeries?.let { series -> gameSeries = series.name }
                 setAmiiboInfoText(txtName, "$value: $amiiboName")
             } else {
                 setAmiiboInfoText(

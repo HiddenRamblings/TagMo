@@ -122,12 +122,10 @@ open class BrowserSettings : Parcelable {
 
     fun initialize(): BrowserSettings {
         val prefs = Preferences(appContext)
-        browserRootFolder = if (null != prefs.browserRootFolder()) File(
-            Storage.getFile(prefs.preferEmulated()),
-            Objects.requireNonNull(prefs.browserRootFolder())
-        ) else Storage.getDownloadDir(null)
-        browserRootDocument =
-            if (null != prefs.browserRootDocument()) Uri.parse(prefs.browserRootDocument()) else null
+        browserRootFolder = prefs.browserRootFolder()?.let {
+            File(Storage.getFile(prefs.preferEmulated()), it)
+        } ?: Storage.getDownloadDir(null)
+        browserRootDocument = prefs.browserRootDocument()?.let { Uri.parse(it) }
         query = prefs.query()
         sort = prefs.sort()
         setFilter(FILTER.CHARACTER, prefs.filterCharacter())
@@ -223,7 +221,7 @@ open class BrowserSettings : Parcelable {
         dest.writeTypedList(amiiboFiles)
         dest.writeList(folders)
         dest.writeSerializable(browserRootFolder)
-        dest.writeString(if (null != browserRootDocument) browserRootDocument.toString() else null)
+        dest.writeString(browserRootDocument?.toString())
         dest.writeString(query)
         dest.writeInt(sort)
         dest.writeString(filterCharacter)

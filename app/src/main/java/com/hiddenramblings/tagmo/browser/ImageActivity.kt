@@ -145,17 +145,16 @@ class ImageActivity : AppCompatActivity() {
         } else if (amiiboId == 0L) {
             tagInfo = getString(R.string.blank_tag)
         } else {
-            if (null != amiiboManager) {
-                amiibo = amiiboManager!!.amiibos[amiiboId]
-                    ?: Amiibo(amiiboManager, amiiboId, null, null)
+            amiiboManager?.let {
+                amiibo = it.amiibos[amiiboId] ?: Amiibo(it, amiiboId, null, null)
             }
-            if (null != amiibo) {
-                amiiboHexId = Amiibo.idToHex(amiibo!!.id)
-                if (null != amiibo!!.name) amiiboName = amiibo!!.name
-                if (null != amiibo!!.amiiboSeries) amiiboSeries = amiibo!!.amiiboSeries!!.name
-                if (null != amiibo!!.amiiboType) amiiboType = amiibo!!.amiiboType!!.name
-                if (null != amiibo!!.gameSeries) gameSeries = amiibo!!.gameSeries!!.name
-            } else {
+            amiibo?.let {
+                amiiboHexId = Amiibo.idToHex(it.id)
+                it.name?.let { name -> amiiboName = name }
+                it.amiiboSeries?.let { series -> amiiboSeries = series.name }
+                it.amiiboType?.let { type -> amiiboType = type.name }
+                it.gameSeries?.let { series -> gameSeries = series.name }
+            } ?: {
                 tagInfo = "ID: " + Amiibo.idToHex(amiiboId)
             }
         }
@@ -194,11 +193,7 @@ class ImageActivity : AppCompatActivity() {
         val dialog = AlertDialog.Builder(this)
         view.findViewById<TextView>(R.id.save_item_label).setText(R.string.save_image)
         val input = view.findViewById<EditText>(R.id.save_item_entry)
-        if (null != amiibo) {
-            input.setText(amiibo!!.name)
-        } else {
-            input.setText(Amiibo.idToHex(amiiboId))
-        }
+        input.setText(amiibo?.name ?: Amiibo.idToHex(amiiboId))
         val imageDialog: Dialog = dialog.setView(view).create()
         imageDialog.setCancelable(false)
         view.findViewById<View>(R.id.button_save).setOnClickListener {

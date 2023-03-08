@@ -121,7 +121,7 @@ class FoomiiboAdapter(
     }
 
     private fun handleClickEvent(holder: FoomiiboViewHolder) {
-        if (null != holder.listener) {
+        holder.listener?.run {
             if (settings.amiiboView != VIEW.IMAGE.value) {
                 if (foomiiboId.contains(holder.foomiibo?.id)) {
                     foomiiboId.remove(holder.foomiibo?.id)
@@ -131,7 +131,7 @@ class FoomiiboAdapter(
             } else {
                 foomiiboId.clear()
             }
-            holder.listener.onFoomiiboClicked(holder.itemView, holder.foomiibo)
+            onFoomiiboClicked(holder.itemView, holder.foomiibo)
         }
     }
 
@@ -141,8 +141,8 @@ class FoomiiboAdapter(
         holder.imageAmiibo?.setOnClickListener {
             if (settings.amiiboView == VIEW.IMAGE.value)
                 handleClickEvent(holder)
-            else if (null != holder.listener)
-                holder.listener.onFoomiiboImageClicked(holder.foomiibo)
+            else
+                holder.listener?.onFoomiiboImageClicked(holder.foomiibo)
         }
         holder.bind(getItem(clickPosition))
     }
@@ -167,10 +167,9 @@ class FoomiiboAdapter(
                 filterResults.values = data
             }
             settings.query = query
-            if (null != settings.amiiboManager)
-                data = ArrayList(settings.amiiboManager?.amiibos!!.values)
-            else
-                data.clear()
+            settings.amiiboManager?. let {
+                data = ArrayList(it.amiibos.values)
+            } ?: data.clear()
             val tempList: ArrayList<Amiibo> = arrayListOf()
             val queryText = query.trim { it <= ' ' }.lowercase(Locale.getDefault())
             data.forEach {
@@ -269,22 +268,22 @@ class FoomiiboAdapter(
             val amiiboId = item?.id
             var amiibo: Amiibo? = null
             val amiiboManager = settings.amiiboManager
-            if (null != amiiboManager) {
-                amiibo = amiiboManager.amiibos[amiiboId]
+            amiiboManager?.let {
+                amiibo = it.amiibos[amiiboId]
                 if (null == amiibo && null != amiiboId)
-                    amiibo = Amiibo(amiiboManager, amiiboId, null, null)
+                    amiibo = Amiibo(it, amiiboId, null, null)
             }
-            if (null != amiibo) {
-                amiiboHexId = Amiibo.idToHex(amiibo.id)
-                amiiboImageUrl = amiibo.imageUrl
-                if (null != amiibo.name) amiiboName = amiibo.name!!
-                if (null != amiibo.amiiboSeries) amiiboSeries = amiibo.amiiboSeries!!.name
-                if (null != amiibo.amiiboType) amiiboType = amiibo.amiiboType!!.name
-                if (null != amiibo.gameSeries) gameSeries = amiibo.gameSeries!!.name
-            } else if (null != amiiboId) {
-                amiiboHexId = Amiibo.idToHex(amiiboId)
+            amiibo?.let {
+                amiiboHexId = Amiibo.idToHex(it.id)
+                amiiboImageUrl = it.imageUrl
+                it.name?.let { name -> amiiboName = name }
+                it.amiiboSeries?.let { series -> amiiboSeries = series.name }
+                it.amiiboType?.let { type -> amiiboType = type.name }
+                it.gameSeries?.let { series -> gameSeries = series.name }
+            } ?: amiiboId?.let {
+                amiiboHexId = Amiibo.idToHex(it)
                 tagInfo = "ID: $amiiboHexId"
-                amiiboImageUrl = Amiibo.getImageUrl(amiiboId)
+                amiiboImageUrl = Amiibo.getImageUrl(it)
             }
             imageAmiibo?.let {
                 GlideApp.with(it).clear(it)
@@ -325,8 +324,7 @@ class FoomiiboAdapter(
                 itemView.findViewById<View>(R.id.txtUsage).isVisible = expanded
                 if (expanded) listener?.onFoomiiboRebind(itemView, foomiibo)
             }
-            if (AmiiboManager.hasSpoofData(amiiboHexId) && null != txtTagId)
-                txtTagId.isEnabled = false
+            if (AmiiboManager.hasSpoofData(amiiboHexId)) txtTagId?.isEnabled = false
         }
 
         private fun setFoomiiboInfoText(textView: TextView?, text: CharSequence?, hasTagInfo: Boolean) {

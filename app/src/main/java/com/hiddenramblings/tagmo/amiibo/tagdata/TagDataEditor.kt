@@ -276,8 +276,7 @@ class TagDataEditor : AppCompatActivity() {
             amiiboData.appData = ByteArray(amiiboData.appData.size)
             loadData()
         }
-        if (null != AppData.transferData)
-            appDataTransfer.text = getString(R.string.import_app_data)
+        if (null != AppData.transferData) appDataTransfer.text = getString(R.string.import_app_data)
         appDataTransfer.setOnClickListener {
             if (null != AppData.transferData) {
                 transferData()
@@ -328,18 +327,18 @@ class TagDataEditor : AppCompatActivity() {
                 tagInfo = getString(R.string.blank_tag)
             } else {
                 var amiibo: Amiibo? = null
-                if (null != amiiboManager) {
-                    amiibo = amiiboManager!!.amiibos[amiiboId]
-                    if (null == amiibo) amiibo = Amiibo(amiiboManager, amiiboId, null, null)
+                amiiboManager?.let {
+                    amiibo = it.amiibos[amiiboId]
+                    if (null == amiibo) amiibo = Amiibo(it, amiiboId, null, null)
                 }
-                if (null != amiibo) {
-                    amiiboHexId = Amiibo.idToHex(amiibo.id)
-                    amiiboImageUrl = amiibo.imageUrl
-                    if (null != amiibo.name) amiiboName = amiibo.name!!
-                    if (null != amiibo.amiiboSeries) amiiboSeries = amiibo.amiiboSeries!!.name
-                    if (null != amiibo.amiiboType) amiiboType = amiibo.amiiboType!!.name
-                    if (null != amiibo.gameSeries) gameSeries = amiibo.gameSeries!!.name
-                } else {
+                amiibo?.let {
+                    amiiboHexId = Amiibo.idToHex(it.id)
+                    amiiboImageUrl = it.imageUrl
+                    it.name?.let { name -> amiiboName = name }
+                    it.amiiboSeries?.let { series -> amiiboSeries = series.name }
+                    it.amiiboType?.let { type -> amiiboType = type.name }
+                    it.gameSeries?.let { series -> gameSeries = series.name }
+                } ?: {
                     tagInfo = "ID: " + Amiibo.idToHex(amiiboId)
                     amiiboImageUrl = Amiibo.getImageUrl(amiiboId)
                 }
@@ -603,9 +602,9 @@ class TagDataEditor : AppCompatActivity() {
             0
         }
         var index = 0
-        if (null != countryCodeAdapter) {
-            for (i in 0 until countryCodeAdapter!!.count) {
-                val (key) = countryCodeAdapter!!.getItem(i)
+        countryCodeAdapter?.let {
+            for (i in 0 until it.count) {
+                val (key) = it.getItem(i)
                 if (key == countryCode) {
                     index = i
                     break
@@ -724,11 +723,7 @@ class TagDataEditor : AppCompatActivity() {
     }
 
     private fun updateAppIdView(appId: Int?) {
-        if (null != appId) {
-            txtAppId.setText(String.format("%08X", appId))
-        } else {
-            txtAppId.setText("")
-        }
+        txtAppId.setText(appId?.let { String.format("%08X", it) } ?: "")
     }
 
     @Throws(IOException::class, NumberFormatException::class)
@@ -756,9 +751,8 @@ class TagDataEditor : AppCompatActivity() {
                 ignoreAppNameSelected = false
                 return
             }
-            val selectedItem = adapterView.getItemAtPosition(i)
-            if (null != selectedItem) {
-                appId = (selectedItem as Map.Entry<*, *>).key as Int?
+            adapterView.getItemAtPosition(i)?.let {
+                appId = (it as Map.Entry<*, *>).key as Int?
             }
             updateAppIdView(appId)
             updateAppDataView(appId)
@@ -769,9 +763,9 @@ class TagDataEditor : AppCompatActivity() {
 
     private fun updateAppNameView() {
         var index = 0
-        if (null != appIdAdapter) {
-            for (i in 0 until appIdAdapter!!.count) {
-                if (appIdAdapter!!.getItem(i).key == appId) {
+        appIdAdapter?.let {
+            for (i in 0 until it.count) {
+                if (it.getItem(i).key == appId) {
                     index = i
                     break
                 }
@@ -810,8 +804,8 @@ class TagDataEditor : AppCompatActivity() {
         appDataSSB = null
         appDataViewSSBU.isGone = true
         appDataSSBU = null
-        if (null != appId) {
-            when (appId) {
+        appId?.let {
+            when (it) {
                 AppId_ZeldaTP -> {
                     appDataViewZeldaTP.isVisible = true
                     enableAppDataZeldaTP(amiiboData.appData)
@@ -985,8 +979,7 @@ class TagDataEditor : AppCompatActivity() {
             }
         } catch (e: NumberFormatException) {
             txtHearts1?.error = getString(R.string.error_min_max, 0, 20)
-            if (null != txtHearts1)
-                txtHearts2?.isEnabled = txtHearts1!!.isEnabled
+            txtHearts2?.isEnabled = txtHearts1?.isEnabled == true
         }
     }
 

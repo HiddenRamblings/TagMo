@@ -540,22 +540,18 @@ class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
         val args = Bundle()
         if ((requireActivity() as BrowserActivity).isDocumentStorage) {
             try {
-                val data = if (null != amiiboFile.data)
-                    amiiboFile.data
-                else if (null != amiiboFile.docUri)
-                    TagArray.getValidatedDocument(keyManager, amiiboFile.docUri!!)
-                else null
+                val data = amiiboFile.data ?: amiiboFile.docUri?.let {
+                    TagArray.getValidatedDocument(keyManager, it)
+                }
                 args.putByteArray(NFCIntent.EXTRA_TAG_DATA, data)
             } catch (e: Exception) {
                 Debug.warn(e)
             }
         } else {
             try {
-                val data = if (null != amiiboFile.data)
-                    amiiboFile.data
-                else if (null != amiiboFile.filePath)
-                    TagArray.getValidatedFile(keyManager, amiiboFile.filePath)
-                else null
+                val data = amiiboFile.data ?: amiiboFile.filePath?.let {
+                    TagArray.getValidatedFile(keyManager, it)
+                }
                 args.putByteArray(NFCIntent.EXTRA_TAG_DATA, data)
             } catch (e: Exception) {
                 Debug.warn(e)
@@ -576,9 +572,9 @@ class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
         searchView?.clearFocus()
         writeTagAdapter?.setListener(object : WriteTagAdapter.OnAmiiboClickListener {
             override fun onAmiiboClicked(amiiboFile: AmiiboFile?) {
-                if (null != amiiboFile) {
+                amiiboFile?.let {
                     onBottomSheetChanged(SHEET.AMIIBO)
-                    writeAmiiboFile(amiiboFile, position)
+                    writeAmiiboFile(it, position)
                     settings.removeChangeListener(writeTagAdapter)
                 }
             }
@@ -772,21 +768,23 @@ class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
             tagInfo = getString(R.string.read_error)
         } else if (amiiboLongId == 0L) {
             tagInfo = getString(R.string.blank_tag)
-        } else if (null != amiiboManager) {
-            val generic = amiiboManager.amiibos[amiiboLongId]
-            amiibo = EliteTag(
-                generic ?: Amiibo(amiiboManager, amiiboLongId, null, null)
-            )
+        } else {
+            amiiboManager?.let {
+                val generic = it.amiibos[amiiboLongId]
+                amiibo = EliteTag(
+                    generic ?: Amiibo(it, amiiboLongId, null, null)
+                )
+            }
         }
-        if (null != amiibo) {
+        amiibo?.let {
             amiiboView.isVisible = true
-            amiiboImageUrl = amiibo.imageUrl
-            amiiboHexId = Amiibo.idToHex(amiibo.id)
-            if (null != amiibo.name) amiiboName = amiibo.name!!
-            if (null != amiibo.amiiboSeries) amiiboSeries = amiibo.amiiboSeries!!.name
-            if (null != amiibo.amiiboType) amiiboType = amiibo.amiiboType!!.name
-            if (null != amiibo.gameSeries) gameSeries = amiibo.gameSeries!!.name
-        } else if (null == tagInfo) {
+            amiiboHexId = Amiibo.idToHex(it.id)
+            amiiboImageUrl = it.imageUrl
+            it.name?.let { name -> amiiboName = name }
+            it.amiiboSeries?.let { series -> amiiboSeries = series.name }
+            it.amiiboType?.let { type -> amiiboType = type.name }
+            it.gameSeries?.let { series -> gameSeries = series.name }
+        } ?: tagInfo ?: {
             tagInfo = "ID: " + Amiibo.idToHex(amiiboLongId)
             amiiboImageUrl = Amiibo.getImageUrl(amiiboLongId)
         }
@@ -797,10 +795,11 @@ class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
         } else {
             txtError.isGone = true
         }
-        if (null != txtBank)
-            setAmiiboInfoText(txtBank, getString(
+        txtBank?.let {
+            setAmiiboInfoText(it, getString(
                 R.string.bank_number, getValueForPosition(eliteBankCount, current_bank)
             ), hasTagInfo)
+        }
         setAmiiboInfoText(txtName, amiiboName, hasTagInfo)
         setAmiiboInfoText(txtTagId, amiiboHexId, hasTagInfo)
         setAmiiboInfoText(txtAmiiboSeries, amiiboSeries, hasTagInfo)
@@ -809,22 +808,20 @@ class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
         if (amiiboView === amiiboTile && null == amiiboImageUrl) {
             imageAmiibo!!.setImageResource(R.mipmap.ic_launcher_round)
             imageAmiibo.visibility = View.VISIBLE
-        } else if (null != imageAmiibo) {
-            GlideApp.with(imageAmiibo).clear(imageAmiibo)
-            if (!amiiboImageUrl.isNullOrEmpty()) {
-                GlideApp.with(imageAmiibo).asBitmap().load(amiiboImageUrl).into(
-                    if (amiiboView === amiiboCard) amiiboCardTarget else amiiboTileTarget
-                )
-            }
-            imageAmiibo.setOnClickListener {
-                if (amiiboLongId == -1L) {
-                    return@setOnClickListener
+        } else {
+            imageAmiibo?.apply {
+                GlideApp.with(this).clear(this)
+                if (!amiiboImageUrl.isNullOrEmpty()) {
+                    GlideApp.with(this).asBitmap().load(amiiboImageUrl).into(
+                        if (amiiboView === amiiboCard) amiiboCardTarget else amiiboTileTarget
+                    )
                 }
-                startActivity(Intent(requireContext(), ImageActivity::class.java)
-                    .putExtras(Bundle().apply {
-                        putLong(NFCIntent.EXTRA_AMIIBO_ID, amiiboLongId)
-                    })
-                )
+                setOnClickListener {
+                    if (amiiboLongId == -1L) return@setOnClickListener
+                    startActivity(Intent(requireContext(), ImageActivity::class.java)
+                        .putExtras(Bundle().apply { putLong(NFCIntent.EXTRA_AMIIBO_ID, amiiboLongId) })
+                    )
+                }
             }
         }
     }
@@ -855,10 +852,9 @@ class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
     private fun writeAmiiboCollection(amiiboList: ArrayList<AmiiboFile?>) {
         amiiboList.indices.forEach {
             try {
-                val amiiboFile = amiiboList[it]
-                if (null != amiiboFile) {
-                    amiiboFile.data = TagArray.getValidatedData(keyManager, amiiboFile)
-                    amiiboList[it] = amiiboFile
+                amiiboList[it]?.let { file ->
+                    file.data = TagArray.getValidatedData(keyManager, file)
+                    amiiboList[it] = file
                 }
             } catch (ignored: Exception) { }
         }
@@ -931,20 +927,20 @@ class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
     }
 
     private fun handleImageClicked(amiibo: Amiibo?) {
-        if (null != amiibo) {
+        amiibo?.let {
             this.startActivity(Intent(requireContext(), ImageActivity::class.java)
                 .putExtras(Bundle().apply {
-                    putLong(NFCIntent.EXTRA_AMIIBO_ID, amiibo.id)
+                    putLong(NFCIntent.EXTRA_AMIIBO_ID, it.id)
                 })
             )
         }
     }
 
     private fun handleImageClicked(amiiboFile: AmiiboFile?) {
-        if (null != amiiboFile) {
+        amiiboFile?.let {
             this.startActivity(Intent(requireContext(), ImageActivity::class.java)
                 .putExtras(Bundle().apply {
-                    putLong(NFCIntent.EXTRA_AMIIBO_ID, amiiboFile.id)
+                    putLong(NFCIntent.EXTRA_AMIIBO_ID, it.id)
                 })
             )
         }

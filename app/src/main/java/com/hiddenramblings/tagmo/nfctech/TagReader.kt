@@ -106,8 +106,7 @@ object TagReader {
     }
 
     fun getBankSignature(tag: NTAG215?): String? {
-        val signature = tag?.readSignature(false)
-        return if (null != signature) TagArray.bytesToHex(signature).substring(0, 22) else null
+        return tag?.readSignature(false)?.let { TagArray.bytesToHex(it).substring(0, 22) }
     }
 
     @Throws(IllegalStateException::class, NullPointerException::class)

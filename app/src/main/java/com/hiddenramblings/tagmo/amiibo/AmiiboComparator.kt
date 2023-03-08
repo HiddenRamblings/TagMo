@@ -12,10 +12,9 @@ class AmiiboComparator(var settings: BrowserSettings) : Comparator<Amiibo> {
         if (sort == SORT.FILE_PATH.value || sort == SORT.ID.value) {
             value = compareAmiiboId(amiiboId1, amiiboId2)
         } else {
-            val amiiboManager = settings.amiiboManager
-            if (null != amiiboManager) {
-                val amiibo1 = amiiboManager.amiibos[amiiboId1]
-                val amiibo2 = amiiboManager.amiibos[amiiboId2]
+            settings.amiiboManager?.let {
+                val amiibo1 = it.amiibos[amiiboId1]
+                val amiibo2 = it.amiibos[amiiboId2]
                 if (null == amiibo1 && null == amiibo2)
                     value = 0
                 else if (null == amiibo1)

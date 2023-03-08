@@ -77,8 +77,8 @@ class FoldersAdapter(var settings: BrowserSettings?) : RecyclerView.Adapter<Fold
     private fun showParentFolder(): Boolean {
         val internal = mPrefs.preferEmulated()
         val storage = Storage.getPath(internal)
-        return (null != rootFolder && Storage.getFile(internal) != rootFolder
-                && (null == storage || rootFolder!!.absolutePath.startsWith(storage)))
+        return (rootFolder != Storage.getFile(internal)
+                && (null == storage || rootFolder?.absolutePath?.startsWith(storage) == true))
     }
 
     override fun getItemCount(): Int {

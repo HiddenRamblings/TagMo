@@ -208,14 +208,14 @@ class FlaskGattService : Service() {
                     }
                 } else if (progress.startsWith("tag.download")) {
                     if (progress.endsWith(">") || progress.endsWith("\n")) {
-                        if (null != listener) {
+                        listener?.let {
                             for (dataString in progress.split(
                                 "new Uint8Array".toRegex()).toTypedArray()
                             ) {
                                 if (dataString.startsWith("tag.download")
                                     && dataString.endsWith("=")
                                 ) continue
-                                listener?.onFlaskFilesDownload(dataString.substring(
+                                it.onFlaskFilesDownload(dataString.substring(
                                     1, dataString.lastIndexOf(">") - 2
                                 ))
                             }
@@ -236,7 +236,7 @@ class FlaskGattService : Service() {
                             if (event == "button") listener?.onFlaskActiveChanged(jsonObject)
                             if (event == "delete") listener?.onFlaskStatusChanged(jsonObject)
                         } catch (e: JSONException) {
-                            if (null != e.message && e.message!!.contains("tag.setTag"))
+                            if (e.message?.contains("tag.setTag") == true)
                                 activeAmiibo
                             else Debug.warn(e)
                         }
@@ -259,16 +259,16 @@ class FlaskGattService : Service() {
     private val mGattCallback: BluetoothGattCallback = object : BluetoothGattCallback() {
         override fun onConnectionStateChange(gatt: BluetoothGatt, status: Int, newState: Int) {
             if (newState == BluetoothProfile.STATE_CONNECTED) {
-                mBluetoothGatt!!.discoverServices()
+                mBluetoothGatt?.discoverServices()
             } else if (newState == BluetoothProfile.STATE_DISCONNECTED) {
-                listener!!.onGattConnectionLost()
+                listener?.onGattConnectionLost()
             }
         }
 
         override fun onServicesDiscovered(gatt: BluetoothGatt, status: Int) {
             if (status == BluetoothGatt.GATT_SUCCESS) {
                 if (Version.isLollipop)
-                    mBluetoothGatt!!.requestMtu(512) // Maximum: 517
+                    gatt.requestMtu(512) // Maximum: 517
                 else listener?.onServicesDiscovered()
             } else {
                 Debug.warn(this.javaClass, "onServicesDiscovered received: $status")
@@ -321,7 +321,7 @@ class FlaskGattService : Service() {
             } else {
                 Debug.warn(this.javaClass, "onMtuChange received: $status")
             }
-            if (null != listener) listener?.onServicesDiscovered()
+            listener?.onServicesDiscovered()
         }
     }
 
@@ -667,17 +667,16 @@ class FlaskGattService : Service() {
     }
 
     fun setActiveAmiibo(name: String?, tail: String) {
-        if (null != name) {
-            if (name.startsWith("New Tag")) {
+        name?.let {
+            if (it.startsWith("New Tag")) {
                 // delayedTagCharacteristic("setTag(\"$name||$tail\")")
-                delayedTagCharacteristic("setTag(\"$name|$tail|0\")")
+                delayedTagCharacteristic("setTag(\"$it|$tail|0\")")
                 return
             }
             val reserved = tail.length + 3 // |tail|#
-            val nameUnicode = GattArray.stringToUnicode(name)
+            val nameUnicode = GattArray.stringToUnicode(it)
             nameCompat = if (nameUnicode.length + reserved > 28) nameUnicode.substring(
-                0, nameUnicode.length
-                        - (nameUnicode.length + reserved - 28)
+                0, nameUnicode.length - (nameUnicode.length + reserved - 28)
             ) else nameUnicode
             tailCompat = tail
             delayedTagCharacteristic("setTag(\"$nameCompat|$tailCompat|0\")")
@@ -697,14 +696,14 @@ class FlaskGattService : Service() {
     }
 
     fun deleteAmiibo(name: String?, tail: String) {
-        if (null != name) {
-            if (name.startsWith("New Tag")) {
+        name?.let {
+            if (it.startsWith("New Tag")) {
                 // delayedTagCharacteristic("remove(\"$name||$tail\")")
-                delayedTagCharacteristic("remove(\"$name|$tail|0\")")
+                delayedTagCharacteristic("remove(\"$it|$tail|0\")")
                 return
             }
             val reserved = tail.length + 3 // |tail|#
-            val nameUnicode = GattArray.stringToUnicode(name)
+            val nameUnicode = GattArray.stringToUnicode(it)
             nameCompat = if (nameUnicode.length + reserved > 28)
                 nameUnicode.substring(0, nameUnicode.length - (nameUnicode.length + reserved - 28))
             else nameUnicode

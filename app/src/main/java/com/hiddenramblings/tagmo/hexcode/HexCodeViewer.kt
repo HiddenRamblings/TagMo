@@ -129,11 +129,10 @@ class HexCodeViewer : AppCompatActivity() {
             val bigCanvas = Canvas(viewBitmap)
             bigCanvas.drawColor(Color.BLACK)
             for (i in 0 until size) {
-                val bitmap = bitmapCache[i.toString()]
-                if (null != bitmap) {
-                    bigCanvas.drawBitmap(bitmap, 0f, iHeight.toFloat(), paint)
-                    iHeight += bitmap.height
-                    bitmap.recycle()
+                bitmapCache[i.toString()]?.let {
+                    bigCanvas.drawBitmap(it, 0f, iHeight.toFloat(), paint)
+                    iHeight += it.height
+                    it.recycle()
                 }
             }
         }

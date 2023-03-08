@@ -80,16 +80,12 @@ class FlaskSlotAdapter(
     override fun onBindViewHolder(holder: FlaskViewHolder, position: Int) {
 //        setIsHighlighted(holder, position)
         holder.itemView.setOnClickListener {
-            if (null != holder.listener) {
-                holder.listener.onAmiiboClicked(holder.amiibo, holder.bindingAdapterPosition)
-            }
+            holder.listener?.onAmiiboClicked(holder.amiibo, holder.bindingAdapterPosition)
         }
         holder.imageAmiibo?.setOnClickListener {
-            if (null != holder.listener) {
-                if (settings.amiiboView == VIEW.IMAGE.value)
-                    holder.listener.onAmiiboClicked(holder.amiibo, holder.bindingAdapterPosition)
-                else holder.listener.onAmiiboImageClicked(holder.amiibo)
-            }
+            if (settings.amiiboView == VIEW.IMAGE.value)
+                holder.listener?.onAmiiboClicked(holder.amiibo, holder.bindingAdapterPosition)
+            else holder.listener?.onAmiiboImageClicked(holder.amiibo)
         }
         holder.bind(getItem(position))
     }
@@ -139,7 +135,7 @@ class FlaskSlotAdapter(
 
         fun bind(item: Amiibo?) {
             amiibo = item
-            val amiiboHexId: String
+            var amiiboHexId = ""
             var amiiboSeries = ""
             var amiiboType = ""
             var gameSeries = ""
@@ -181,10 +177,12 @@ class FlaskSlotAdapter(
                     txtAmiiboType?.isGone = true
                     txtGameSeries?.isGone = true
                 } else {
-                    amiiboHexId = Amiibo.idToHex(amiibo!!.id)
-                    if (null != amiibo!!.amiiboSeries) amiiboSeries = amiibo!!.amiiboSeries!!.name
-                    if (null != amiibo!!.amiiboType) amiiboType = amiibo!!.amiiboType!!.name
-                    if (null != amiibo!!.gameSeries) gameSeries = amiibo!!.gameSeries!!.name
+                    amiibo?.let {
+                        amiiboHexId = Amiibo.idToHex(it.id)
+                        it.amiiboSeries?.let { series -> amiiboSeries = series.name }
+                        it.amiiboType?.let { type -> amiiboType = type.name }
+                        it.gameSeries?.let { series -> gameSeries = series.name }
+                    }
                     txtTagId?.isVisible = true
                     txtAmiiboSeries?.isVisible = true
                     txtAmiiboType?.isVisible = true

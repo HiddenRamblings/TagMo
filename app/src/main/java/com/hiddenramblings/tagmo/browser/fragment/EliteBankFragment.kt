@@ -1,6 +1,5 @@
 package com.hiddenramblings.tagmo.browser.fragment
 
-import android.app.Activity
 import android.app.Dialog
 import android.app.SearchManager
 import android.content.Context
@@ -22,6 +21,7 @@ import android.widget.TextView
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.*
 import androidx.cardview.widget.CardView
 import androidx.coordinatorlayout.widget.CoordinatorLayout
@@ -424,7 +424,7 @@ class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
     private val onActivateActivity = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
     ) { result: ActivityResult ->
-        if (result.resultCode != Activity.RESULT_OK || null == result.data)
+        if (result.resultCode != AppCompatActivity.RESULT_OK || null == result.data)
             return@registerForActivityResult
         if (NFCIntent.ACTION_NFC_SCANNED != result.data!!.action)
             return@registerForActivityResult
@@ -446,7 +446,7 @@ class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
     private val onUpdateTagResult = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
     ) { result: ActivityResult ->
-        if (result.resultCode != Activity.RESULT_OK || null == result.data) return@registerForActivityResult
+        if (result.resultCode != AppCompatActivity.RESULT_OK || null == result.data) return@registerForActivityResult
         if (NFCIntent.ACTION_NFC_SCANNED != result.data!!.action
             && NFCIntent.ACTION_EDIT_COMPLETE != result.data!!.action
         ) return@registerForActivityResult
@@ -482,7 +482,7 @@ class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
     private val onScanTagResult = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
     ) { result: ActivityResult ->
-        if (result.resultCode != Activity.RESULT_OK || null == result.data) return@registerForActivityResult
+        if (result.resultCode != AppCompatActivity.RESULT_OK || null == result.data) return@registerForActivityResult
         if (NFCIntent.ACTION_NFC_SCANNED != result.data!!.action) return@registerForActivityResult
         val tagData = result.data?.getByteArrayExtra(NFCIntent.EXTRA_TAG_DATA)
         clickedPosition = result.data!!.getIntExtra(NFCIntent.EXTRA_CURRENT_BANK, clickedPosition)
@@ -829,7 +829,7 @@ class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
     private val onOpenBanksActivity = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
     ) { result: ActivityResult ->
-        if (result.resultCode != Activity.RESULT_OK || null == result.data) return@registerForActivityResult
+        if (result.resultCode != AppCompatActivity.RESULT_OK || null == result.data) return@registerForActivityResult
         if (NFCIntent.ACTION_NFC_SCANNED != result.data!!.action) return@registerForActivityResult
         val bankCount = result.data!!.getIntExtra(
             NFCIntent.EXTRA_BANK_COUNT,

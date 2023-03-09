@@ -8,7 +8,6 @@ package com.hiddenramblings.tagmo.qrcode
 
 import android.Manifest
 import android.annotation.SuppressLint
-import android.app.Activity
 import android.app.Dialog
 import android.content.ContentValues
 import android.content.Intent
@@ -101,7 +100,7 @@ class QRCodeScanner : AppCompatActivity() {
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         setContentView(R.layout.activity_qr_code)
 
-        setResult(Activity.RESULT_CANCELED)
+        setResult(RESULT_CANCELED)
 
         barcodeScanner = BarcodeScanning.getClient(
             BarcodeScannerOptions.Builder().setBarcodeFormats(
@@ -195,7 +194,7 @@ class QRCodeScanner : AppCompatActivity() {
                                 Toasty(this@QRCodeScanner).Long(
                                     getString(R.string.wrote_file, fileName)
                                 )
-                                setResult(Activity.RESULT_OK)
+                                setResult(RESULT_OK)
                             } catch (e: Exception) {
                                 e.message?.let { Toasty(this@QRCodeScanner).Short(it) }
                             }

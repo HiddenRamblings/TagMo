@@ -116,17 +116,17 @@ class BluetoothHandler(
         }
     }
 
-    fun requestPermissions(context: Activity) {
+    fun requestPermissions(activity: Activity) {
         if (Version.isLowerThan(Build.VERSION_CODES.M)) {
-            val mBluetoothAdapter = getBluetoothAdapter(context)
+            val mBluetoothAdapter = getBluetoothAdapter(activity)
             mBluetoothAdapter?.let { listener.onAdapterEnabled(it) }
                 ?: onRequestBluetooth.launch(Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE))
         } else {
             if (ActivityCompat.shouldShowRequestPermissionRationale(
-                    context, Manifest.permission.ACCESS_FINE_LOCATION
+                    activity, Manifest.permission.ACCESS_FINE_LOCATION
                 )
             ) {
-                AlertDialog.Builder(context)
+                AlertDialog.Builder(activity)
                     .setMessage(R.string.location_disclosure)
                     .setCancelable(false)
                     .setPositiveButton(R.string.accept) { dialog: DialogInterface, _: Int ->
@@ -141,13 +141,13 @@ class BluetoothHandler(
                         listener.onPermissionsFailed() }
                     .show()
             } else if (ContextCompat.checkSelfPermission(
-                    context, Manifest.permission.ACCESS_FINE_LOCATION
+                    activity, Manifest.permission.ACCESS_FINE_LOCATION
                 ) == PackageManager.PERMISSION_GRANTED
             ) {
-                requestBluetooth(context)
+                requestBluetooth(activity)
             } else {
                 if (BuildConfig.GOOGLE_PLAY) {
-                    AlertDialog.Builder(context)
+                    AlertDialog.Builder(activity)
                         .setMessage(R.string.location_disclosure)
                         .setCancelable(false)
                         .setPositiveButton(R.string.accept) { dialog: DialogInterface, _: Int ->

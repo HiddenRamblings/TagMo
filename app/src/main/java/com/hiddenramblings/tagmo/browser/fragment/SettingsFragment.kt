@@ -1,6 +1,5 @@
 package com.hiddenramblings.tagmo.browser.fragment
 
-import android.app.Activity
 import android.app.Dialog
 import android.content.ActivityNotFoundException
 import android.content.Intent
@@ -17,6 +16,7 @@ import android.widget.TextView
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatActivity
 import androidx.preference.*
 import com.google.android.material.snackbar.Snackbar
 import com.hiddenramblings.tagmo.*
@@ -580,7 +580,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
     private val onLoadKeys = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
     ) { result: ActivityResult ->
-        if (result.resultCode != Activity.RESULT_OK || result.data == null) {
+        if (result.resultCode != AppCompatActivity.RESULT_OK || result.data == null) {
             CoroutineScope(Dispatchers.IO).launch(Dispatchers.IO) {
                 URL("https://pastebin.com/raw/aV23ha3X").openStream().use { stream ->
                     Scanner(stream).use {
@@ -605,7 +605,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
     private val onImportAmiiboDatabase = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
     ) { result: ActivityResult ->
-        if (result.resultCode != Activity.RESULT_OK || result.data == null) 
+        if (result.resultCode != AppCompatActivity.RESULT_OK || result.data == null)
             return@registerForActivityResult
         updateAmiiboDatabase(result.data!!.data)
     }
@@ -647,7 +647,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
         }
     }
 
-    private fun buildSnackbar(activity: Activity, msgRes: Int, length: Int): Snackbar {
+    private fun buildSnackbar(activity: AppCompatActivity, msgRes: Int, length: Int): Snackbar {
         return IconifiedSnackbar(activity).buildSnackbar(
             requireActivity().findViewById(R.id.preferences), msgRes, length
         )

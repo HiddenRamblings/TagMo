@@ -25,27 +25,29 @@ class SecurityHandler(activity: Activity?, listener: ProviderInstallListener?) {
         if (Version.isMarshmallow) {
             listener?.onProviderInstalled()
         } else {
-            ProviderInstaller.installIfNeededAsync(activity!!,
-                object : ProviderInstaller.ProviderInstallListener {
-                override fun onProviderInstalled() {
-                    listener?.onProviderInstalled()
-                }
-
-                override fun onProviderInstallFailed(errorCode: Int, recoveryIntent: Intent?) {
-                    val availability = GoogleApiAvailability.getInstance()
-                    if (availability.isUserResolvableError(errorCode)) {
-                        try {
-                            availability.showErrorDialogFragment(
-                                activity, errorCode, 7000
-                            ) { listener?.onProviderInstallFailed() }
-                        } catch (ex: IllegalArgumentException) {
-                            listener?.onProviderInstallException()
-                        }
-                    } else {
-                        listener?.onProviderInstallFailed()
+            activity?.let {
+                ProviderInstaller.installIfNeededAsync(it,
+                    object : ProviderInstaller.ProviderInstallListener {
+                    override fun onProviderInstalled() {
+                        listener?.onProviderInstalled()
                     }
-                }
-            })
+
+                    override fun onProviderInstallFailed(errorCode: Int, recoveryIntent: Intent?) {
+                        val availability = GoogleApiAvailability.getInstance()
+                        if (availability.isUserResolvableError(errorCode)) {
+                            try {
+                                availability.showErrorDialogFragment(
+                                    it, errorCode, 7000
+                                ) { listener?.onProviderInstallFailed() }
+                            } catch (ex: IllegalArgumentException) {
+                                listener?.onProviderInstallException()
+                            }
+                        } else {
+                            listener?.onProviderInstallFailed()
+                        }
+                    }
+                })
+            }
         }
     }
 

@@ -1,7 +1,6 @@
 package com.hiddenramblings.tagmo.browser.fragment
 
 import android.annotation.SuppressLint
-import android.app.Activity
 import android.app.ProgressDialog
 import android.content.DialogInterface
 import android.content.Intent
@@ -17,6 +16,7 @@ import android.widget.TextView
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.view.isGone
 import androidx.core.view.isVisible
@@ -65,7 +65,7 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
     val onUpdateTagResult = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
     ) { result: ActivityResult ->
-        if (result.resultCode != Activity.RESULT_OK || null == result.data)
+        if (result.resultCode != AppCompatActivity.RESULT_OK || null == result.data)
             return@registerForActivityResult
         if (NFCIntent.ACTION_NFC_SCANNED != result.data!!.action
             && NFCIntent.ACTION_UPDATE_TAG != result.data!!.action

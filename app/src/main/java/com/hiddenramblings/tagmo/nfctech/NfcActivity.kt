@@ -1,6 +1,5 @@
 package com.hiddenramblings.tagmo.nfctech
 
-import android.app.Activity
 import android.app.PendingIntent
 import android.content.*
 import android.nfc.NfcAdapter
@@ -216,7 +215,7 @@ class NfcActivity : AppCompatActivity() {
     private fun onTagDiscovered(intent: Intent) {
         val commandIntent = getIntent()
         val mode = commandIntent.action
-        setResult(Activity.RESULT_CANCELED)
+        setResult(RESULT_CANCELED)
         var update: ByteArray? = ByteArray(0)
         val tag = intent.parcelable<Tag>(NfcAdapter.EXTRA_TAG)
         tagTech = tag.technology()
@@ -568,7 +567,7 @@ class NfcActivity : AppCompatActivity() {
     }
 
     private fun getErrorDialog(
-        activity: Activity, title: Int, message: Int
+        activity: AppCompatActivity, title: Int, message: Int
     ) : AlertDialog.Builder {
         return AlertDialog.Builder(activity).setTitle(title).setMessage(message)
     }

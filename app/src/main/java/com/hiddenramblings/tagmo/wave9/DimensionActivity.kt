@@ -1,7 +1,6 @@
 package com.hiddenramblings.tagmo.wave9
 
 import android.annotation.SuppressLint
-import android.app.Activity
 import android.app.PendingIntent
 import android.content.Intent
 import android.content.IntentFilter
@@ -42,7 +41,7 @@ class DimensionActivity : AppCompatActivity() {
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         setContentView(R.layout.activity_webview)
 
-        setResult(Activity.RESULT_CANCELED)
+        setResult(RESULT_CANCELED)
 
         mWebView = findViewById(R.id.webview_content)
 

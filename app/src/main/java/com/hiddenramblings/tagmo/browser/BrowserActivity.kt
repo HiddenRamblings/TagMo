@@ -1098,7 +1098,6 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
         }
         toolbar.setOnMenuItemClickListener { menuItem ->
             clickedAmiibo = amiiboFile
-            val args = Bundle()
             val scan = Intent(this, NfcActivity::class.java)
             when (menuItem.itemId) {
                 R.id.mnu_scan -> {
@@ -1107,16 +1106,24 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                     return@setOnMenuItemClickListener true
                 }
                 R.id.mnu_write -> {
-                    args.putByteArray(NFCIntent.EXTRA_TAG_DATA, tagData)
-                    scan.action = NFCIntent.ACTION_WRITE_TAG_FULL
-                    onUpdateTagResult.launch(scan.putExtras(args))
+                    scan.apply {
+                        action = NFCIntent.ACTION_WRITE_TAG_FULL
+                        putExtras(Bundle().apply {
+                            putByteArray(NFCIntent.EXTRA_TAG_DATA, tagData)
+                        })
+                    }
+                    onUpdateTagResult.launch(scan)
                     return@setOnMenuItemClickListener true
                 }
                 R.id.mnu_update -> {
-                    args.putByteArray(NFCIntent.EXTRA_TAG_DATA, tagData)
-                    scan.action = NFCIntent.ACTION_WRITE_TAG_DATA
-                    scan.putExtra(NFCIntent.EXTRA_IGNORE_TAG_ID, ignoreTagId)
-                    onUpdateTagResult.launch(scan.putExtras(args))
+                    scan.apply {
+                        action = NFCIntent.ACTION_WRITE_TAG_DATA
+                        putExtra(NFCIntent.EXTRA_IGNORE_TAG_ID, ignoreTagId)
+                        putExtras(Bundle().apply {
+                            putByteArray(NFCIntent.EXTRA_TAG_DATA, tagData)
+                        })
+                    }
+                    onUpdateTagResult.launch(scan)
                     return@setOnMenuItemClickListener true
                 }
                 R.id.mnu_save -> {
@@ -1165,9 +1172,11 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                     return@setOnMenuItemClickListener true
                 }
                 R.id.mnu_edit -> {
-                    args.putByteArray(NFCIntent.EXTRA_TAG_DATA, tagData)
-                    val tagEdit = Intent(this, TagDataEditor::class.java)
-                    onUpdateTagResult.launch(tagEdit.putExtras(args))
+                    onUpdateTagResult.launch(Intent(this, TagDataEditor::class.java)
+                        .putExtras(Bundle().apply {
+                            putByteArray(NFCIntent.EXTRA_TAG_DATA, tagData)
+                        })
+                    )
                     return@setOnMenuItemClickListener true
                 }
                 R.id.mnu_view_hex -> {

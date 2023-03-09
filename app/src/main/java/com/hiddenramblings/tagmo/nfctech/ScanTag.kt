@@ -32,55 +32,55 @@ class ScanTag {
 
     fun onTagDiscovered(activity: BrowserActivity, intent: Intent) {
         val prefs = Preferences(activity.applicationContext)
-        var mifare: NTAG215? = null
+        val tag = intent.parcelable<Tag>(NfcAdapter.EXTRA_TAG)
+        val tagTech = tag.technology()
+        val mifare: NTAG215? = NTAG215[tag]
         try {
-            val tag = intent.parcelable<Tag>(NfcAdapter.EXTRA_TAG)
-            val tagTech = tag.technology()
-            mifare = NTAG215[tag]
-            mifare?.connect()
-                ?: throw Exception(activity.getString(R.string.error_tag_protocol, tagTech))
-            if (!hasTestedElite) {
-                hasTestedElite = true
-                if (!isPowerTag(mifare)) {
-                    isEliteDevice = isElite(mifare)
+            mifare?.let { ntag ->
+                ntag.connect()
+                if (!hasTestedElite) {
+                    hasTestedElite = true
+                    if (!isPowerTag(ntag)) {
+                        isEliteDevice = isElite(ntag)
+                    }
                 }
-            }
-            var banksCount = -1
-            var activeBank = -1
-            if (isEliteDevice) {
-                if (TagReader.needsFirmware(mifare)) {
-                    if (TagWriter.updateFirmware(mifare))
-                        Toasty(activity).Short(R.string.firmware_update)
-                    closeTagSilently(mifare)
-                    return
-                }
-                val bankParams = TagReader.getBankParams(mifare)
-                banksCount = bankParams?.get(1)?.toInt()?.and(0xFF) ?: banksCount
-                activeBank = bankParams?.get(0)?.toInt()?.and(0xFF) ?: activeBank
-            }
-            try {
+                var banksCount = -1
+                var activeBank = -1
                 if (isEliteDevice) {
-                    val signature = TagReader.getBankSignature(mifare)
-                    prefs.eliteSignature(signature)
-                    prefs.eliteActiveBank(activeBank)
-                    prefs.eliteBankCount(banksCount)
-                    activity.showElitePage(Bundle().apply {
-                        val titles = TagReader.readTagTitles(mifare, banksCount)
-                        putString(NFCIntent.EXTRA_SIGNATURE, signature)
-                        putInt(NFCIntent.EXTRA_BANK_COUNT, banksCount)
-                        putInt(NFCIntent.EXTRA_ACTIVE_BANK, activeBank)
-                        putStringArrayList(NFCIntent.EXTRA_AMIIBO_LIST, titles)
-                    })
-                } else {
-                    activity.updateAmiiboView(TagReader.readFromTag(mifare))
+                    if (TagReader.needsFirmware(ntag)) {
+                        if (TagWriter.updateFirmware(ntag))
+                            Toasty(activity).Short(R.string.firmware_update)
+                        closeTagSilently(ntag)
+                        return
+                    }
+                    val bankParams = TagReader.getBankParams(ntag)
+                    banksCount = bankParams?.get(1)?.toInt()?.and(0xFF) ?: banksCount
+                    activeBank = bankParams?.get(0)?.toInt()?.and(0xFF) ?: activeBank
                 }
-                hasTestedElite = false
-                isEliteDevice = false
-            } catch (ex: Exception) {
-                throw ex
-            } finally {
-                closeTagSilently(mifare)
-            }
+                try {
+                    if (isEliteDevice) {
+                        val signature = TagReader.getBankSignature(ntag)
+                        prefs.eliteSignature(signature)
+                        prefs.eliteActiveBank(activeBank)
+                        prefs.eliteBankCount(banksCount)
+                        activity.showElitePage(Bundle().apply {
+                            val titles = TagReader.readTagTitles(ntag, banksCount)
+                            putString(NFCIntent.EXTRA_SIGNATURE, signature)
+                            putInt(NFCIntent.EXTRA_BANK_COUNT, banksCount)
+                            putInt(NFCIntent.EXTRA_ACTIVE_BANK, activeBank)
+                            putStringArrayList(NFCIntent.EXTRA_AMIIBO_LIST, titles)
+                        })
+                    } else {
+                        activity.updateAmiiboView(TagReader.readFromTag(ntag))
+                    }
+                    hasTestedElite = false
+                    isEliteDevice = false
+                } catch (ex: Exception) {
+                    throw ex
+                } finally {
+                    closeTagSilently(ntag)
+                }
+            } ?: throw Exception(activity.getString(R.string.error_tag_protocol, tagTech))
         } catch (e: Exception) {
             Debug.warn(e)
             Debug.getExceptionCause(e)?.let { error ->

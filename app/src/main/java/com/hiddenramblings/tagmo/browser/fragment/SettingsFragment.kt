@@ -24,9 +24,9 @@ import com.hiddenramblings.tagmo.NFCIntent.FilterComponent
 import com.hiddenramblings.tagmo.NFCIntent.getIntent
 import com.hiddenramblings.tagmo.R
 import com.hiddenramblings.tagmo.amiibo.AmiiboManager
-import com.hiddenramblings.tagmo.amiibo.AmiiboManager.Companion.parse
-import com.hiddenramblings.tagmo.amiibo.AmiiboManager.Companion.parseAmiiboAPI
-import com.hiddenramblings.tagmo.amiibo.AmiiboManager.Companion.saveDatabase
+import com.hiddenramblings.tagmo.amiibo.AmiiboManager.parse
+import com.hiddenramblings.tagmo.amiibo.AmiiboManager.parseAmiiboAPI
+import com.hiddenramblings.tagmo.amiibo.AmiiboManager.saveDatabase
 import com.hiddenramblings.tagmo.amiibo.KeyManager
 import com.hiddenramblings.tagmo.browser.BrowserActivity
 import com.hiddenramblings.tagmo.eightbit.io.Debug

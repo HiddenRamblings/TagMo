@@ -35,8 +35,8 @@ import com.hiddenramblings.tagmo.*
 import com.hiddenramblings.tagmo.amiibo.Amiibo
 import com.hiddenramblings.tagmo.amiibo.AmiiboFile
 import com.hiddenramblings.tagmo.amiibo.AmiiboManager
-import com.hiddenramblings.tagmo.amiibo.AmiiboManager.Companion.getAmiiboManager
-import com.hiddenramblings.tagmo.amiibo.AmiiboManager.Companion.hasSpoofData
+import com.hiddenramblings.tagmo.amiibo.AmiiboManager.getAmiiboManager
+import com.hiddenramblings.tagmo.amiibo.AmiiboManager.hasSpoofData
 import com.hiddenramblings.tagmo.amiibo.FlaskTag
 import com.hiddenramblings.tagmo.bluetooth.BluetoothHandler
 import com.hiddenramblings.tagmo.bluetooth.BluetoothHandler.BluetoothListener

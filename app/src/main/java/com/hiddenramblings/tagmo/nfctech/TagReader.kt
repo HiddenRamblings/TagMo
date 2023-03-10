@@ -52,11 +52,11 @@ object TagReader {
 
     @Throws(Exception::class)
     fun readTagDocument(uri: Uri?): ByteArray? {
-        return if (uri != null) {
-            appContext.contentResolver.openInputStream(uri).use { inputStream ->
-                return inputStream?.let { getTagData(uri.path, it) }
+        return uri?.let { stream ->
+            appContext.contentResolver.openInputStream(stream).use { inputStream ->
+                inputStream?.let { getTagData(stream.path, it) }
             }
-        } else null
+        }
     }
 
     @Throws(Exception::class)

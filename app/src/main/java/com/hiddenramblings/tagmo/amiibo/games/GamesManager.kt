@@ -81,11 +81,11 @@ class GamesManager {
 
         @Throws(IOException::class, JSONException::class, ParseException::class)
         fun parse(context: Context, uri: Uri?): GamesManager? {
-            return if (uri != null) {
-                context.contentResolver.openInputStream(uri).use { inputSteam ->
+            return uri?.let { stream ->
+                context.contentResolver.openInputStream(stream).use { inputSteam ->
                     inputSteam?.let { parse(it) }
                 }
-            } else null
+            }
         }
 
         @Throws(IOException::class, JSONException::class, ParseException::class)

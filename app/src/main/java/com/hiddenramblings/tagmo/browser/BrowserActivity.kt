@@ -63,11 +63,11 @@ import com.google.android.play.core.appupdate.AppUpdateInfo
 import com.hiddenramblings.tagmo.*
 import com.hiddenramblings.tagmo.NFCIntent.FilterComponent
 import com.hiddenramblings.tagmo.amiibo.*
-import com.hiddenramblings.tagmo.amiibo.AmiiboManager.Companion.binFileMatches
-import com.hiddenramblings.tagmo.amiibo.AmiiboManager.Companion.getAmiiboManager
-import com.hiddenramblings.tagmo.amiibo.AmiiboManager.Companion.hasSpoofData
-import com.hiddenramblings.tagmo.amiibo.AmiiboManager.Companion.listAmiiboDocuments
-import com.hiddenramblings.tagmo.amiibo.AmiiboManager.Companion.listAmiibos
+import com.hiddenramblings.tagmo.amiibo.AmiiboManager.binFileMatches
+import com.hiddenramblings.tagmo.amiibo.AmiiboManager.getAmiiboManager
+import com.hiddenramblings.tagmo.amiibo.AmiiboManager.hasSpoofData
+import com.hiddenramblings.tagmo.amiibo.AmiiboManager.listAmiiboDocuments
+import com.hiddenramblings.tagmo.amiibo.AmiiboManager.listAmiiboFiles
 import com.hiddenramblings.tagmo.amiibo.PowerTagManager.powerTagManager
 import com.hiddenramblings.tagmo.amiibo.games.GamesManager
 import com.hiddenramblings.tagmo.amiibo.games.GamesManager.Companion.getGamesManager
@@ -1791,12 +1791,12 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
 
     private fun loadAmiiboFiles(rootFolder: File?, recursiveFiles: Boolean) {
         CoroutineScope(Dispatchers.IO).launch(Dispatchers.IO) {
-            val amiiboFiles = listAmiibos(keyManager, rootFolder, recursiveFiles)
+            val amiiboFiles = listAmiiboFiles(keyManager, rootFolder, recursiveFiles)
             val download = Storage.getDownloadDir("TagMo")
             if (isDirectoryHidden(rootFolder, download, recursiveFiles))
-                amiiboFiles.addAll(listAmiibos(keyManager, download, true))
+                amiiboFiles.addAll(listAmiiboFiles(keyManager, download, true))
             val foomiibo = File(filesDir, "Foomiibo")
-            amiiboFiles.addAll(listAmiibos(keyManager, foomiibo, true))
+            amiiboFiles.addAll(listAmiiboFiles(keyManager, foomiibo, true))
             withContext(Dispatchers.Main) {
                 hideFakeSnackbar()
                 settings?.amiiboFiles = amiiboFiles
@@ -1816,7 +1816,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                 return@launch
             }
             val foomiibo = File(filesDir, "Foomiibo")
-            amiiboFiles.addAll(listAmiibos(keyManager, foomiibo, true))
+            amiiboFiles.addAll(listAmiiboFiles(keyManager, foomiibo, true))
             withContext(Dispatchers.Main) {
                 hideFakeSnackbar()
                 settings?.amiiboFiles = amiiboFiles

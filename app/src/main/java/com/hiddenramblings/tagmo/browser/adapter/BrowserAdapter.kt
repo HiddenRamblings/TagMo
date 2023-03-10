@@ -24,7 +24,7 @@ import com.hiddenramblings.tagmo.TagMo
 import com.hiddenramblings.tagmo.amiibo.Amiibo
 import com.hiddenramblings.tagmo.amiibo.AmiiboFile
 import com.hiddenramblings.tagmo.amiibo.AmiiboFileComparator
-import com.hiddenramblings.tagmo.amiibo.AmiiboManager.Companion.hasSpoofData
+import com.hiddenramblings.tagmo.amiibo.AmiiboManager.hasSpoofData
 import com.hiddenramblings.tagmo.browser.BrowserSettings
 import com.hiddenramblings.tagmo.browser.BrowserSettings.*
 import com.hiddenramblings.tagmo.eightbit.os.Storage

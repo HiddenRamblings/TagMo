@@ -87,9 +87,8 @@ class HexCodeViewer : AppCompatActivity() {
             Toasty(this@HexCodeViewer).Short(getString(R.string.fail_bitmap))
             return
         }
-        val adapter = view.adapter as HexAdapter?
-        var viewBitmap: Bitmap? = null
-        if (adapter != null) {
+        var viewBitmap: Bitmap?
+        (view.adapter as HexAdapter).let { adapter ->
             val size = adapter.itemCount
             var height = 0
             val paint = Paint()
@@ -126,13 +125,15 @@ class HexCodeViewer : AppCompatActivity() {
             viewBitmap = Bitmap.createBitmap(
                 view.measuredWidth, height, Bitmap.Config.ARGB_8888
             )
-            val bigCanvas = Canvas(viewBitmap)
-            bigCanvas.drawColor(Color.BLACK)
-            for (i in 0 until size) {
-                bitmapCache[i.toString()]?.let {
-                    bigCanvas.drawBitmap(it, 0f, iHeight.toFloat(), paint)
-                    iHeight += it.height
-                    it.recycle()
+            val bigCanvas = viewBitmap?.let { Canvas(it) }
+            bigCanvas?.let { canvas ->
+                canvas.drawColor(Color.BLACK)
+                for (i in 0 until size) {
+                    bitmapCache[i.toString()]?.let {
+                        canvas.drawBitmap(it, 0f, iHeight.toFloat(), paint)
+                        iHeight += it.height
+                        it.recycle()
+                    }
                 }
             }
         }
@@ -150,7 +151,7 @@ class HexCodeViewer : AppCompatActivity() {
         val file = File(dir, filename + "-" + System.currentTimeMillis() + ".png")
         try {
             FileOutputStream(file).use { fos ->
-                viewBitmap.compress(Bitmap.CompressFormat.PNG, 100, fos)
+                viewBitmap?.compress(Bitmap.CompressFormat.PNG, 100, fos)
                 Toasty(this@HexCodeViewer).Short(getString(
                         R.string.wrote_file, Storage.getRelativePath(file, prefs.preferEmulated())
                 ))
@@ -158,7 +159,7 @@ class HexCodeViewer : AppCompatActivity() {
         } catch (e: IOException) {
             Debug.warn(e)
         } finally {
-            viewBitmap.recycle()
+            viewBitmap?.recycle()
         }
     }
 

@@ -302,8 +302,7 @@ class BluetoothHelper : BluetoothProfile.ServiceListener {
 
     fun connect(dev: BluetoothDevice, on: Boolean) {
         checkOrThrow()
-        val host = mHidHost
-        if (host != null) {
+        mHidHost?.let { host ->
             val state = host.getConnectionState(dev)
             if (state == BluetoothAdapter.STATE_CONNECTED && !on) {
                 host.disconnect(dev)
@@ -327,8 +326,7 @@ class BluetoothHelper : BluetoothProfile.ServiceListener {
     }
 
     fun getDeviceState(dev: BluetoothDevice): Int {
-        val host = mHidHost
-        if (host != null && host.getConnectionState(dev) == BluetoothAdapter.STATE_CONNECTED)
+        if (mHidHost?.getConnectionState(dev) == BluetoothAdapter.STATE_CONNECTED)
             return BT_STATE_CONNECTED
         if (dev.bondState == BluetoothDevice.BOND_BONDED)
             return BT_STATE_PAIRED

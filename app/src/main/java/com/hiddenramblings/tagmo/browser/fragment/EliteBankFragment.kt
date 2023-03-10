@@ -39,7 +39,7 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior.BottomSheetCa
 import com.hiddenramblings.tagmo.*
 import com.hiddenramblings.tagmo.amiibo.Amiibo
 import com.hiddenramblings.tagmo.amiibo.AmiiboFile
-import com.hiddenramblings.tagmo.amiibo.AmiiboManager.Companion.getAmiiboManager
+import com.hiddenramblings.tagmo.amiibo.AmiiboManager.getAmiiboManager
 import com.hiddenramblings.tagmo.amiibo.EliteTag
 import com.hiddenramblings.tagmo.amiibo.KeyManager
 import com.hiddenramblings.tagmo.amiibo.tagdata.TagDataEditor

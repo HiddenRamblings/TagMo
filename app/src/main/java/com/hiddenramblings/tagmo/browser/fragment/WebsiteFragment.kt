@@ -16,7 +16,7 @@ import androidx.webkit.*
 import androidx.webkit.WebViewAssetLoader.AssetsPathHandler
 import com.hiddenramblings.tagmo.R
 import com.hiddenramblings.tagmo.TagMo
-import com.hiddenramblings.tagmo.amiibo.AmiiboManager.Companion.getAmiiboManager
+import com.hiddenramblings.tagmo.amiibo.AmiiboManager.getAmiiboManager
 import com.hiddenramblings.tagmo.browser.BrowserActivity
 import com.hiddenramblings.tagmo.eightbit.io.Debug
 import com.hiddenramblings.tagmo.eightbit.os.Storage

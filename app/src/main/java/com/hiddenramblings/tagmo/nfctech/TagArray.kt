@@ -140,8 +140,8 @@ object TagArray {
         val buffer = ByteBuffer.allocate(
             if (Version.isNougat) java.lang.Long.BYTES else 8
         )
-        if (bytes != null) {
-            buffer.put(bytes)
+        bytes?.let {
+            buffer.put(it)
             buffer.flip() // need flip
         }
         return try {

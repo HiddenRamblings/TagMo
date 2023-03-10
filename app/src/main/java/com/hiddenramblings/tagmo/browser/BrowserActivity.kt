@@ -179,8 +179,6 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
     private val statsHandler = Handler(Looper.getMainLooper())
     private val sheetHandler = Handler(Looper.getMainLooper())
 
-    private val loadingExecutor = Executors.newSingleThreadExecutor()
-
     public override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         prefs = Preferences(applicationContext)
@@ -788,18 +786,11 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
             updateUrl?.let { updateManager?.requestDownload(it) }
             return
         }
-        loadingExecutor.execute {
-            try {
-                if (!Debug.processLogcat(this)) {
-                    runOnUiThread { showWebsite(null) }
-                }
-            } catch (e: IOException) {
-                runOnUiThread {
-                    IconifiedSnackbar(this, viewPager).buildSnackbar(
-                        e.message, Snackbar.LENGTH_SHORT
-                    ).show()
-                }
-            }
+        try {
+            Debug.processLogcat(this@BrowserActivity)
+        } catch (e: IOException) {
+            IconifiedSnackbar(this@BrowserActivity, viewPager)
+                .buildSnackbar(e.message, Snackbar.LENGTH_SHORT).show()
         }
     }
 
@@ -2665,7 +2656,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
             || NfcAdapter.ACTION_TECH_DISCOVERED == intent.action
             || NfcAdapter.ACTION_TAG_DISCOVERED == intent.action) {
             if (keyManager.isKeyMissing) return
-            loadingExecutor.execute {
+            Executors.newSingleThreadExecutor().execute {
                 tagScanner.onTagDiscovered(this@BrowserActivity, intent)
             }
         }

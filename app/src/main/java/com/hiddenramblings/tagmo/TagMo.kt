@@ -62,7 +62,9 @@ class TagMo : Application() {
             ANRWatchDog(30000).setANRListener { error: ANRError ->
                 val exception = StringWriter()
                 error.printStackTrace(PrintWriter(exception))
-                Debug.processException(this, exception.toString())
+                try {
+                    Debug.processException(this, exception.toString())
+                } catch (ignored: Exception) { }
             }.start()
         }
         Thread.setDefaultUncaughtExceptionHandler { _: Thread?, error: Throwable ->
@@ -72,7 +74,9 @@ class TagMo : Application() {
             try {
                 Toast.makeText(this, R.string.logcat_crash, Toast.LENGTH_SHORT).show()
             } catch (ignored: Exception) { }
-            Debug.processException(this, exception.toString())
+            try {
+                Debug.processException(this, exception.toString())
+            } catch (ignored: Exception) { }
             exitProcess(0)
         }
         setThemePreference()

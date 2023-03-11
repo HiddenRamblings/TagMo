@@ -475,6 +475,7 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
         // amiiboFilesView.setHasFixedSize(true);
         val toggle = rootLayout.findViewById<AppCompatImageView>(R.id.toggle)
         bottomSheet = BottomSheetBehavior.from(rootLayout.findViewById(R.id.bottom_sheet))
+        bottomSheet?.state = BottomSheetBehavior.STATE_COLLAPSED
         setBottomSheetHidden(false)
         bottomSheet?.addBottomSheetCallback(object : BottomSheetCallback() {
             override fun onStateChanged(bottomSheet: View, newState: Int) {
@@ -1181,22 +1182,28 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
         super.onDestroy()
     }
 
+    private fun onFragmentLoaded() {
+        if (statusBar?.isShown != true) {
+            fragmentHandler.postDelayed({
+                when (noticeState) {
+                    STATE.SCANNING, STATE.TIMEOUT -> {
+                        showScanningNotice()
+                        selectBluetoothDevice()
+                    }
+                    STATE.CONNECT -> showConnectionNotice()
+                    STATE.MISSING -> showDisconnectNotice()
+                    else -> {}
+                }
+            }, TagMo.uiDelay.toLong())
+            setBottomSheetHidden(false)
+            onBottomSheetChanged(if (null == deviceAddress) SHEET.LOCKED else SHEET.MENU)
+        }
+    }
+
     override fun onResume() {
         isFragmentVisible = true
         super.onResume()
-        if (statusBar?.isShown == true) return
-        fragmentHandler.postDelayed({
-            when (noticeState) {
-                STATE.SCANNING, STATE.TIMEOUT -> {
-                    showScanningNotice()
-                    selectBluetoothDevice()
-                }
-                STATE.CONNECT -> showConnectionNotice()
-                STATE.MISSING -> showDisconnectNotice()
-                else -> {}
-            }
-        }, TagMo.uiDelay.toLong())
-        onBottomSheetChanged(if (null == deviceAddress) SHEET.LOCKED else SHEET.MENU)
+        onFragmentLoaded()
     }
 
     override fun onAmiiboClicked(amiibo: Amiibo?, position: Int) {

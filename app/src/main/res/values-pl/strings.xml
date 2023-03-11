@@ -22,6 +22,7 @@
     <string name="proceed">Kontynuuj</string>
     <string name="unlock">Odblokuj</string>
     <string name="scan">Skanuj</string>
+    <string name="retry">Powtórka</string>
 
     <string name="amiibo_id">ID</string>
     <string name="amiibo_name">Nazwa</string>

@@ -1,14 +1,21 @@
 <resources>
     <string name="topCenterTextMessage">Legen Sie das Etikett unter das Telefon</string>
 
+    <string name="fixed_key_found">&#171;locked-secret&#187; gespeichert / geladen.</string>
+    <string name="fixed_key_missing">&#171;locked-secret&#187; fehlende!</string>
+    <string name="unfixed_key_found">&#171;unfixed-info&#187; gespeichert / geladen.</string>
+    <string name="unfixed_key_missing">&#171;unfixed-info&#187; fehlende!</string>
+
     <string name="nfc_unsupported">NFC nicht unterstützt!</string>
     <string name="nfc_disabled">NFC deaktiviert!</string>
     <string name="nfc_available">NFC ist derzeit deaktiviert. NFC aktivieren?</string>
 
+    <string name="no_decrypt_key">Entschlüsselungsschlüssel nicht importiert</string>
+
     <string name="proceed">Weiterhin</string>
     <string name="scan">Scan</string>
     <string name="browser">Browser</string>
-    <string name="purchase">Kauf</string>
+    <string name="retry">Retry</string>
     <string name="save">Speichern</string>
 
     <string name="accept">Akzeptieren</string>
@@ -39,9 +46,5 @@
     <string name="conversion_message">GitHub- und Google Play-Versionen sind jetzt universell.\nKlicken Sie auf Weiter, um Installationskonflikte zu beheben.</string>
 
     <string name="notice_incomplete">Kommt bald!</string>
-    <string name="fixed_key_found">&#171;locked-secret&#187; zwischengespeichert / geladen.</string>
-    <string name="fixed_key_missing">Kein &#171;locked-secret&#187;!</string>
-    <string name="unfixed_key_found">&#171;unfixed-info&#187;  zwischengespeichert / geladen.</string>
-    <string name="unfixed_key_missing">Kein &#171;unfixed-info&#187;!</string>
     <string name="device_not_found">Kein Gerät / Tags gefunden!</string>
 </resources>

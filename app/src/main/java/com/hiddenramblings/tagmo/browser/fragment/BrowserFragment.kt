@@ -301,26 +301,27 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
     }
 
     fun buildFoomiiboSet() {
-        val amiiboManager = if (this::settings.isInitialized) settings.amiiboManager else null
-        if (null == amiiboManager) {
-            Toasty(requireContext()).Short(R.string.amiibo_failure_read)
-            return
-        }
-        val dialog = ProgressDialog.show(activity, "", "", true)
-        CoroutineScope(Dispatchers.IO).launch(Dispatchers.IO) {
-            deleteDir(null, directory)
-            directory.mkdirs()
-            amiiboManager.amiibos.values.forEach {
-                buildFoomiiboFile(it)
-                withContext(Dispatchers.Main) {
-                    dialog.setMessage(getString(R.string.foomiibo_progress, it.character!!.name))
+        try {
+            settings.amiiboManager?.let { amiiboManager ->
+                val dialog = ProgressDialog.show(activity, "", "", true)
+                CoroutineScope(Dispatchers.IO).launch(Dispatchers.IO) {
+                    deleteDir(null, directory)
+                    directory.mkdirs()
+                    amiiboManager.amiibos.values.forEach {
+                        buildFoomiiboFile(it)
+                        withContext(Dispatchers.Main) {
+                            dialog.setMessage(getString(R.string.foomiibo_progress, it.character!!.name))
+                        }
+                    }
+                    withContext(Dispatchers.Main) {
+                        dialog.dismiss()
+                        if (activity is BrowserActivity)
+                            (requireActivity() as BrowserActivity).onRefresh(false)
+                    }
                 }
-            }
-            withContext(Dispatchers.Main) {
-                dialog.dismiss()
-                if (activity is BrowserActivity)
-                    (requireActivity() as BrowserActivity).onRefresh(false)
-            }
+            } ?: Toasty(requireContext()).Short(R.string.amiibo_failure_read)
+        } catch (ex: Exception) {
+            Toasty(TagMo.appContext).Short(R.string.amiibo_failure_read)
         }
     }
 

@@ -951,12 +951,14 @@ class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
         clickedPosition = position
         status = CLICKED.NOTHING
         onBottomSheetChanged(SHEET.AMIIBO)
-        if (null != amiibo.data && amiibo.index == position) {
-            updateAmiiboView(amiiboCard, amiibo.data, -1, position)
-        } else if (amiibo.id != 0L) {
-            updateAmiiboView(amiiboCard, null, amiibo.id, position)
-        } else {
-            scanAmiiboTag(position)
+        when {
+            null != amiibo.data && amiibo.index == position -> {
+                updateAmiiboView(amiiboCard, amiibo.data, -1, position)
+            }
+            amiibo.id != 0L -> {
+                updateAmiiboView(amiiboCard, null, amiibo.id, position)
+            }
+            else -> { scanAmiiboTag(position) }
         }
         bottomSheet!!.state = BottomSheetBehavior.STATE_EXPANDED
     }

@@ -171,7 +171,11 @@ object TagArray {
         val output = StringBuilder()
         var i = 0
         while (i < hex.length) {
-            output.append(hex.substring(i, i + 2).toInt(16).toChar())
+            try {
+                output.append(hex.substring(i, i + 2).toInt(16).toChar())
+            } catch (nf: NumberFormatException) {
+                output.append(Integer.parseInt(hex.substring(i, i + 2), 16).toChar())
+            }
             i += 2
         }
         return output.toString()

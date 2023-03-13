@@ -205,7 +205,6 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
 
     override fun onResume() {
         super.onResume()
-        (requireActivity() as BrowserActivity).onRootFolderChanged(false)
         browserScroller?.postDelayed({ setFoomiiboVisibility() }, TagMo.uiDelay.toLong())
     }
 
@@ -263,7 +262,7 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
             withContext(Dispatchers.Main) {
                 dialog.dismiss()
                 if (activity is BrowserActivity)
-                    (requireActivity() as BrowserActivity).onRefresh(false)
+                    (requireActivity() as BrowserActivity).onRootFolderChanged(false)
             }
         }
     }
@@ -316,7 +315,7 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
                     withContext(Dispatchers.Main) {
                         dialog.dismiss()
                         if (activity is BrowserActivity)
-                            (requireActivity() as BrowserActivity).onRefresh(false)
+                            (requireActivity() as BrowserActivity).onRootFolderChanged(false)
                     }
                 }
             } ?: Toasty(requireContext()).Short(R.string.amiibo_failure_read)

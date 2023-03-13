@@ -136,11 +136,6 @@ class WebsiteFragment : Fragment() {
             if (null == website) website = WEBSITE_README
             val webViewSettings = mWebView?.settings
             if (null != webViewSettings) {
-                if (website.startsWith(WEBSITE_README)) {
-                    webViewSettings.userAgentString = webViewSettings.userAgentString?.replace(
-                        ("(?i)" + Pattern.quote("android")).toRegex(), "TagMo"
-                    )
-                }
                 webViewSettings.setSupportZoom(true)
                 webViewSettings.builtInZoomControls = true
             }

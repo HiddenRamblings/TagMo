@@ -2,8 +2,10 @@
 <data-extraction-rules>
     <cloud-backup disableIfNoEncryptionCapabilities="false">
         <include domain="sharedpref" path="."/>
+        <include domain="file" path="Foomiibo" />
     </cloud-backup>
     <device-transfer>
         <include domain="sharedpref" path="."/>
+        <include domain="file" path="Foomiibo" />
     </device-transfer>
 </data-extraction-rules>

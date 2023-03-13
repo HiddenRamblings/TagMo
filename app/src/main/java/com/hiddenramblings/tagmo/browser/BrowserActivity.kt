@@ -1245,7 +1245,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                     if (tagData != null) {
                         fragment.buildFoomiiboFile(tagData)
                         itemView.callOnClick()
-                        onRefresh(true)
+                        onRootFolderChanged(true)
                     } else {
                         Toasty(this).Short(R.string.fail_save_data)
                     }
@@ -1289,7 +1289,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                 R.id.mnu_delete -> {
                     fragment.deleteFoomiiboFile(tagData)
                     itemView.callOnClick()
-                    onRefresh(true)
+                    onRootFolderChanged(true)
                     return@setOnMenuItemClickListener true
                 }
                 R.id.mnu_ignore_tag_id -> {
@@ -1327,7 +1327,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
         onRefresh(indicator)
     }
 
-    fun onRefresh(indicator: Boolean) {
+    private fun onRefresh(indicator: Boolean) {
         loadAmiiboManager()
         onRootFolderChanged(indicator)
     }
@@ -1784,9 +1784,9 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
 
     private fun isDirectoryHidden(rootFolder: File?, directory: File, recursive: Boolean): Boolean {
         if (null == rootFolder) return false
-        return rootFolder.path != directory.path || (!recursive
-                || (!rootFolder.path.startsWith(directory.path)
-                && !directory.path.startsWith(rootFolder.path)))
+        return !(rootFolder.canonicalPath == directory.canonicalPath || (recursive
+                && (rootFolder.canonicalPath.startsWith(directory.canonicalPath)
+                || directory.canonicalPath.startsWith(rootFolder.canonicalPath))))
     }
 
     private fun loadAmiiboFiles(rootFolder: File?, recursiveFiles: Boolean) {

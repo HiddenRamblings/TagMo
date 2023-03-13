@@ -28,8 +28,8 @@ Additional thanks go out to (alphabetically):
 * Supercool330 - [Encryption help](https://gbatemp.net/search/2757547/)
 
 ### Source
-* hax0karti - [Amiibo Generator For Wumiibo](https://github.com/hax0kartik/amiibo-generator)
 * Falco20019 - [libamiibo](https://github.com/Falco20019/libamiibo)
+* hax0karti - [Amiibo Generator For Wumiibo](https://github.com/hax0kartik/amiibo-generator)
 * N3evin - [AmiiboAPI](https://github.com/N3evin/AmiiboAPI)
 * socram8888 - [amiitool](https://github.com/socram8888/amiitool)
 

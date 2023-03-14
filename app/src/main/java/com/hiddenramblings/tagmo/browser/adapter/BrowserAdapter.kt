@@ -13,6 +13,7 @@ import android.widget.TextView
 import androidx.appcompat.widget.AppCompatImageView
 import androidx.core.content.ContextCompat
 import androidx.core.view.isGone
+import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.request.target.CustomTarget
@@ -256,16 +257,16 @@ class BrowserAdapter(
             }
 
             override fun onLoadFailed(errorDrawable: Drawable?) {
-                imageAmiibo?.visibility = View.INVISIBLE
+                imageAmiibo?.isInvisible = true
             }
 
             override fun onLoadCleared(placeholder: Drawable?) {
-                imageAmiibo?.visibility = View.VISIBLE
+                imageAmiibo?.isInvisible = false
             }
 
             override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap?>?) {
                 imageAmiibo?.setImageBitmap(resource)
-                imageAmiibo?.visibility = View.VISIBLE
+                imageAmiibo?.isInvisible = false
             }
         }
 
@@ -319,37 +320,30 @@ class BrowserAdapter(
             val query = settings.query?.lowercase(Locale.getDefault())
             setAmiiboInfoText(txtName, amiiboName, false)
             if (settings.amiiboView != VIEW.IMAGE.value) {
-                val hasTagInfo = null != tagInfo
-                if (hasTagInfo) {
+                val isTagInfo = null != tagInfo
+                if (isTagInfo) {
                     setAmiiboInfoText(txtError, tagInfo, false)
                 } else {
                     txtError?.isGone = true
                 }
                 setAmiiboInfoText(
-                    txtTagId,
-                    boldSpannable.startsWith(amiiboHexId, query),
-                    hasTagInfo
+                    txtTagId, boldSpannable.startsWith(amiiboHexId, query), isTagInfo
                 )
                 setAmiiboInfoText(
-                    txtAmiiboSeries,
-                    boldSpannable.indexOf(amiiboSeries, query), hasTagInfo
+                    txtAmiiboSeries, boldSpannable.indexOf(amiiboSeries, query), isTagInfo
                 )
                 setAmiiboInfoText(
-                    txtAmiiboType,
-                    boldSpannable.indexOf(amiiboType, query), hasTagInfo
+                    txtAmiiboType, boldSpannable.indexOf(amiiboType, query), isTagInfo
                 )
                 setAmiiboInfoText(
-                    txtGameSeries,
-                    boldSpannable.indexOf(gameSeries, query), hasTagInfo
+                    txtGameSeries, boldSpannable.indexOf(gameSeries, query), isTagInfo
                 )
                 txtPath?.run {
                     item?.docUri?.let {
                         val relativeDocument = Storage.getRelativeDocument(it.uri)
                         val expanded = amiiboPath.contains(relativeDocument)
-                        itemView.findViewById<View>(R.id.menu_options).visibility =
-                            if (expanded) View.VISIBLE else View.GONE
-                        itemView.findViewById<View>(R.id.txtUsage).visibility =
-                            if (expanded) View.VISIBLE else View.GONE
+                        itemView.findViewById<View>(R.id.menu_options).isVisible = expanded
+                        itemView.findViewById<View>(R.id.txtUsage).isVisible = expanded
                         if (expanded) listener?.onAmiiboRebind(itemView, amiiboFile)
                         itemView.isEnabled = true
                         text = boldSpannable.indexOf(relativeDocument, query)
@@ -367,10 +361,8 @@ class BrowserAdapter(
                         setIsHighlighted(relativeDocument.startsWith("/Foomiibo/"))
                     } ?: item?.filePath?.let {
                         val expanded = amiiboPath.contains(it.absolutePath)
-                        itemView.findViewById<View>(R.id.menu_options).visibility =
-                            if (expanded) View.VISIBLE else View.GONE
-                        itemView.findViewById<View>(R.id.txtUsage).visibility =
-                            if (expanded) View.VISIBLE else View.GONE
+                        itemView.findViewById<View>(R.id.menu_options).isVisible = expanded
+                        itemView.findViewById<View>(R.id.txtUsage).isVisible = expanded
                         if (expanded) listener?.onAmiiboRebind(itemView, amiiboFile)
                         var relativeFile = Storage.getRelativePath(it, mPrefs.preferEmulated())
                         mPrefs.browserRootFolder()?.let { path ->
@@ -395,7 +387,7 @@ class BrowserAdapter(
                         text = ""
                         setTextColor(ContextCompat.getColor(context, R.color.tag_text))
                     }
-                    isVisible = true
+                    isGone = false
                 }
             }
             if (hasSpoofData(amiiboHexId)) txtTagId?.isEnabled = false
@@ -410,15 +402,17 @@ class BrowserAdapter(
             }
         }
 
-        fun setAmiiboInfoText(textView: TextView?, text: CharSequence?, hasTagInfo: Boolean) {
-            textView?.isGone = hasTagInfo
-            if (!hasTagInfo) {
-                 if (!text.isNullOrEmpty()) {
-                    textView?.text = text
-                    textView?.isEnabled = true
-                } else {
-                    textView?.setText(R.string.unknown)
-                    textView?.isEnabled = false
+        fun setAmiiboInfoText(textView: TextView?, text: CharSequence?, isTagInfo: Boolean) {
+            textView?.run {
+                isGone = isTagInfo
+                if (!isTagInfo) {
+                    if (text.isNullOrEmpty()) {
+                        setText(R.string.unknown)
+                        isEnabled = false
+                    } else {
+                        this.text = text
+                        isEnabled = true
+                    }
                 }
             }
         }

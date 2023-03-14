@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.appcompat.widget.AppCompatImageView
 import androidx.core.view.isGone
+import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.request.target.CustomTarget
@@ -111,16 +112,16 @@ class EliteBankAdapter     // setHasStableIds(true);
             }
 
             override fun onLoadFailed(errorDrawable: Drawable?) {
-                imageAmiibo?.visibility = View.INVISIBLE
+                imageAmiibo?.isInvisible = true
             }
 
             override fun onLoadCleared(placeholder: Drawable?) {
-                imageAmiibo?.visibility = View.VISIBLE
+                imageAmiibo?.isInvisible = false
             }
 
             override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap?>?) {
                 imageAmiibo?.setImageBitmap(resource)
-                imageAmiibo?.visibility = View.VISIBLE
+                imageAmiibo?.isInvisible = false
             }
         }
 
@@ -167,7 +168,7 @@ class EliteBankAdapter     // setHasStableIds(true);
                 GlideApp.with(it).clear(it)
                 if (amiiboImageUrl.isNullOrEmpty()) {
                     it.setImageResource(R.mipmap.ic_launcher_round)
-                    it.visibility = View.VISIBLE
+                    it.isInvisible = false
                 } else {
                     GlideApp.with(it).asBitmap().load(amiiboImageUrl).into(target)
                 }
@@ -175,19 +176,10 @@ class EliteBankAdapter     // setHasStableIds(true);
             if (settings.amiiboView != VIEW.IMAGE.value) {
                 txtError?.isGone = true
                 if (isAmiibo) {
-                    setAmiiboInfoText(txtTagId, boldSpannable.startsWith(amiiboHexId!!, query))
-                    setAmiiboInfoText(
-                        txtAmiiboSeries,
-                        boldSpannable.indexOf(amiiboSeries, query)
-                    )
-                    setAmiiboInfoText(
-                        txtAmiiboType,
-                        boldSpannable.indexOf(amiiboType, query)
-                    )
-                    setAmiiboInfoText(
-                        txtGameSeries,
-                        boldSpannable.indexOf(gameSeries, query)
-                    )
+                    setAmiiboInfoText(txtTagId, boldSpannable.startsWith(amiiboHexId, query))
+                    setAmiiboInfoText(txtAmiiboSeries, boldSpannable.indexOf(amiiboSeries, query))
+                    setAmiiboInfoText(txtAmiiboType, boldSpannable.indexOf(amiiboType, query))
+                    setAmiiboInfoText(txtGameSeries, boldSpannable.indexOf(gameSeries, query))
                 } else {
                     txtTagId?.isGone = true
                     txtAmiiboSeries?.isGone = true
@@ -198,13 +190,15 @@ class EliteBankAdapter     // setHasStableIds(true);
         }
 
         private fun setAmiiboInfoText(textView: TextView?, text: CharSequence?) {
-            textView?.isVisible = true
-             if (!text.isNullOrEmpty()) {
-                textView?.text = text
-                textView?.isEnabled = true
-            } else {
-                textView?.setText(R.string.unknown)
-                textView?.isEnabled = false
+            textView?.run {
+                isVisible = true
+                if (text.isNullOrEmpty()) {
+                    setText(R.string.unknown)
+                    isEnabled = false
+                } else {
+                    this.text = text
+                    isEnabled = true
+                }
             }
         }
     }

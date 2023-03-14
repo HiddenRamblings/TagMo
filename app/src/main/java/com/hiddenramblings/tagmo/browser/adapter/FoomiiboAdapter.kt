@@ -11,6 +11,7 @@ import android.widget.Filterable
 import android.widget.TextView
 import androidx.appcompat.widget.AppCompatImageView
 import androidx.core.view.isGone
+import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.request.target.CustomTarget
@@ -230,16 +231,16 @@ class FoomiiboAdapter(
             }
 
             override fun onLoadFailed(errorDrawable: Drawable?) {
-                imageAmiibo?.visibility = View.INVISIBLE
+                imageAmiibo?.isInvisible = true
             }
 
             override fun onLoadCleared(placeholder: Drawable?) {
-                imageAmiibo?.visibility = View.VISIBLE
+                imageAmiibo?.isInvisible = false
             }
 
             override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap?>?) {
                 imageAmiibo?.setImageBitmap(resource)
-                imageAmiibo?.visibility = View.VISIBLE
+                imageAmiibo?.isInvisible = false
             }
         }
 

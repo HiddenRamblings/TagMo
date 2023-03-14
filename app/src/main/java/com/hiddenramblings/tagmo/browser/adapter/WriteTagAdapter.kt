@@ -13,7 +13,7 @@ import android.widget.TextView
 import androidx.appcompat.widget.AppCompatImageView
 import androidx.core.content.ContextCompat
 import androidx.core.view.isGone
-import androidx.core.view.isVisible
+import androidx.core.view.isInvisible
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
@@ -239,16 +239,16 @@ class WriteTagAdapter(private val settings: BrowserSettings?) :
             }
 
             override fun onLoadFailed(errorDrawable: Drawable?) {
-                imageAmiibo?.visibility = View.INVISIBLE
+                imageAmiibo?.isInvisible = true
             }
 
             override fun onLoadCleared(placeholder: Drawable?) {
-                imageAmiibo?.visibility = View.VISIBLE
+                imageAmiibo?.isInvisible = false
             }
 
             override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap?>?) {
                 imageAmiibo?.setImageBitmap(resource)
-                imageAmiibo?.visibility = View.VISIBLE
+                imageAmiibo?.isInvisible = false
             }
         }
 
@@ -300,28 +300,23 @@ class WriteTagAdapter(private val settings: BrowserSettings?) :
             val query = settings?.query?.lowercase(Locale.getDefault())
             setAmiiboInfoText(txtName, amiiboName, false)
             if (settings?.amiiboView != VIEW.IMAGE.value) {
-                val hasTagInfo = null != tagInfo
-                if (hasTagInfo) {
+                val isTagInfo = null != tagInfo
+                if (isTagInfo) {
                     setAmiiboInfoText(txtError, tagInfo, false)
                 } else {
                     txtError?.isGone = true
                 }
                 setAmiiboInfoText(
-                    txtTagId,
-                    boldSpannable.startsWith(amiiboHexId, query),
-                    hasTagInfo
+                    txtTagId, boldSpannable.startsWith(amiiboHexId, query), isTagInfo
                 )
                 setAmiiboInfoText(
-                    txtAmiiboSeries,
-                    boldSpannable.indexOf(amiiboSeries, query), hasTagInfo
+                    txtAmiiboSeries, boldSpannable.indexOf(amiiboSeries, query), isTagInfo
                 )
                 setAmiiboInfoText(
-                    txtAmiiboType,
-                    boldSpannable.indexOf(amiiboType, query), hasTagInfo
+                    txtAmiiboType, boldSpannable.indexOf(amiiboType, query), isTagInfo
                 )
                 setAmiiboInfoText(
-                    txtGameSeries,
-                    boldSpannable.indexOf(gameSeries, query), hasTagInfo
+                    txtGameSeries, boldSpannable.indexOf(gameSeries, query), isTagInfo
                 )
                 txtPath?.run {
                     item?.docUri?.let {
@@ -363,20 +358,22 @@ class WriteTagAdapter(private val settings: BrowserSettings?) :
                         text = ""
                         setTextColor(ContextCompat.getColor(context, R.color.tag_text))
                     }
-                    isVisible = true
+                    isGone = false
                 }
             }
         }
 
-        fun setAmiiboInfoText(textView: TextView?, text: CharSequence?, hasTagInfo: Boolean) {
-            textView?.isGone = hasTagInfo
-            if (!hasTagInfo) {
-                 if (!text.isNullOrEmpty()) {
-                    textView?.text = text
-                    textView?.isEnabled = true
-                } else {
-                    textView?.setText(R.string.unknown)
-                    textView?.isEnabled = false
+        fun setAmiiboInfoText(textView: TextView?, text: CharSequence?, isTagInfo: Boolean) {
+            textView?.run {
+                isGone = isTagInfo
+                if (!isTagInfo) {
+                    if (text.isNullOrEmpty()) {
+                        setText(R.string.unknown)
+                        isEnabled = false
+                    } else {
+                        this.text = text
+                        isEnabled = true
+                    }
                 }
             }
         }

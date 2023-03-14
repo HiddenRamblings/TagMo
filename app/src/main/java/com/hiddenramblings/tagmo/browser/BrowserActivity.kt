@@ -1552,8 +1552,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
             menuViewLarge = toolbar.menu.findItem(R.id.view_large)
             menuViewImage = toolbar.menu.findItem(R.id.view_image)
             menuRecursiveFiles = toolbar.menu.findItem(R.id.recursive)
-            toolbar.menu.findItem(R.id.mnu_joy_con).isVisible =
-                Version.isJellyBeanMR2
+            toolbar.menu.findItem(R.id.mnu_joy_con).isVisible = Version.isJellyBeanMR2
         }
         onSortChanged()
         onViewChanged()
@@ -1608,7 +1607,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
 
             override fun onMenuItemActionCollapse(menuItem: MenuItem): Boolean {
                 return if (BottomSheetBehavior.STATE_EXPANDED == bottomSheet?.state
-                    || View.VISIBLE == amiiboContainer?.visibility
+                    || amiiboContainer?.isVisible == true
                     || supportFragmentManager.backStackEntryCount > 0) {
                     onBackPressedDispatcher.onBackPressed()
                     false
@@ -2197,13 +2196,12 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                 txtUsage.isGone = true
                 val label = findViewById<TextView>(R.id.txtUsageLabel)
                 label.setOnClickListener {
-                    if (txtUsage.isVisible) {
-                        txtUsage.isGone = true
-                        label.setText(R.string.game_titles_view)
-                    } else {
-                        txtUsage.isVisible = true
-                        label.setText(R.string.game_titles_hide)
-                    }
+                    label.setText(
+                        if (txtUsage.isVisible)
+                            R.string.game_titles_view
+                        else R.string.game_titles_hide
+                    )
+                    txtUsage.isGone = txtUsage.isVisible
                 }
             } catch (ex: Exception) {
                 Debug.warn(ex)

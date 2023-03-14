@@ -810,7 +810,7 @@ class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
             imageAmiibo!!.setImageResource(R.mipmap.ic_launcher_round)
             imageAmiibo.visibility = View.VISIBLE
         } else {
-            imageAmiibo?.apply {
+            imageAmiibo?.run {
                 GlideApp.with(this).clear(this)
                 if (!amiiboImageUrl.isNullOrEmpty()) {
                     GlideApp.with(this).asBitmap().load(amiiboImageUrl).into(

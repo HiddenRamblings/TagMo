@@ -1097,24 +1097,22 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                     return@setOnMenuItemClickListener true
                 }
                 R.id.mnu_write -> {
-                    scan.apply {
+                    onUpdateTagResult.launch(scan.apply {
                         action = NFCIntent.ACTION_WRITE_TAG_FULL
                         putExtras(Bundle().apply {
                             putByteArray(NFCIntent.EXTRA_TAG_DATA, tagData)
                         })
-                    }
-                    onUpdateTagResult.launch(scan)
+                    })
                     return@setOnMenuItemClickListener true
                 }
                 R.id.mnu_update -> {
-                    scan.apply {
+                    onUpdateTagResult.launch(scan.apply {
                         action = NFCIntent.ACTION_WRITE_TAG_DATA
                         putExtra(NFCIntent.EXTRA_IGNORE_TAG_ID, ignoreTagId)
                         putExtras(Bundle().apply {
                             putByteArray(NFCIntent.EXTRA_TAG_DATA, tagData)
                         })
-                    }
-                    onUpdateTagResult.launch(scan)
+                    })
                     return@setOnMenuItemClickListener true
                 }
                 R.id.mnu_save -> {
@@ -2215,9 +2213,8 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                 }
                 val amiiboTagId = amiiboId
                 it.setOnClickListener {
-                    startActivity(Intent(
-                        this@BrowserActivity, ImageActivity::class.java
-                    ).putExtras(Bundle().apply {
+                    startActivity(Intent(this@BrowserActivity, ImageActivity::class.java)
+                        .putExtras(Bundle().apply {
                             putLong(NFCIntent.EXTRA_AMIIBO_ID, amiiboTagId)
                         })
                     )

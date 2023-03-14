@@ -135,7 +135,7 @@ class UpdateManager internal constructor(activity: BrowserActivity) {
                         }
                     } else {
                         @Suppress("DEPRECATION")
-                        val installIntent = Intent(Intent.ACTION_INSTALL_PACKAGE).apply {
+                        Intent(Intent.ACTION_INSTALL_PACKAGE).apply {
                             setDataAndType(Storage.getFileUri(apk),
                                 browserActivity.getString(R.string.mimetype_apk)
                             )
@@ -146,13 +146,14 @@ class UpdateManager internal constructor(activity: BrowserActivity) {
                                 addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
                             }
                             addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                        }
-                        try {
-                            startActivity(installIntent)
-                        } catch (anf: ActivityNotFoundException) {
+                        }.also {
                             try {
-                                startActivity(installIntent.setAction(Intent.ACTION_VIEW))
-                            } catch (ignored: ActivityNotFoundException) { }
+                                startActivity(it)
+                            } catch (anf: ActivityNotFoundException) {
+                                try {
+                                    startActivity(it.setAction(Intent.ACTION_VIEW))
+                                } catch (ignored: ActivityNotFoundException) { }
+                            }
                         }
                     }
                 }

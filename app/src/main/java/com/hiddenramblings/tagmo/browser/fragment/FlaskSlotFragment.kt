@@ -200,7 +200,7 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
                                     }
                                 }
                                 val adapter = flaskContent?.adapter as FlaskSlotAdapter?
-                                adapter?.apply {
+                                adapter?.run {
                                     addFlaskAmiibo(flaskAmiibos)
                                     withContext(Dispatchers.Main) {
                                         notifyItemRangeInserted(
@@ -312,7 +312,7 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
                         override fun onPuckActiveChanged(slot: Int) {
                             CoroutineScope(Dispatchers.IO).launch(Dispatchers.IO) {
                                 val adapter = flaskContent?.adapter as FlaskSlotAdapter?
-                                adapter?.apply {
+                                adapter?.run {
                                     val amiibo = getItem(slot)
                                     getActiveAmiibo(amiibo, amiiboTile)
                                     if (bottomSheet?.state == BottomSheetBehavior.STATE_COLLAPSED)
@@ -684,7 +684,7 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
 
     private fun resetActiveSlot() {
         val adapter = flaskContent?.adapter as FlaskSlotAdapter?
-        adapter?.apply {
+        adapter?.run {
             val amiibo = getItem(0)
             if (amiibo is FlaskTag) {
                 serviceFlask?.setActiveAmiibo(
@@ -753,7 +753,7 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
                 imageAmiibo!!.setImageResource(0)
                 imageAmiibo.visibility = View.INVISIBLE
             } else {
-                imageAmiibo?.apply {
+                imageAmiibo?.run {
                     GlideApp.with(this).clear(this)
                     if (!amiiboImageUrl.isNullOrEmpty()) {
                         GlideApp.with(this).asBitmap().load(amiiboImageUrl).into(

@@ -53,11 +53,10 @@ class DimensionActivity : AppCompatActivity() {
                 PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_MUTABLE
             else PendingIntent.FLAG_UPDATE_CURRENT
         )
-        val ndef = IntentFilter("android.nfc.action.NDEF_DISCOVERED").apply {
-            addDataType("*/*")
-        }
         try {
-            mFilters = arrayOf(ndef)
+            mFilters = arrayOf(IntentFilter("android.nfc.action.NDEF_DISCOVERED").apply {
+                addDataType("*/*")
+            })
             mTechLists = arrayOf(arrayOf(NfcA::class.java.name))
             nfc = NfcAdapter.getDefaultAdapter(this)
         } catch (e: IntentFilter.MalformedMimeTypeException) {

@@ -168,7 +168,7 @@ class FoomiiboAdapter(
                 filterResults.values = data
             }
             settings.query = query
-            settings.amiiboManager?. let {
+            settings.amiiboManager?.let {
                 data = ArrayList(it.amiibos.values)
             } ?: data.clear()
             val tempList: ArrayList<Amiibo> = arrayListOf()

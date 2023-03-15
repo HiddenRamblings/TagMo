@@ -122,7 +122,7 @@ class ImageActivity : AppCompatActivity() {
                 this@ImageActivity.amiiboManager = amiiboManager
                 withContext(Dispatchers.Main) { updateView(amiiboId) }
         }
-        GlideApp.with(imageView).load(getImageUrl(amiiboId)).into(imageView)
+        GlideApp.with(imageView).load(Amiibo.getImageUrl(amiiboId)).into(imageView)
         findViewById<View>(R.id.toggle).setOnClickListener {
             if (bottomSheetBehavior.state == BottomSheetBehavior.STATE_COLLAPSED) {
                 bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED)
@@ -184,10 +184,6 @@ class ImageActivity : AppCompatActivity() {
         }
     }
 
-    private fun getImageUrl(amiiboId: Long): String {
-        return Amiibo.getImageUrl(amiiboId)
-    }
-
     private fun onSaveClicked(prefs: Preferences, amiiboId: Long) {
         val view = layoutInflater.inflate(R.layout.dialog_save_item, null)
         val dialog = AlertDialog.Builder(this)
@@ -205,7 +201,7 @@ class ImageActivity : AppCompatActivity() {
                 override fun onLoadCleared(placeholder: Drawable?) { }
             }
             GlideApp.with(this@ImageActivity).asBitmap()
-                .load(getImageUrl(amiiboId))
+                .load(Amiibo.getImageUrl(amiiboId))
                 .skipMemoryCache(true)
                 .diskCacheStrategy(DiskCacheStrategy.NONE)
                 .into(saveImageTarget)

@@ -298,10 +298,12 @@ class WebsiteFragment : Fragment() {
                         filePath, Storage.getDownloadDir("TagMo", "Downloads")
                 )).start()
             } else {
-                for (binType in resources.getStringArray(R.array.mimetype_bin)) {
-                    if (base64File.contains("data:$binType;")) {
-                        setBinName(base64File, binType)
-                        break
+                run breaking@{
+                    resources.getStringArray(R.array.mimetype_bin).forEach { binType ->
+                        if (base64File.contains("data:$binType;")) {
+                            setBinName(base64File, binType)
+                            return@breaking
+                        }
                     }
                 }
             }

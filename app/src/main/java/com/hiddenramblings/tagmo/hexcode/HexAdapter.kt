@@ -41,10 +41,12 @@ class HexAdapter(tagData: ByteArray) : RecyclerView.Adapter<HexAdapter.ViewHolde
                             "%02X", java.lang.Byte.valueOf(tagData[index]).toInt() and 0xFF
                         )
                         var color = Color.WHITE
-                        for (t in TagMap.getTagMap) {
-                            if (t.index <= index) {
-                                color = t.color
-                                break
+                        run breaking@{
+                            TagMap.getTagMap.forEach {
+                                if (it.index <= index) {
+                                    color = it.color
+                                    return@breaking
+                                }
                             }
                         }
                         hexItem = HexItem(text, color)

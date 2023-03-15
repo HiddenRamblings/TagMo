@@ -456,13 +456,15 @@ class FlaskGattService : Service() {
     private fun getCharacteristicRX(mCustomService: BluetoothGattService): BluetoothGattCharacteristic {
         var mReadCharacteristic = mCustomService.getCharacteristic(FlaskRX)
         if (!mBluetoothGatt!!.readCharacteristic(mReadCharacteristic)) {
-            for (customRead in mCustomService.characteristics) {
-                val customUUID = customRead.uuid
-                /*get the read characteristic from the service*/
-                if (customUUID.compareTo(FlaskRX) == 0) {
-                    Debug.verbose(this.javaClass, "GattReadCharacteristic: $customUUID")
-                    mReadCharacteristic = mCustomService.getCharacteristic(customUUID)
-                    break
+            run breaking@{
+                mCustomService.characteristics.forEach {
+                    val customUUID = it.uuid
+                    /*get the read characteristic from the service*/
+                    if (customUUID.compareTo(FlaskRX) == 0) {
+                        Debug.verbose(this.javaClass, "GattReadCharacteristic: $customUUID")
+                        mReadCharacteristic = mCustomService.getCharacteristic(customUUID)
+                        return@breaking
+                    }
                 }
             }
         }
@@ -478,10 +480,12 @@ class FlaskGattService : Service() {
         if (null == mCustomService) {
             val services = supportedGattServices
             if (services.isNullOrEmpty()) throw UnsupportedOperationException()
-            for (customService in services) {
-                Debug.verbose(this.javaClass, "GattReadService: ${customService.uuid}")
-                mCharacteristicRX = getCharacteristicRX(customService)
-                break
+            run breaking@{
+                services.forEach {
+                    Debug.verbose(this.javaClass, "GattReadService: ${it.uuid}")
+                    mCharacteristicRX = getCharacteristicRX(it)
+                    return@breaking
+                }
             }
         } else {
             mCharacteristicRX = getCharacteristicRX(mCustomService)
@@ -492,12 +496,14 @@ class FlaskGattService : Service() {
     private fun getCharacteristicTX(mCustomService: BluetoothGattService): BluetoothGattCharacteristic {
         var mWriteCharacteristic = mCustomService.getCharacteristic(FlaskTX)
         if (!mCustomService.characteristics.contains(mWriteCharacteristic)) {
-            for (customWrite in mCustomService.characteristics) {
-                val customUUID = customWrite.uuid
-                if (customUUID.compareTo(FlaskTX) == 0) {
-                    Debug.verbose(this.javaClass, "GattWriteCharacteristic: $customUUID")
-                    mWriteCharacteristic = mCustomService.getCharacteristic(customUUID)
-                    break
+            run breaking@{
+                mCustomService.characteristics.forEach {
+                    val customUUID = it.uuid
+                    if (customUUID.compareTo(FlaskTX) == 0) {
+                        Debug.verbose(this.javaClass, "GattWriteCharacteristic: $customUUID")
+                        mWriteCharacteristic = mCustomService.getCharacteristic(customUUID)
+                        return@breaking
+                    }
                 }
             }
         }

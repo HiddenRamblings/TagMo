@@ -155,6 +155,7 @@ open class Amiibo : Comparable<Amiibo>, Parcelable {
         const val VARIANT_MASK = -0x10000000000L
         const val AMIIBO_MODEL_MASK = 0x00000000FFFF0000L
         const val UNKNOWN_MASK = 0x00000000000000FFL
+
         fun hexToId(value: String): Long {
             return java.lang.Long.decode(value)
         }

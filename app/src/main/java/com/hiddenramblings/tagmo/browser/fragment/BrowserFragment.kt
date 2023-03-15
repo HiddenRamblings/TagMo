@@ -74,14 +74,16 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
         val tagData = result.data?.getByteArrayExtra(NFCIntent.EXTRA_TAG_DATA)
         if (tagData?.isNotEmpty() == true) {
             var updated = false
-            for (data in resultData) {
-                try {
-                    if (data.isNotEmpty() && Amiibo.dataToId(data) == Amiibo.dataToId(tagData)) {
-                        updated = true
-                        resultData[resultData.indexOf(data)] = tagData
-                        break
-                    }
-                } catch (ignored: Exception) { }
+            run breaking@{
+                resultData.forEach { data ->
+                    try {
+                        if (data.isNotEmpty() && Amiibo.dataToId(data) == Amiibo.dataToId(tagData)) {
+                            updated = true
+                            resultData[resultData.indexOf(data)] = tagData
+                            return@breaking
+                        }
+                    } catch (ignored: Exception) { }
+                }
             }
             if (!updated) resultData.add(tagData)
         }
@@ -342,13 +344,15 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
 
     override fun onFoomiiboClicked(itemView: View?, amiibo: Amiibo?) {
         var tagData = byteArrayOf()
-        for (data in resultData) {
-            try {
-                if (data.isNotEmpty() && Amiibo.dataToId(data) == amiibo?.id) {
-                    tagData = data
-                    break
-                }
-            } catch (ignored: Exception) { }
+        run breaking@{
+            resultData.forEach { data ->
+                try {
+                    if (data.isNotEmpty() && Amiibo.dataToId(data) == amiibo?.id) {
+                        tagData = data
+                        return@breaking
+                    }
+                } catch (ignored: Exception) { }
+            }
         }
         if (tagData.isEmpty() && null != amiibo)
             tagData = foomiibo.generateData(Amiibo.idToHex(amiibo.id))
@@ -375,13 +379,15 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
 
     override fun onFoomiiboRebind(itemView: View?, amiibo: Amiibo?) {
         var tagData = byteArrayOf()
-        for (data in resultData) {
-            try {
-                if (data.isNotEmpty() && Amiibo.dataToId(data) == amiibo?.id) {
-                    tagData = data
-                    break
-                }
-            } catch (ignored: Exception) { }
+        run breaking@{
+            resultData.forEach { data ->
+                try {
+                    if (data.isNotEmpty() && Amiibo.dataToId(data) == amiibo?.id) {
+                        tagData = data
+                        return@breaking
+                    }
+                } catch (ignored: Exception) { }
+            }
         }
         if (tagData.isEmpty() && null != amiibo)
             tagData = foomiibo.generateData(Amiibo.idToHex(amiibo.id))

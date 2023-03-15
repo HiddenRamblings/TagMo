@@ -321,26 +321,26 @@ class TagDataEditor : AppCompatActivity() {
                 Debug.info(e)
                 -1
             }
-            if (amiiboId == -1L) {
-                tagInfo = getString(R.string.read_error)
-            } else if (amiiboId == 0L) {
-                tagInfo = getString(R.string.blank_tag)
-            } else {
-                var amiibo: Amiibo? = null
-                amiiboManager?.let {
-                    amiibo = it.amiibos[amiiboId]
-                    if (null == amiibo) amiibo = Amiibo(it, amiiboId, null, null)
-                }
-                amiibo?.let {
-                    amiiboHexId = Amiibo.idToHex(it.id)
-                    amiiboImageUrl = it.imageUrl
-                    it.name?.let { name -> amiiboName = name }
-                    it.amiiboSeries?.let { series -> amiiboSeries = series.name }
-                    it.amiiboType?.let { type -> amiiboType = type.name }
-                    it.gameSeries?.let { series -> gameSeries = series.name }
-                } ?: {
-                    tagInfo = "ID: " + Amiibo.idToHex(amiiboId)
-                    amiiboImageUrl = Amiibo.getImageUrl(amiiboId)
+            when (amiiboId) {
+                -1L -> { tagInfo = getString(R.string.read_error) }
+                0L -> { tagInfo = getString(R.string.blank_tag) }
+                else -> {
+                    var amiibo: Amiibo? = null
+                    amiiboManager?.let {
+                        amiibo = it.amiibos[amiiboId]
+                        if (null == amiibo) amiibo = Amiibo(it, amiiboId, null, null)
+                    }
+                    amiibo?.let {
+                        amiiboHexId = Amiibo.idToHex(it.id)
+                        amiiboImageUrl = it.imageUrl
+                        it.name?.let { name -> amiiboName = name }
+                        it.amiiboSeries?.let { series -> amiiboSeries = series.name }
+                        it.amiiboType?.let { type -> amiiboType = type.name }
+                        it.gameSeries?.let { series -> gameSeries = series.name }
+                    } ?: {
+                        tagInfo = "ID: " + Amiibo.idToHex(amiiboId)
+                        amiiboImageUrl = Amiibo.getImageUrl(amiiboId)
+                    }
                 }
             }
         }

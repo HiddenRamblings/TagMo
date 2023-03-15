@@ -94,10 +94,12 @@ class DonationManager internal constructor(private val activity: BrowserActivity
             billingResult: BillingResult, purchases: List<Purchase> ->
             if (billingResult.responseCode == BillingClient.BillingResponseCode.OK) {
                 purchases.forEach {
-                    for (sku in it.products) {
-                        if (subsPurchased.contains(sku)) {
-                            TagMo.hasSubscription = true
-                            break
+                    run breaking@{
+                        it.products.forEach { sku ->
+                            if (subsPurchased.contains(sku)) {
+                                TagMo.hasSubscription = true
+                                return@breaking
+                            }
                         }
                     }
                 }
@@ -120,9 +122,11 @@ class DonationManager internal constructor(private val activity: BrowserActivity
             billingResult: BillingResult, purchases: List<PurchaseHistoryRecord>? ->
             if (billingResult.responseCode == BillingClient.BillingResponseCode.OK) {
                 purchases?.forEach {
-                    for (sku in it.products) {
-                        if (sku.split("_").toTypedArray()[1].toInt() >= 10) {
-                            break
+                    run breaking@{
+                        it.products.forEach { sku ->
+                            if (sku.split("_").toTypedArray()[1].toInt() >= 10) {
+                                return@breaking
+                            }
                         }
                     }
                 }

@@ -296,7 +296,8 @@ class TagDataEditor : AppCompatActivity() {
             imageAmiibo.isGone = true
         }
 
-        override fun onLoadCleared(placeholder: Drawable?) {}
+        override fun onLoadCleared(placeholder: Drawable?) { }
+
         override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap?>?) {
             imageAmiibo.setImageBitmap(resource)
             imageAmiibo.isVisible = true

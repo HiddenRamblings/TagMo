@@ -49,9 +49,9 @@
                     android:contentDescription="@string/imageview_amiibo"
                     android:layout_width="match_parent"
                     android:layout_height="120dp"
+                    android:src="@drawable/ic_no_image_60"
                     android:layout_marginBottom="4dp"
-                    android:foreground="@drawable/card_foreground"
-                    android:visibility="invisible"/>
+                    android:foreground="@drawable/card_foreground" />
 
                 <View
                     android:id="@+id/imageDivider"

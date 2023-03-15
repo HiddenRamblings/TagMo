@@ -2100,7 +2100,8 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
             imageAmiibo?.isGone = true
         }
 
-        override fun onLoadCleared(placeholder: Drawable?) {}
+        override fun onLoadCleared(placeholder: Drawable?) { }
+
         override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap?>?) {
             imageAmiibo?.maxHeight = Resources.getSystem().displayMetrics.heightPixels / 3
             imageAmiibo?.requestLayout()

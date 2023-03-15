@@ -747,8 +747,8 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
                 if (hasSpoofData(amiiboHexId)) txtTagId.isEnabled = false
             }
             if (amiiboView === amiiboTile && null == amiiboImageUrl) {
-                imageAmiibo!!.setImageResource(R.mipmap.ic_launcher_round)
-                imageAmiibo.visibility = View.VISIBLE
+                imageAmiibo?.setImageResource(R.drawable.ic_no_image_60)
+                imageAmiibo?.isVisible = true
             } else if (amiiboView === amiiboCard && null == amiiboImageUrl) {
                 imageAmiibo!!.setImageResource(0)
                 imageAmiibo.visibility = View.INVISIBLE

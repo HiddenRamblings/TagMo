@@ -807,8 +807,8 @@ class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
         setAmiiboInfoText(txtAmiiboType, amiiboType, hasTagInfo)
         setAmiiboInfoText(txtGameSeries, gameSeries, hasTagInfo)
         if (amiiboView === amiiboTile && null == amiiboImageUrl) {
-            imageAmiibo!!.setImageResource(R.mipmap.ic_launcher_round)
-            imageAmiibo.visibility = View.VISIBLE
+            imageAmiibo?.setImageResource(R.drawable.ic_no_image_60)
+            imageAmiibo?.isVisible = true
         } else {
             imageAmiibo?.run {
                 GlideApp.with(this).clear(this)

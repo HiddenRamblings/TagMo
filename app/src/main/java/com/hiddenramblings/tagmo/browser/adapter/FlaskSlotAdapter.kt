@@ -105,21 +105,14 @@ class FlaskSlotAdapter(
         var amiibo: Amiibo? = null
 
         var target: CustomTarget<Bitmap?> = object : CustomTarget<Bitmap?>() {
-            override fun onLoadStarted(placeholder: Drawable?) {
-                imageAmiibo?.setImageResource(0)
-            }
-
             override fun onLoadFailed(errorDrawable: Drawable?) {
-                imageAmiibo?.isInvisible = true
+                imageAmiibo?.setImageResource(R.drawable.ic_no_image_60)
             }
 
-            override fun onLoadCleared(placeholder: Drawable?) {
-                imageAmiibo?.isInvisible = false
-            }
+            override fun onLoadCleared(placeholder: Drawable?) { }
 
             override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap?>?) {
                 imageAmiibo?.setImageBitmap(resource)
-                imageAmiibo?.isInvisible = false
             }
         }
 
@@ -163,8 +156,7 @@ class FlaskSlotAdapter(
             imageAmiibo?.let {
                 GlideApp.with(it).clear(it)
                 if (amiiboImageUrl.isNullOrEmpty()) {
-                    it.setImageResource(R.mipmap.ic_launcher_round)
-                    it.isInvisible = false
+                    it.setImageResource(R.drawable.ic_no_image_60)
                 } else {
                     GlideApp.with(it).asBitmap().load(amiiboImageUrl).into(target)
                 }

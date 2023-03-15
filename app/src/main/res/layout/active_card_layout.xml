@@ -49,10 +49,10 @@
                         android:id="@+id/imageAmiibo"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:src="@drawable/ic_no_image_60"
                         android:layout_marginBottom="4dp"
                         android:adjustViewBounds="true"
                         android:foreground="@drawable/card_foreground"
-                        android:visibility="invisible"
                         tools:ignore="UnusedAttribute" />
 
                     <View

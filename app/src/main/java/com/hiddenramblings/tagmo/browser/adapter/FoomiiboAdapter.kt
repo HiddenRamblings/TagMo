@@ -226,21 +226,14 @@ class FoomiiboAdapter(
         private val boldSpannable = BoldSpannable()
 
         var target: CustomTarget<Bitmap?> = object : CustomTarget<Bitmap?>() {
-            override fun onLoadStarted(placeholder: Drawable?) {
-                imageAmiibo?.setImageResource(0)
-            }
-
             override fun onLoadFailed(errorDrawable: Drawable?) {
-                imageAmiibo?.isInvisible = true
+                imageAmiibo?.setImageResource(R.drawable.ic_no_image_60)
             }
 
-            override fun onLoadCleared(placeholder: Drawable?) {
-                imageAmiibo?.isInvisible = false
-            }
+            override fun onLoadCleared(placeholder: Drawable?) { }
 
             override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap?>?) {
                 imageAmiibo?.setImageBitmap(resource)
-                imageAmiibo?.isInvisible = false
             }
         }
 
@@ -301,21 +294,16 @@ class FoomiiboAdapter(
                     txtError?.isGone = true
                 }
                 setFoomiiboInfoText(
-                    txtTagId,
-                    boldSpannable.startsWith(amiiboHexId, query),
-                    hasTagInfo
+                    txtTagId, boldSpannable.startsWith(amiiboHexId, query), hasTagInfo
                 )
                 setFoomiiboInfoText(
-                    txtAmiiboSeries,
-                    boldSpannable.indexOf(amiiboSeries, query), hasTagInfo
+                    txtAmiiboSeries, boldSpannable.indexOf(amiiboSeries, query), hasTagInfo
                 )
                 setFoomiiboInfoText(
-                    txtAmiiboType,
-                    boldSpannable.indexOf(amiiboType, query), hasTagInfo
+                    txtAmiiboType, boldSpannable.indexOf(amiiboType, query), hasTagInfo
                 )
                 setFoomiiboInfoText(
-                    txtGameSeries,
-                    boldSpannable.indexOf(gameSeries, query), hasTagInfo
+                    txtGameSeries, boldSpannable.indexOf(gameSeries, query), hasTagInfo
                 )
                 // setAmiiboInfoText(this.txtCharacter,
                 // boldText.Matching(character, query), hasTagInfo);

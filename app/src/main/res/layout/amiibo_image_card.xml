@@ -25,6 +25,7 @@
             android:contentDescription="@string/imageview_amiibo"
             android:layout_width="80dp"
             android:layout_height="80dp"
+            android:src="@drawable/ic_no_image_60"
             android:layout_gravity="center" />
 
         <TextView

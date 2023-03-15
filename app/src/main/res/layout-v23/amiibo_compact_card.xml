@@ -31,10 +31,10 @@
                 android:contentDescription="@string/imageview_amiibo"
                 android:layout_width="60dp"
                 android:layout_height="60dp"
+                android:src="@drawable/ic_no_image_60"
                 android:layout_gravity="center_vertical"
                 android:layout_marginEnd="8dp"
-                android:foreground="@drawable/card_foreground"
-                android:visibility="invisible" />
+                android:foreground="@drawable/card_foreground" />
 
             <TextView
                 android:id="@+id/txtError"

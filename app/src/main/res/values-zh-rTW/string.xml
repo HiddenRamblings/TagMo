@@ -58,6 +58,7 @@
     <string name="unlock">解鎖</string>
     <string name="scan">掃描</string>
     <string name="browser">瀏覽器</string>
+    <string name="retry">重試</string>
     <string name="save">儲存</string>
     <string name="cache">快取</string>
     <string name="write">寫入</string>
@@ -68,6 +69,7 @@
     <string name="delete">刪除</string>
     <string name="erase">抹除</string>
     <string name="activate">已啟用</string>
+    <string name="download">下載</string>
     <string name="parent">上一層</string>
     <string name="unknown">未知的</string>
     <string name="invalid">無效的</string>
@@ -95,7 +97,9 @@
     <string name="ignore_tag_id">忽略此Tag ID #</string>
     <string name="random_serial">隨機序號</string>
     <string name="inject_game_data">寫入遊戲儲存數據</string>
-    <string name="format_app_data">格式化遊戲儲存數據</string>
+    <string name="export_app_data">匯出APP數據</string>
+    <string name="import_app_data">匯入APP數據</string>
+    <string name="format_app_data">格式化APP數據</string>
     <string name="game_titles_view">檢視可支援的相關遊戲</string>
     <string name="game_titles_hide">隱藏可支援的相關遊戲</string>
 
@@ -125,10 +129,13 @@
 
     <string name="report_problem">程式意見反映</string>
     <string name="logcat_crash">出現嚴重錯誤，是否上傳操作日誌?</string>
+    <string name="send_donation">捐款贊助</string>
     <string name="settings_donate">捐款贊助程式開發</string>
     <string name="google_link">透過Google Play捐款</string>
     <string name="sponsor_link">透過GitHub捐款</string>
     <string name="paypal_link">透過PayPal捐款</string>
+    <string name="cancel_link">取消訂閱</string>
+    <string name="subscription_terms">使用按月贊助方案, 訂閱期間設定頁面內將有特別橫幅圖案.\n\n您隨時都可以點擊贊助頁面的按鈕或從GOOGLE PLAY商店設定來取消訂閱.</string>
     <string name="clear_foomiibo_set">清除 Foomiibo</string>
     <string name="build_foomiibo_set">建立 Foomiibo</string>
     <string name="foomiibo_progress">正在建立 %1$s&#8230;</string>
@@ -181,6 +188,7 @@
     <string name="lego_dimensions">樂高次元</string>
     <string name="connect_joy_con">Joy-Con 測試</string>
 
+    <string name="activity_unavailable">請稍後再試</string>
     <string name="storage_unavailable">無法存取手機的儲存空間！</string>
     <string name="allow">允許</string>
     
@@ -289,7 +297,7 @@
     <string name="flask_located">正在連接Bluup Flask&#8230;</string>
     <string name="flask_disconnect">Flask 藍牙連線無法使用！</string>
     <string name="flask_count">Slot %1$s 可啟用，%2$d Slots 已執行</string>
-    <string name="write_slot_file">將二進位檔案上傳到Bluup Flask</string>
+    <string name="write_slot_file">將二進位檔案上傳到GATT 設備</string>
     <string name="write_slots">寫入 %1$d slots</string>
     <string name="erase_slots">抹除 %1$d slots</string>
     <string name="slots_full">所有的Bluup Flask slots都已佔用</string>
@@ -304,6 +312,7 @@
     <string name="fail_permissions">無法取得執行所需的權限！</string>
     <string name="location_disclosure">特此知會您，使用Bluetooth LE掃描時必須取得定位資訊，依據Google Play商店的政策，本程序會在背景服務收集定位資訊，但絕對不會讀取、儲存或與第三人分享定位資訊。</string>
 
+     <string name="paired_devices">已配對的藍牙裝置</string>
     <string name="device_address">MAC: %1$s</string>
     <string name="connect_flask">連接 Flask</string>
     <string name="connect_puck">連接 Puck.js</string>
@@ -321,6 +330,7 @@
 
     <string name="error_no_data">沒有數據可供寫入</string>
     <string name="error_tag_protocol">必須使用NTAG215 ，目前為 %1$s！</string>
+    <string name="error_tag_unavailable">無法與NTAG215建立連線！</string>
     <string name="error_state">錯誤狀態、無效的操作: %1$s</string>
     <string name="error_length">必須輸入8個字元</string>
     <string name="error_input">輸入錯誤</string>
@@ -391,6 +401,8 @@
     <string name="invalid_tag_key">已偵測到金鑰檔案。點擊此處略過</string>
     <string name="invalid_app_data">app數據無效</string>
 
+    <string name="invalid_read_result">讀取大小不正確</string>
+    
     <string name="uid_key_missing">沒有對應此UID的金鑰</string>
     <string name="p10_key_missing">沒有對應此P10_ID的金鑰</string>
     <string name="power_tag_verify">Power Tag已驗證: %1$s</string>
@@ -414,6 +426,7 @@
     <string name="sub_button">%1$s 每月捐贈</string>
     <string name="iap_button">%1$s 單次捐贈</string>
     <string name="donation_thanks">非常感謝你的捐贈！</string>
+     <string name="settings_banner">TagMo按月訂閱捐款者</string>
 
     <string name="conversion_title">TagMo必要更新</string>
     <string name="conversion_message">目前GitHub的新版本已與Google Play商店同步更新。\n請點擊繼續，將核對版本並完成更新安裝。</string>

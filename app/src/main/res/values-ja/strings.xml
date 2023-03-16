@@ -7,6 +7,8 @@
 
     <string name="no_decrypt_key">復号化キーがインポートされていない</string>
 
+    <string name="recursive_folders">再帰検索</string>
+
     <string name="proceed">続きを読む</string>
     <string name="scan">スキャン</string>
     <string name="browser">ブラウザ</string>

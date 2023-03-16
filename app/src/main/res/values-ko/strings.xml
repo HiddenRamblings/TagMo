@@ -7,6 +7,8 @@
 
     <string name="no_decrypt_key">복호화 키를 가져오지 않음</string>
 
+    <string name="recursive_folders">재귀 검색</string>
+
     <string name="proceed">계속</string>
     <string name="scan">스캔</string>
     <string name="browser">브라우저</string>

@@ -5,6 +5,10 @@
     <string name="nfc_disabled">NFC Отключен!</string>
     <string name="nfc_available">NFC в настоящее время отключен. Включить NFC?</string>
 
+    <string name="no_decrypt_key">Ключи дешифрования не импортированы</string>
+
+    <string name="recursive_folders">Рекурсивный поиск</string>
+
     <string name="proceed">Продолжать</string>
     <string name="scan">Сканировать</string>
     <string name="browser">Браузер</string>

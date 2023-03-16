@@ -12,6 +12,8 @@
 
     <string name="no_decrypt_key">Entschlüsselungsschlüssel nicht importiert</string>
 
+    <string name="recursive_folders">Rekursive Suche</string>
+
     <string name="proceed">Weiterhin</string>
     <string name="scan">Scan</string>
     <string name="browser">Browser</string>

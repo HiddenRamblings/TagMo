@@ -4,6 +4,10 @@
     <string name="nfc_disabled">NFC Desactivado!</string>
     <string name="nfc_available">NFC está deshabilitado actualmente. ¿Habilitar NFC?</string>
 
+    <string name="no_decrypt_key">Claves de descifrado no importadas</string>
+
+    <string name="recursive_folders">Búsqueda Recursiva</string>
+
     <string name="proceed">Continuar</string>
     <string name="scan">Escanear</string>
     <string name="browser">Navegador</string>

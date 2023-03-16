@@ -212,21 +212,23 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
 
     private suspend fun deleteDir(dialog: ProgressDialog?, dir: File?) {
         if (!directory.exists()) return
-        dir?.listFiles().also { files ->
-            if (!files.isNullOrEmpty()) {
-                files.forEach {
-                    if (it.isDirectory) {
-                        withContext(Dispatchers.Main) {
-                            dialog?.setMessage(getString(R.string.foomiibo_removing, it.name))
+        withContext(Dispatchers.IO) {
+            dir?.listFiles().also { files ->
+                if (!files.isNullOrEmpty()) {
+                    files.forEach {
+                        if (it.isDirectory) {
+                            withContext(Dispatchers.Main) {
+                                dialog?.setMessage(getString(R.string.foomiibo_removing, it.name))
+                            }
+                            deleteDir(dialog, it)
+                        } else {
+                            it.delete()
                         }
-                        deleteDir(dialog, it)
-                    } else {
-                        it.delete()
                     }
                 }
             }
+            dir?.delete()
         }
-        dir?.delete()
     }
 
     fun deleteFoomiiboFile(tagData: ByteArray?) {

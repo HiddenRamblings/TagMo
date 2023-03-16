@@ -2532,12 +2532,12 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
     }
 
     private suspend fun locateKeyFilesRecursive(rootFolder: File?) {
-        rootFolder?.listFiles { _: File?, name: String -> keyNameMatcher(name) }.also { files ->
-            if (!files.isNullOrEmpty()) {
-                for (file in files) {
-                    try {
-                        withContext(Dispatchers.IO) {
-                            FileInputStream(file).use { inputStream ->
+        withContext(Dispatchers.IO) {
+            rootFolder?.listFiles { _: File?, name: String -> keyNameMatcher(name) }.also { files ->
+                if (!files.isNullOrEmpty()) {
+                    files.forEach {
+                        try {
+                            FileInputStream(it).use { inputStream ->
                                 try {
                                     keyManager.evaluateKey(inputStream)
                                 } catch (ex: Exception) {
@@ -2545,16 +2545,16 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                                 }
                                 withContext(Dispatchers.Main) { hideFakeSnackbar() }
                             }
+                        } catch (e: Exception) {
+                            Debug.warn(e)
                         }
-                    } catch (e: Exception) {
-                        Debug.warn(e)
                     }
-                }
-            } else {
-                rootFolder?.listFiles().also { directories ->
-                    if (directories.isNullOrEmpty()) return
-                    for (directory in directories) {
-                        if (directory.isDirectory) locateKeyFilesRecursive(directory)
+                } else {
+                    rootFolder?.listFiles().also { directories ->
+                        if (directories.isNullOrEmpty()) return@withContext
+                        directories.forEach {
+                            if (it.isDirectory) locateKeyFilesRecursive(it)
+                        }
                     }
                 }
             }

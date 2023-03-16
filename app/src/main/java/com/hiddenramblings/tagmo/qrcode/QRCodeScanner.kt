@@ -162,8 +162,8 @@ class QRCodeScanner : AppCompatActivity() {
         } ?: false
 
     @Throws(Exception::class)
-    private suspend fun decodeAmiibo(qrData: ByteArray?) {
-        if (null == qrData) return
+    private suspend fun decodeAmiibo(qrData: ByteArray?) = withContext(Dispatchers.IO) {
+        if (null == qrData) return@withContext
         amiiboManager?.let {
             it.amiibos[Amiibo.dataToId(qrData)]?.let { amiibo ->
                 withContext(Dispatchers.Main) {
@@ -217,8 +217,8 @@ class QRCodeScanner : AppCompatActivity() {
     ), "AES")
 
     @Throws(Exception::class)
-    private suspend fun decryptMii(qrData: ByteArray?) {
-        if (null == qrData) return
+    private suspend fun decryptMii(qrData: ByteArray?) = withContext(Dispatchers.IO) {
+        if (null == qrData) return@withContext
         val nonce = qrData.copyOfRange(0, 8)
         val empty = byteArrayOf(0, 0, 0, 0)
         val cipher = Cipher.getInstance("AES/CCM/NoPadding")

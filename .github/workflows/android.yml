@@ -2,9 +2,7 @@ name: Android CI
 
 on:
   push:
-    branches: [ master, conversion ]
-  pull_request:
-    branches: [ conversion ]
+    branches: [ master ]
 
 permissions:
   contents: write

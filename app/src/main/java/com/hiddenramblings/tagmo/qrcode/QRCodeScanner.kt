@@ -510,7 +510,7 @@ class QRCodeScanner : AppCompatActivity() {
                     cameraPreview?.isGone = true
                 }
                 val text = if (!txtRawBytes.text.isNullOrEmpty())
-                    TagArray.hexToString(txtRawBytes.text.toString())
+                    TagArray.hexToString(txtRawBytes.text.toString().trim())
                 else txtRawValue.text.toString()
 
                 try {

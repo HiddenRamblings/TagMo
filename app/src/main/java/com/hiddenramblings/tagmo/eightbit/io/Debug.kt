@@ -316,13 +316,11 @@ object Debug {
             val separator = if (System.getProperty("line.separator") != null)
                 Objects.requireNonNull(System.getProperty("line.separator")) else "\n"
             val log = getDeviceProfile(context)
-            val mLogcatProc = Runtime.getRuntime().exec(
-                arrayOf(
+            val mLogcatProc = Runtime.getRuntime().exec(arrayOf(
                     "logcat", "-d", "-t", "192", BuildConfig.APPLICATION_ID,
                     "AndroidRuntime", "System.err",
                     "ViewRootImpl*:S", "IssueReporterActivity:S", "*:W"
-                )
-            )
+            ))
             val reader = BufferedReader(InputStreamReader(mLogcatProc.inputStream))
             log.append(separator).append(separator)
             var line: String?

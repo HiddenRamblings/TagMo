@@ -20,17 +20,11 @@ import android.content.*
 import android.net.Uri
 import android.os.Build
 import android.util.Log
-import android.widget.Toast
-import com.google.android.material.snackbar.Snackbar
-import com.heinrichreimersoftware.androidissuereporter.IssueReporterLauncher
 import com.hiddenramblings.tagmo.BuildConfig
 import com.hiddenramblings.tagmo.Preferences
 import com.hiddenramblings.tagmo.R
 import com.hiddenramblings.tagmo.TagMo
 import com.hiddenramblings.tagmo.browser.BrowserActivity
-import com.hiddenramblings.tagmo.eightbit.material.IconifiedSnackbar
-import com.hiddenramblings.tagmo.eightbit.net.GitHubRequest
-import com.hiddenramblings.tagmo.widget.Toasty
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -319,9 +313,6 @@ object Debug {
     @Throws(IOException::class)
     fun processLogcat(context: Context) {
         CoroutineScope(Dispatchers.IO).launch(Dispatchers.IO) {
-            val project = Debug.context.getString(R.string.tagmo)
-            val username = "HiddenRamblings"
-
             val separator = if (System.getProperty("line.separator") != null)
                 Objects.requireNonNull(System.getProperty("line.separator")) else "\n"
             val log = getDeviceProfile(context)
@@ -341,32 +332,8 @@ object Debug {
             reader.close()
             val logText = log.toString()
             withContext(Dispatchers.Main) {
-                val submitted = if (!logText.contains("AndroidRuntime")) {
-                    submitLogcat(Debug.context, logText)
-                    false
-                } else {
-                    try {
-                        IssueReporterLauncher.forTarget(username, project)
-                            .theme(R.style.AppTheme_NoActionBar)
-                            .guestToken(GitHubRequest.token)
-                            .guestEmailRequired(false)
-                            .publicIssueUrl(issueUrl)
-                            .titleTextDefault(
-                                Debug.context.getString(
-                                    R.string.git_issue_title,
-                                    BuildConfig.COMMIT
-                                )
-                            )
-                            .minDescriptionLength(1)
-                            .putExtraInfo("logcat", logText)
-                            .homeAsUpEnabled(false).launch(Debug.context)
-                        true
-                    } catch (ignored: Exception) {
-                        submitLogcat(Debug.context, logText)
-                        true
-                    }
-                }
-                if (!submitted && context is BrowserActivity) {
+                submitLogcat(Debug.context, logText)
+                if (!logText.contains("AndroidRuntime") && context is BrowserActivity) {
                     context.showWebsite(null)
                 }
             }

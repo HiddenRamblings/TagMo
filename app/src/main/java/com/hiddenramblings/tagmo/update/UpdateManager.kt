@@ -47,11 +47,13 @@ import java.net.URL
 import kotlin.random.Random
 
 class UpdateManager internal constructor(activity: BrowserActivity) {
-    private var listenerGit: GitUpdateListener? = null
-    private var listenerPlay: PlayUpdateListener? = null
+    private var listener: UpdateListener? = null
     private var appUpdateManager: AppUpdateManager? = null
     private val browserActivity: BrowserActivity = activity
     private var isUpdateAvailable = false
+
+    private var updateUrl: String? = null
+    private var appUpdate: AppUpdateInfo? = null
 
     init {
         if (BuildConfig.GOOGLE_PLAY) {
@@ -84,7 +86,10 @@ class UpdateManager internal constructor(activity: BrowserActivity) {
             isUpdateAvailable = (appUpdateInfo.updateAvailability()
                     == UpdateAvailability.UPDATE_AVAILABLE
                     && appUpdateInfo.isUpdateTypeAllowed(AppUpdateType.IMMEDIATE))
-            if (isUpdateAvailable) listenerPlay?.onPlayUpdateFound(appUpdateInfo)
+            if (isUpdateAvailable) {
+                appUpdate = appUpdateInfo
+                listener?.onPlayUpdateFound()
+            }
         }
     }
 
@@ -95,7 +100,7 @@ class UpdateManager internal constructor(activity: BrowserActivity) {
     }
 
     fun installDownload(apkUrl: String?) {
-        if (null == apkUrl) return
+        if (apkUrl.isNullOrEmpty()) return
         CoroutineScope(Dispatchers.IO).launch(Dispatchers.IO) {
             val apk = File(
                 browserActivity.externalCacheDir,
@@ -165,8 +170,7 @@ class UpdateManager internal constructor(activity: BrowserActivity) {
         }
     }
 
-    fun requestDownload(apkUrl: String?) {
-        if (null == apkUrl) return
+    private fun requestDownload(apkUrl: String) {
         if (Version.isOreo) {
             if (browserActivity.packageManager.canRequestPackageInstalls()) {
                 installDownload(apkUrl)
@@ -191,15 +195,17 @@ class UpdateManager internal constructor(activity: BrowserActivity) {
             )
             val assets = jsonObject["assets"] as JSONArray
             val asset = assets[0] as JSONObject
-            val downloadUrl = asset["browser_download_url"] as String
             isUpdateAvailable = BuildConfig.COMMIT != lastCommit
-            if (isUpdateAvailable) listenerGit?.onUpdateFound(downloadUrl)
+            if (isUpdateAvailable) {
+                updateUrl = asset["browser_download_url"] as String
+                listener?.onUpdateFound()
+            }
         } catch (e: JSONException) {
             Debug.warn(e)
         }
     }
 
-    fun startPlayUpdateFlow(appUpdateInfo: AppUpdateInfo?) {
+    private fun startPlayUpdateFlow(appUpdateInfo: AppUpdateInfo?) {
         try {
             appUpdateManager?.startUpdateFlowForResult( // Pass the intent that is returned by 'getAppUpdateInfo()'.
                 appUpdateInfo!!,  // Or 'AppUpdateType.FLEXIBLE' for flexible updates.
@@ -216,20 +222,21 @@ class UpdateManager internal constructor(activity: BrowserActivity) {
         return isUpdateAvailable
     }
 
-    fun setUpdateListener(listener: GitUpdateListener?) {
-        this.listenerGit = listener
+    fun onUpdateRequested() {
+        if (BuildConfig.GOOGLE_PLAY) {
+            appUpdate?.let { startPlayUpdateFlow(it) }
+        } else {
+            updateUrl?.let { requestDownload(it) }
+        }
     }
 
-    interface GitUpdateListener {
-        fun onUpdateFound(downloadUrl: String?)
+    fun setUpdateListener(listener: UpdateListener?) {
+        this.listener = listener
     }
 
-    fun setPlayUpdateListener(listenerPlay: PlayUpdateListener?) {
-        this.listenerPlay = listenerPlay
-    }
-
-    interface PlayUpdateListener {
-        fun onPlayUpdateFound(appUpdateInfo: AppUpdateInfo?)
+    interface UpdateListener {
+        fun onUpdateFound()
+        fun onPlayUpdateFound()
     }
 
     companion object {

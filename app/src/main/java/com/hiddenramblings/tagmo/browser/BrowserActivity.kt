@@ -59,7 +59,6 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
-import com.google.android.play.core.appupdate.AppUpdateInfo
 import com.hiddenramblings.tagmo.*
 import com.hiddenramblings.tagmo.NFCIntent.FilterComponent
 import com.hiddenramblings.tagmo.amiibo.*
@@ -92,8 +91,6 @@ import com.hiddenramblings.tagmo.nfctech.TagArray
 import com.hiddenramblings.tagmo.nfctech.TagReader
 import com.hiddenramblings.tagmo.qrcode.QRCodeScanner
 import com.hiddenramblings.tagmo.update.UpdateManager
-import com.hiddenramblings.tagmo.update.UpdateManager.GitUpdateListener
-import com.hiddenramblings.tagmo.update.UpdateManager.PlayUpdateListener
 import com.hiddenramblings.tagmo.wave9.DimensionActivity
 import com.hiddenramblings.tagmo.widget.Toasty
 import com.wajahatkarim3.easyflipviewpager.CardFlipPageTransformer2
@@ -121,8 +118,6 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
         private set
     private var ignoreTagId = false
     private var updateManager: UpdateManager? = null
-    private var updateUrl: String? = null
-    private var appUpdate: AppUpdateInfo? = null
     private var fragmentSettings: SettingsFragment? = null
     var bottomSheetBehavior: BottomSheetBehavior<View>? = null
         private set
@@ -220,25 +215,15 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
         if (!BuildConfig.WEAR_OS) {
             updateManager = UpdateManager(this)
             settings?.lastUpdatedGit = System.currentTimeMillis()
-            if (BuildConfig.GOOGLE_PLAY) {
-                updateManager?.setPlayUpdateListener(object : PlayUpdateListener {
-                    override fun onPlayUpdateFound(appUpdateInfo: AppUpdateInfo?) {
-                        appUpdate = appUpdateInfo
-                        if (BuildConfig.WEAR_OS)
-                            onCreateWearOptionsMenu()
-                        else invalidateOptionsMenu()
-                    }
-                })
-            } else {
-                updateManager?.setUpdateListener(object : GitUpdateListener {
-                    override fun onUpdateFound(downloadUrl: String?) {
-                        updateUrl = downloadUrl
-                        if (BuildConfig.WEAR_OS)
-                            onCreateWearOptionsMenu()
-                        else invalidateOptionsMenu()
-                    }
-                })
-            }
+            updateManager?.setUpdateListener(object : UpdateManager.UpdateListener {
+                override fun onUpdateFound() {
+                    if (BuildConfig.WEAR_OS) onCreateWearOptionsMenu() else invalidateOptionsMenu()
+                }
+
+                override fun onPlayUpdateFound() {
+                    if (BuildConfig.WEAR_OS) onCreateWearOptionsMenu() else invalidateOptionsMenu()
+                }
+            })
         }
         settings?.addChangeListener(this)
         val intent = intent
@@ -462,21 +447,16 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                     settingsBanner.isVisible = TagMo.hasSubscription
                     onTextColorAnimation(settingsBanner, 0)
                     super.onDrawerOpened(drawerView)
-                    findViewById<View>(R.id.build_layout).setOnClickListener {
-                        closePrefsDrawer()
-                        val repository = "https://github.com/HiddenRamblings/TagMo"
-                        showWebsite(repository)
-                    }
-                    appUpdate?.let { update ->
+                    if (updateManager?.hasPendingUpdate() == true) {
                         findViewById<View>(R.id.build_layout).setOnClickListener {
                             closePrefsDrawer()
-                            updateManager?.startPlayUpdateFlow(update)
+                            updateManager?.onUpdateRequested()
                         }
-                    }
-                    updateUrl?.let { update ->
+                    } else {
                         findViewById<View>(R.id.build_layout).setOnClickListener {
                             closePrefsDrawer()
-                            updateManager?.requestDownload(update)
+                            val repository = "https://github.com/HiddenRamblings/TagMo"
+                            showWebsite(repository)
                         }
                     }
                 }
@@ -782,8 +762,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
 
     fun onReportProblemClick() {
         if (updateManager?.hasPendingUpdate() == true) {
-            appUpdate?.let { updateManager?.startPlayUpdateFlow(it) }
-            updateUrl?.let { updateManager?.requestDownload(it) }
+            updateManager?.onUpdateRequested()
             return
         }
         try {
@@ -1592,7 +1571,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
         onSortChanged()
         onViewChanged()
         onRecursiveFilesChanged()
-        menuUpdate.isVisible = null != appUpdate || null != updateUrl
+        menuUpdate.isVisible = updateManager?.hasPendingUpdate() == true
         val searchView = menuSearch.actionView as SearchView?
         (getSystemService(SEARCH_SERVICE) as SearchManager).run {
             searchView?.setSearchableInfo(getSearchableInfo(componentName))
@@ -1644,8 +1623,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                 prefsDrawer?.openDrawer(GravityCompat.START)
             }
         } else if (item.itemId == R.id.install_update) {
-            appUpdate?.let { updateManager?.startPlayUpdateFlow(it) }
-            updateUrl?.let { updateManager?.requestDownload(it) }
+            updateManager?.onUpdateRequested()
         }
         return onMenuItemClicked(item)
     }
@@ -2423,7 +2401,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
     }
 
     private fun hideFakeSnackbar() {
-        runOnUiThread {
+        CoroutineScope(Dispatchers.Main).launch {
             if (fakeSnackbar?.isVisible == true) {
                 val animate = TranslateAnimation(
                     0f, 0f, 0f, (-fakeSnackbar!!.height).toFloat()

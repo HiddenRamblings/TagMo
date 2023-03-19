@@ -313,15 +313,17 @@ class SettingsFragment : PreferenceFragmentCompat() {
     }
 
     private fun onImageNetworkChange(imageNetworkSetting: ListPreference?, newValue: String?) {
-        val index = imageNetworkSetting!!.findIndexOfValue(newValue)
+        val index = imageNetworkSetting?.findIndexOfValue(newValue)
         if (index == -1) {
             onImageNetworkChange(imageNetworkSetting, GlideTagModule.IMAGE_NETWORK_ALWAYS)
         } else {
             prefs.imageNetwork(newValue)
-            imageNetworkSetting.value = newValue
-            imageNetworkSetting.summary = imageNetworkSetting.entry
+            imageNetworkSetting?.value = newValue
+            imageNetworkSetting?.summary = imageNetworkSetting?.entry
             val activity = requireActivity() as BrowserActivity
-            activity.runOnUiThread { activity.settings?.notifyChanges() }
+            CoroutineScope(Dispatchers.Main).launch {
+                activity.settings?.notifyChanges()
+            }
         }
     }
 
@@ -495,8 +497,10 @@ class SettingsFragment : PreferenceFragmentCompat() {
         val syncMessage = buildSnackbar(
             activity, R.string.sync_amiibo_process, Snackbar.LENGTH_INDEFINITE
         )
-        activity.runOnUiThread { syncMessage.show() }
         CoroutineScope(Dispatchers.IO).launch(Dispatchers.IO) {
+            withContext(Dispatchers.Main) {
+                syncMessage.show()
+            }
             try {
                 val url: URL = if (prefs.databaseSource() == 0) {
                     URL("${AmiiboManager.RENDER_RAW}/database/amiibo.json")
@@ -536,7 +540,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
                     else
                         parseAmiiboAPI(response.toString())
                     saveDatabase(amiiboManager, requireContext().applicationContext)
-                    activity.runOnUiThread {
+                    withContext(Dispatchers.Main) {
                         if (syncMessage.isShown) syncMessage.dismiss()
                         buildSnackbar(
                             activity, R.string.sync_amiibo_complete, Snackbar.LENGTH_SHORT

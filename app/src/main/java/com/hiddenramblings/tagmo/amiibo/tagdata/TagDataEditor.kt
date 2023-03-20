@@ -937,33 +937,29 @@ class TagDataEditor : AppCompatActivity() {
         }
 
         override fun getDropDownView(position: Int, view: View?, parent: ViewGroup): View? {
-            var viewItem = view
-            if (null == viewItem) {
-                viewItem = LayoutInflater.from(parent.context)
-                    .inflate(android.R.layout.simple_dropdown_item_1line, parent, false)
+            return view ?: LayoutInflater.from(parent.context).inflate(
+                android.R.layout.simple_dropdown_item_1line, parent, false
+            ).apply {
+                findViewById<TextView>(android.R.id.text1)?.text = getItem(position).value
             }
-            viewItem?.findViewById<TextView>(android.R.id.text1)?.text = getItem(position).value
-            return viewItem
         }
 
         override fun getView(position: Int, view: View?, parent: ViewGroup): View {
-            var viewItem = view
-            if (null == view) {
-                viewItem = LayoutInflater.from(parent.context)
-                    .inflate(R.layout.spinner_text, parent, false)
+            return view ?: LayoutInflater.from(parent.context).inflate(
+                R.layout.spinner_text, parent, false
+            ).apply {
+                (this as TextView).text = getItem(position).value
             }
-            (viewItem as TextView).text = getItem(position).value
-            return viewItem
         }
     }
 
     private fun setListForSpinners(controls: Array<Spinner?>, list: Int) {
         controls.forEach {
-            val adapter = ArrayAdapter.createFromResource(
+            it?.adapter = ArrayAdapter.createFromResource(
                 this, list, R.layout.spinner_text
-            )
-            adapter.setDropDownViewResource(android.R.layout.simple_dropdown_item_1line)
-            it?.adapter = adapter
+            ).apply {
+                setDropDownViewResource(android.R.layout.simple_dropdown_item_1line)
+            }
         }
     }
 

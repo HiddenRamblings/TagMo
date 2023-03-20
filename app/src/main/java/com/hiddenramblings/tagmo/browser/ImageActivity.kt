@@ -1,6 +1,6 @@
 package com.hiddenramblings.tagmo.browser
 
-import android.app.Dialog
+import android.annotation.SuppressLint
 import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
 import android.os.Bundle
@@ -140,22 +140,22 @@ class ImageActivity : AppCompatActivity() {
         var amiiboType: String? = ""
         var gameSeries: String? = ""
         // String character = "";
-        if (amiiboId == -1L) {
-            tagInfo = getString(R.string.read_error)
-        } else if (amiiboId == 0L) {
-            tagInfo = getString(R.string.blank_tag)
-        } else {
-            amiiboManager?.let {
-                amiibo = it.amiibos[amiiboId] ?: Amiibo(it, amiiboId, null, null)
-            }
-            amiibo?.let {
-                amiiboHexId = Amiibo.idToHex(it.id)
-                it.name?.let { name -> amiiboName = name }
-                it.amiiboSeries?.let { series -> amiiboSeries = series.name }
-                it.amiiboType?.let { type -> amiiboType = type.name }
-                it.gameSeries?.let { series -> gameSeries = series.name }
-            } ?: {
-                tagInfo = "ID: " + Amiibo.idToHex(amiiboId)
+        when (amiiboId) {
+            -1L -> { tagInfo = getString(R.string.read_error) }
+            0L -> { tagInfo = getString(R.string.blank_tag) }
+            else -> {
+                amiiboManager?.let {
+                    amiibo = it.amiibos[amiiboId] ?: Amiibo(it, amiiboId, null, null)
+                }
+                amiibo?.let {
+                    amiiboHexId = Amiibo.idToHex(it.id)
+                    it.name?.let { name -> amiiboName = name }
+                    it.amiiboSeries?.let { series -> amiiboSeries = series.name }
+                    it.amiiboType?.let { type -> amiiboType = type.name }
+                    it.gameSeries?.let { series -> gameSeries = series.name }
+                } ?: {
+                    tagInfo = "ID: " + Amiibo.idToHex(amiiboId)
+                }
             }
         }
         val hasTagInfo = null != tagInfo
@@ -184,32 +184,35 @@ class ImageActivity : AppCompatActivity() {
         }
     }
 
+    @SuppressLint("InflateParams")
     private fun onSaveClicked(prefs: Preferences, amiiboId: Long) {
-        val view = layoutInflater.inflate(R.layout.dialog_save_item, null)
-        val dialog = AlertDialog.Builder(this)
-        view.findViewById<TextView>(R.id.save_item_label).setText(R.string.save_image)
-        val input = view.findViewById<EditText>(R.id.save_item_entry)
-        input.setText(amiibo?.name ?: Amiibo.idToHex(amiiboId))
-        val imageDialog: Dialog = dialog.setView(view).create()
-        imageDialog.setCancelable(false)
-        view.findViewById<View>(R.id.button_save).setOnClickListener {
-            val saveImageTarget: CustomTarget<Bitmap?> = object : CustomTarget<Bitmap?>() {
-                override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap?>?) {
-                    saveImageToFile(prefs, resource, input.text.toString())
-                }
+        layoutInflater.inflate(R.layout.dialog_save_item, null).run {
+            findViewById<TextView>(R.id.save_item_label).setText(R.string.save_image)
+            val input = findViewById<EditText>(R.id.save_item_entry)
+            input.setText(amiibo?.name ?: Amiibo.idToHex(amiiboId))
+            AlertDialog.Builder(this@ImageActivity).setView(this).create().also { dialog ->
+                dialog.setCancelable(false)
+                findViewById<View>(R.id.button_save).setOnClickListener {
+                    val saveImageTarget: CustomTarget<Bitmap?> = object : CustomTarget<Bitmap?>() {
+                        override fun onResourceReady(
+                            resource: Bitmap,
+                            transition: Transition<in Bitmap?>?
+                        ) {
+                            saveImageToFile(prefs, resource, input.text.toString())
+                        }
 
-                override fun onLoadCleared(placeholder: Drawable?) { }
+                        override fun onLoadCleared(placeholder: Drawable?) {}
+                    }
+                    GlideApp.with(this@ImageActivity).asBitmap()
+                        .load(Amiibo.getImageUrl(amiiboId))
+                        .skipMemoryCache(true)
+                        .diskCacheStrategy(DiskCacheStrategy.NONE)
+                        .into(saveImageTarget)
+                    dialog.dismiss()
+                }
+                findViewById<View>(R.id.button_cancel).setOnClickListener { dialog.dismiss() }
             }
-            GlideApp.with(this@ImageActivity).asBitmap()
-                .load(Amiibo.getImageUrl(amiiboId))
-                .skipMemoryCache(true)
-                .diskCacheStrategy(DiskCacheStrategy.NONE)
-                .into(saveImageTarget)
-            imageDialog.dismiss()
-        }
-        view.findViewById<View>(R.id.button_cancel)
-            .setOnClickListener { imageDialog.dismiss() }
-        imageDialog.show()
+        }.show()
     }
 
     private fun saveImageToFile(prefs: Preferences, resource: Bitmap, filename: String) {

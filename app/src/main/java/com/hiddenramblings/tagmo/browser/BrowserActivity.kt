@@ -652,39 +652,43 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
         if (result.resultCode != RESULT_OK || null == result.data) return@registerForActivityResult
         if (NFCIntent.ACTION_NFC_SCANNED != result.data!!.action) return@registerForActivityResult
         val tagData = result.data?.getByteArrayExtra(NFCIntent.EXTRA_TAG_DATA)
-        val view = layoutInflater.inflate(
+        layoutInflater.inflate(
             R.layout.dialog_save_item, viewPager, false
-        )
-        val dialog = AlertDialog.Builder(this)
-        val input = view.findViewById<EditText>(R.id.save_item_entry)
-        input.setText(TagArray.decipherFilename(settings?.amiiboManager, tagData, true))
-        val backupDialog: Dialog = dialog.setView(view).create()
-        view.findViewById<View>(R.id.button_save).setOnClickListener { _: View? ->
-            try {
-                var fileName: String? = input.text.toString()
-                fileName = if (isDocumentStorage) {
-                    val rootDocument = settings?.browserRootDocument?.let {
-                        DocumentFile.fromTreeUri(this, it)
-                    } ?: throw NullPointerException()
-                    TagArray.writeBytesToDocument(
-                        this, rootDocument, fileName!!, tagData
-                    )
-                } else {
-                    TagArray.writeBytesToFile(Storage.getDownloadDir(
-                        "TagMo", "Backups"
-                    ), fileName!!, tagData)
-                }
-                IconifiedSnackbar(this, viewPager).buildSnackbar(
-                    getString(R.string.wrote_file, fileName), Snackbar.LENGTH_SHORT
-                ).show()
-                onRootFolderChanged(true)
-            } catch (e: Exception) {
-                e.message?.let { Toasty(this).Short(it) }
+        ).run {
+            val input = findViewById<EditText>(R.id.save_item_entry).apply {
+                setText(TagArray.decipherFilename(settings?.amiiboManager, tagData, true))
             }
-            backupDialog.dismiss()
+            AlertDialog.Builder(this@BrowserActivity).setView(this).create().also { dialog ->
+                findViewById<View>(R.id.button_save).setOnClickListener { _: View? ->
+                    try {
+                        var fileName: String? = input.text.toString()
+                        fileName = if (isDocumentStorage) {
+                            val rootDocument = settings?.browserRootDocument?.let {
+                                DocumentFile.fromTreeUri(this@BrowserActivity, it)
+                            } ?: throw NullPointerException()
+                            TagArray.writeBytesToDocument(
+                                this@BrowserActivity, rootDocument, fileName!!, tagData
+                            )
+                        } else {
+                            TagArray.writeBytesToFile(
+                                Storage.getDownloadDir(
+                                    "TagMo", "Backups"
+                                ), fileName!!, tagData
+                            )
+                        }
+                        IconifiedSnackbar(this@BrowserActivity, viewPager).buildSnackbar(
+                            getString(R.string.wrote_file, fileName), Snackbar.LENGTH_SHORT
+                        ).show()
+                        onRootFolderChanged(true)
+                    } catch (e: Exception) {
+                        e.message?.let { Toasty(this@BrowserActivity).Short(it) }
+                    }
+                    dialog.dismiss()
+                }
+                findViewById<View>(R.id.button_cancel).setOnClickListener { dialog.dismiss() }
+                dialog.show()
+            }
         }
-        view.findViewById<View>(R.id.button_cancel).setOnClickListener { backupDialog.dismiss() }
-        backupDialog.show()
     }
     private val onValidateActivity = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()

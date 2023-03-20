@@ -11,15 +11,15 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.load.engine.cache.ExternalPreferredCacheDiskCacheFactory
 import com.bumptech.glide.module.AppGlideModule
 import com.bumptech.glide.request.RequestOptions
+import com.hiddenramblings.tagmo.eightbit.os.Version
 
 @GlideModule
 class GlideTagModule : AppGlideModule() {
     private fun isConnectionWiFi(context: Context): Boolean {
         var result = false
-        val cm = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager?
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            cm?.run {
-                getNetworkCapabilities(cm.activeNetwork)?.run {
+        (context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager).run {
+            if (Version.isMarshmallow) {
+                getNetworkCapabilities(activeNetwork)?.run {
                     result = when {
                         hasTransport(NetworkCapabilities.TRANSPORT_WIFI) -> true
                         hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) -> false
@@ -27,10 +27,8 @@ class GlideTagModule : AppGlideModule() {
                         else -> false
                     }
                 }
-            }
-        } else {
-            @Suppress("DEPRECATION")
-            cm?.run {
+            } else {
+                @Suppress("DEPRECATION")
                 activeNetworkInfo?.run {
                     result = type == ConnectivityManager.TYPE_WIFI
                             || type == ConnectivityManager.TYPE_ETHERNET
@@ -42,30 +40,24 @@ class GlideTagModule : AppGlideModule() {
 
 
     private fun onlyRetrieveFromCache(context: Context, requestOptions: RequestOptions): RequestOptions {
-        val imageNetworkSetting = Preferences(context.applicationContext).imageNetwork()
-        return if (IMAGE_NETWORK_NEVER == imageNetworkSetting) {
-            requestOptions.onlyRetrieveFromCache(true)
-        } else if (IMAGE_NETWORK_WIFI == imageNetworkSetting) {
-            requestOptions.onlyRetrieveFromCache(!isConnectionWiFi(context))
-        } else {
-            requestOptions.onlyRetrieveFromCache(false)
+        return when (Preferences(context.applicationContext).imageNetwork()) {
+            IMAGE_NETWORK_NEVER -> { requestOptions.onlyRetrieveFromCache(true) }
+            IMAGE_NETWORK_WIFI -> { requestOptions.onlyRetrieveFromCache(!isConnectionWiFi(context)) }
+            else -> { requestOptions.onlyRetrieveFromCache(false) }
         }
     }
 
     override fun applyOptions(context: Context, builder: GlideBuilder) {
-        val diskCacheSizeBytes = 1024 * 1024 * 128 // 128 MB
-        // The current size of the API image repo is 117.1 MB
-        builder.setDiskCache(
-            ExternalPreferredCacheDiskCacheFactory(
-                context, diskCacheSizeBytes.toLong()
-            )
-        )
+        // Current size of AmiiboAPI images folder is 131 MB
+        val diskCacheSizeBytes = 1024 * 1024 * 192 // 192 MB
+        builder.setDiskCache(ExternalPreferredCacheDiskCacheFactory(
+            context, diskCacheSizeBytes.toLong()
+        ))
         builder.setLogLevel(Log.ERROR)
-        val requestOptions = onlyRetrieveFromCache(
+        builder.setDefaultRequestOptions(onlyRetrieveFromCache(
             context.applicationContext,
             RequestOptions().diskCacheStrategy(DiskCacheStrategy.RESOURCE)
-        )
-        builder.setDefaultRequestOptions(requestOptions)
+        ))
     }
 
     override fun isManifestParsingEnabled(): Boolean {

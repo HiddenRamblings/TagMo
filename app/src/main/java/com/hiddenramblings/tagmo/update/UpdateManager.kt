@@ -31,6 +31,7 @@ import com.google.android.play.core.install.model.UpdateAvailability
 import com.hiddenramblings.tagmo.*
 import com.hiddenramblings.tagmo.browser.BrowserActivity
 import com.hiddenramblings.tagmo.eightbit.io.Debug
+import com.hiddenramblings.tagmo.eightbit.net.JSONExecutor
 import com.hiddenramblings.tagmo.eightbit.os.Storage
 import com.hiddenramblings.tagmo.eightbit.os.Version
 import kotlinx.coroutines.CoroutineScope
@@ -44,6 +45,7 @@ import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
 import java.net.URL
+import java.net.UnknownHostException
 import kotlin.random.Random
 
 class UpdateManager internal constructor(activity: BrowserActivity) {
@@ -57,7 +59,7 @@ class UpdateManager internal constructor(activity: BrowserActivity) {
 
     init {
         if (BuildConfig.GOOGLE_PLAY) {
-            configurePlay(activity)
+            configurePlay()
         } else {
             if (Version.isLollipop) {
                 activity.applicationContext.packageManager.packageInstaller.run {
@@ -75,12 +77,13 @@ class UpdateManager internal constructor(activity: BrowserActivity) {
         }
     }
 
-    fun refreshUpdateStatus(activity: BrowserActivity) {
-        if (BuildConfig.GOOGLE_PLAY) configurePlay(activity) else configureGit()
+    fun refreshUpdateStatus() {
+        if (BuildConfig.GOOGLE_PLAY) configurePlay() else configureGit()
     }
 
-    private fun configurePlay(activity: BrowserActivity) {
-        if (null == appUpdateManager) appUpdateManager = AppUpdateManagerFactory.create(activity)
+    private fun configurePlay() {
+        if (null == appUpdateManager)
+            appUpdateManager = AppUpdateManagerFactory.create(browserActivity)
         val appUpdateInfoTask = appUpdateManager?.appUpdateInfo
         appUpdateInfoTask?.addOnSuccessListener { appUpdateInfo: AppUpdateInfo ->
             isUpdateAvailable = (appUpdateInfo.updateAvailability()
@@ -95,7 +98,17 @@ class UpdateManager internal constructor(activity: BrowserActivity) {
 
     private fun configureGit() {
         CoroutineScope(Dispatchers.IO).launch(Dispatchers.IO) {
-            URL(TAGMO_GIT_API).readText().also { parseUpdateJSON(it) }
+            try {
+                URL(TAGMO_GIT_API).readText().also { parseUpdateJSON(it) }
+            } catch (uhe: UnknownHostException) {
+                JSONExecutor(
+                    browserActivity, TAGMO_GIT_API, ""
+                ).setResultListener(object : JSONExecutor.ResultListener {
+                    override fun onResults(result: String?) {
+                        result?.let { parseUpdateJSON(it) }
+                    }
+                })
+            }
         }
     }
 

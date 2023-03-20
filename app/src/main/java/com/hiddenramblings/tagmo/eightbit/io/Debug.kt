@@ -329,6 +329,7 @@ object Debug {
             }
             reader.close()
             val logText = log.toString()
+            log.setLength(0)
             withContext(Dispatchers.Main) {
                 submitLogcat(Debug.context, logText)
                 if (!logText.contains("AndroidRuntime") && context is BrowserActivity) {

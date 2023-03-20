@@ -161,7 +161,7 @@ class DimensionActivity : AppCompatActivity() {
 
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
-        this.tag = intent.parcelable<Parcelable>(NfcAdapter.EXTRA_TAG) as Tag?
+        this.tag = intent.parcelable<Parcelable>(NfcAdapter.EXTRA_TAG) as? Tag
         val params: Array<Any> = arrayOf(0)
         val stringBuilder = StringBuilder()
         stringBuilder.append("javascript:try{(window.$jsInterface.tagDetected||")

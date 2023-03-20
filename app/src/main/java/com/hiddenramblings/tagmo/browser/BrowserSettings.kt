@@ -246,7 +246,7 @@ open class BrowserSettings : Parcelable {
         browserRootFolder = if (Version.isTiramisu)
             parcel.readSerializable(File::class.java.classLoader, File::class.java)
         else
-            @Suppress("DEPRECATION") parcel.readSerializable() as File?
+            @Suppress("DEPRECATION") parcel.readSerializable() as? File
         val docs = parcel.readString()
         browserRootDocument = if (!docs.isNullOrEmpty()) Uri.parse(docs) else null
         query = parcel.readString()

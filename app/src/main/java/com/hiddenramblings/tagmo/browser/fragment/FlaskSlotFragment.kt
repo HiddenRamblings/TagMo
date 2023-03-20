@@ -132,8 +132,8 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
                                 flaskSlotCount.maxValue = maxSlotCount
                                 screenOptions?.isVisible = true
                                 createBlank?.isVisible = true
-                                (rootLayout.findViewById<View>(R.id.hardware_info) as TextView).text =
-                                    deviceProfile
+                                (rootLayout.findViewById<View>(R.id.hardware_info) as TextView)
+                                    .text = deviceProfile
                             }
                             try {
                                 serviceFlask!!.setFlaskCharacteristicRX()

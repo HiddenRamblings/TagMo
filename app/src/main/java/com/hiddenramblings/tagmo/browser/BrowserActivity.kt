@@ -1907,7 +1907,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
             onViewChanged()
         }
         if (System.currentTimeMillis() >= oldBrowserSettings.lastUpdatedGit + 3600000) {
-            updateManager?.refreshUpdateStatus(this)
+            updateManager?.refreshUpdateStatus()
             newBrowserSettings.lastUpdatedGit = System.currentTimeMillis()
         }
         prefs.browserRootFolder(Storage.getRelativePath(

@@ -2520,6 +2520,10 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
     fun showElitePage(extras: Bundle) {
         if (!prefs.eliteEnabled()) return
         CoroutineScope(Dispatchers.Main).launch {
+            if (viewPager.currentItem == 1) {
+                pagerAdapter.eliteBanks.onHardwareLoaded(extras)
+                return@launch
+            }
             setScrollListener(object: ScrollListener {
                 override fun onScrollComplete() {
                     pagerAdapter.eliteBanks.onHardwareLoaded(extras)
@@ -2532,6 +2536,10 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
 
     fun showWebsite(address: String?) {
         CoroutineScope(Dispatchers.Main).launch {
+            if (viewPager.currentItem == pagerAdapter.itemCount - 1) {
+                pagerAdapter.website.loadWebsite(address)
+                return@launch
+            }
             setScrollListener(object: ScrollListener {
                 override fun onScrollComplete() {
                     pagerAdapter.website.loadWebsite(address)

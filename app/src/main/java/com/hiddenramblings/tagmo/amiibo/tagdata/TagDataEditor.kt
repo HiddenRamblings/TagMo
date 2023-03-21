@@ -295,11 +295,13 @@ class TagDataEditor : AppCompatActivity() {
 
     private val imageTarget: CustomTarget<Bitmap?> = object : CustomTarget<Bitmap?>() {
         override fun onLoadFailed(errorDrawable: Drawable?) {
+            imageAmiibo.setImageResource(0)
             imageAmiibo.isGone = true
         }
 
         override fun onLoadCleared(placeholder: Drawable?) {
-            imageAmiibo.setImageResource(R.drawable.ic_no_image_60)
+            imageAmiibo.setImageResource(0)
+            imageAmiibo.isGone = true
         }
 
         override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap?>?) {
@@ -361,6 +363,7 @@ class TagDataEditor : AppCompatActivity() {
         setAmiiboInfoText(txtAmiiboType, amiiboType, hasTagInfo)
         setAmiiboInfoText(txtGameSeries, gameSeries, hasTagInfo)
         // setAmiiboInfoText(txtCharacter, character, hasTagInfo);
+        imageAmiibo.setImageResource(0)
         imageAmiibo.isGone = true
         if (!amiiboImageUrl.isNullOrEmpty()) {
             GlideApp.with(imageAmiibo).clear(imageAmiibo)

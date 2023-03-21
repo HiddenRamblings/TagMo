@@ -154,17 +154,20 @@ class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
         amiiboCardTarget = object : CustomTarget<Bitmap?>() {
             val imageAmiibo = amiiboCard?.findViewById<AppCompatImageView>(R.id.imageAmiibo)
             override fun onLoadFailed(errorDrawable: Drawable?) {
-                imageAmiibo?.setImageResource(R.drawable.ic_no_image_60)
+                imageAmiibo?.setImageResource(0)
+                imageAmiibo?.isGone = true
             }
 
             override fun onLoadCleared(placeholder: Drawable?) {
-                imageAmiibo?.setImageResource(R.drawable.ic_no_image_60)
+                imageAmiibo?.setImageResource(0)
+                imageAmiibo?.isGone = true
             }
 
             override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap?>?) {
                 imageAmiibo?.maxHeight = Resources.getSystem().displayMetrics.heightPixels / 4
                 imageAmiibo?.requestLayout()
                 imageAmiibo?.setImageBitmap(resource)
+                imageAmiibo?.isVisible = true
             }
         }
         bankStats = rootLayout.findViewById(R.id.bank_stats)
@@ -823,14 +826,18 @@ class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
         setAmiiboInfoText(txtAmiiboType, amiiboType, hasTagInfo)
         setAmiiboInfoText(txtGameSeries, gameSeries, hasTagInfo)
         if (amiiboView !== amiiboTile || null != amiiboImageUrl) {
-            imageAmiibo?.run {
+            imageAmiibo?.let {
                 if (!amiiboImageUrl.isNullOrEmpty()) {
-                    GlideApp.with(this).clear(this)
-                    GlideApp.with(this).asBitmap().load(amiiboImageUrl).into(
+                    if (amiiboView === amiiboCard) {
+                        it.setImageResource(0)
+                        it.isGone = true
+                    }
+                    GlideApp.with(it).clear(it)
+                    GlideApp.with(it).asBitmap().load(amiiboImageUrl).into(
                         if (amiiboView === amiiboCard) amiiboCardTarget else amiiboTileTarget
                     )
                 }
-                setOnClickListener {
+                it.setOnClickListener {
                     if (amiiboLongId == -1L) return@setOnClickListener
                     startActivity(Intent(requireContext(), ImageActivity::class.java)
                         .putExtras(Bundle().apply { putLong(NFCIntent.EXTRA_AMIIBO_ID, amiiboLongId) })

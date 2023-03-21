@@ -2096,11 +2096,13 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
 
     private val imageTarget: CustomTarget<Bitmap?> = object : CustomTarget<Bitmap?>() {
         override fun onLoadFailed(errorDrawable: Drawable?) {
+            imageAmiibo?.setImageResource(0)
             imageAmiibo?.isGone = true
         }
 
         override fun onLoadCleared(placeholder: Drawable?) {
-            imageAmiibo?.setImageResource(R.drawable.ic_no_image_60)
+            imageAmiibo?.setImageResource(0)
+            imageAmiibo?.isGone = true
         }
 
         override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap?>?) {
@@ -2210,6 +2212,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
             }
             if (hasSpoofData(amiiboHexId)) txtTagId?.isEnabled = false
             imageAmiibo?.let {
+                it.setImageResource(0)
                 it.isGone = true
                 if (!amiiboImageUrl.isNullOrEmpty()) {
                     GlideApp.with(it).clear(it)

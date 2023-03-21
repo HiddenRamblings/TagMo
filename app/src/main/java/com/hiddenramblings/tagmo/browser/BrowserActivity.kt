@@ -133,6 +133,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
     private var fakeSnackbarItem: AppCompatButton? = null
     lateinit var viewPager: ViewPager2
         private set
+    private var listener: ScrollListener? = null
     private val pagerAdapter = NavPagerAdapter(this)
     private lateinit var nfcFab: FloatingActionButton
     private var amiibosView: RecyclerView? = null
@@ -342,6 +343,11 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                     GridLayoutManager(this@BrowserActivity, columnCount)
                 else LinearLayoutManager(this@BrowserActivity)
                 if (BuildConfig.WEAR_OS) onCreateWearOptionsMenu() else invalidateOptionsMenu()
+            }
+
+            override fun onPageScrollStateChanged(state: Int) {
+                if (state == ViewPager2.SCROLL_STATE_IDLE) listener?.onScrollComplete()
+                super.onPageScrollStateChanged(state)
             }
         })
         TabLayoutMediator(findViewById(R.id.navigation_tabs), viewPager, true,
@@ -2120,10 +2126,12 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
 
     @JvmOverloads
     fun updateAmiiboView(tagData: ByteArray?, amiiboFile: AmiiboFile? = clickedAmiibo) {
-        amiiboContainer?.post {
-            amiiboContainer!!.alpha = 0f
-            amiiboContainer!!.isVisible = true
-            amiiboContainer!!.animate().alpha(1f).setDuration(150).setListener(null)
+        CoroutineScope(Dispatchers.Main).launch {
+            amiiboContainer?.let {
+                it.alpha = 0f
+                it.isVisible = true
+                it.animate().alpha(1f).setDuration(150).setListener(null)
+            }
             onCreateToolbarMenu(toolbar, tagData, amiiboFile)
             var amiiboId: Long = -1
             var tagInfo: String? = null
@@ -2509,19 +2517,25 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
     fun showElitePage(extras: Bundle) {
         if (!prefs.eliteEnabled()) return
         CoroutineScope(Dispatchers.Main).launch {
+            setScrollListener(object: ScrollListener {
+                override fun onScrollComplete() {
+                    pagerAdapter.eliteBanks.onHardwareLoaded(extras)
+                    listener = null
+                }
+            })
             viewPager.setCurrentItem(1, true)
-            viewPager.postDelayed({
-                pagerAdapter.eliteBanks.onHardwareLoaded(extras)
-            }, TagMo.uiDelay.toLong())
         }
     }
 
     fun showWebsite(address: String?) {
         CoroutineScope(Dispatchers.Main).launch {
+            setScrollListener(object: ScrollListener {
+                override fun onScrollComplete() {
+                    pagerAdapter.website.loadWebsite(address)
+                    listener = null
+                }
+            })
             viewPager.setCurrentItem(pagerAdapter.itemCount - 1, true)
-            viewPager.postDelayed({
-                pagerAdapter.website.loadWebsite(address)
-            }, TagMo.uiDelay.toLong())
         }
     }
 
@@ -2714,5 +2728,13 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
             Manifest.permission.READ_EXTERNAL_STORAGE,
             Manifest.permission.WRITE_EXTERNAL_STORAGE
         )
+    }
+
+    private fun setScrollListener(listener: ScrollListener?) {
+        this.listener = listener
+    }
+
+    interface ScrollListener {
+        fun onScrollComplete()
     }
 }

@@ -74,9 +74,6 @@ class TagMo : Application() {
             val exception = StringWriter()
             error.printStackTrace(PrintWriter(exception))
             try {
-                Toast.makeText(this, R.string.logcat_crash, Toast.LENGTH_SHORT).show()
-            } catch (ignored: Exception) { }
-            try {
                 Debug.processException(this, exception.toString())
             } catch (ignored: Exception) { }
             exitProcess(0)

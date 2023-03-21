@@ -24,6 +24,7 @@ import com.hiddenramblings.tagmo.*
 import com.hiddenramblings.tagmo.amiibo.AmiiboFile
 import com.hiddenramblings.tagmo.amiibo.EliteTag
 import com.hiddenramblings.tagmo.amiibo.KeyManager
+import com.hiddenramblings.tagmo.amiibo.tagdata.AmiiboData
 import com.hiddenramblings.tagmo.eightbit.io.Debug
 import com.hiddenramblings.tagmo.eightbit.material.IconifiedSnackbar
 import com.hiddenramblings.tagmo.eightbit.os.Version
@@ -317,7 +318,17 @@ class NfcActivity : AppCompatActivity() {
                         NFCIntent.ACTION_WRITE_ALL_TAGS -> {
                             ntag.setBankCount(writeCount)
                             if (activeBank <= writeCount) ntag.activateBank(activeBank)
-                            if (commandIntent.hasExtra(NFCIntent.EXTRA_AMIIBO_FILES)) {
+                            if (commandIntent.hasExtra(NFCIntent.EXTRA_AMIIBO_BYTES)) {
+                                val amiiboList = commandIntent.parcelableArrayList<AmiiboData>(
+                                    NFCIntent.EXTRA_AMIIBO_BYTES
+                                )
+                                amiiboList?.indices?.forEach { x ->
+                                    showMessage(R.string.bank_writing, x + 1, amiiboList.size)
+                                    keyManager.encrypt(amiiboList[x].array()).run {
+                                        TagWriter.writeEliteAuto(ntag, this, keyManager, x)
+                                    }
+                                }
+                            } else if (commandIntent.hasExtra(NFCIntent.EXTRA_AMIIBO_FILES)) {
                                 val amiiboList = commandIntent.parcelableArrayList<AmiiboFile>(
                                     NFCIntent.EXTRA_AMIIBO_FILES
                                 )

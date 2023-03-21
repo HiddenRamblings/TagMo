@@ -38,6 +38,7 @@ import com.hiddenramblings.tagmo.amiibo.AmiiboManager
 import com.hiddenramblings.tagmo.amiibo.AmiiboManager.getAmiiboManager
 import com.hiddenramblings.tagmo.amiibo.AmiiboManager.hasSpoofData
 import com.hiddenramblings.tagmo.amiibo.FlaskTag
+import com.hiddenramblings.tagmo.amiibo.tagdata.AmiiboData
 import com.hiddenramblings.tagmo.bluetooth.BluetoothHandler
 import com.hiddenramblings.tagmo.bluetooth.BluetoothHandler.BluetoothListener
 import com.hiddenramblings.tagmo.bluetooth.FlaskGattService
@@ -81,6 +82,7 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
     private lateinit var flaskSlotCount: NumberPicker
     private var screenOptions: LinearLayout? = null
     private var writeSlots: AppCompatButton? = null
+    private var writeSerials: SwitchCompat? = null
     private var eraseSlots: AppCompatButton? = null
     private var slotOptionsMenu: LinearLayout? = null
     private var createBlank: AppCompatButton? = null
@@ -414,35 +416,33 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
         amiiboTileTarget = object : CustomTarget<Bitmap?>() {
             val imageAmiibo = amiiboTile?.findViewById<AppCompatImageView>(R.id.imageAmiibo)
             override fun onLoadFailed(errorDrawable: Drawable?) {
-                imageAmiibo?.visibility = View.INVISIBLE
+                imageAmiibo?.setImageResource(R.drawable.ic_no_image_60)
             }
 
             override fun onLoadCleared(placeholder: Drawable?) {
-                imageAmiibo?.setImageResource(0)
+                imageAmiibo?.setImageResource(R.drawable.ic_no_image_60)
             }
 
             override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap?>?) {
                 imageAmiibo?.maxHeight = Resources.getSystem().displayMetrics.heightPixels / 4
                 imageAmiibo?.requestLayout()
                 imageAmiibo?.setImageBitmap(resource)
-                imageAmiibo?.visibility = View.VISIBLE
             }
         }
         amiiboCardTarget = object : CustomTarget<Bitmap?>() {
             val imageAmiibo = amiiboCard?.findViewById<AppCompatImageView>(R.id.imageAmiibo)
             override fun onLoadFailed(errorDrawable: Drawable?) {
-                imageAmiibo?.visibility = View.INVISIBLE
+                imageAmiibo?.setImageResource(R.drawable.ic_no_image_60)
             }
 
             override fun onLoadCleared(placeholder: Drawable?) {
-                imageAmiibo?.setImageResource(0)
+                imageAmiibo?.setImageResource(R.drawable.ic_no_image_60)
             }
 
             override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap?>?) {
                 imageAmiibo?.maxHeight = Resources.getSystem().displayMetrics.heightPixels / 4
                 imageAmiibo?.requestLayout()
                 imageAmiibo?.setImageBitmap(resource)
-                imageAmiibo?.visibility = View.VISIBLE
             }
         }
         settings = activity.settings ?: BrowserSettings().initialize()
@@ -464,11 +464,12 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
         screenOptions = rootLayout.findViewById(R.id.screen_options)
         writeSlots = rootLayout.findViewById(R.id.write_slot_count)
         writeSlots?.text = getString(R.string.write_slots, 1)
+        writeSerials = rootLayout.findViewById(R.id.write_serial_fill)
         eraseSlots = rootLayout.findViewById(R.id.erase_slot_count)
         eraseSlots?.text = getString(R.string.erase_slots, 0)
         writeSlotsLayout = rootLayout.findViewById(R.id.write_list_layout)
         if (prefs.softwareLayer())
-            writeSlotsLayout!!.setLayerType(View.LAYER_TYPE_SOFTWARE, null)
+            writeSlotsLayout?.setLayerType(View.LAYER_TYPE_SOFTWARE, null)
         val amiiboFilesView = rootLayout.findViewById<RecyclerView>(R.id.amiibo_files_list)
         if (prefs.softwareLayer())
             amiiboFilesView.setLayerType(View.LAYER_TYPE_SOFTWARE, null)
@@ -570,7 +571,8 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
                 }
 
                 override fun onAmiiboListClicked(amiiboList: ArrayList<AmiiboFile?>?) {}
-            }, 1)
+                override fun onAmiiboDataClicked(serialList: ArrayList<AmiiboData?>?) {}
+            })
             bottomSheet?.setState(BottomSheetBehavior.STATE_EXPANDED)
         }
         flaskSlotCount.setOnValueChangedListener (object : NumberPicker.OnValueChangeListener {
@@ -589,9 +591,12 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
                     override fun onAmiiboClicked(amiiboFile: AmiiboFile?) {}
                     override fun onAmiiboImageClicked(amiiboFile: AmiiboFile?) {}
                     override fun onAmiiboListClicked(amiiboList: ArrayList<AmiiboFile?>?) {
-                        if (!amiiboList.isNullOrEmpty()) writeAmiiboCollection(amiiboList)
+                        if (!amiiboList.isNullOrEmpty()) writeAmiiboFileCollection(amiiboList)
                     }
-                }, count)
+                    override fun onAmiiboDataClicked(serialList: ArrayList<AmiiboData?>?) {
+                        if (!serialList.isNullOrEmpty()) writeAmiiboDataCollection(serialList)
+                    }
+                }, count, writeSerials?.isChecked ?: false)
             }
             bottomSheet?.setState(BottomSheetBehavior.STATE_EXPANDED)
         }
@@ -746,16 +751,14 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
                 setAmiiboInfoText(txtGameSeries, gameSeries)
                 if (hasSpoofData(amiiboHexId)) txtTagId.isEnabled = false
             }
-            if (amiiboView === amiiboTile && null == amiiboImageUrl) {
-                imageAmiibo?.setImageResource(R.drawable.ic_no_image_60)
-                imageAmiibo?.isVisible = true
-            } else if (amiiboView === amiiboCard && null == amiiboImageUrl) {
+
+            if (amiiboView === amiiboCard && null == amiiboImageUrl) {
                 imageAmiibo!!.setImageResource(0)
                 imageAmiibo.visibility = View.INVISIBLE
-            } else {
+            } else if (amiiboView !== amiiboTile || null != amiiboImageUrl) {
                 imageAmiibo?.run {
-                    GlideApp.with(this).clear(this)
                     if (!amiiboImageUrl.isNullOrEmpty()) {
+                        GlideApp.with(this).clear(this)
                         GlideApp.with(this).asBitmap().load(amiiboImageUrl).into(
                             if (amiiboView === amiiboCard) amiiboCardTarget else amiiboTileTarget
                         )
@@ -961,17 +964,40 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
                 Intent.ACTION_VIEW, Uri.parse("https://www.bluuplabs.com/flask/")
             ))
         }
-        deviceDialog = AlertDialog.Builder(requireActivity()).setView(view).show()
-        for (device in mBluetoothAdapter!!.bondedDevices) {
-            val deviceType = if (device.name.lowercase().startsWith("flask")) 1 else 0
-            view.findViewById<LinearLayout>(R.id.bluetooth_paired)?.addView(
-                displayScanResult(deviceDialog!!, device, deviceType)
-            )
+        deviceDialog = AlertDialog.Builder(requireActivity()).setView(view).show().apply {
+            mBluetoothAdapter?.bondedDevices?.forEach { device ->
+                val deviceType = if (device.name.lowercase().startsWith("flask")) 1 else 0
+                view.findViewById<LinearLayout>(R.id.bluetooth_paired)?.addView(
+                    displayScanResult(this, device, deviceType)
+                )
+            }
+            scanBluetoothServices(this)
         }
-        scanBluetoothServices(deviceDialog!!)
     }
 
-    private fun writeAmiiboCollection(amiiboList: ArrayList<AmiiboFile?>) {
+    private fun writeAmiiboDataCollection(bytesList: ArrayList<AmiiboData?>) {
+        AlertDialog.Builder(requireContext())
+            .setMessage(R.string.gatt_write_confirm)
+            .setPositiveButton(R.string.proceed) { dialog: DialogInterface, _: Int ->
+                showProcessingNotice(true)
+                bytesList.indices.forEach {
+                    fragmentHandler.postDelayed({
+                        uploadAmiiboData(bytesList[it], it == bytesList.size - 1)
+                    }, 30L * it)
+                }
+                onBottomSheetChanged(SHEET.MENU)
+                settings.removeChangeListener(writeTagAdapter)
+                dialog.dismiss()
+            }
+            .setNegativeButton(R.string.cancel) { dialog: DialogInterface, _: Int ->
+                onBottomSheetChanged(SHEET.MENU)
+                settings.removeChangeListener(writeTagAdapter)
+                dialog.dismiss()
+            }
+            .show()
+    }
+
+    private fun writeAmiiboFileCollection(amiiboList: ArrayList<AmiiboFile?>) {
         AlertDialog.Builder(requireContext())
             .setMessage(R.string.gatt_write_confirm)
             .setPositiveButton(R.string.proceed) { dialog: DialogInterface, _: Int ->
@@ -991,6 +1017,25 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
                 dialog.dismiss()
             }
             .show()
+    }
+
+    private fun uploadAmiiboData(amiiboData: AmiiboData?, complete: Boolean = true) {
+        var amiibo: Amiibo? = null
+        settings.amiiboManager?.let {
+            try {
+                val amiiboId = Amiibo.dataToId(amiiboData?.array())
+                amiibo = it.amiibos[amiiboId]
+                if (null == amiibo) amiibo = Amiibo(it, amiiboId, null, null)
+            } catch (e: Exception) {
+                Debug.warn(e)
+            }
+        }
+        amiibo?.let {
+            amiiboData?.array()?.let { data ->
+                serviceFlask?.uploadAmiiboFile(data, it, complete)
+                servicePuck?.uploadSlotAmiibo(data, flaskSlotCount.value - 1)
+            }
+        }
     }
 
     private fun uploadAmiiboFile(amiiboFile: AmiiboFile?, complete: Boolean = true) {

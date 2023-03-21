@@ -179,8 +179,8 @@
     <string name="files_displayed">%1$d Pliki: ? / ? amiibo</string>
     <string name="amiibo_collected">%1$d Pliki: %2$d / %3$d amiibo</string>
 
-    <string name="write_open_banks">Nagraj %1$d banków na N2 Elite</string>
-    <string name="erase_open_banks">Wymaż %1$d banków z N2 Elite</string>
+    <string name="write_banks">Nagraj %1$d banków na N2 Elite</string>
+    <string name="erase_banks">Wymaż %1$d banków z N2 Elite</string>
     <string name="bank_stats">Bank %1$d aktywny, banków %2$d włączonych</string>
     <string name="bank_number">Bank %1$d</string>
 

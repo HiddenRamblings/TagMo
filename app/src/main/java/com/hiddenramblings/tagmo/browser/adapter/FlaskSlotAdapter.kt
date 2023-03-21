@@ -109,7 +109,9 @@ class FlaskSlotAdapter(
                 imageAmiibo?.setImageResource(R.drawable.ic_no_image_60)
             }
 
-            override fun onLoadCleared(placeholder: Drawable?) { }
+            override fun onLoadCleared(placeholder: Drawable?) {
+                imageAmiibo?.setImageResource(R.drawable.ic_no_image_60)
+            }
 
             override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap?>?) {
                 imageAmiibo?.setImageBitmap(resource)

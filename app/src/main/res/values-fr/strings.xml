@@ -199,8 +199,8 @@
 
     <string name="view_device_options">Basculer vers les options du N2 Elite</string>
     <string name="view_amiibo_details">Basculer vers les détails de l’amiibo</string>
-    <string name="write_open_banks">Écrire %1$d banques au N2 Elite</string>
-    <string name="erase_open_banks">Effacer %1$d banques du N2 Elite</string>
+    <string name="write_banks">Écrire %1$d banques au N2 Elite</string>
+    <string name="erase_banks">Effacer %1$d banques du N2 Elite</string>
     <string name="edit_bank_count">Modifier le nombre de banques du N2 Elite</string>
     <string name="bank_stats">Banque %1$d active, %2$d banques enregistrées</string>
     <string name="bank_number">Banque %1$d</string>

@@ -13,22 +13,22 @@ import android.widget.TextView
 import androidx.appcompat.widget.AppCompatImageView
 import androidx.core.content.ContextCompat
 import androidx.core.view.isGone
-import androidx.core.view.isInvisible
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
-import com.hiddenramblings.tagmo.GlideApp
-import com.hiddenramblings.tagmo.Preferences
-import com.hiddenramblings.tagmo.R
-import com.hiddenramblings.tagmo.TagMo
+import com.hiddenramblings.tagmo.*
 import com.hiddenramblings.tagmo.amiibo.Amiibo
 import com.hiddenramblings.tagmo.amiibo.AmiiboFile
 import com.hiddenramblings.tagmo.amiibo.AmiiboFileComparator
+import com.hiddenramblings.tagmo.amiibo.KeyManager
+import com.hiddenramblings.tagmo.amiibo.tagdata.AmiiboData
 import com.hiddenramblings.tagmo.browser.BrowserSettings
 import com.hiddenramblings.tagmo.browser.BrowserSettings.BrowserSettingsListener
 import com.hiddenramblings.tagmo.browser.BrowserSettings.VIEW
 import com.hiddenramblings.tagmo.eightbit.os.Storage
 import com.hiddenramblings.tagmo.eightbit.os.Version
+import com.hiddenramblings.tagmo.nfctech.Foomiibo
+import com.hiddenramblings.tagmo.nfctech.TagArray
 import com.hiddenramblings.tagmo.widget.BoldSpannable
 import java.util.*
 
@@ -36,11 +36,13 @@ class WriteTagAdapter(private val settings: BrowserSettings?) :
     RecyclerView.Adapter<WriteTagAdapter.AmiiboViewHolder>(), Filterable, BrowserSettingsListener {
     private var listener: OnAmiiboClickListener? = null
     private var listSize = 1
+    private var isFillEnabled = false
     private var amiiboFiles: ArrayList<AmiiboFile?> = arrayListOf()
     private var filteredData: ArrayList<AmiiboFile?> = arrayListOf()
     private var filter: AmiiboFilter? = null
     private var firstRun = true
     private val amiiboList: ArrayList<AmiiboFile?> = arrayListOf()
+    private val serialList: ArrayList<AmiiboData?> = arrayListOf()
 
     init {
         filteredData = amiiboFiles
@@ -48,11 +50,18 @@ class WriteTagAdapter(private val settings: BrowserSettings?) :
     }
 
     @SuppressLint("NotifyDataSetChanged")
-    fun setListener(listener: OnAmiiboClickListener?, listSize: Int) {
+    fun setListener(listener: OnAmiiboClickListener?, listSize: Int, isFillEnabled: Boolean) {
         amiiboList.clear()
+        serialList.clear()
         notifyDataSetChanged()
         this.listener = listener
         this.listSize = listSize
+        this.isFillEnabled = isFillEnabled
+    }
+
+    @SuppressLint("NotifyDataSetChanged")
+    fun setListener(listener: OnAmiiboClickListener?) {
+        setListener(listener, 1, false)
     }
 
     override fun onBrowserSettingsChanged(
@@ -75,8 +84,7 @@ class WriteTagAdapter(private val settings: BrowserSettings?) :
             )
         ) {
             amiiboFiles = arrayListOf()
-            if (null != newBrowserSettings?.amiiboFiles)
-                amiiboFiles.addAll(newBrowserSettings.amiiboFiles)
+            newBrowserSettings?.amiiboFiles?.let { amiiboFiles.addAll(it) }
             refresh = true
         }
         if (!BrowserSettings.equals(
@@ -134,14 +142,32 @@ class WriteTagAdapter(private val settings: BrowserSettings?) :
 
     private fun handleClickEvent(holder: AmiiboViewHolder, position: Int) {
         if (listSize > 1) {
-            if (amiiboList.contains(holder.amiiboFile)) {
-                amiiboList.remove(filteredData[position])
-                setIsHighlighted(holder, false)
+            if (isFillEnabled) {
+                filteredData[position]?.let { amiiboFile ->
+                    val keyManager = KeyManager(holder.itemView.context)
+                    val data = amiiboFile.data ?: amiiboFile.docUri?.let {
+                        TagArray.getValidatedDocument(keyManager, it)
+                    } ?: amiiboFile.filePath?.let {
+                        TagArray.getValidatedFile(keyManager, it)
+                    }
+                    val amiiboData = data?.let { AmiiboData(keyManager.decrypt(it)) }
+                    for (i in 0 until listSize) {
+                        val newData = amiiboData?.let { AmiiboData(it.array()) }
+                        newData?.uID = Foomiibo().generateRandomUID()
+                        serialList.add(newData)
+                    }
+                    listener?.onAmiiboDataClicked(serialList)
+                }
             } else {
-                amiiboList.add(filteredData[position])
-                setIsHighlighted(holder, true)
+                if (amiiboList.contains(holder.amiiboFile)) {
+                    amiiboList.remove(filteredData[position])
+                    setIsHighlighted(holder, false)
+                } else {
+                    amiiboList.add(filteredData[position])
+                    setIsHighlighted(holder, true)
+                }
+                if (amiiboList.size == listSize) listener?.onAmiiboListClicked(amiiboList)
             }
-            if (amiiboList.size == listSize) listener?.onAmiiboListClicked(amiiboList)
         } else {
             listener?.onAmiiboClicked(holder.amiiboFile)
         }
@@ -153,12 +179,12 @@ class WriteTagAdapter(private val settings: BrowserSettings?) :
             handleClickEvent(holder, clickPosition)
         }
         holder.imageAmiibo?.setOnClickListener {
-            if (settings!!.amiiboView == VIEW.IMAGE.value)
+            if (settings?.amiiboView == VIEW.IMAGE.value)
                 handleClickEvent(holder, clickPosition)
             else
                 listener?.onAmiiboImageClicked(holder.amiiboFile)
         }
-        holder.bind(getItem(clickPosition)!!)
+        holder.bind(getItem(clickPosition))
         setIsHighlighted(holder, amiiboList.contains(holder.amiiboFile))
     }
 
@@ -238,7 +264,9 @@ class WriteTagAdapter(private val settings: BrowserSettings?) :
                 imageAmiibo?.setImageResource(R.drawable.ic_no_image_60)
             }
 
-            override fun onLoadCleared(placeholder: Drawable?) { }
+            override fun onLoadCleared(placeholder: Drawable?) {
+                imageAmiibo?.setImageResource(R.drawable.ic_no_image_60)
+            }
 
             override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap?>?) {
                 imageAmiibo?.setImageBitmap(resource)
@@ -286,9 +314,10 @@ class WriteTagAdapter(private val settings: BrowserSettings?) :
                 amiiboImageUrl = Amiibo.getImageUrl(it)
             }
             imageAmiibo?.let {
-                GlideApp.with(it).clear(it)
-                if (!amiiboImageUrl.isNullOrEmpty())
+                if (!amiiboImageUrl.isNullOrEmpty()) {
+                    GlideApp.with(it).clear(it)
                     GlideApp.with(it).asBitmap().load(amiiboImageUrl).into(target)
+                }
             }
             val query = settings?.query?.lowercase(Locale.getDefault())
             setAmiiboInfoText(txtName, amiiboName, false)
@@ -408,6 +437,7 @@ class WriteTagAdapter(private val settings: BrowserSettings?) :
         fun onAmiiboClicked(amiiboFile: AmiiboFile?)
         fun onAmiiboImageClicked(amiiboFile: AmiiboFile?)
         fun onAmiiboListClicked(amiiboList: ArrayList<AmiiboFile?>?)
+        fun onAmiiboDataClicked(serialList: ArrayList<AmiiboData?>?)
     }
 
     companion object {

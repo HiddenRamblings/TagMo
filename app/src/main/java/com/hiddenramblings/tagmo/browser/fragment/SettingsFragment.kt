@@ -73,7 +73,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
             onPreferenceChangeListener =
                 Preference.OnPreferenceChangeListener { preference: Preference?, newValue: Any ->
                     onImageNetworkChange(this, newValue.toString())
-                    super@SettingsFragment.onPreferenceTreeClick(preference!!)
+                    preference?.let { super@SettingsFragment.onPreferenceTreeClick(it) } ?: false
                 }
         }
         importKeys?.onPreferenceClickListener =
@@ -330,11 +330,13 @@ class SettingsFragment : PreferenceFragmentCompat() {
     private fun validateKeys(data: Uri?) {
         CoroutineScope(Dispatchers.IO).launch(Dispatchers.IO) {
             try {
-                requireContext().contentResolver.openInputStream(data!!).use { strm ->
-                    keyManager.evaluateKey(strm!!)
-                    withContext(Dispatchers.Main) {
-                        (requireActivity() as BrowserActivity).onKeysLoaded(true)
-                        updateKeySummary()
+                data?.let {
+                    requireContext().contentResolver.openInputStream(it)?.use { strm ->
+                        keyManager.evaluateKey(strm)
+                        withContext(Dispatchers.Main) {
+                            (requireActivity() as BrowserActivity).onKeysLoaded(true)
+                            updateKeySummary()
+                        }
                     }
                 }
             } catch (e: Exception) {
@@ -343,7 +345,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
         }
     }
 
-    private fun keyEntryDialog(hexString: String) {
+    private suspend fun keyEntryDialog(hexString: String) = withContext(Dispatchers.Main) {
         val view = layoutInflater.inflate(R.layout.dialog_save_item, null)
         val dialog = AlertDialog.Builder(requireContext())
         (view.findViewById<View>(R.id.save_item_label) as TextView).setText(R.string.key_hex_entry)

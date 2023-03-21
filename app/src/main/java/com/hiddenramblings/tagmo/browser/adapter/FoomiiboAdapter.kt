@@ -230,7 +230,9 @@ class FoomiiboAdapter(
                 imageAmiibo?.setImageResource(R.drawable.ic_no_image_60)
             }
 
-            override fun onLoadCleared(placeholder: Drawable?) { }
+            override fun onLoadCleared(placeholder: Drawable?) {
+                imageAmiibo?.setImageResource(R.drawable.ic_no_image_60)
+            }
 
             override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap?>?) {
                 imageAmiibo?.setImageBitmap(resource)
@@ -280,9 +282,10 @@ class FoomiiboAdapter(
                 amiiboImageUrl = Amiibo.getImageUrl(it)
             }
             imageAmiibo?.let {
-                GlideApp.with(it).clear(it)
-                if (!amiiboImageUrl.isNullOrEmpty())
+                if (!amiiboImageUrl.isNullOrEmpty()) {
+                    GlideApp.with(it).clear(it)
                     GlideApp.with(it).asBitmap().load(amiiboImageUrl).into(target)
+                }
             }
             val query = settings.query?.lowercase(Locale.getDefault())
             setFoomiiboInfoText(txtName, amiiboName, false)

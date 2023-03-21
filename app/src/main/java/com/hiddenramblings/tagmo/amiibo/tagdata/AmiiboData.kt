@@ -1,5 +1,7 @@
 package com.hiddenramblings.tagmo.amiibo.tagdata
 
+import android.os.Parcel
+import android.os.Parcelable
 import com.hiddenramblings.tagmo.R
 import com.hiddenramblings.tagmo.TagMo
 import com.hiddenramblings.tagmo.charset.CharsetCompat
@@ -10,11 +12,21 @@ import java.nio.ByteBuffer
 import java.nio.charset.Charset
 import java.util.*
 
-class AmiiboData(tagData: ByteArray) {
+open class AmiiboData : Parcelable {
     private val context = TagMo.appContext
     private val tagData: ByteBuffer
     fun array(): ByteArray {
         return tagData.array()
+    }
+
+    constructor(tagData: ByteArray) {
+        if (tagData.size < NfcByte.TAG_DATA_SIZE) throw IOException(
+            context.getString(
+                R.string.invalid_data_size,
+                tagData.size, NfcByte.TAG_DATA_SIZE
+            )
+        )
+        this.tagData = ByteBuffer.wrap(tagData)
     }
 
     @set:Throws(NumberFormatException::class)
@@ -142,16 +154,6 @@ class AmiiboData(tagData: ByteArray) {
             if (value.size != APP_DATA_LENGTH) throw IOException(context.getString(R.string.invalid_app_data))
             putBytes(tagData, APP_DATA_OFFSET, value)
         }
-
-    init {
-        if (tagData.size < NfcByte.TAG_DATA_SIZE) throw IOException(
-            context.getString(
-                R.string.invalid_data_size,
-                tagData.size, NfcByte.TAG_DATA_SIZE
-            )
-        )
-        this.tagData = ByteBuffer.wrap(tagData)
-    }
 
     companion object {
         private const val UID_OFFSET = 0x1D4
@@ -409,5 +411,33 @@ class AmiiboData(tagData: ByteArray) {
                 else ByteArray(length)
             )
         }
+
+        @JvmField
+        val CREATOR: Parcelable.Creator<AmiiboData?> = object : Parcelable.Creator<AmiiboData?> {
+            override fun createFromParcel(source: Parcel): AmiiboData {
+                return AmiiboData(source)
+            }
+
+            override fun newArray(size: Int): Array<AmiiboData?> {
+                return arrayOfNulls(size)
+            }
+        }
+    }
+
+    override fun describeContents(): Int {
+        return 0
+    }
+
+    override fun writeToParcel(dest: Parcel, flags: Int) {
+        tagData.array().run {
+            dest.writeInt(size)
+            dest.writeByteArray(this)
+        }
+    }
+
+    protected constructor(parcel: Parcel) {
+        tagData = ByteBuffer.wrap(ByteArray(parcel.readInt()).also {
+            parcel.readByteArray(it)
+        })
     }
 }

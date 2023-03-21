@@ -259,8 +259,8 @@
 
     <string name="view_device_options">檢視N2 Elite選項設定</string>
     <string name="view_amiibo_details">檢視 amiibo 相關資訊</string>
-    <string name="write_open_banks">寫入 %1$d banks</string>
-    <string name="erase_open_banks">抹除 %1$d banks</string>
+    <string name="write_banks">寫入 %1$d banks</string>
+    <string name="erase_banks">抹除 %1$d banks</string>
     <string name="edit_bank_count">編輯 N2 Elite 的 Bank 計數</string>
     <string name="bank_stats">Bank %1$d 可用 ， 已啟用 %2$d Banks </string>
     <string name="bank_number">Bank %1$d</string>

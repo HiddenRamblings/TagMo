@@ -259,8 +259,8 @@
 
     <string name="view_device_options">Switch to Device Options</string>
     <string name="view_amiibo_details">Switch to amiibo Details</string>
-    <string name="write_open_banks">Write %1$d banks</string>
-    <string name="erase_open_banks">Erase %1$d banks</string>
+    <string name="write_banks">Write %1$d banks</string>
+    <string name="erase_banks">Erase %1$d banks</string>
     <string name="edit_bank_count">Edit Bank Count for N2 Elite</string>
     <string name="bank_stats">Bank %1$d Active, %2$d Banks Enabled</string>
     <string name="bank_number">Bank %1$d</string>
@@ -318,6 +318,8 @@
     <string name="connect_flask">Connect Flask</string>
     <string name="connect_puck">Connect Puck.js</string>
     <string name="switch_devices">Connect a Bluetooth device</string>
+
+    <string name="write_serials">Duplicate with random serial</string>
 
     <string name="data_write">Wrote main data</string>
     <string name="password_write">Wrote password</string>

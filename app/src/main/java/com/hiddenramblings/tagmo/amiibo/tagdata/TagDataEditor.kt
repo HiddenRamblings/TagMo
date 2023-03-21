@@ -201,7 +201,7 @@ class TagDataEditor : AppCompatActivity() {
         appDataSwitch.setOnCheckedChangeListener { _: CompoundButton?, checked: Boolean ->
             onAppDataSwitchClicked(checked)
         }
-        findViewById<View>(R.id.random_serial).setOnClickListener {
+        generateSerial.setOnClickListener {
             txtSerialNumber.setText(TagArray.bytesToHex(Foomiibo().generateRandomUID()))
         }
         findViewById<View>(R.id.txtInitDate).setOnClickListener {
@@ -298,7 +298,9 @@ class TagDataEditor : AppCompatActivity() {
             imageAmiibo.isGone = true
         }
 
-        override fun onLoadCleared(placeholder: Drawable?) { }
+        override fun onLoadCleared(placeholder: Drawable?) {
+            imageAmiibo.setImageResource(R.drawable.ic_no_image_60)
+        }
 
         override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap?>?) {
             imageAmiibo.setImageBitmap(resource)
@@ -360,8 +362,8 @@ class TagDataEditor : AppCompatActivity() {
         setAmiiboInfoText(txtGameSeries, gameSeries, hasTagInfo)
         // setAmiiboInfoText(txtCharacter, character, hasTagInfo);
         imageAmiibo.isGone = true
-        GlideApp.with(imageAmiibo).clear(imageAmiibo)
         if (!amiiboImageUrl.isNullOrEmpty()) {
+            GlideApp.with(imageAmiibo).clear(imageAmiibo)
             GlideApp.with(imageAmiibo).asBitmap().load(amiiboImageUrl).into(imageTarget)
         }
     }

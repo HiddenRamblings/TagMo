@@ -19,7 +19,6 @@ import com.hiddenramblings.tagmo.nfctech.TagArray.isPowerTag
 import com.hiddenramblings.tagmo.nfctech.TagArray.technology
 import com.hiddenramblings.tagmo.parcelable
 import com.hiddenramblings.tagmo.widget.Toasty
-import java.io.IOException
 
 class ScanTag {
     private var hasTestedElite = false
@@ -34,31 +33,25 @@ class ScanTag {
         val prefs = Preferences(activity.applicationContext)
         val tag = intent.parcelable<Tag>(NfcAdapter.EXTRA_TAG)
         val tagTech = tag.technology()
-        val mifare: NTAG215? = NTAG215[tag]
+        val mifare: NTAG215 = NTAG215[tag] ?: NTAG215.getBlind(tag)
         try {
-            mifare?.let { ntag ->
+            mifare.let { ntag ->
                 ntag.connect()
                 if (!hasTestedElite) {
                     hasTestedElite = true
-                    if (!isPowerTag(ntag)) {
-                        isEliteDevice = isElite(ntag)
-                    }
-                }
-                var banksCount = -1
-                var activeBank = -1
-                if (isEliteDevice) {
-                    if (TagReader.needsFirmware(ntag)) {
-                        if (TagWriter.updateFirmware(ntag))
-                            Toasty(activity).Short(R.string.firmware_update)
-                        closeTagSilently(ntag)
-                        return
-                    }
-                    val bankParams = TagReader.getBankParams(ntag)
-                    banksCount = bankParams?.get(1)?.toInt()?.and(0xFF) ?: banksCount
-                    activeBank = bankParams?.get(0)?.toInt()?.and(0xFF) ?: activeBank
+                    if (!isPowerTag(ntag)) isEliteDevice = isElite(ntag)
                 }
                 try {
                     if (isEliteDevice) {
+                        if (TagReader.needsFirmware(ntag)) {
+                            if (TagWriter.updateFirmware(ntag))
+                                Toasty(activity).Short(R.string.firmware_update)
+                            closeTagSilently(ntag)
+                            return
+                        }
+                        val bankParams = TagReader.getBankParams(ntag)
+                        val banksCount = bankParams?.get(1)?.toInt()?.and(0xFF) ?: -1
+                        val activeBank = bankParams?.get(0)?.toInt()?.and(0xFF) ?: -1
                         val signature = TagReader.getBankSignature(ntag)
                         prefs.eliteSignature(signature)
                         prefs.eliteActiveBank(activeBank)

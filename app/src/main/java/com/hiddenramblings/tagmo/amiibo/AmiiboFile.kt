@@ -32,8 +32,10 @@ open class AmiiboFile : Parcelable {
     override fun writeToParcel(dest: Parcel, flags: Int) {
         dest.writeSerializable(filePath)
         dest.writeLong(id)
-        dest.writeInt(data!!.size)
-        dest.writeByteArray(data)
+        data?.let {
+            dest.writeInt(it.size)
+            dest.writeByteArray(it)
+        }
     }
 
     protected constructor(parcel: Parcel) {
@@ -42,8 +44,9 @@ open class AmiiboFile : Parcelable {
         else
             @Suppress("DEPRECATION") parcel.readSerializable() as File?
         id = parcel.readLong()
-        data = ByteArray(parcel.readInt())
-        parcel.readByteArray(data!!)
+        data = ByteArray(parcel.readInt()).also {
+            parcel.readByteArray(it)
+        }
     }
 
     companion object {

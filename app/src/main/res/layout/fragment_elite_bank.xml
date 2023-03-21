@@ -128,6 +128,16 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
+            <androidx.appcompat.widget.SwitchCompat
+                android:id="@+id/write_serial_fill"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginHorizontal="2dp"
+                android:defaultValue="false"
+                android:text="@string/write_serials"
+                app:switchPadding="4dp" />
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -135,23 +145,23 @@
                 android:layout_marginBottom="6dp"
                 android:orientation="horizontal" >
 
-            <androidx.appcompat.widget.AppCompatButton
-                android:id="@+id/write_open_banks"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginRight="-2dp"
-                android:layout_marginEnd="-2dp"
-                android:layout_weight="1"
-                android:text="@string/write_open_banks" />
+                <androidx.appcompat.widget.AppCompatButton
+                    android:id="@+id/write_open_banks"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="-2dp"
+                    android:layout_marginEnd="-2dp"
+                    android:layout_weight="1"
+                    android:text="@string/write_banks" />
 
-            <androidx.appcompat.widget.AppCompatButton
-                android:id="@+id/erase_open_banks"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="-2dp"
-                android:layout_marginStart="-2dp"
-                android:layout_weight="1"
-                android:text="@string/erase_open_banks" />
+                <androidx.appcompat.widget.AppCompatButton
+                    android:id="@+id/erase_open_banks"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="-2dp"
+                    android:layout_marginStart="-2dp"
+                    android:layout_weight="1"
+                    android:text="@string/erase_banks" />
             </LinearLayout>
 
             <include

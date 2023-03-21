@@ -4,6 +4,8 @@ import android.app.Application
 import android.content.Context
 import android.content.Intent
 import android.os.Parcelable
+import android.os.Process.killProcess
+import android.os.Process.myPid
 import android.text.Spanned
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatDelegate

@@ -54,7 +54,7 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
     private var browserScroller: RecyclerViewFastScroller? = null
     var browserContent: RecyclerView? = null
         private set
-    var foomiiboView: RecyclerView? = null
+    var foomiiboContent: RecyclerView? = null
         private set
     private lateinit var directory: File
     private lateinit var keyManager: KeyManager
@@ -117,14 +117,14 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
         browserContent?.adapter = BrowserAdapter(settings, activity)
         settings.addChangeListener(browserContent?.adapter as BrowserSettingsListener?)
 
-        foomiiboView = view.findViewById(R.id.foomiibo_list)
+        foomiiboContent = view.findViewById(R.id.foomiibo_list)
         if (prefs.softwareLayer())
-            foomiiboView?.setLayerType(View.LAYER_TYPE_SOFTWARE, null)
-        foomiiboView?.layoutManager = if (settings.amiiboView == BrowserSettings.VIEW.IMAGE.value)
+            foomiiboContent?.setLayerType(View.LAYER_TYPE_SOFTWARE, null)
+        foomiiboContent?.layoutManager = if (settings.amiiboView == BrowserSettings.VIEW.IMAGE.value)
             GridLayoutManager(activity, activity.columnCount)
         else LinearLayoutManager(activity)
-        foomiiboView?.adapter = FoomiiboAdapter(settings, this)
-        settings.addChangeListener(foomiiboView?.adapter as BrowserSettingsListener?)
+        foomiiboContent?.adapter = FoomiiboAdapter(settings, this)
+        settings.addChangeListener(foomiiboContent?.adapter as BrowserSettingsListener?)
 
         view.findViewById<View>(R.id.list_divider).isGone = true
         browserScroller = view.findViewById(R.id.browser_scroller)

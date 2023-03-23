@@ -484,7 +484,6 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
         }
 
         val foomiiboOptions = findViewById<LinearLayout>(R.id.foomiibo_options)
-        val foomiiboHandler = Handler(Looper.getMainLooper())
         pagerAdapter.browser.run {
             foomiiboOptions.findViewById<View>(R.id.clear_foomiibo_set).setOnClickListener {
                 collapseBottomSheet()
@@ -492,15 +491,11 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                     Toasty(this@BrowserActivity).Short(R.string.activity_unavailable)
                     return@setOnClickListener
                 }
-                foomiiboHandler.postDelayed({
-                    if (isBrowserAvailable) clearFoomiiboSet()
-                }, TagMo.uiDelay.toLong())
+                if (isBrowserAvailable) clearFoomiiboSet(this@BrowserActivity)
             }
             foomiiboOptions.findViewById<View>(R.id.build_foomiibo_set).setOnClickListener {
                 collapseBottomSheet()
-                foomiiboHandler.postDelayed({
-                    if (isBrowserAvailable) buildFoomiiboSet()
-                }, TagMo.uiDelay.toLong())
+                if (isBrowserAvailable) buildFoomiiboSet(this@BrowserActivity)
             }
         }
 

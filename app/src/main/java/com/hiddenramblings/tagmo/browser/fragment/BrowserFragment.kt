@@ -259,14 +259,13 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
         }
     }
 
-    fun clearFoomiiboSet() {
+    fun clearFoomiiboSet(activity: AppCompatActivity) {
         val dialog = ProgressDialog.show(activity, "", "", true)
         CoroutineScope(Dispatchers.IO).launch(Dispatchers.IO) {
             deleteDir(dialog, directory)
             withContext(Dispatchers.Main) {
                 dialog.dismiss()
-                if (activity is BrowserActivity)
-                    (requireActivity() as BrowserActivity).onRootFolderChanged(false)
+                if (activity is BrowserActivity) activity.onRootFolderChanged(false)
             }
         }
     }
@@ -303,7 +302,7 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
         }
     }
 
-    fun buildFoomiiboSet() {
+    fun buildFoomiiboSet(activity: AppCompatActivity) {
         try {
             settings.amiiboManager?.let { amiiboManager ->
                 val dialog = ProgressDialog.show(activity, "", "", true)
@@ -318,13 +317,12 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
                     }
                     withContext(Dispatchers.Main) {
                         dialog.dismiss()
-                        if (activity is BrowserActivity)
-                            (requireActivity() as BrowserActivity).onRootFolderChanged(false)
+                        if (activity is BrowserActivity) activity.onRootFolderChanged(false)
                     }
                 }
-            } ?: Toasty(requireContext()).Short(R.string.amiibo_failure_read)
+            } ?: Toasty(activity).Short(R.string.amiibo_failure_read)
         } catch (ex: Exception) {
-            Toasty(TagMo.appContext).Short(R.string.amiibo_failure_read)
+            Toasty(activity).Short(R.string.amiibo_failure_read)
         }
     }
 

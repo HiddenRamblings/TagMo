@@ -29,11 +29,13 @@ import java.io.BufferedReader
 import java.io.IOException
 import java.io.InputStreamReader
 import java.net.URL
+import java.net.UnknownHostException
 import javax.net.ssl.HttpsURLConnection
 
-class JSONExecutor(activity: Activity, server: String, path: String) {
+class JSONExecutor(activity: Activity, server: String, path: String? = null) {
 
     var listener: ResultListener? = null
+    var listenerDb: DatabaseListener? = null
 
     init {
         SecurityHandler(activity, object : SecurityHandler.ProviderInstallListener {
@@ -52,12 +54,13 @@ class JSONExecutor(activity: Activity, server: String, path: String) {
                     CoroutineScope(Dispatchers.Main).launch { activity.settings?.notifyChanges() }
                 }
                 listener?.onResults(null)
+                    ?: listenerDb?.onResults(null, false)
             }
         })
     }
 
     @Throws(IOException::class)
-    private fun fixServerLocation(url: URL): HttpsURLConnection {
+    private fun updateConnectionUrl(url: URL): HttpsURLConnection {
         val urlConnection = url.openConnection() as HttpsURLConnection
         urlConnection.requestMethod = "GET"
         urlConnection.useCaches = false
@@ -65,10 +68,17 @@ class JSONExecutor(activity: Activity, server: String, path: String) {
         return urlConnection
     }
 
-    fun retrieveJSON(server: String, path: String) {
+    fun retrieveJSON(server: String, path: String?) {
         CoroutineScope(Dispatchers.IO).launch(Dispatchers.IO) {
+            val url = path?.let { "$server/$path" } ?: server
             try {
-                var conn = URL("$server/$path").openConnection() as HttpsURLConnection
+                URL(url).readText().also {
+                    listener?.onResults(it) ?: listenerDb?.onResults(it, false)
+                    return@launch
+                }
+            } catch (_: UnknownHostException) { }
+            try {
+                var conn = URL(url).openConnection() as HttpsURLConnection
                 conn.requestMethod = "GET"
                 conn.useCaches = false
                 conn.defaultUseCaches = false
@@ -76,11 +86,11 @@ class JSONExecutor(activity: Activity, server: String, path: String) {
                 if (statusCode == HttpsURLConnection.HTTP_MOVED_PERM) {
                     val address = conn.getHeaderField("Location")
                     conn.disconnect()
-                    conn = fixServerLocation(URL(address))
+                    conn = updateConnectionUrl(URL(address))
                     statusCode = conn.responseCode
-                } else if (statusCode != HttpsURLConnection.HTTP_OK && isRenderAPI(conn)) {
+                } else if (statusCode != HttpsURLConnection.HTTP_OK && isRawJSON(conn)) {
                     conn.disconnect()
-                    conn = fixServerLocation(URL("${AmiiboManager.AMIIBO_API}/amiibo/"))
+                    conn = updateConnectionUrl(URL("${AmiiboManager.AMIIBO_API}/amiibo/"))
                     statusCode = conn.responseCode
                 }
                 if (statusCode != HttpsURLConnection.HTTP_OK) {
@@ -95,17 +105,22 @@ class JSONExecutor(activity: Activity, server: String, path: String) {
                         var inputStr: String?
                         while (null != streamReader.readLine().also { inputStr = it })
                             responseStrBuilder.append(inputStr)
-                        listener?.onResults(responseStrBuilder.toString())
+                        listener?.onResults(
+                            responseStrBuilder.toString()
+                        ) ?: listenerDb?.onResults(
+                            responseStrBuilder.toString(), isRawJSON(conn)
+                        )
                         conn.disconnect()
                     }
                 }
-            } catch (e: IOException) {
+            } catch (e: Exception) {
                 Debug.warn(e)
+                listenerDb?.onException(e)
             }
         }
     }
 
-    private fun isRenderAPI(urlConnection: HttpsURLConnection): Boolean {
+    private fun isRawJSON(urlConnection: HttpsURLConnection): Boolean {
         val render = "${AmiiboManager.RENDER_RAW}/database/amiibo.json"
         return render == urlConnection.url.toString()
     }
@@ -116,5 +131,14 @@ class JSONExecutor(activity: Activity, server: String, path: String) {
 
     fun setResultListener(listener: ResultListener?) {
         this.listener = listener
+    }
+
+    interface DatabaseListener {
+        fun onResults(result: String?, isRawJSON: Boolean)
+        fun onException(e: Exception)
+    }
+
+    fun setDatabaseListener(listener: DatabaseListener?) {
+        this.listenerDb = listener
     }
 }

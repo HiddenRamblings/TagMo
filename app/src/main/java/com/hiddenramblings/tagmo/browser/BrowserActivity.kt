@@ -217,10 +217,6 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                 override fun onUpdateFound() {
                     if (BuildConfig.WEAR_OS) onCreateWearOptionsMenu() else invalidateOptionsMenu()
                 }
-
-                override fun onPlayUpdateFound() {
-                    if (BuildConfig.WEAR_OS) onCreateWearOptionsMenu() else invalidateOptionsMenu()
-                }
             })
         }
         settings?.addChangeListener(this)

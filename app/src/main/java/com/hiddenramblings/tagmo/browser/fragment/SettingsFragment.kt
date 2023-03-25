@@ -42,7 +42,10 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.json.JSONException
 import org.json.JSONObject
-import java.io.*
+import java.io.BufferedReader
+import java.io.ByteArrayInputStream
+import java.io.IOException
+import java.io.InputStreamReader
 import java.net.URL
 import java.text.ParseException
 import java.util.*
@@ -485,15 +488,6 @@ class SettingsFragment : PreferenceFragmentCompat() {
         }
     }
 
-    @Throws(IOException::class)
-    private fun fixServerLocation(url: URL): HttpsURLConnection {
-        val urlConnection = url.openConnection() as HttpsURLConnection
-        urlConnection.requestMethod = "GET"
-        urlConnection.useCaches = false
-        urlConnection.defaultUseCaches = false
-        return urlConnection
-    }
-
     private fun downloadAmiiboAPIData(lastUpdated: String) {
         val activity = requireActivity() as BrowserActivity
         val syncMessage = buildSnackbar(
@@ -503,66 +497,35 @@ class SettingsFragment : PreferenceFragmentCompat() {
             withContext(Dispatchers.Main) {
                 syncMessage.show()
             }
-            try {
-                val url: URL = if (prefs.databaseSource() == 0) {
-                    URL("${AmiiboManager.RENDER_RAW}/database/amiibo.json")
-                } else {
-                    URL("${AmiiboManager.AMIIBO_API}/amiibo/")
-                }
-                var conn = url.openConnection() as HttpsURLConnection
-                conn.requestMethod = "GET"
-                conn.useCaches = false
-                conn.defaultUseCaches = false
-                var statusCode = conn.responseCode
-                if (statusCode == HttpsURLConnection.HTTP_MOVED_PERM) {
-                    val address = conn.getHeaderField("Location")
-                    conn.disconnect()
-                    conn = fixServerLocation(URL(address))
-                    statusCode = conn.responseCode
-                } else if (statusCode != HttpsURLConnection.HTTP_OK && isRenderAPI(conn)) {
-                    conn.disconnect()
-                    conn = fixServerLocation(URL("${AmiiboManager.AMIIBO_API}/amiibo/"))
-                    statusCode = conn.responseCode
-                }
-                if (statusCode == HttpsURLConnection.HTTP_OK) {
-                    val inputStream: InputStream = BufferedInputStream(conn.inputStream)
-                    val response = StringBuilder()
-                    try {
-                         BufferedReader(InputStreamReader(inputStream)).use { reader ->
-                            var line: String?
-                            while (null != reader.readLine().also { line = it }) {
-                                response.append(line)
-                            }
+            JSONExecutor(
+                activity, if (prefs.databaseSource() == 0)
+                    "${AmiiboManager.RENDER_RAW}/database/amiibo.json"
+                else "${AmiiboManager.AMIIBO_API}/amiibo/"
+            ).setDatabaseListener(object : JSONExecutor.DatabaseListener {
+                override fun onResults(result: String?, isRawJSON: Boolean) {
+                    result?.let {
+                        val amiiboManager = if (isRawJSON) parse(it) else parseAmiiboAPI(it)
+                        saveDatabase(amiiboManager, requireContext().applicationContext)
+                        CoroutineScope(Dispatchers.Main).launch {
+                            if (syncMessage.isShown) syncMessage.dismiss()
+                            buildSnackbar(
+                                activity, R.string.sync_amiibo_complete, Snackbar.LENGTH_SHORT
+                            ).show()
+                            activity.settings?.lastUpdatedAPI = lastUpdated
+                            activity.settings?.notifyChanges()
                         }
-                    } finally {
-                        conn.disconnect()
                     }
-                    val amiiboManager = if (isRenderAPI(conn))
-                        parse(response.toString())
-                    else
-                        parseAmiiboAPI(response.toString())
-                    saveDatabase(amiiboManager, requireContext().applicationContext)
-                    withContext(Dispatchers.Main) {
+                }
+
+                override fun onException(e: Exception) {
+                    CoroutineScope(Dispatchers.Main).launch {
                         if (syncMessage.isShown) syncMessage.dismiss()
                         buildSnackbar(
-                            activity, R.string.sync_amiibo_complete, Snackbar.LENGTH_SHORT
+                            activity, R.string.sync_amiibo_failed, Snackbar.LENGTH_SHORT
                         ).show()
-                        activity.settings?.lastUpdatedAPI = lastUpdated
-                        activity.settings?.notifyChanges()
                     }
-                } else {
-                    conn.disconnect()
-                    throw Exception(statusCode.toString())
                 }
-            } catch (e: Exception) {
-                Debug.warn(e)
-                withContext(Dispatchers.Main) {
-                    if (syncMessage.isShown) syncMessage.dismiss()
-                    buildSnackbar(
-                        activity, R.string.sync_amiibo_failed, Snackbar.LENGTH_SHORT
-                    ).show()
-                }
-            }
+            })
         }
     }
 
@@ -718,8 +681,8 @@ class SettingsFragment : PreferenceFragmentCompat() {
         if (prefs.databaseSource() == 0) {
             JSONExecutor(
                 requireActivity(),
-                "https://api.github.com/repos/8bitDream/AmiiboAPI/",
-                "branches/render?path=databaset%2Famiibo.json"
+                "https://api.github.com/repos/8bitDream/AmiiboAPI",
+                "branches/render?path=database/amiibo.json"
             ).setResultListener(object : JSONExecutor.ResultListener {
                 override fun onResults(result: String?) {
                     result?.let { parseCommitDate(it, isMenuClicked) }
@@ -734,11 +697,6 @@ class SettingsFragment : PreferenceFragmentCompat() {
                 }
             })
         }
-    }
-
-    private fun isRenderAPI(conn: HttpsURLConnection): Boolean {
-        val render = "${AmiiboManager.RENDER_RAW}/database/amiibo.json"
-        return render == conn.url.toString()
     }
 
     companion object {

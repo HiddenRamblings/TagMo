@@ -31,7 +31,6 @@ import java.io.IOException
 import java.nio.file.Files
 import java.nio.file.Paths
 import java.text.ParseException
-import java.util.regex.Pattern
 import java.util.zip.ZipFile
 
 class WebsiteFragment : Fragment() {

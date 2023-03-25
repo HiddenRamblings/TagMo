@@ -45,7 +45,6 @@ import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
 import java.net.URL
-import java.net.UnknownHostException
 import kotlin.random.Random
 
 class UpdateManager internal constructor(activity: BrowserActivity) {
@@ -91,25 +90,21 @@ class UpdateManager internal constructor(activity: BrowserActivity) {
                     && appUpdateInfo.isUpdateTypeAllowed(AppUpdateType.IMMEDIATE))
             if (isUpdateAvailable) {
                 appUpdate = appUpdateInfo
-                listener?.onPlayUpdateFound()
+                listener?.onUpdateFound()
             }
         }
     }
 
     private fun configureGit() {
-        CoroutineScope(Dispatchers.IO).launch(Dispatchers.IO) {
-            try {
-                URL(TAGMO_GIT_API).readText().also { parseUpdateJSON(it) }
-            } catch (uhe: UnknownHostException) {
+            CoroutineScope(Dispatchers.IO).launch(Dispatchers.IO) {
                 JSONExecutor(
-                    browserActivity, TAGMO_GIT_API, ""
+                    browserActivity, TAGMO_GIT_API
                 ).setResultListener(object : JSONExecutor.ResultListener {
                     override fun onResults(result: String?) {
                         result?.let { parseUpdateJSON(it) }
                     }
                 })
             }
-        }
     }
 
     fun installDownload(apkUrl: String?) {
@@ -249,7 +244,6 @@ class UpdateManager internal constructor(activity: BrowserActivity) {
 
     interface UpdateListener {
         fun onUpdateFound()
-        fun onPlayUpdateFound()
     }
 
     companion object {

@@ -3846,6 +3846,112 @@
 				}
 			]
 		},
+		"0x000000030430ff02": {
+			"games3DS": [],
+			"gamesWiiU": [],
+			"gamesSwitch": [
+				{
+					"gameName": "Mario + Rabbids: Kingdom Battle",
+					"gameID": [
+						"010067300059A000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Unlock an amiibo-exclusive weapon for the character and their Rabbid counterpart",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Mario Kart 8 Deluxe",
+					"gameID": [
+						"0100152000022000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Unlock a character-themed Mii racing suit",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Miitopia",
+					"gameID": [
+						"01003DA010E8A000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Unlock a character-based costume",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Super Mario 3D World + Bowser's Fury",
+					"gameID": [
+						"010028600EBDA000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a particular power-up depending on the character",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Super Mario Odyssey",
+					"gameID": [
+						"0100000000010000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a character-based costume",
+							"write": false
+						},
+						{
+							"Usage": "Gain temporary invincibility",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Super Mario Party",
+					"gameID": [
+						"010036B0034E4000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Unlock the character's shiny sticker",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Super Smash Bros. Ultimate",
+					"gameID": [
+						"01006A800016E000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Battle and train up a computer-controlled Figure Player of the character",
+							"write": true
+						}
+					]
+				},
+				{
+					"gameName": "Yoshi's Crafted World",
+					"gameID": [
+						"01006000040C2000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Unlock a character-based costume",
+							"write": false
+						}
+					]
+				}
+			]
+		},
 		"0x0000010000190002": {
 			"games3DS": [
 				{
@@ -17215,18 +17321,6 @@
 					]
 				},
 				{
-					"gameName": "Style Savvy: Styling Star",
-					"gameID": [
-						"00040000001C2500"
-					],
-					"amiiboUsage": [
-						{
-							"Usage": "Unlock a Legend of Zelda pattern",
-							"write": false
-						}
-					]
-				},
-				{
 					"gameName": "Super Smash Bros. for Nintendo 3DS",
 					"gameID": [
 						"00040000000EE000",
@@ -20714,7 +20808,7 @@
 					],
 					"amiiboUsage": [
 						{
-							"Usage": "Receive a weapon rated 3 stars or higher",
+							"Usage": "Unlock the Spinner weapon",
 							"write": false
 						}
 					]
@@ -20728,7 +20822,7 @@
 					],
 					"amiiboUsage": [
 						{
-							"Usage": "Unlock the Spinner weapon",
+							"Usage": "Receive a weapon rated 3 stars or higher",
 							"write": false
 						}
 					]
@@ -24774,20 +24868,6 @@
 					]
 				},
 				{
-					"gameName": "Miitopia",
-					"gameID": [
-						"0004000000178800",
-						"00040000001B4F00",
-						"00040000001B4E00"
-					],
-					"amiiboUsage": [
-						{
-							"Usage": "Unlock a character-based costume",
-							"write": false
-						}
-					]
-				},
-				{
 					"gameName": "Style Savvy: Fashion Forward",
 					"gameID": [
 						"0004000000196500"
@@ -25520,6 +25600,18 @@
 					"amiiboUsage": [
 						{
 							"Usage": "Give Kirby a Copy ability based on the character's abilities and a health item",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Style Savvy: Fashion Forward",
+					"gameID": [
+						"0004000000196500"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Unlock a character-themed accessory",
 							"write": false
 						}
 					]
@@ -75807,6 +75899,21 @@
 		"0x0468000102f20502": {
 			"games3DS": [
 				{
+					"gameName": "Animal Crossing: New Leaf",
+					"gameID": [
+						"0004000000086400",
+						"0004000000086300",
+						"0004000000198F00",
+						"0004000000198E00"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Invite the character to visit your RV campsite, give you an item, and/or move to your town",
+							"write": false
+						}
+					]
+				},
+				{
 					"gameName": "Kirby: Planet Robobot",
 					"gameID": [
 						"0004000000189600",
@@ -103959,18 +104066,6 @@
 					"amiiboUsage": [
 						{
 							"Usage": "Unlock boss fight against Shovel Knight",
-							"write": false
-						}
-					]
-				},
-				{
-					"gameName": "Cyber Shadow",
-					"gameID": [
-						"01008D100DE46000"
-					],
-					"amiiboUsage": [
-						{
-							"Usage": "Unlock a fairy companion and player color palette matching the character",
 							"write": false
 						}
 					]

@@ -18,7 +18,6 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageInstaller
-import android.os.Parcelable
 import android.widget.Toast
 import com.hiddenramblings.tagmo.BuildConfig
 import com.hiddenramblings.tagmo.browser.BrowserActivity

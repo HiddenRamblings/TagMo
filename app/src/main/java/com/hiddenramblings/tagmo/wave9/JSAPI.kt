@@ -68,9 +68,9 @@ class JSAPI(val activity: DimensionActivity, val web: WebView) {
         this.web.loadUrl(stringBuilder.toString())
     }
 
-    private fun closeTagSilently(mifare: NTAG215?) : Boolean {
+    private fun closeTagSilently(mifare: NTAG215) : Boolean {
         return try {
-            mifare?.close()
+            mifare.close()
             true
         } catch (ex: Exception) {
             false

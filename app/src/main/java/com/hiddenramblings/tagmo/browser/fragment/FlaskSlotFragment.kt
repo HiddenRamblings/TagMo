@@ -578,12 +578,10 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
             })
             bottomSheet?.setState(BottomSheetBehavior.STATE_EXPANDED)
         }
-        flaskSlotCount.setOnValueChangedListener (object : NumberPicker.OnValueChangeListener {
-            override fun onValueChange(picker: NumberPicker?, oldVal: Int, newVal: Int) {
-                if (maxSlotCount - currentCount > 0)
-                    writeSlots?.text = getString(R.string.write_slots, newVal)
-            }
-        })
+        flaskSlotCount.setOnValueChangedListener { _, _, newVal ->
+            if (maxSlotCount - currentCount > 0)
+                writeSlots?.text = getString(R.string.write_slots, newVal)
+        }
         writeSlots?.setOnClickListener {
             settings.addChangeListener(writeTagAdapter)
             onBottomSheetChanged(SHEET.WRITE)

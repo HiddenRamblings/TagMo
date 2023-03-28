@@ -69,9 +69,9 @@ class Foomiibo {
 
         // Set Keygen Salt
         System.arraycopy(getRandomBytes(32), 0, arr, 0x1E8, 32)
+        // Write Identification Block
         var off1 = 0x54
         var off2 = 0x1DC
-        // Write Identification Block
         var i = 0
         while (i < 16) {
             val currByte = id.substring(i, i + 2).toInt(16).toByte()

@@ -229,16 +229,18 @@ class FlaskGattService : Service() {
                 } else if (progress.endsWith("}")) {
                     if (progress.startsWith("tag.saveUploadedTag")) {
                         response = StringBuilder()
-                    } else if (null != listener) {
-                        try {
-                            val jsonObject = JSONObject(response.toString())
-                            val event = jsonObject.getString("event")
-                            if (event == "button") listener?.onFlaskActiveChanged(jsonObject)
-                            if (event == "delete") listener?.onFlaskStatusChanged(jsonObject)
-                        } catch (e: JSONException) {
-                            if (e.message?.contains("tag.setTag") == true)
-                                activeAmiibo
-                            else Debug.warn(e)
+                    } else {
+                        listener?.let {
+                            try {
+                                val jsonObject = JSONObject(response.toString())
+                                val event = jsonObject.getString("event")
+                                if (event == "button") it.onFlaskActiveChanged(jsonObject)
+                                if (event == "delete") it.onFlaskStatusChanged(jsonObject)
+                            } catch (e: JSONException) {
+                                if (e.message?.contains("tag.setTag") == true)
+                                    activeAmiibo
+                                else Debug.warn(e)
+                            }
                         }
                     }
                     response = StringBuilder()

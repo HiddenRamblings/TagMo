@@ -4,7 +4,7 @@ class GamesWiiU(val manager: GamesManager, val id: Long, val games: ArrayList<St
     val stringList: String
         get() {
             val usage = StringBuilder()
-            for (game in games!!) {
+            games?.forEach { game ->
                 if (usage.isEmpty()) usage.append("  ") else usage.append(", ")
                 usage.append(game)
             }

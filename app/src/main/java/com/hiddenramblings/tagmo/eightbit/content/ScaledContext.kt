@@ -21,7 +21,6 @@ import android.content.res.Configuration
 class ScaledContext(base: Context) : ContextWrapper(base) {
 
     fun screen(density: Float): ScaledContext {
-        val resources = resources
         val metrics = resources.displayMetrics
         val orientation = resources.configuration.orientation
         metrics.density = density // 2
@@ -42,7 +41,6 @@ class ScaledContext(base: Context) : ContextWrapper(base) {
     }
 
     fun watch(density: Float): ScaledContext {
-        val resources = resources
         val metrics = resources.displayMetrics
         metrics.density = density // 1f
         metrics.densityDpi = 160 // 340

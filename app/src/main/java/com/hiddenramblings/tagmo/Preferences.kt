@@ -2,11 +2,17 @@ package com.hiddenramblings.tagmo
 
 import android.content.Context
 import android.content.SharedPreferences
+import android.net.Uri
+import androidx.documentfile.provider.DocumentFile
 import androidx.preference.PreferenceManager
 import com.hiddenramblings.tagmo.eightbit.io.Debug
+import com.hiddenramblings.tagmo.eightbit.os.Version
 
-class Preferences(context: Context?) {
+class Preferences(context: Context) {
+
     private val prefs: SharedPreferences
+    val isDocumentStorage: Boolean
+
     private fun getBoolean(pref: String, defValue: Boolean): Boolean {
         return prefs.getBoolean(pref, defValue)
     }
@@ -322,15 +328,23 @@ class Preferences(context: Context?) {
 
     private val lastUpdatedGit = "lastUpdatedGit"
 
-    init {
-        prefs = PreferenceManager.getDefaultSharedPreferences(context!!)
-    }
-
     fun lastUpdatedGit(): Long {
         return getLong(lastUpdatedGit, 0)
     }
 
     fun lastUpdatedGit(value: Long) {
         putLong(lastUpdatedGit, value)
+    }
+
+    init {
+        prefs = PreferenceManager.getDefaultSharedPreferences(context)
+        isDocumentStorage = Version.isLollipop && browserRootDocument()?.let {
+            try {
+                DocumentFile.fromTreeUri(context, Uri.parse(it))
+                true
+            } catch (iae: IllegalArgumentException) {
+                false
+            }
+        } ?: false
     }
 }

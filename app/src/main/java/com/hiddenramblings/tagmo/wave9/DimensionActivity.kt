@@ -130,9 +130,6 @@ class DimensionActivity : AppCompatActivity() {
                 "https://appassets.androidplatform.net/assets/wave9/index.html"
             else "file:///android_asset/wave9/index.html"
         )
-        mWebView.postDelayed({
-            Toasty(this).Short(R.string.notice_incomplete)
-        }, TagMo.uiDelay.toLong())
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {

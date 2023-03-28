@@ -612,7 +612,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
             if (BuildConfig.GOOGLE_PLAY) {
                 onDocumentEnabled()
             } else {
-                if (null != settings?.browserRootDocument && isDocumentStorage) {
+                if (null != settings?.browserRootDocument && prefs.isDocumentStorage) {
                     onDocumentEnabled()
                 } else if (Environment.isExternalStorageManager()) {
                     settings?.browserRootDocument = null
@@ -668,8 +668,8 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
             AlertDialog.Builder(this@BrowserActivity).setView(this).create().also { dialog ->
                 findViewById<View>(R.id.button_save).setOnClickListener { _: View? ->
                     try {
-                        var fileName: String? = input.text.toString()
-                        fileName = if (isDocumentStorage) {
+                        var fileName: String? = input.text?.toString()
+                        fileName = if (prefs.isDocumentStorage) {
                             val rootDocument = settings?.browserRootDocument?.let {
                                 DocumentFile.fromTreeUri(this@BrowserActivity, it)
                             } ?: throw NullPointerException()
@@ -1121,23 +1121,19 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                         val backupDialog: Dialog = dialog.setView(view).create()
                         view.findViewById<View>(R.id.button_save).setOnClickListener {
                             try {
-                                var fileName: String? = input.text.toString()
-                                fileName = if (isDocumentStorage) {
-                                    val rootDocument = settings?.browserRootDocument?.let {
-                                        DocumentFile.fromTreeUri(this, it)
-                                    } ?: throw NullPointerException()
-                                    TagArray.writeBytesToDocument(
-                                        this, rootDocument, fileName!!, tagData
-                                    )
-                                } else {
-                                    TagArray.writeBytesToFile(Storage.getDownloadDir(
-                                        "TagMo", "Backups"
-                                    ), fileName!!, tagData)
+                                val fileName = TagArray.writeBytesWithName(
+                                    this, input.text, tagData
+                                )
+                                fileName?.let {
+                                    IconifiedSnackbar(this, viewPager).buildSnackbar(
+                                        getString(R.string.wrote_file, it), Snackbar.LENGTH_SHORT
+                                    ).show()
+                                    onRootFolderChanged(true)
+                                } ?: {
+                                    IconifiedSnackbar(this, viewPager).buildSnackbar(
+                                        getString(R.string.fail_save_file), Snackbar.LENGTH_SHORT
+                                    ).show()
                                 }
-                                IconifiedSnackbar(this, viewPager).buildSnackbar(
-                                    getString(R.string.wrote_file, fileName), Snackbar.LENGTH_SHORT
-                                ).show()
-                                onRootFolderChanged(true)
                             } catch (e: Exception) {
                                 e.message?.let { Toasty(this).Short(it) }
                             }
@@ -1320,16 +1316,6 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
         onRootFolderChanged(indicator)
     }
 
-    val isDocumentStorage: Boolean
-        get() = Version.isLollipop && settings?.browserRootDocument?.let {
-            try {
-                DocumentFile.fromTreeUri(this, it)
-                true
-            } catch (iae: IllegalArgumentException) {
-                false
-            }
-        } ?: false
-
     @Throws(ActivityNotFoundException::class)
     private fun onDocumentRequested() {
         if (Version.isLollipop) {
@@ -1341,7 +1327,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
     }
 
     private fun onDocumentEnabled() {
-        if (isDocumentStorage) {
+        if (prefs.isDocumentStorage) {
             onStorageEnabled()
         } else {
             try {
@@ -1358,7 +1344,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                 onShowSettingsFragment()
             else onRefresh(true)
         } else {
-            if (isDocumentStorage) {
+            if (prefs.isDocumentStorage) {
                 switchStorageRoot?.isVisible = true
                 switchStorageRoot?.setText(R.string.document_storage_root)
                 switchStorageRoot?.setOnClickListener {
@@ -1817,7 +1803,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
     }
 
     fun loadAmiiboBackground() {
-        if (isDocumentStorage) {
+        if (prefs.isDocumentStorage) {
             val rootDocument = settings?.browserRootDocument?.let {
                 DocumentFile.fromTreeUri(this@BrowserActivity, it)
             }
@@ -1970,7 +1956,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
     }
 
     fun onRootFolderChanged(indicator: Boolean) {
-        if (isDocumentStorage) {
+        if (prefs.isDocumentStorage) {
             val rootDocument = settings?.browserRootDocument?.let {
                 DocumentFile.fromTreeUri(this, it)
             }
@@ -2396,7 +2382,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
 
     private fun setFolderText(textSettings: BrowserSettings?) {
         textSettings?.also {
-            val relativePath: String = if (isDocumentStorage) {
+            val relativePath: String = if (prefs.isDocumentStorage) {
                 Storage.getRelativeDocument(it.browserRootDocument)
             } else {
                 val rootFolder = it.browserRootFolder

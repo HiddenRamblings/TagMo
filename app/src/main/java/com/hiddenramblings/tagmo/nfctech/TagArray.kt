@@ -3,6 +3,7 @@
  * Copyright (C) 2022 AbandonedCart @ TagMo
  * ====================================================================
  */
+
 package com.hiddenramblings.tagmo.nfctech
 
 import android.content.Context
@@ -12,6 +13,7 @@ import android.nfc.FormatException
 import android.nfc.Tag
 import android.nfc.tech.*
 import android.os.Build
+import android.text.Editable
 import androidx.documentfile.provider.DocumentFile
 import com.hiddenramblings.tagmo.Preferences
 import com.hiddenramblings.tagmo.R
@@ -21,6 +23,7 @@ import com.hiddenramblings.tagmo.amiibo.AmiiboFile
 import com.hiddenramblings.tagmo.amiibo.AmiiboManager
 import com.hiddenramblings.tagmo.amiibo.KeyManager
 import com.hiddenramblings.tagmo.eightbit.io.Debug
+import com.hiddenramblings.tagmo.eightbit.os.Storage
 import com.hiddenramblings.tagmo.eightbit.os.Version
 import java.io.File
 import java.io.FileOutputStream
@@ -364,5 +367,21 @@ object TagArray {
             context.contentResolver.openOutputStream(file.uri).use { it?.write(tagData) }
         }
         return newFile?.name
+    }
+
+    fun writeBytesWithName(context: Context, input: Editable?, tagData: ByteArray?) : String? {
+        val prefs = Preferences(context.applicationContext)
+        return input?.toString()?.let { name ->
+            if (prefs.isDocumentStorage) {
+                val rootDocument = prefs.browserRootDocument()?.let { uri ->
+                    DocumentFile.fromTreeUri(context, Uri.parse(uri))
+                } ?: throw NullPointerException()
+                writeBytesToDocument(context, rootDocument, name, tagData)
+            } else {
+                writeBytesToFile(
+                    Storage.getDownloadDir("TagMo", "Backups"), name, tagData
+                )
+            }
+        }
     }
 }

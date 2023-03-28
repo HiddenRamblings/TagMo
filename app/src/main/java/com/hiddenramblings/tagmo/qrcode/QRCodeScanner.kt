@@ -68,8 +68,6 @@ import kotlin.math.abs
 
 class QRCodeScanner : AppCompatActivity() {
 
-    private lateinit var prefs: Preferences
-
     private lateinit var qrTypeSpinner: Spinner
     private lateinit var txtRawValue: EditText
     private lateinit var txtRawBytes: EditText
@@ -94,7 +92,6 @@ class QRCodeScanner : AppCompatActivity() {
 
     public override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        prefs = Preferences(applicationContext)
 
         supportActionBar?.setHomeButtonEnabled(true)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
@@ -151,16 +148,6 @@ class QRCodeScanner : AppCompatActivity() {
         }
     }
 
-    private val isDocumentStorage: Boolean
-        get() = Version.isLollipop && prefs.browserRootDocument()?.let {
-            try {
-                DocumentFile.fromTreeUri(this, Uri.parse(it))
-                true
-            } catch (iae: IllegalArgumentException) {
-                false
-            }
-        } ?: false
-
     @Throws(Exception::class)
     private suspend fun decodeAmiibo(qrData: ByteArray?) = withContext(Dispatchers.IO) {
         if (null == qrData) return@withContext
@@ -178,23 +165,19 @@ class QRCodeScanner : AppCompatActivity() {
                         val backupDialog: Dialog = dialog.setView(view).create()
                         view.findViewById<View>(R.id.button_save).setOnClickListener {
                             try {
-                                val fileName: String = input.text.toString()
-                                if (isDocumentStorage) {
-                                    val rootDocument = DocumentFile.fromTreeUri(
-                                        this@QRCodeScanner, Uri.parse(prefs.browserRootDocument())
-                                    ) ?: throw NullPointerException()
-                                    TagArray.writeBytesToDocument(
-                                        this@QRCodeScanner, rootDocument, fileName, qrData
-                                    )
-                                } else {
-                                    TagArray.writeBytesToFile(Storage.getDownloadDir(
-                                        "TagMo", "Backups"
-                                    ), fileName, qrData)
-                                }
-                                Toasty(this@QRCodeScanner).Long(
-                                    getString(R.string.wrote_file, fileName)
+                                val fileName = TagArray.writeBytesWithName(
+                                    this@QRCodeScanner, input.text, qrData
                                 )
-                                setResult(RESULT_OK)
+                                fileName?.let {
+                                    Toasty(this@QRCodeScanner).Long(
+                                        getString(R.string.wrote_file, it)
+                                    )
+                                    setResult(RESULT_OK)
+                                } ?: {
+                                    Toasty(this@QRCodeScanner).Long(
+                                        getString(R.string.fail_save_file)
+                                    )
+                                }
                             } catch (e: Exception) {
                                 e.message?.let { Toasty(this@QRCodeScanner).Short(it) }
                             }

@@ -1,5 +1,6 @@
 package com.hiddenramblings.tagmo.browser.fragment
 
+import android.annotation.SuppressLint
 import android.app.Dialog
 import android.app.SearchManager
 import android.content.Context
@@ -9,10 +10,7 @@ import android.content.res.Resources
 import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.MenuItem
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.widget.EditText
 import android.widget.LinearLayout
 import android.widget.TextView
@@ -25,7 +23,6 @@ import androidx.cardview.widget.CardView
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.view.isGone
 import androidx.core.view.isVisible
-import androidx.documentfile.provider.DocumentFile
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -51,7 +48,6 @@ import com.hiddenramblings.tagmo.browser.ImageActivity
 import com.hiddenramblings.tagmo.browser.adapter.EliteBankAdapter
 import com.hiddenramblings.tagmo.browser.adapter.WriteTagAdapter
 import com.hiddenramblings.tagmo.eightbit.io.Debug
-import com.hiddenramblings.tagmo.eightbit.os.Storage
 import com.hiddenramblings.tagmo.hexcode.HexCodeViewer
 import com.hiddenramblings.tagmo.nfctech.NfcActivity
 import com.hiddenramblings.tagmo.nfctech.TagArray
@@ -218,12 +214,10 @@ class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
         bankAdapter = EliteBankAdapter(settings, this)
         eliteContent?.adapter = bankAdapter
         settings.addChangeListener(bankAdapter)
-        eliteBankCount.setOnValueChangedListener (object : NumberPicker.OnValueChangeListener {
-            override fun onValueChange(picker: NumberPicker?, oldVal: Int, newVal: Int) {
-                writeOpenBanks?.text = getString(R.string.write_banks, newVal)
-                eraseOpenBanks?.text = getString(R.string.erase_banks, newVal)
-            }
-        })
+        eliteBankCount.setOnValueChangedListener { _, _, newVal ->
+            writeOpenBanks?.text = getString(R.string.write_banks, newVal)
+            eraseOpenBanks?.text = getString(R.string.erase_banks, newVal)
+        }
         if (settings.amiiboView == BrowserSettings.VIEW.IMAGE.value)
             amiiboFilesView?.layoutManager = GridLayoutManager(activity, activity.columnCount)
         else
@@ -558,7 +552,7 @@ class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
 
     private fun writeAmiiboFile(amiiboFile: AmiiboFile, position: Int) {
         val args = Bundle()
-        if ((requireActivity() as BrowserActivity).isDocumentStorage) {
+        if (prefs.isDocumentStorage) {
             try {
                 val data = amiiboFile.data ?: amiiboFile.docUri?.let {
                     TagArray.getValidatedDocument(keyManager, it)
@@ -617,23 +611,20 @@ class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
         val backupDialog: Dialog = dialog.setView(view).create()
         view.findViewById<View>(R.id.button_save).setOnClickListener {
             try {
-                val fileName: String
                 val activity = requireActivity() as BrowserActivity
-                fileName = if (activity.isDocumentStorage) ({
-                    val rootDocument = DocumentFile.fromTreeUri(
-                        requireContext(),
-                        settings.browserRootDocument!!
-                    ) ?: throw NullPointerException()
-                    TagArray.writeBytesToDocument(
-                        requireContext(), rootDocument, input.text.toString(), tagData
+                val fileName = TagArray.writeBytesWithName(
+                    activity, input.text, tagData
+                )
+                fileName?.let {
+                    Toasty(requireContext()).Long(
+                        getString(R.string.wrote_file, it)
                     )
-                }).toString() else {
-                    TagArray.writeBytesToFile(Storage.getDownloadDir(
-                            "TagMo", "Backups"
-                    ), input.text.toString(), tagData)
+                    activity.loadAmiiboBackground()
+                } ?: {
+                    Toasty(requireContext()).Long(
+                        getString(R.string.fail_save_file)
+                    )
                 }
-                Toasty(requireContext()).Long(getString(R.string.wrote_file, fileName))
-                activity.loadAmiiboBackground()
             } catch (e: Exception) {
                 e.message?.let { Toasty(requireActivity()).Short(it) }
             }
@@ -904,7 +895,7 @@ class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
         val bytesList: ArrayList<AmiiboData?> = arrayListOf()
         amiiboList.indices.forEach {
             amiiboList[it]?.let { amiiboFile ->
-                if ((requireActivity() as BrowserActivity).isDocumentStorage) {
+                if (prefs.isDocumentStorage) {
                     try {
                         val data = amiiboFile.data ?: amiiboFile.docUri?.let { doc ->
                             TagArray.getValidatedDocument(keyManager, doc)

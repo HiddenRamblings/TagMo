@@ -60,7 +60,7 @@ class NfcActivity : AppCompatActivity() {
         override fun onReceive(context: Context, intent: Intent) {
             val action = intent.action
             if (NfcAdapter.ACTION_ADAPTER_STATE_CHANGED == action) {
-                if (!nfcAdapter!!.isEnabled) {
+                if (nfcAdapter?.isEnabled != true) {
                     showError(getString(R.string.nfc_disabled))
                 } else {
                     clearError()
@@ -600,7 +600,7 @@ class NfcActivity : AppCompatActivity() {
     fun startNfcMonitor() {
         if (null == nfcAdapter) {
             showError(getString(R.string.nfc_unsupported))
-        } else if (!nfcAdapter!!.isEnabled) {
+        } else if (nfcAdapter?.isEnabled != true) {
             showError(getString(R.string.nfc_disabled))
             AlertDialog.Builder(this)
                 .setMessage(R.string.nfc_available)

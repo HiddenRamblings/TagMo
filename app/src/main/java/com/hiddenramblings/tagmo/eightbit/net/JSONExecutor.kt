@@ -73,7 +73,7 @@ class JSONExecutor(activity: Activity, server: String, path: String? = null) {
             val url = path?.let { "$server/$path" } ?: server
             try {
                 URL(url).readText().also {
-                    listener?.onResults(it) ?: listenerDb?.onResults(it, false)
+                    listenerDb?.onResults(it, isRawJSON(url)) ?: listener?.onResults(it)
                     return@launch
                 }
             } catch (_: UnknownHostException) { }
@@ -105,10 +105,10 @@ class JSONExecutor(activity: Activity, server: String, path: String? = null) {
                         var inputStr: String?
                         while (null != streamReader.readLine().also { inputStr = it })
                             responseStrBuilder.append(inputStr)
-                        listener?.onResults(
-                            responseStrBuilder.toString()
-                        ) ?: listenerDb?.onResults(
+                        listenerDb?.onResults(
                             responseStrBuilder.toString(), isRawJSON(conn)
+                        ) ?: listener?.onResults(
+                            responseStrBuilder.toString()
                         )
                         conn.disconnect()
                     }
@@ -120,9 +120,12 @@ class JSONExecutor(activity: Activity, server: String, path: String? = null) {
         }
     }
 
+    private fun isRawJSON(url: String): Boolean {
+        return url == "${AmiiboManager.RENDER_RAW}/database/amiibo.json"
+    }
+
     private fun isRawJSON(urlConnection: HttpsURLConnection): Boolean {
-        val render = "${AmiiboManager.RENDER_RAW}/database/amiibo.json"
-        return render == urlConnection.url.toString()
+        return isRawJSON(urlConnection.url.toString())
     }
 
     interface ResultListener {

@@ -1129,11 +1129,9 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                                         getString(R.string.wrote_file, it), Snackbar.LENGTH_SHORT
                                     ).show()
                                     onRootFolderChanged(true)
-                                } ?: {
-                                    IconifiedSnackbar(this, viewPager).buildSnackbar(
-                                        getString(R.string.fail_save_file), Snackbar.LENGTH_SHORT
-                                    ).show()
-                                }
+                                } ?: IconifiedSnackbar(this, viewPager).buildSnackbar(
+                                    getString(R.string.fail_save_file), Snackbar.LENGTH_SHORT
+                                ).show()
                             } catch (e: Exception) {
                                 e.message?.let { Toasty(this).Short(it) }
                             }
@@ -1287,8 +1285,9 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
     }
 
     private fun getGameCompatibility(txtUsage: TextView, tagData: ByteArray?) {
-        findViewById<TextView>(R.id.txtUsageLabel).run {
-            settings?.gamesManager?.let {
+        val usageLabel = findViewById<TextView>(R.id.txtUsageLabel)
+        settings?.gamesManager?.let {
+            usageLabel.run {
                 isVisible = true
                 CoroutineScope(Dispatchers.Default).launch {
                     val usage: String? = try {
@@ -1302,7 +1301,9 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                         txtUsage.text = usage
                     }
                 }
-            } ?: { isGone = true }
+            }
+        } ?: usageLabel.run {
+            isGone = true
         }
     }
 
@@ -2151,10 +2152,10 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                         it.amiiboSeries?.let { series -> amiiboSeries = series.name }
                         it.amiiboType?.let { type -> amiiboType = type.name }
                         it.gameSeries?.let { series -> gameSeries = series.name }
-                    } ?: {
-                        amiiboHexId = Amiibo.idToHex(amiiboId)
+                    } ?: amiiboId.let {
+                        amiiboHexId = Amiibo.idToHex(it)
                         tagInfo = "ID: $amiiboHexId"
-                        amiiboImageUrl = Amiibo.getImageUrl(amiiboId)
+                        amiiboImageUrl = Amiibo.getImageUrl(it)
                     }
                 }
             }
@@ -2347,36 +2348,40 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
 
     private fun setAmiiboStats() {
         statsHandler.removeCallbacksAndMessages(null)
-        currentFolderView?.post {
-            val size = settings?.amiiboFiles?.size ?: 0
-            if (size <= 0) return@post
-            currentFolderView?.gravity = Gravity.CENTER
-            settings?.amiiboManager?.also {
-                var count = 0
-                if (!settings?.query.isNullOrEmpty()) {
-                    val stats = getAdapterStats(it)
-                    currentFolderView?.text = getString(
-                        R.string.amiibo_collected,
-                        stats[0], stats[1], getQueryCount(settings?.query)
-                    )
-                } else if (settings?.isFilterEmpty != true) {
-                    val stats = getAdapterStats(it)
-                    currentFolderView?.text = getString(
-                        R.string.amiibo_collected,
-                        stats[0], stats[1], filteredCount
-                    )
-                } else {
-                    it.amiibos.values.forEach { amiibo ->
-                        settings?.amiiboFiles?.forEach { amiiboFile ->
-                            if (amiibo.id == amiiboFile?.id) count += 1
+        CoroutineScope(Dispatchers.Main).launch {
+            currentFolderView?.run {
+                val size = settings?.amiiboFiles?.size ?: 0
+                if (size <= 0) return@run
+                gravity = Gravity.CENTER
+                settings?.amiiboManager?.let {
+                    var count = 0
+                    if (!settings?.query.isNullOrEmpty()) {
+                        val stats = getAdapterStats(it)
+                        text = getString(
+                            R.string.amiibo_collected,
+                            stats[0], stats[1], getQueryCount(settings?.query)
+                        )
+                    } else if (settings?.isFilterEmpty != true) {
+                        val stats = getAdapterStats(it)
+                        text = getString(
+                            R.string.amiibo_collected,
+                            stats[0], stats[1], filteredCount
+                        )
+                    } else {
+                        it.amiibos.values.forEach { amiibo ->
+                            settings?.amiiboFiles?.forEach { amiiboFile ->
+                                if (amiibo.id == amiiboFile?.id) count += 1
+                            }
                         }
+                        text = getString(
+                            R.string.amiibo_collected,
+                            size, count, it.amiibos.size
+                        )
                     }
-                    currentFolderView?.text = getString(
-                        R.string.amiibo_collected,
-                        size, count, it.amiibos.size
-                    )
+                } ?: size.let {
+                    text = getString(R.string.files_displayed, it)
                 }
-            } ?: { currentFolderView?.text = getString(R.string.files_displayed, size) }
+            }
         }
     }
 
@@ -2394,7 +2399,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
             currentFolderView?.gravity = Gravity.CENTER_VERTICAL
             currentFolderView?.text = relativePath
             statsHandler.postDelayed({ setAmiiboStats() }, 3000)
-        } ?: { setAmiiboStats() }
+        } ?: setAmiiboStats()
     }
 
     private fun showFakeSnackbar(msg: String) {
@@ -2476,11 +2481,9 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
 
     private fun onLoadSettingsFragment() {
         if (null == fragmentSettings) fragmentSettings = SettingsFragment()
-        if (fragmentSettings?.isAdded != true) {
-            supportFragmentManager
-                .beginTransaction()
-                .replace(R.id.preferences, fragmentSettings!!)
-                .commit()
+        fragmentSettings?.let {
+            if (!it.isAdded)
+                supportFragmentManager.beginTransaction().replace(R.id.preferences, it).commit()
         }
     }
 

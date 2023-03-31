@@ -127,9 +127,9 @@ class ScanTag {
                          "${activity.getString(R.string.error_tag_faulty)}\n$error" else error
                     Toasty(activity).Short(message)
                 }
-            } ?: {
-                Toasty(activity).Short(R.string.error_unknown)
-                activity.onReportProblemClick()
+            } ?: activity.run {
+                Toasty(this).Short(R.string.error_unknown)
+                onReportProblemClick()
             }
         }
     }

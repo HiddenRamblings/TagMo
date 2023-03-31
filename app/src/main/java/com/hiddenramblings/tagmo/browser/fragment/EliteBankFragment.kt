@@ -620,11 +620,9 @@ class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
                         getString(R.string.wrote_file, it)
                     )
                     activity.loadAmiiboBackground()
-                } ?: {
-                    Toasty(requireContext()).Long(
-                        getString(R.string.fail_save_file)
-                    )
-                }
+                } ?: Toasty(requireContext()).Long(
+                    getString(R.string.fail_save_file)
+                )
             } catch (e: Exception) {
                 e.message?.let { Toasty(requireActivity()).Short(it) }
             }
@@ -797,9 +795,9 @@ class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
             it.amiiboSeries?.let { series -> amiiboSeries = series.name }
             it.amiiboType?.let { type -> amiiboType = type.name }
             it.gameSeries?.let { series -> gameSeries = series.name }
-        } ?: tagInfo ?: {
-            tagInfo = "ID: " + Amiibo.idToHex(amiiboLongId)
-            amiiboImageUrl = Amiibo.getImageUrl(amiiboLongId)
+        } ?: tagInfo ?: amiiboLongId.let {
+            tagInfo = "ID: " + Amiibo.idToHex(it)
+            amiiboImageUrl = Amiibo.getImageUrl(it)
         }
         val hasTagInfo = null != tagInfo
         amiiboInfo.isGone = hasTagInfo

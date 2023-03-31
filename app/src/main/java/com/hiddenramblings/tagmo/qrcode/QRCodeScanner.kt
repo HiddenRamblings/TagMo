@@ -173,11 +173,9 @@ class QRCodeScanner : AppCompatActivity() {
                                         getString(R.string.wrote_file, it)
                                     )
                                     setResult(RESULT_OK)
-                                } ?: {
-                                    Toasty(this@QRCodeScanner).Long(
-                                        getString(R.string.fail_save_file)
-                                    )
-                                }
+                                } ?: Toasty(this@QRCodeScanner).Long(
+                                    getString(R.string.fail_save_file)
+                                )
                             } catch (e: Exception) {
                                 e.message?.let { Toasty(this@QRCodeScanner).Short(it) }
                             }

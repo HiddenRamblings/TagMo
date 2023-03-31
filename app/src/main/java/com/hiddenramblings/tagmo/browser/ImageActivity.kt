@@ -153,8 +153,8 @@ class ImageActivity : AppCompatActivity() {
                     it.amiiboSeries?.let { series -> amiiboSeries = series.name }
                     it.amiiboType?.let { type -> amiiboType = type.name }
                     it.gameSeries?.let { series -> gameSeries = series.name }
-                } ?: {
-                    tagInfo = "ID: " + Amiibo.idToHex(amiiboId)
+                } ?: amiiboId.let {
+                    tagInfo = "ID: " + Amiibo.idToHex(it)
                 }
             }
         }

@@ -615,9 +615,9 @@ class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
                 val fileName = TagArray.writeBytesWithName(
                     activity, input.text, tagData
                 )
-                fileName?.let {
+                fileName?.let { name ->
                     Toasty(requireContext()).Long(
-                        getString(R.string.wrote_file, it)
+                        getString(R.string.wrote_file, name)
                     )
                     activity.loadAmiiboBackground()
                 } ?: Toasty(requireContext()).Long(

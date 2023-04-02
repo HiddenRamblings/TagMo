@@ -117,6 +117,7 @@ class JoyConFragment : DialogFragment(), BluetoothListener {
     override fun onCancel(dialog: DialogInterface) {
         bluetoothHelper?.unregister(requireContext())
         bluetoothHelper = null
+        bluetoothHandler?.unregisterResultContracts()
         super.onCancel(dialog)
     }
 

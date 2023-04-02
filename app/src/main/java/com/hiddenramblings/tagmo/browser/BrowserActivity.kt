@@ -1124,9 +1124,9 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                                 val fileName = TagArray.writeBytesWithName(
                                     this, input.text, tagData
                                 )
-                                fileName?.let {
+                                fileName?.let { name ->
                                     IconifiedSnackbar(this, viewPager).buildSnackbar(
-                                        getString(R.string.wrote_file, it), Snackbar.LENGTH_SHORT
+                                        getString(R.string.wrote_file, name), Snackbar.LENGTH_SHORT
                                     ).show()
                                     onRootFolderChanged(true)
                                 } ?: IconifiedSnackbar(this, viewPager).buildSnackbar(

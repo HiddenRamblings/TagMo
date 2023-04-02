@@ -201,9 +201,7 @@ object Storage : Environment() {
     }
 
     fun getDownloadDir(directory: String?, subfolder: String?): File {
-        val downloads = getExternalStoragePublicDirectory(
-            DIRECTORY_DOWNLOADS
-        )
+        val downloads = getExternalStoragePublicDirectory(DIRECTORY_DOWNLOADS)
         return if (null != directory && null != subfolder) {
             val destination = File(downloads, directory + File.separator + subfolder)
             destination.mkdirs()

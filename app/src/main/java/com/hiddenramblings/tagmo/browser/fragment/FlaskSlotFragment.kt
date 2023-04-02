@@ -1312,11 +1312,13 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
     }
 
     override fun onPermissionsFailed() {
+        this.mBluetoothAdapter = null
         setBottomSheetHidden(true)
         Toasty(requireActivity()).Long(R.string.fail_permissions)
     }
 
     override fun onAdapterMissing() {
+        this.mBluetoothAdapter = null
         setBottomSheetHidden(true)
         Toasty(requireActivity()).Long(R.string.fail_bluetooth_adapter)
     }
@@ -1324,5 +1326,10 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
     override fun onAdapterEnabled(adapter: BluetoothAdapter?) {
         this.mBluetoothAdapter = adapter
         selectBluetoothDevice()
+    }
+
+    override fun onStop() {
+        super.onStop()
+        bluetoothHandler?.unregisterResultContracts()
     }
 }

@@ -38,7 +38,6 @@ import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
 import androidx.core.view.isGone
 import androidx.core.view.isVisible
-import androidx.documentfile.provider.DocumentFile
 import androidx.lifecycle.ViewModelProvider
 import com.google.mlkit.vision.barcode.BarcodeScanner
 import com.google.mlkit.vision.barcode.BarcodeScannerOptions
@@ -50,7 +49,6 @@ import com.hiddenramblings.tagmo.R
 import com.hiddenramblings.tagmo.amiibo.Amiibo
 import com.hiddenramblings.tagmo.amiibo.AmiiboManager
 import com.hiddenramblings.tagmo.eightbit.io.Debug
-import com.hiddenramblings.tagmo.eightbit.os.Storage
 import com.hiddenramblings.tagmo.eightbit.os.Version
 import com.hiddenramblings.tagmo.nfctech.TagArray
 import com.hiddenramblings.tagmo.widget.Toasty
@@ -168,9 +166,9 @@ class QRCodeScanner : AppCompatActivity() {
                                 val fileName = TagArray.writeBytesWithName(
                                     this@QRCodeScanner, input.text, qrData
                                 )
-                                fileName?.let {
+                                fileName?.let { name ->
                                     Toasty(this@QRCodeScanner).Long(
-                                        getString(R.string.wrote_file, it)
+                                        getString(R.string.wrote_file, name)
                                     )
                                     setResult(RESULT_OK)
                                 } ?: Toasty(this@QRCodeScanner).Long(
@@ -406,7 +404,8 @@ class QRCodeScanner : AppCompatActivity() {
     }
 
     @Throws(Exception::class)
-    fun encodeQR(text: String, type: Int) : Bitmap? {
+    fun encodeQR(text: String?, type: Int) : Bitmap? {
+        if (null == text) throw NullPointerException(getString(R.string.qr_invalid))
         val dimension = if (Version.isSnowCone) {
             val bounds: Rect = windowManager.currentWindowMetrics.bounds
             val params = if (bounds.width() < bounds.height())
@@ -492,7 +491,7 @@ class QRCodeScanner : AppCompatActivity() {
                 }
                 val text = if (!txtRawBytes.text.isNullOrEmpty())
                     TagArray.hexToString(txtRawBytes.text.toString().trim())
-                else txtRawValue.text.toString()
+                else txtRawValue.text?.toString()
 
                 try {
                     encodeQR(text, qrTypeSpinner.selectedItemPosition)?.let {

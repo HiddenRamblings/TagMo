@@ -50,8 +50,7 @@ class BluetoothHandler(
 
     init {
         onRequestLocationQ = registry.register(
-            "LocationQ",
-            ActivityResultContracts.RequestMultiplePermissions()
+            "LocationQ", ActivityResultContracts.RequestMultiplePermissions()
         ) { permissions: Map<String, Boolean> ->
             var isLocationAvailable = false
             permissions.entries.forEach {
@@ -61,12 +60,10 @@ class BluetoothHandler(
             if (isLocationAvailable) requestBluetooth(context) else listener.onPermissionsFailed()
         }
         onRequestBackgroundQ = registry.register(
-            "BackgroundQ",
-            ActivityResultContracts.RequestPermission()
+            "BackgroundQ", ActivityResultContracts.RequestPermission()
         ) { }
         onRequestBluetoothS = registry.register(
-            "BluetoothS",
-            ActivityResultContracts.RequestMultiplePermissions()
+            "BluetoothS", ActivityResultContracts.RequestMultiplePermissions()
         ) { permissions: Map<String, Boolean> ->
             var isBluetoothAvailable = true
             permissions.entries.forEach {
@@ -80,15 +77,13 @@ class BluetoothHandler(
             }
         }
         onRequestBluetooth = registry.register(
-            "Bluetooth",
-            ActivityResultContracts.StartActivityForResult()
+            "Bluetooth", ActivityResultContracts.StartActivityForResult()
         ) {
             val mBluetoothAdapter = getBluetoothAdapter(context)
             mBluetoothAdapter?.let { listener.onAdapterEnabled(it) } ?: listener.onAdapterMissing()
         }
         onRequestLocation = registry.register(
-            "Location",
-            ActivityResultContracts.RequestMultiplePermissions()
+            "Location", ActivityResultContracts.RequestMultiplePermissions()
         ) { permissions: Map<String, Boolean> ->
             var isLocationAvailable = false
             permissions.entries.forEach {
@@ -168,62 +163,50 @@ class BluetoothHandler(
         }
     }
 
+    private fun enableBluetoothAdapter(context: Context, adapter: BluetoothAdapter?) : BluetoothAdapter? {
+        return adapter?.also {
+            if (it.isEnabled) return it
+            if (Version.isTiramisu) {
+                AlertDialog.Builder(context)
+                    .setMessage(R.string.tiramisu_bluetooth)
+                    .setCancelable(false)
+                    .setPositiveButton(R.string.proceed) { dialog: DialogInterface, _: Int ->
+                        context.startActivity(Intent(Settings.ACTION_BLUETOOTH_SETTINGS))
+                        dialog.dismiss()
+                    }
+                    .setNegativeButton(R.string.cancel) { _: DialogInterface?, _: Int ->
+                        listener.onAdapterMissing() }
+                    .show()
+            } else {
+                try {
+                    @Suppress("DEPRECATION")
+                    it.enable()
+                } catch (se: SecurityException) {
+                    Toasty(context).Long(R.string.fail_permissions)
+                    return null
+                }
+            }
+        }
+    }
+
     @SuppressLint("MissingPermission")
     fun getBluetoothAdapter(context: Context?): BluetoothAdapter? {
         if (null == context) return null
-        if (null != mBluetoothAdapter) {
-            if (!mBluetoothAdapter!!.isEnabled) {
-                if (Version.isTiramisu) {
-                    AlertDialog.Builder(context)
-                        .setMessage(R.string.tiramisu_bluetooth)
-                        .setCancelable(false)
-                        .setPositiveButton(R.string.proceed) { dialog: DialogInterface, _: Int ->
-                            context.startActivity(Intent(Settings.ACTION_BLUETOOTH_SETTINGS))
-                            dialog.dismiss()
-                        }
-                        .setNegativeButton(R.string.cancel) { _: DialogInterface?, _: Int ->
-                            listener.onAdapterMissing() }
-                        .show()
-                } else {
-                    @Suppress("DEPRECATION")
-                    mBluetoothAdapter!!.enable()
-                }
-            }
-            return mBluetoothAdapter
+        return enableBluetoothAdapter(context, mBluetoothAdapter) ?:
+        enableBluetoothAdapter(context, if (Version.isJellyBeanMR2) {
+            (context.getSystemService(Context.BLUETOOTH_SERVICE) as BluetoothManager).adapter
         } else {
-            mBluetoothAdapter = if (Version.isJellyBeanMR2) {
-                (context.getSystemService(Context.BLUETOOTH_SERVICE) as BluetoothManager).adapter
-            } else {
-                @Suppress("DEPRECATION")
-                BluetoothAdapter.getDefaultAdapter()
-            }
-            if (null != mBluetoothAdapter) {
-                if (!mBluetoothAdapter!!.isEnabled) {
-                    if (Version.isTiramisu) {
-                        AlertDialog.Builder(context)
-                            .setMessage(R.string.tiramisu_bluetooth)
-                            .setCancelable(false)
-                            .setPositiveButton(R.string.proceed) { dialog: DialogInterface, _: Int ->
-                                context.startActivity(Intent(Settings.ACTION_BLUETOOTH_SETTINGS))
-                                dialog.dismiss()
-                            }
-                            .setNegativeButton(R.string.cancel) { _: DialogInterface?, _: Int ->
-                                listener.onAdapterMissing() }
-                            .show()
-                    } else {
-                        try {
-                            @Suppress("DEPRECATION")
-                            mBluetoothAdapter!!.enable()
-                        } catch (se: SecurityException) {
-                            Toasty(context).Long(R.string.fail_permissions)
-                            return null
-                        }
-                    }
-                }
-                return mBluetoothAdapter
-            }
-        }
-        return null
+            @Suppress("DEPRECATION")
+            BluetoothAdapter.getDefaultAdapter()
+        })
+    }
+
+    fun unregisterResultContracts() {
+        onRequestLocationQ.unregister()
+        onRequestBackgroundQ.unregister()
+        onRequestBluetoothS.unregister()
+        onRequestBluetooth.unregister()
+        onRequestLocation.unregister()
     }
 
     companion object {

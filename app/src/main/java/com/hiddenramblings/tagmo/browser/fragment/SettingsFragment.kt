@@ -49,7 +49,6 @@ import java.io.InputStreamReader
 import java.net.URL
 import java.text.ParseException
 import java.util.*
-import javax.net.ssl.HttpsURLConnection
 
 class SettingsFragment : PreferenceFragmentCompat() {
     private lateinit var prefs: Preferences

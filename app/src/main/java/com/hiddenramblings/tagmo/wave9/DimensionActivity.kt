@@ -16,10 +16,8 @@ import android.webkit.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.webkit.*
 import com.hiddenramblings.tagmo.R
-import com.hiddenramblings.tagmo.TagMo
 import com.hiddenramblings.tagmo.eightbit.os.Version
 import com.hiddenramblings.tagmo.parcelable
-import com.hiddenramblings.tagmo.widget.Toasty
 
 class DimensionActivity : AppCompatActivity() {
 

@@ -235,7 +235,7 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
         try {
             val amiibo = settings.amiiboManager?.amiibos?.get(Amiibo.dataToId(tagData))
                 ?: throw Exception()
-            val directory = File(directory, amiibo.amiiboSeries!!.name)
+            val directory = amiibo.amiiboSeries?.let { File(directory, it.name) } ?: directory
             val amiiboFile = File(
                 directory, TagArray.decipherFilename(amiibo, tagData, false)
             )
@@ -286,7 +286,7 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
     fun buildFoomiiboFile(tagData: ByteArray) {
         try {
             val amiibo = settings.amiiboManager?.amiibos?.get(Amiibo.dataToId(tagData)) ?: return
-            val directory = File(directory, amiibo.amiiboSeries!!.name)
+            val directory = amiibo.amiiboSeries?.let { File(directory, it.name) } ?: directory
             directory.mkdirs()
             val foomiiboData = foomiibo.getSignedData(tagData)
             TagArray.writeBytesToFile(

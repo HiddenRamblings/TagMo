@@ -483,10 +483,6 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
         pagerAdapter.browser.run {
             foomiiboOptions.findViewById<View>(R.id.clear_foomiibo_set).setOnClickListener {
                 collapseBottomSheet()
-                if (isDetached) {
-                    Toasty(this@BrowserActivity).Short(R.string.activity_unavailable)
-                    return@setOnClickListener
-                }
                 if (isBrowserAvailable) clearFoomiiboSet(this@BrowserActivity)
             }
             foomiiboOptions.findViewById<View>(R.id.build_foomiibo_set).setOnClickListener {
@@ -577,9 +573,9 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
     }
 
     private val isBrowserAvailable : Boolean get() {
-        val isDetached = pagerAdapter.browser.isDetached
-        if (isDetached) Toasty(this).Short(R.string.activity_unavailable)
-        return !isDetached
+        val isAttached = pagerAdapter.browser.isAdded
+        if (!isAttached) Toasty(this).Short(R.string.activity_unavailable)
+        return isAttached
     }
 
     fun onApplicationRecreate() {
@@ -594,9 +590,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
     @SuppressLint("NotifyDataSetChanged")
     fun onTabCollectionChanged() {
         if (viewPager.currentItem != 0) viewPager.setCurrentItem(0, false)
-        if (Version.isTiramisu)
-            onApplicationRecreate()
-        else pagerAdapter.notifyDataSetChanged()
+        if (Version.isTiramisu) onApplicationRecreate() else pagerAdapter.notifyDataSetChanged()
     }
 
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)

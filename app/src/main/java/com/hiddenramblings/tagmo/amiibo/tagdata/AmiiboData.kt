@@ -116,12 +116,14 @@ open class AmiiboData : Parcelable {
         set(value) {
             putString(tagData, MII_NAME_OFFSET, MII_TEXT_LENGTH, CharsetCompat.UTF_16LE, value)
         }
+
     @get:Throws(UnsupportedEncodingException::class)
     var miiAuthor: String
         get() = getString(tagData, MII_AUTHOR_OFFSET, MII_TEXT_LENGTH, CharsetCompat.UTF_16LE)
         set(value) {
             putString(tagData, MII_AUTHOR_OFFSET, MII_TEXT_LENGTH, CharsetCompat.UTF_16LE, value)
         }
+
     @Suppress("UNUSED")
     var titleID: Long
         get() = tagData.getLong(TITLE_ID_OFFSET)

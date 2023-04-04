@@ -656,13 +656,17 @@ class FlaskGattService : Service() {
             parameters.add("tagUploadChunk(\"$byteString\")")
         }
 
-        val flaskTail = Amiibo.idToHex(amiibo.id).substring(8, 16).toInt(16).toString(36)
-        val reserved = flaskTail.length + 3 // |tail|#
-        val nameUnicode = GattArray.stringToUnicode(amiibo.name!!)
-        val amiiboName = if (nameUnicode.length + reserved > 28)
-            nameUnicode.substring(0, nameUnicode.length - (nameUnicode.length + reserved - 28)
-        ) else nameUnicode
-        parameters.add("saveUploadedTag(\"$amiiboName|$flaskTail|0\")")
+        amiibo.flaskTail?.let {
+            val reserved = it.length + 3 // |tail|#
+            amiibo.name?.let { name ->
+                val nameUnicode = GattArray.stringToUnicode(name)
+                val nameLength = nameUnicode.length + reserved
+                val amiiboName = if (nameLength > 28)
+                    nameUnicode.substring(0, nameUnicode.length - (nameLength - 28))
+                else nameUnicode
+                parameters.add("saveUploadedTag(\"$amiiboName|$it|0\")")
+            }
+        }
         if (complete) {
             parameters.add("uploadsComplete()")
             parameters.add("getList()")
@@ -674,20 +678,23 @@ class FlaskGattService : Service() {
         }
     }
 
-    fun setActiveAmiibo(name: String?, tail: String) {
-        name?.let {
-            if (it.startsWith("New Tag")) {
+    fun setActiveAmiibo(amiiboName: String?, tail: String?) {
+        amiiboName?.let { name ->
+            if (name.startsWith("New Tag")) {
                 // delayedTagCharacteristic("setTag(\"$name||$tail\")")
-                delayedTagCharacteristic("setTag(\"$it|$tail|0\")")
+                delayedTagCharacteristic("setTag(\"$name|$tail|0\")")
                 return
             }
-            val reserved = tail.length + 3 // |tail|#
-            val nameUnicode = GattArray.stringToUnicode(it)
-            nameCompat = if (nameUnicode.length + reserved > 28) nameUnicode.substring(
-                0, nameUnicode.length - (nameUnicode.length + reserved - 28)
-            ) else nameUnicode
-            tailCompat = tail
-            delayedTagCharacteristic("setTag(\"$nameCompat|$tailCompat|0\")")
+            tail?.let {
+                val reserved = it.length + 3 // |tail|#
+                val nameUnicode = GattArray.stringToUnicode(it)
+                val nameLength = nameUnicode.length + reserved
+                nameCompat = if (nameLength > 28)
+                    nameUnicode.substring(0, nameUnicode.length - (nameLength - 28))
+                else nameUnicode
+                tailCompat = it
+                delayedTagCharacteristic("setTag(\"$nameCompat|$it|0\")")
+            }
         }
     }
 
@@ -703,30 +710,38 @@ class FlaskGattService : Service() {
         deviceAmiibo
     }
 
-    fun deleteAmiibo(name: String?, tail: String) {
-        name?.let {
-            if (it.startsWith("New Tag")) {
+    fun deleteAmiibo(amiiboName: String?, tail: String?) {
+        amiiboName?.let { name ->
+            if (name.startsWith("New Tag")) {
                 // delayedTagCharacteristic("remove(\"$name||$tail\")")
-                delayedTagCharacteristic("remove(\"$it|$tail|0\")")
+                delayedTagCharacteristic("remove(\"$name|$tail|0\")")
                 return
             }
-            val reserved = tail.length + 3 // |tail|#
-            val nameUnicode = GattArray.stringToUnicode(it)
-            nameCompat = if (nameUnicode.length + reserved > 28)
-                nameUnicode.substring(0, nameUnicode.length - (nameUnicode.length + reserved - 28))
-            else nameUnicode
-            tailCompat = tail
-            delayedTagCharacteristic("remove(\"$nameCompat|$tailCompat|0\")")
+            tail?.let {
+                val reserved = it.length + 3 // |tail|#
+                val nameUnicode = GattArray.stringToUnicode(name)
+                val nameLength = nameUnicode.length + reserved
+                nameCompat = if (nameLength > 28)
+                    nameUnicode.substring(0, nameUnicode.length - (nameLength - 28))
+                else nameUnicode
+                tailCompat = it
+                delayedTagCharacteristic("remove(\"$nameCompat|$it|0\")")
+            }
         }
     }
 
-    fun downloadAmiibo(name: String?, tail: String) {
-        val reserved = tail.length + 3 // |tail|#
-        val nameUnicode = GattArray.stringToUnicode(name!!)
-        val amiiboName = if (nameUnicode.length + reserved > 28)
-            nameUnicode.substring(0, nameUnicode.length - (nameUnicode.length + reserved - 28))
-        else nameUnicode
-        delayedTagCharacteristic("download(\"$amiiboName|$tail|0\")")
+    fun downloadAmiibo(fileName: String?, tail: String?) {
+        tail?.let {
+            val reserved = it.length + 3 // |tail|#
+            fileName?.let { name ->
+                val nameUnicode = GattArray.stringToUnicode(name)
+                val nameLength = nameUnicode.length + reserved
+                val amiiboName = if (nameLength > 28)
+                    nameUnicode.substring(0, nameUnicode.length - (nameLength - 28))
+                else nameUnicode
+                delayedTagCharacteristic("download(\"$amiiboName|$it|0\")")
+            }
+        }
     }
 
     val activeAmiibo: Unit

@@ -456,8 +456,8 @@ class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
     ) { result: ActivityResult ->
         if (result.resultCode != AppCompatActivity.RESULT_OK) return@registerForActivityResult
         result.data?.let { intent ->
-        if (NFCIntent.ACTION_NFC_SCANNED != intent.action
-            && NFCIntent.ACTION_EDIT_COMPLETE != intent.action) return@registerForActivityResult
+            if (NFCIntent.ACTION_NFC_SCANNED != intent.action
+                && NFCIntent.ACTION_EDIT_COMPLETE != intent.action) return@registerForActivityResult
             if (intent.hasExtra(NFCIntent.EXTRA_CURRENT_BANK)) {
                 clickedPosition = intent.getIntExtra(
                     NFCIntent.EXTRA_CURRENT_BANK, clickedPosition

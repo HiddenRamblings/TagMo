@@ -102,16 +102,6 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <androidx.appcompat.widget.SwitchCompat
-                android:id="@+id/write_serial_fill"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_marginHorizontal="2dp"
-                android:defaultValue="false"
-                android:text="@string/write_serials"
-                app:switchPadding="4dp" />
-
             <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/write_slot_file"
                 android:layout_width="match_parent"
@@ -124,6 +114,16 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/create_blank" />
+
+            <androidx.appcompat.widget.SwitchCompat
+                android:id="@+id/write_serial_fill"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginHorizontal="2dp"
+                android:defaultValue="false"
+                android:text="@string/write_serials"
+                app:switchPadding="4dp" />
 
             <LinearLayout
                 android:layout_width="match_parent"

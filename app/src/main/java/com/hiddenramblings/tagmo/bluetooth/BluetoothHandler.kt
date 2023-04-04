@@ -34,6 +34,7 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.hiddenramblings.tagmo.BuildConfig
 import com.hiddenramblings.tagmo.R
+import com.hiddenramblings.tagmo.eightbit.io.Debug
 import com.hiddenramblings.tagmo.eightbit.os.Version
 import com.hiddenramblings.tagmo.widget.Toasty
 
@@ -192,13 +193,19 @@ class BluetoothHandler(
     @SuppressLint("MissingPermission")
     fun getBluetoothAdapter(context: Context?): BluetoothAdapter? {
         if (null == context) return null
-        return enableBluetoothAdapter(context, mBluetoothAdapter) ?:
-        enableBluetoothAdapter(context, if (Version.isJellyBeanMR2) {
-            (context.getSystemService(Context.BLUETOOTH_SERVICE) as BluetoothManager).adapter
-        } else {
-            @Suppress("DEPRECATION")
-            BluetoothAdapter.getDefaultAdapter()
-        })
+        return try {
+            enableBluetoothAdapter(context, mBluetoothAdapter) ?: enableBluetoothAdapter(context,
+                if (Version.isJellyBeanMR2) {
+                    (context.getSystemService(Context.BLUETOOTH_SERVICE) as BluetoothManager).adapter
+                } else {
+                    @Suppress("DEPRECATION")
+                    BluetoothAdapter.getDefaultAdapter()
+                }
+            )
+        } catch (ex: SecurityException) {
+            Debug.warn(ex)
+            null
+        }
     }
 
     fun unregisterResultContracts() {
@@ -216,8 +223,8 @@ class BluetoothHandler(
         )
         @RequiresApi(Build.VERSION_CODES.S)
         private val PERMISSIONS_BLUETOOTH = arrayOf(
-            Manifest.permission.BLUETOOTH_CONNECT,
-            Manifest.permission.BLUETOOTH_SCAN
+            Manifest.permission.BLUETOOTH_SCAN,
+            Manifest.permission.BLUETOOTH_CONNECT
         )
     }
 

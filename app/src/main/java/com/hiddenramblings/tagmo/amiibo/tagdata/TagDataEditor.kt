@@ -556,17 +556,17 @@ class TagDataEditor : AppCompatActivity() {
                 }
             }
         }
-        val tagData: ByteArray = try {
-            keyManager.encrypt(newAmiiboData.array())
+        try {
+            keyManager.encrypt(newAmiiboData.array()).let {
+                setResult(RESULT_OK, Intent(NFCIntent.ACTION_EDIT_COMPLETE)
+                    .putExtra(NFCIntent.EXTRA_TAG_DATA, it)
+                )
+                finish()
+            }
         } catch (e: Exception) {
             Debug.warn(e)
             showErrorDialog(R.string.fail_encrypt)
-            return
         }
-        setResult(RESULT_OK, Intent(NFCIntent.ACTION_EDIT_COMPLETE)
-            .putExtra(NFCIntent.EXTRA_TAG_DATA, tagData)
-        )
-        finish()
     }
 
     private fun updateUserDataEnabled(isUserDataInitialized: Boolean) {

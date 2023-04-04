@@ -122,10 +122,9 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
         var isServiceDiscovered = false
         override fun onServiceConnected(component: ComponentName, binder: IBinder) {
             val localBinder = binder as FlaskGattService.LocalBinder
-            serviceFlask = localBinder.service
-            if (serviceFlask!!.initialize()) {
-                if (serviceFlask!!.connect(deviceAddress)) {
-                    serviceFlask!!.setListener(object : FlaskGattService.BluetoothGattListener {
+            serviceFlask = localBinder.service.apply {
+                if (initialize() && connect(deviceAddress)) {
+                    setListener(object : FlaskGattService.BluetoothGattListener {
                         override fun onServicesDiscovered() {
                             isServiceDiscovered = true
                             onBottomSheetChanged(SHEET.MENU)
@@ -138,8 +137,8 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
                                     .text = deviceProfile
                             }
                             try {
-                                serviceFlask!!.setFlaskCharacteristicRX()
-                                serviceFlask!!.deviceAmiibo
+                                setFlaskCharacteristicRX()
+                                deviceAmiibo
                             } catch (uoe: UnsupportedOperationException) {
                                 disconnectService()
                                 Toasty(requireContext()).Short(R.string.device_invalid)
@@ -149,7 +148,7 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
                         override fun onFlaskStatusChanged(jsonObject: JSONObject?) {
                             if (processDialog?.isShowing == true)
                                 processDialog?.dismiss()
-                            serviceFlask?.deviceAmiibo
+                            deviceAmiibo
                         }
 
                         override fun onFlaskListRetrieved(jsonArray: JSONArray) {
@@ -176,7 +175,7 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
                                     dismissSnackbarNotice(true)
                                     flaskContent?.adapter = adapter
                                     if (currentCount > 0) {
-                                        serviceFlask?.activeAmiibo
+                                        activeAmiibo
                                         adapter.notifyItemRangeInserted(0, currentCount)
                                     } else {
                                         amiiboTile?.visibility = View.INVISIBLE
@@ -285,10 +284,9 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
         var isServiceDiscovered = false
         override fun onServiceConnected(name: ComponentName, binder: IBinder) {
             val localBinder = binder as PuckGattService.LocalBinder
-            servicePuck = localBinder.service
-            if (servicePuck!!.initialize()) {
-                if (servicePuck!!.connect(deviceAddress)) {
-                    servicePuck!!.setListener(object : PuckGattService.BluetoothGattListener {
+            servicePuck = localBinder.service.apply {
+                if (initialize() && connect(deviceAddress)) {
+                    setListener(object : PuckGattService.BluetoothGattListener {
                         override fun onServicesDiscovered() {
                             isServiceDiscovered = true
                             onBottomSheetChanged(SHEET.MENU)
@@ -302,9 +300,9 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
                                 flaskSlotCount.maxValue = maxSlotCount
                             }
                             try {
-                                servicePuck!!.setPuckCharacteristicRX()
-                                servicePuck!!.deviceAmiibo
-                                // servicePuck!!.getDeviceSlots(32);
+                                setPuckCharacteristicRX()
+                                deviceAmiibo
+                                // getDeviceSlots(32);
                             } catch (uoe: UnsupportedOperationException) {
                                 disconnectService()
                                 Toasty(requireContext()).Short(R.string.device_invalid)
@@ -697,7 +695,7 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
                     amiibo.name, String(TagArray.longToBytes(amiibo.id))
                 )
             } else {
-                serviceFlask?.setActiveAmiibo(amiibo!!.name, amiibo.flaskTail)
+                amiibo?.let { serviceFlask?.setActiveAmiibo(it.name, it.flaskTail) }
             }
         }
     }
@@ -806,8 +804,7 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
                 amiiboManager?.let {
                     for (amiibo in it.amiibos.values) {
                         try {
-                            val flaskTail = Amiibo.idToHex(amiibo.id)
-                                .substring(8, 16).toInt(16).toString(36)
+                            val flaskTail = amiibo.flaskTail
                             if (name[1] == flaskTail) {
                                 selectedAmiibo = amiibo
                                 break
@@ -882,7 +879,8 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
 
     @SuppressLint("MissingPermission", "NewApi")
     private fun scanBluetoothServices(deviceDialog: AlertDialog) {
-        mBluetoothAdapter = mBluetoothAdapter ?: bluetoothHandler?.getBluetoothAdapter(requireContext())
+        mBluetoothAdapter = mBluetoothAdapter
+            ?: bluetoothHandler?.getBluetoothAdapter(requireContext())
         if (null == mBluetoothAdapter) {
             setBottomSheetHidden(true)
             Toasty(requireActivity()).Long(R.string.fail_bluetooth_adapter)
@@ -1179,7 +1177,8 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
 
     @SuppressLint("MissingPermission")
     private fun dismissGattDiscovery() {
-        mBluetoothAdapter = mBluetoothAdapter ?: bluetoothHandler?.getBluetoothAdapter(requireContext())
+        mBluetoothAdapter = mBluetoothAdapter
+            ?: bluetoothHandler?.getBluetoothAdapter(requireContext())
         mBluetoothAdapter?.let {
             if (Version.isLollipop) {
                 scanCallbackFlaskLP?.let { scan -> it.bluetoothLeScanner.stopScan(scan) }
@@ -1201,7 +1200,7 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
 
     private val isBluetoothEnabled: Boolean
         get() {
-            if (null != mBluetoothAdapter && mBluetoothAdapter?.isEnabled == true) return true
+            if (mBluetoothAdapter?.isEnabled == true) return true
             context?.run {
                 bluetoothHandler = bluetoothHandler ?: BluetoothHandler(
                     this, requireActivity().activityResultRegistry,

@@ -12,18 +12,20 @@ import java.io.IOException
 class NTAG215 : TagTechnology {
     private val tagMifare: MifareUltralight?
     private val tagNfcA: NfcA?
-    private val maxTransceiveLength: Int
+    private var maxTransceiveLength: Int = 0
 
     constructor(nfcA: NfcA?) {
-        tagNfcA = nfcA
+        tagNfcA = nfcA?.also {
+            maxTransceiveLength = it.maxTransceiveLength / 4 + 1
+        }
         tagMifare = null
-        maxTransceiveLength = tagNfcA!!.maxTransceiveLength / 4 + 1
     }
 
     constructor(mifare: MifareUltralight?) {
         tagNfcA = null
-        tagMifare = mifare
-        maxTransceiveLength = tagMifare!!.maxTransceiveLength / 4 + 1
+        tagMifare = mifare?.also {
+            maxTransceiveLength = it.maxTransceiveLength / 4 + 1
+        }
     }
 
     @Suppress("UNUSED")
@@ -177,10 +179,7 @@ class NTAG215 : TagTechnology {
     }
 
     private fun internalFastRead(
-        method: IFastRead,
-        startAddr: Int,
-        endAddr: Int,
-        bank: Int
+        method: IFastRead, startAddr: Int, endAddr: Int, bank: Int
     ): ByteArray? {
         if (endAddr < startAddr) return null
         val resp = ByteArray((endAddr - startAddr + 1) * 4)
@@ -233,10 +232,7 @@ class NTAG215 : TagTechnology {
     }
 
     private fun internalFastWrite(
-        method: IFastWrite,
-        startAddr: Int,
-        bank: Int,
-        data: ByteArray
+        method: IFastWrite, startAddr: Int, bank: Int, data: ByteArray
     ): Boolean {
         var snippetByteSize = 16
         val endAddr = startAddr + data.size / 4

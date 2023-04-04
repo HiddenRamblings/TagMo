@@ -58,8 +58,18 @@ open class Amiibo : Comparable<Amiibo>, Parcelable {
             if (Preferences(TagMo.appContext).databaseSource() == 0) RENDER_IMAGE else AMIIBO_IMAGE,
             head, tail
         )
-    val flaskTail: String
-        get() = idToHex(id).substring(8, 16).toInt(16).toString(36)
+    val flaskTail: String?
+        get() = idToHex(id).let {
+            try {
+                it.substring(8, 16).toInt(16).toString(36)
+            } catch (nf: NumberFormatException) {
+                try {
+                    Integer.parseInt(it.substring(8, 16), 16).toString(36)
+                } catch (nf: NumberFormatException) {
+                    null
+                }
+            }
+        }
 
     override fun compareTo(other: Amiibo): Int {
         if (id == other.id) return 0

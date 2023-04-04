@@ -363,7 +363,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
                 (requireActivity() as BrowserActivity).onKeysLoaded(true)
                 updateKeySummary()
             } catch (e: Exception) {
-                e.message?.let { Toasty(requireActivity()).Short(it) }
+                Toasty(requireActivity()).Short(e.message)
             }
             scannerDialog.dismiss()
         }

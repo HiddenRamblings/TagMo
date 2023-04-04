@@ -2,7 +2,6 @@ package com.hiddenramblings.tagmo.browser.fragment
 
 import android.annotation.SuppressLint
 import android.app.Dialog
-import android.app.ProgressDialog
 import android.os.*
 import android.util.Base64
 import android.view.LayoutInflater
@@ -23,6 +22,7 @@ import com.hiddenramblings.tagmo.eightbit.os.Storage
 import com.hiddenramblings.tagmo.eightbit.os.Version
 import com.hiddenramblings.tagmo.nfctech.TagArray
 import com.hiddenramblings.tagmo.security.SecurityHandler
+import com.hiddenramblings.tagmo.widget.ProgressAlert
 import com.hiddenramblings.tagmo.widget.Toasty
 import org.json.JSONException
 import java.io.File
@@ -36,7 +36,7 @@ import java.util.zip.ZipFile
 class WebsiteFragment : Fragment() {
     private val webHandler = Handler(Looper.getMainLooper())
     private var mWebView: WebView? = null
-    private var dialog: ProgressDialog? = null
+    private var dialog: ProgressAlert? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -288,11 +288,7 @@ class WebsiteFragment : Fragment() {
                     ), 0))
                     it.flush()
                 }
-                webHandler.post {
-                    dialog = ProgressDialog.show(
-                        requireContext(), "", "", true
-                    )
-                }
+                webHandler.post { dialog = ProgressAlert.show(requireContext(), "") }
                 Thread(UnZip(
                         filePath, Storage.getDownloadDir("TagMo", "Downloads")
                 )).start()

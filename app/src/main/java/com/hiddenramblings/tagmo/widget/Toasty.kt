@@ -7,7 +7,6 @@ import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import com.hiddenramblings.tagmo.R
 
-
 class Toasty(context: Context) {
     private val mContext: Context
 
@@ -39,8 +38,8 @@ class Toasty(context: Context) {
         show(msg, Toast.LENGTH_LONG)
     }
 
-    fun Short(msg: String) {
-        show(msg, Toast.LENGTH_SHORT)
+    fun Short(msg: String?) {
+        msg?.let { show(it, Toast.LENGTH_SHORT) }
     }
 
     fun Dialog(msg: String?) {

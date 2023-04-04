@@ -175,7 +175,7 @@ class QRCodeScanner : AppCompatActivity() {
                                     getString(R.string.fail_save_file)
                                 )
                             } catch (e: Exception) {
-                                e.message?.let { Toasty(this@QRCodeScanner).Short(it) }
+                                Toasty(this@QRCodeScanner).Short(e.message)
                             }
                             backupDialog.dismiss()
                         }

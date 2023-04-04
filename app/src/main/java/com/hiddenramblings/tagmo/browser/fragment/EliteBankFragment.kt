@@ -626,7 +626,7 @@ class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
                     getString(R.string.fail_save_file)
                 )
             } catch (e: Exception) {
-                e.message?.let { Toasty(requireActivity()).Short(it) }
+                Toasty(requireActivity()).Short(e.message)
             }
             backupDialog.dismiss()
         }

@@ -1,7 +1,6 @@
 package com.hiddenramblings.tagmo.browser.fragment
 
 import android.annotation.SuppressLint
-import android.app.ProgressDialog
 import android.content.DialogInterface
 import android.content.Intent
 import android.content.res.Configuration
@@ -41,6 +40,7 @@ import com.hiddenramblings.tagmo.eightbit.io.Debug
 import com.hiddenramblings.tagmo.eightbit.material.IconifiedSnackbar
 import com.hiddenramblings.tagmo.nfctech.Foomiibo
 import com.hiddenramblings.tagmo.nfctech.TagArray
+import com.hiddenramblings.tagmo.widget.ProgressAlert
 import com.hiddenramblings.tagmo.widget.Toasty
 import com.qtalk.recyclerviewfastscroller.RecyclerViewFastScroller
 import com.robertlevonyan.views.chip.Chip
@@ -210,7 +210,7 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
         browserScroller?.postDelayed({ setFoomiiboVisibility() }, TagMo.uiDelay.toLong())
     }
 
-    private suspend fun deleteDir(dialog: ProgressDialog?, dir: File?) {
+    private suspend fun deleteDir(dialog: ProgressAlert?, dir: File?) {
         if (!directory.exists()) return
         withContext(Dispatchers.IO) {
             dir?.listFiles().also { files ->
@@ -260,7 +260,7 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
     }
 
     fun clearFoomiiboSet(activity: AppCompatActivity) {
-        val dialog = ProgressDialog.show(activity, "", "", true)
+        val dialog = ProgressAlert.show(activity, "")
         CoroutineScope(Dispatchers.IO).launch(Dispatchers.IO) {
             deleteDir(dialog, directory)
             withContext(Dispatchers.Main) {
@@ -305,14 +305,16 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
     fun buildFoomiiboSet(activity: AppCompatActivity) {
         try {
             settings.amiiboManager?.let { amiiboManager ->
-                val dialog = ProgressDialog.show(activity, "", "", true)
+                val dialog = ProgressAlert.show(activity, "")
                 CoroutineScope(Dispatchers.IO).launch(Dispatchers.IO) {
                     deleteDir(null, directory)
                     directory.mkdirs()
-                    amiiboManager.amiibos.values.forEach {
-                        buildFoomiiboFile(it)
+                    amiiboManager.amiibos.values.forEach { amiibo ->
+                        buildFoomiiboFile(amiibo)
                         withContext(Dispatchers.Main) {
-                            dialog.setMessage(getString(R.string.foomiibo_progress, it.character!!.name))
+                            amiibo.character?.let {
+                                dialog.setMessage(getString(R.string.foomiibo_progress, it.name))
+                            }
                         }
                     }
                     withContext(Dispatchers.Main) {

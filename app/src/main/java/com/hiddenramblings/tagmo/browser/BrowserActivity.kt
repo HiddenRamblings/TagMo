@@ -682,7 +682,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                         ).show()
                         onRootFolderChanged(true)
                     } catch (e: Exception) {
-                        e.message?.let { Toasty(this@BrowserActivity).Short(it) }
+                        Toasty(this@BrowserActivity).Short(e.message)
                     }
                     dialog.dismiss()
                 }
@@ -1127,7 +1127,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                                     getString(R.string.fail_save_file), Snackbar.LENGTH_SHORT
                                 ).show()
                             } catch (e: Exception) {
-                                e.message?.let { Toasty(this).Short(it) }
+                                Toasty(this).Short(e.message)
                             }
                             backupDialog.dismiss()
                         }

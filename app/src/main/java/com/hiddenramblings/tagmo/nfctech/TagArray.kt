@@ -177,7 +177,12 @@ object TagArray {
             try {
                 output.append(hex.substring(i, i + 2).toInt(16).toChar())
             } catch (nf: NumberFormatException) {
-                output.append(Integer.parseInt(hex.substring(i, i + 2), 16).toChar())
+                try {
+                    output.append(Integer.parseInt(hex.substring(i, i + 2), 16).toChar())
+                } catch (nf: NumberFormatException) {
+                    output.clear()
+                    break
+                }
             }
             i += 2
         }

@@ -132,7 +132,7 @@ class FlaskGattService : Service() {
                             && null != nameCompat && null != tailCompat
                         ) {
                             response = StringBuilder()
-                            fixAmiiboName(nameCompat, tailCompat!!)
+                            tailCompat?.let { fixAmiiboName(nameCompat, it) }
                             nameCompat = null
                             tailCompat = null
                             return
@@ -646,7 +646,7 @@ class FlaskGattService : Service() {
         queueScreenCharacteristic(value, commandCallbacks.size)
     }
 
-    fun uploadAmiiboFile(tagData: ByteArray, amiibo: Amiibo, complete: Boolean) {
+    fun uploadAmiiboFile(tagData: ByteArray, amiibo: Amiibo, index: Int, complete: Boolean) {
         delayedTagCharacteristic("startTagUpload(${tagData.size})")
         val parameters: ArrayList<String> = arrayListOf()
         for (chunk in GattArray.byteToPortions(tagData, 128)) {
@@ -655,15 +655,15 @@ class FlaskGattService : Service() {
             )
             parameters.add("tagUploadChunk(\"$byteString\")")
         }
-
         amiibo.flaskTail?.let {
             val reserved = it.length + 3 // |tail|#
             amiibo.name?.let { name ->
                 val nameUnicode = GattArray.stringToUnicode(name)
-                val nameLength = nameUnicode.length + reserved
+                val nameIndexed = if (index > 0) "$index.$nameUnicode" else nameUnicode
+                val nameLength = nameIndexed.length + reserved
                 val amiiboName = if (nameLength > 28)
-                    nameUnicode.substring(0, nameUnicode.length - (nameLength - 28))
-                else nameUnicode
+                    nameIndexed.substring(0, nameIndexed.length - (nameLength - 28))
+                else nameIndexed
                 parameters.add("saveUploadedTag(\"$amiiboName|$it|0\")")
             }
         }

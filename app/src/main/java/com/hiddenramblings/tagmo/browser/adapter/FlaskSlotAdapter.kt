@@ -59,6 +59,12 @@ class FlaskSlotAdapter(
         return settings.amiiboView
     }
 
+    fun getDuplicates(amiibo: Amiibo) : Int {
+        var i = 0
+        flaskAmiibo.forEach { if (it?.id == amiibo.id) i += 1 }
+        return i
+    }
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): FlaskViewHolder {
         return when (VIEW.valueOf(viewType)) {
             VIEW.COMPACT -> CompactViewHolder(parent, settings, listener)

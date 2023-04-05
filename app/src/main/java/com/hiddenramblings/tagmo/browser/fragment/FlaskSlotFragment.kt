@@ -78,6 +78,7 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
     private lateinit var amiiboCardTarget: CustomTarget<Bitmap?>
     var flaskContent: RecyclerView? = null
         private set
+    var flaskAdapter: FlaskSlotAdapter? = null
     private var flaskStats: TextView? = null
     private lateinit var flaskSlotCount: NumberPicker
     private var screenOptions: LinearLayout? = null
@@ -167,19 +168,20 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
                                         Debug.warn(ex)
                                     }
                                 }
-                                val adapter = FlaskSlotAdapter(
+                                flaskAdapter = FlaskSlotAdapter(
                                     settings, this@FlaskSlotFragment
-                                )
-                                adapter.setFlaskAmiibo(flaskAmiibos)
-                                withContext(Dispatchers.Main) {
-                                    dismissSnackbarNotice(true)
-                                    flaskContent?.adapter = adapter
-                                    if (currentCount > 0) {
-                                        activeAmiibo
-                                        adapter.notifyItemRangeInserted(0, currentCount)
-                                    } else {
-                                        amiiboTile?.visibility = View.INVISIBLE
-                                        flaskButtonState
+                                ).also {
+                                    it.setFlaskAmiibo(flaskAmiibos)
+                                    withContext(Dispatchers.Main) {
+                                        dismissSnackbarNotice(true)
+                                        flaskContent?.adapter = it
+                                        if (currentCount > 0) {
+                                            activeAmiibo
+                                            it.notifyItemRangeInserted(0, currentCount)
+                                        } else {
+                                            amiiboTile?.visibility = View.INVISIBLE
+                                            flaskButtonState
+                                        }
                                     }
                                 }
                             }
@@ -200,8 +202,7 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
                                         Debug.warn(ex)
                                     }
                                 }
-                                val adapter = flaskContent?.adapter as FlaskSlotAdapter?
-                                adapter?.run {
+                                flaskAdapter?.run {
                                     addFlaskAmiibo(flaskAmiibos)
                                     withContext(Dispatchers.Main) {
                                         notifyItemRangeInserted(
@@ -311,8 +312,7 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
 
                         override fun onPuckActiveChanged(slot: Int) {
                             CoroutineScope(Dispatchers.IO).launch(Dispatchers.IO) {
-                                val adapter = flaskContent?.adapter as FlaskSlotAdapter?
-                                adapter?.run {
+                                flaskAdapter?.run {
                                     val amiibo = getItem(slot)
                                     getActiveAmiibo(amiibo, amiiboTile)
                                     if (bottomSheet?.state == BottomSheetBehavior.STATE_COLLAPSED)
@@ -342,19 +342,20 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
                                         flaskAmiibos.add(null)
                                     }
                                 }
-                                val adapter = FlaskSlotAdapter(
+                                flaskAdapter = FlaskSlotAdapter(
                                     settings, this@FlaskSlotFragment
-                                )
-                                adapter.setFlaskAmiibo(flaskAmiibos)
-                                withContext(Dispatchers.Main) {
-                                    dismissSnackbarNotice(true)
-                                    flaskContent?.adapter = adapter
-                                    if (currentCount > 0) {
-                                        adapter.notifyItemRangeInserted(0, currentCount)
-                                        onPuckActiveChanged(active)
-                                    } else {
-                                        amiiboTile?.visibility = View.INVISIBLE
-                                        flaskButtonState
+                                ).also {
+                                    it.setFlaskAmiibo(flaskAmiibos)
+                                    withContext(Dispatchers.Main) {
+                                        dismissSnackbarNotice(true)
+                                        flaskContent?.adapter = it
+                                        if (currentCount > 0) {
+                                            it.notifyItemRangeInserted(0, currentCount)
+                                            onPuckActiveChanged(active)
+                                        } else {
+                                            amiiboTile?.visibility = View.INVISIBLE
+                                            flaskButtonState
+                                        }
                                     }
                                 }
                             }
@@ -687,8 +688,7 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
         }
 
     private fun resetActiveSlot() {
-        val adapter = flaskContent?.adapter as FlaskSlotAdapter?
-        adapter?.run {
+        flaskAdapter?.run {
             val amiibo = getItem(0)
             if (amiibo is FlaskTag) {
                 serviceFlask?.setActiveAmiibo(
@@ -799,7 +799,6 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
                     amiiboManager = null
                     Toasty(requireActivity()).Short(R.string.amiibo_info_parse_error)
                 }
-                if (Thread.currentThread().isInterrupted) return null
                 var selectedAmiibo: Amiibo? = null
                 amiiboManager?.let {
                     for (amiibo in it.amiibos.values) {
@@ -812,6 +811,7 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
                         } catch (ignored: NumberFormatException) { }
                     }
                 }
+                selectedAmiibo?.flaskName = name[0]
                 return selectedAmiibo
             }
         }
@@ -1035,7 +1035,9 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
         }
         amiibo?.let {
             amiiboData?.array()?.let { data ->
-                serviceFlask?.uploadAmiiboFile(data, it, complete)
+                serviceFlask?.uploadAmiiboFile(
+                    data, it, flaskAdapter?.getDuplicates(it) ?: 0, complete
+                )
                 servicePuck?.uploadSlotAmiibo(data, flaskSlotCount.value - 1)
             }
         }
@@ -1055,7 +1057,9 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
             }
             amiibo?.let {
                 file.data?.let { data ->
-                    serviceFlask?.uploadAmiiboFile(data, it, complete)
+                    serviceFlask?.uploadAmiiboFile(
+                        data, it, flaskAdapter?.getDuplicates(it) ?: 0, complete
+                    )
                     servicePuck?.uploadSlotAmiibo(data, flaskSlotCount.value - 1)
                 }
             }
@@ -1078,11 +1082,11 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
         if (isFragmentVisible) {
             statusBar = IconifiedSnackbar(requireActivity()).buildSnackbar(
                 R.string.flask_scanning,
-                R.drawable.ic_bluetooth_searching_24dp,
-                Snackbar.LENGTH_INDEFINITE
-            )
-            statusBar!!.show()
-            statusBar!!.view.keepScreenOn = true
+                R.drawable.ic_bluetooth_searching_24dp, Snackbar.LENGTH_INDEFINITE
+            ).also {
+                it.show()
+                it.view.keepScreenOn = true
+            }
         }
     }
 
@@ -1092,11 +1096,11 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
         if (isFragmentVisible) {
             statusBar = IconifiedSnackbar(requireActivity()).buildSnackbar(
                 R.string.flask_located,
-                R.drawable.ic_bluup_flask_24dp,
-                Snackbar.LENGTH_INDEFINITE
-            )
-            statusBar!!.show()
-            statusBar!!.view.keepScreenOn = true
+                R.drawable.ic_bluup_flask_24dp, Snackbar.LENGTH_INDEFINITE
+            ).also {
+                it.show()
+                it.view.keepScreenOn = true
+            }
         }
     }
 
@@ -1106,11 +1110,14 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
         if (isFragmentVisible) {
             statusBar = IconifiedSnackbar(requireActivity()).buildSnackbar(
                 R.string.flask_disconnect,
-                R.drawable.ic_bluetooth_searching_24dp,
-                Snackbar.LENGTH_INDEFINITE
-            )
-            statusBar!!.setAction(R.string.scan) { selectBluetoothDevice() }
-            statusBar!!.show()
+                R.drawable.ic_bluetooth_searching_24dp, Snackbar.LENGTH_INDEFINITE
+            ).also { status ->
+                status.setAction(R.string.scan) {
+                    selectBluetoothDevice()
+                    status.dismiss()
+                }
+                status.show()
+            }
         }
     }
 
@@ -1121,9 +1128,10 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
             if (upload) R.string.flask_upload else R.string.flask_remove
         )
         builder.setView(view)
-        processDialog = builder.create()
-        processDialog?.show()
-        processDialog?.window?.decorView?.keepScreenOn = true
+        processDialog = builder.create().also {
+            it.show()
+            it.window?.decorView?.keepScreenOn = true
+        }
     }
 
     private fun showTimeoutNotice() {
@@ -1134,12 +1142,13 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
                 R.string.flask_missing,
                 R.drawable.ic_bluup_flask_24dp,
                 Snackbar.LENGTH_INDEFINITE
-            )
-            statusBar!!.setAction(R.string.retry) {
-                selectBluetoothDevice()
-                statusBar!!.dismiss()
+            ).also { status ->
+                status.setAction(R.string.retry) {
+                    selectBluetoothDevice()
+                    status.dismiss()
+                }
+                status.show()
             }
-            statusBar!!.show()
         }
     }
 
@@ -1270,7 +1279,8 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
                     return@setOnMenuItemClickListener true
                 } else if (item.itemId == R.id.mnu_delete) {
                     serviceFlask?.deleteAmiibo(
-                        amiibo.name, String(TagArray.longToBytes(amiibo.id))
+                        amiibo.flaskName ?: amiibo.name,
+                        String(TagArray.longToBytes(amiibo.id))
                     )
                     bottomSheet?.state = BottomSheetBehavior.STATE_COLLAPSED
                     return@setOnMenuItemClickListener true
@@ -1287,7 +1297,7 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
                         return@setOnMenuItemClickListener true
                     }
                     R.id.mnu_delete -> {
-                        serviceFlask?.deleteAmiibo(it.name, it.flaskTail)
+                        serviceFlask?.deleteAmiibo(it.flaskName ?: it.name, it.flaskTail)
                         bottomSheet?.state = BottomSheetBehavior.STATE_COLLAPSED
                         return@setOnMenuItemClickListener true
                     }

@@ -175,14 +175,11 @@ object TagArray {
         var i = 0
         while (i < hex.length) {
             try {
-                output.append(hex.substring(i, i + 2).toInt(16).toChar())
+                output.append(Integer.parseInt(hex.substring(i, i + 2), 16).toChar())
             } catch (nf: NumberFormatException) {
-                try {
-                    output.append(Integer.parseInt(hex.substring(i, i + 2), 16).toChar())
-                } catch (nf: NumberFormatException) {
-                    output.clear()
-                    break
-                }
+                Debug.warn(nf)
+                output.clear()
+                break
             }
             i += 2
         }

@@ -5,6 +5,7 @@ import android.os.Parcelable
 import com.hiddenramblings.tagmo.Preferences
 import com.hiddenramblings.tagmo.TagMo
 import com.hiddenramblings.tagmo.amiibo.tagdata.AmiiboData
+import com.hiddenramblings.tagmo.eightbit.io.Debug
 import com.hiddenramblings.tagmo.eightbit.os.Version
 import java.io.IOException
 
@@ -61,15 +62,13 @@ open class Amiibo : Comparable<Amiibo>, Parcelable {
     val flaskTail: String?
         get() = idToHex(id).let {
             try {
-                it.substring(8, 16).toInt(16).toString(36)
+                Integer.parseInt(it.substring(8, 16), 16).toString(36)
             } catch (nf: NumberFormatException) {
-                try {
-                    Integer.parseInt(it.substring(8, 16), 16).toString(36)
-                } catch (nf: NumberFormatException) {
-                    null
-                }
+                Debug.warn(nf)
+                null
             }
         }
+    var flaskName: String? = null
 
     override fun compareTo(other: Amiibo): Int {
         if (id == other.id) return 0

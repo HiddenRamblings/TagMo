@@ -1180,21 +1180,26 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
         try {
             requireContext().unbindService(flaskServerConn)
             requireContext().stopService(Intent(requireContext(), FlaskGattService::class.java))
-        } catch (ignored: IllegalArgumentException) {
-        }
+        } catch (ignored: IllegalArgumentException) { }
     }
 
     @SuppressLint("MissingPermission")
     private fun dismissGattDiscovery() {
         mBluetoothAdapter = mBluetoothAdapter
             ?: bluetoothHandler?.getBluetoothAdapter(requireContext())
-        mBluetoothAdapter?.let {
+        mBluetoothAdapter?.let { adapter ->
             if (Version.isLollipop) {
-                scanCallbackFlaskLP?.let { scan -> it.bluetoothLeScanner.stopScan(scan) }
-                scanCallbackPuckLP?.let { scan -> it.bluetoothLeScanner.stopScan(scan) }
+                scanCallbackFlaskLP?.let {
+                    adapter.bluetoothLeScanner.stopScan(it)
+                    adapter.bluetoothLeScanner.flushPendingScanResults(it)
+                }
+                scanCallbackPuckLP?.let {
+                    adapter.bluetoothLeScanner.stopScan(it)
+                    adapter.bluetoothLeScanner.flushPendingScanResults(it)
+                }
             } else @Suppress("DEPRECATION") {
-                scanCallbackFlask?.let { scan -> it.stopLeScan(scan) }
-                scanCallbackPuck?.let { scan -> it.stopLeScan(scan) }
+                scanCallbackFlask?.let { adapter.stopLeScan(it) }
+                scanCallbackPuck?.let { adapter.stopLeScan(it) }
             }
         }
     }

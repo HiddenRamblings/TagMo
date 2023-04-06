@@ -64,6 +64,10 @@ class JoyConFragment : DialogFragment(), BluetoothListener {
         Toasty(requireContext()).Long(R.string.fail_bluetooth_adapter)
     }
 
+    override fun onAdapterRestricted() {
+        bluetoothHandler?.getBluetoothAdapter(requireContext())
+    }
+
     @SuppressLint("MissingPermission")
     override fun onAdapterEnabled(adapter: BluetoothAdapter?) {
         var hasProController = false
@@ -83,12 +87,13 @@ class JoyConFragment : DialogFragment(), BluetoothListener {
         if (hasProController) {
             adapter?.bondedDevices?.forEach {
                 if (it.name == "Pro Controller") {
-                    bluetoothHelper = BluetoothHelper()
-                    bluetoothHelper!!.register(requireContext(), object : StateChangedCallback {
-                        override fun onStateChanged(
-                            name: String?, address: String?, state: Int
-                        ) { }
-                    })
+                    bluetoothHelper = BluetoothHelper().apply {
+                        register(requireContext(), object : StateChangedCallback {
+                            override fun onStateChanged(
+                                name: String?, address: String?, state: Int
+                            ) { }
+                        })
+                    }
                     // bluetoothHelper.connectL2cap(device);
                     val proController = JoyCon(bluetoothHelper, it)
                     // proController.poll(JoyCon.PollType.STANDARD);

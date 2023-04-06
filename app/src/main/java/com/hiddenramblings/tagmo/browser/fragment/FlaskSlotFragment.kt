@@ -1337,8 +1337,13 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
         Toasty(requireActivity()).Long(R.string.fail_bluetooth_adapter)
     }
 
+    override fun onAdapterRestricted() {
+        bluetoothHandler?.getBluetoothAdapter(requireContext())
+    }
+
     override fun onAdapterEnabled(adapter: BluetoothAdapter?) {
         this.mBluetoothAdapter = adapter
+        setBottomSheetHidden(false)
         selectBluetoothDevice()
     }
 

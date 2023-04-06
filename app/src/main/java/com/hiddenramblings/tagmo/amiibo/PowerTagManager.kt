@@ -18,10 +18,10 @@ object PowerTagManager {
         get() {
             if (null != keys) return
             TagMo.appContext.resources.openRawResource(R.raw.keytable).use { stream ->
-                val data = ByteArray(stream.available())
-                stream.read(data)
-                val obj = JSONObject(String(data))
-                parseKeyTable(obj)
+                val data = ByteArray(stream.available()).also {
+                    stream.read(it)
+                }
+                parseKeyTable(JSONObject(String(data)))
             }
         }
 
@@ -61,22 +61,24 @@ object PowerTagManager {
     @JvmStatic
     @Throws(NullPointerException::class)
     fun getPowerTagKey(uid: ByteArray, page10bytes: String): ByteArray {
-        if (null == keys) throw NullPointerException(
+        keys?.let {
+            val uidc = ByteArray(7)
+            uidc[0] = (uid[0].toInt() and 0xFE).toByte()
+            uidc[1] = (uid[1].toInt() and 0xFE).toByte()
+            uidc[2] = (uid[2].toInt() and 0xFE).toByte()
+            uidc[3] = (uid[3].toInt() and 0xFE).toByte()
+            uidc[4] = (uid[4].toInt() and 0xFE).toByte()
+            uidc[5] = (uid[5].toInt() and 0xFE).toByte()
+            uidc[6] = (uid[6].toInt() and 0xFE).toByte()
+            val keymap = it[TagArray.bytesToHex(uidc)] ?: throw NullPointerException(
+                TagMo.appContext.getString(R.string.uid_key_missing)
+            )
+            return keymap[page10bytes] ?: throw NullPointerException(
+                TagMo.appContext.getString(R.string.p10_key_missing)
+            )
+        } ?: throw NullPointerException(
             TagMo.appContext.getString(R.string.error_powertag_key)
         )
-        val uidc = ByteArray(7)
-        uidc[0] = (uid[0].toInt() and 0xFE).toByte()
-        uidc[1] = (uid[1].toInt() and 0xFE).toByte()
-        uidc[2] = (uid[2].toInt() and 0xFE).toByte()
-        uidc[3] = (uid[3].toInt() and 0xFE).toByte()
-        uidc[4] = (uid[4].toInt() and 0xFE).toByte()
-        uidc[5] = (uid[5].toInt() and 0xFE).toByte()
-        uidc[6] = (uid[6].toInt() and 0xFE).toByte()
-        val keymap = keys!![TagArray.bytesToHex(uidc)] ?: throw NullPointerException(
-            TagMo.appContext.getString(R.string.uid_key_missing)
-        )
-        return keymap[page10bytes] ?: throw NullPointerException(
-            TagMo.appContext.getString(R.string.p10_key_missing)
-        )
+
     }
 }

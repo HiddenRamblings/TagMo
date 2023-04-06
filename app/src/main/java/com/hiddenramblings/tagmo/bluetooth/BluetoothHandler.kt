@@ -36,7 +36,6 @@ import com.hiddenramblings.tagmo.BuildConfig
 import com.hiddenramblings.tagmo.R
 import com.hiddenramblings.tagmo.eightbit.io.Debug
 import com.hiddenramblings.tagmo.eightbit.os.Version
-import com.hiddenramblings.tagmo.widget.Toasty
 
 class BluetoothHandler(
     context: Context, registry: ActivityResultRegistry, listener: BluetoothListener
@@ -48,6 +47,7 @@ class BluetoothHandler(
     private var onRequestBluetoothS: ActivityResultLauncher<Array<String>>
     private var onRequestBluetooth: ActivityResultLauncher<Intent>
     private var onRequestLocation: ActivityResultLauncher<Array<String>>
+    private var onRequestAdapter: ActivityResultLauncher<Intent>
 
     init {
         onRequestLocationQ = registry.register(
@@ -99,6 +99,9 @@ class BluetoothHandler(
                 listener.onPermissionsFailed()
             }
         }
+        onRequestAdapter = registry.register(
+            "Adapter", ActivityResultContracts.StartActivityForResult()
+        ) { listener.onAdapterRestricted() }
         this.listener = listener
     }
 
@@ -164,28 +167,29 @@ class BluetoothHandler(
         }
     }
 
-    private fun enableBluetoothAdapter(context: Context, adapter: BluetoothAdapter?) : BluetoothAdapter? {
-        return adapter?.also {
+    private fun enableBluetoothAdapter(
+        context: Context, adapter: BluetoothAdapter
+    ) : BluetoothAdapter {
+        return adapter.also {
             if (it.isEnabled) return it
             if (Version.isTiramisu) {
                 AlertDialog.Builder(context)
                     .setMessage(R.string.tiramisu_bluetooth)
                     .setCancelable(false)
                     .setPositiveButton(R.string.proceed) { dialog: DialogInterface, _: Int ->
-                        context.startActivity(Intent(Settings.ACTION_BLUETOOTH_SETTINGS))
+                        listener.onAdapterMissing()
+                        onRequestAdapter.launch(Intent(Settings.ACTION_BLUETOOTH_SETTINGS))
                         dialog.dismiss()
                     }
                     .setNegativeButton(R.string.cancel) { _: DialogInterface?, _: Int ->
-                        listener.onAdapterMissing() }
+                        listener.onAdapterMissing()
+                    }
                     .show()
             } else {
                 try {
                     @Suppress("DEPRECATION")
                     it.enable()
-                } catch (se: SecurityException) {
-                    Toasty(context).Long(R.string.fail_permissions)
-                    return null
-                }
+                } catch (se: SecurityException) { listener.onPermissionsFailed() }
             }
         }
     }
@@ -194,14 +198,12 @@ class BluetoothHandler(
     fun getBluetoothAdapter(context: Context?): BluetoothAdapter? {
         if (null == context) return null
         return try {
-            enableBluetoothAdapter(context, mBluetoothAdapter) ?: enableBluetoothAdapter(context,
-                if (Version.isJellyBeanMR2) {
+            mBluetoothAdapter?.let {enableBluetoothAdapter(context, it) }
+                ?: enableBluetoothAdapter(context, if (Version.isJellyBeanMR2) {
                     (context.getSystemService(Context.BLUETOOTH_SERVICE) as BluetoothManager).adapter
                 } else {
-                    @Suppress("DEPRECATION")
-                    BluetoothAdapter.getDefaultAdapter()
-                }
-            )
+                    @Suppress("DEPRECATION") BluetoothAdapter.getDefaultAdapter()
+                })
         } catch (ex: SecurityException) {
             Debug.warn(ex)
             null
@@ -214,6 +216,7 @@ class BluetoothHandler(
         onRequestBluetoothS.unregister()
         onRequestBluetooth.unregister()
         onRequestLocation.unregister()
+        onRequestAdapter.unregister()
     }
 
     companion object {
@@ -231,6 +234,7 @@ class BluetoothHandler(
     interface BluetoothListener {
         fun onPermissionsFailed()
         fun onAdapterMissing()
+        fun onAdapterRestricted()
         fun onAdapterEnabled(adapter: BluetoothAdapter?)
     }
 }

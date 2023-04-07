@@ -115,7 +115,7 @@ class JSONExecutor(activity: Activity, server: String, path: String? = null) {
                 }
             } catch (e: Exception) {
                 Debug.warn(e)
-                listenerDb?.onException(e)
+                listenerDb?.onException(e) ?: listener?.onException(e)
             }
         }
     }
@@ -130,6 +130,7 @@ class JSONExecutor(activity: Activity, server: String, path: String? = null) {
 
     interface ResultListener {
         fun onResults(result: String?)
+        fun onException(e: Exception)
     }
 
     fun setResultListener(listener: ResultListener?) {

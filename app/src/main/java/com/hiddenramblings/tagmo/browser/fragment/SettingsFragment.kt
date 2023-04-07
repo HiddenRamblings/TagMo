@@ -161,12 +161,9 @@ class SettingsFragment : PreferenceFragmentCompat() {
                 Preference.OnPreferenceClickListener {
                     val isEnabled = isChecked
                     prefs.eliteEnabled(isChecked)
-                    if (isEnabled && !prefs.eliteSignature().isNullOrEmpty())
-                        summary = getString(
-                            R.string.elite_signature, prefs.eliteSignature()
-                        ) 
-                    else 
-                        summary = getString(R.string.elite_details)
+                    summary = if (isEnabled && !prefs.eliteSignature().isNullOrEmpty())
+                        getString(R.string.elite_signature, prefs.eliteSignature())
+                    else getString(R.string.elite_details)
                     (requireActivity() as BrowserActivity).reloadTabCollection = true
                     super@SettingsFragment.onPreferenceTreeClick(it)
                 }
@@ -471,8 +468,10 @@ class SettingsFragment : PreferenceFragmentCompat() {
             val activity = requireActivity() as BrowserActivity
             if (notify) {
                 withContext(Dispatchers.Main) {
-                    activity.settings?.lastUpdatedAPI = null
-                    activity.settings?.notifyChanges()
+                    activity.settings?.run {
+                        lastUpdatedAPI = null
+                        notifyChanges()
+                    }
                 }
             }
             try {
@@ -510,17 +509,18 @@ class SettingsFragment : PreferenceFragmentCompat() {
                             buildSnackbar(
                                 activity, R.string.sync_amiibo_complete, Snackbar.LENGTH_SHORT
                             ).show()
-                            activity.settings?.lastUpdatedAPI = lastUpdated
-                            activity.settings?.notifyChanges()
+                            activity.settings?.run {
+                                lastUpdatedAPI = lastUpdated
+                                notifyChanges()
+                            }
                         }
                     }
                 }
-
                 override fun onException(e: Exception) {
                     CoroutineScope(Dispatchers.Main).launch {
                         if (syncMessage.isShown) syncMessage.dismiss()
                         buildSnackbar(
-                            activity, R.string.sync_amiibo_failed, Snackbar.LENGTH_SHORT
+                            activity, R.string.amiibo_failure_server, Snackbar.LENGTH_SHORT
                         ).show()
                     }
                 }
@@ -677,22 +677,38 @@ class SettingsFragment : PreferenceFragmentCompat() {
     }
 
     private fun onUpdateRequested(isMenuClicked: Boolean) {
+        val activity = requireActivity() as BrowserActivity
         if (prefs.databaseSource() == 0) {
             JSONExecutor(
-                requireActivity(),
+                activity,
                 "https://api.github.com/repos/8bitDream/AmiiboAPI",
                 "branches/render?path=database/amiibo.json"
             ).setResultListener(object : JSONExecutor.ResultListener {
                 override fun onResults(result: String?) {
                     result?.let { parseCommitDate(it, isMenuClicked) }
                 }
+                override fun onException(e: Exception) {
+                    CoroutineScope(Dispatchers.Main).launch {
+                        buildSnackbar(
+                            activity, R.string.amiibo_failure_server, Snackbar.LENGTH_SHORT
+                        ).show()
+                    }
+                }
             })
         } else {
             JSONExecutor(
-                requireActivity(), AmiiboManager.AMIIBO_API, "lastupdated/"
+                activity, AmiiboManager.AMIIBO_API, "lastupdated/"
             ).setResultListener(object : JSONExecutor.ResultListener {
                 override fun onResults(result: String?) {
                     result?.let { parseUpdateJSON(it, isMenuClicked) }
+                }
+
+                override fun onException(e: Exception) {
+                    CoroutineScope(Dispatchers.Main).launch {
+                        buildSnackbar(
+                            activity, R.string.amiibo_failure_server, Snackbar.LENGTH_SHORT
+                        ).show()
+                    }
                 }
             })
         }

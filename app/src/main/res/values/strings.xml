@@ -240,8 +240,6 @@
     <string name="tagmo_theme_details">Change local theme independent of system theme settings</string>
     <string name="pref_disable_debug">Disable Debug Logger</string>
     <string name="disable_debug_details">May improve performance, but limits most diagnostic details</string>
-    <string name="pref_stable_channel">Stable Update Checks</string>
-    <string name="stable_channel_details">Only use the stable branch when checking for TagMo updates</string>
     <string name="pref_disclaimer">Disclaimers</string>
 
     <string name="amiibo_info_updated">Updated amiibo database!</string>
@@ -355,6 +353,7 @@
     <string name="error_auth_null">Auth result was null</string>
     <string name="error_unknown">An unknown error has occurred.</string>
 
+    <string name="fail_update_git">Unable to contact update server!</string>
     <string name="fail_ssl_update">OpenSSL security provider obsolete!</string>
     <string name="fail_save_file">Failed writing tag to file</string>
     <string name="fail_save_data">Failed to save tag data</string>
@@ -418,6 +417,7 @@
     <string name="amiibo_failure_parse">Failed to parse amiibo database</string>
     <string name="amiibo_failure_read">Failed to read amiibo database</string>
     <string name="amiibo_failure_update">Failed to update amiibo database</string>
+    <string name="amiibo_failure_server">Unable to contact database server</string>
     <string name="amiibo_failure_parse_default">Failed to parse default amiibo database</string>
 
     <string name="firmware_update">N2 Elite Firmware Updated!</string>

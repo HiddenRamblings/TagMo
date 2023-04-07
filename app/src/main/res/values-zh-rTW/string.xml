@@ -239,8 +239,6 @@
     <string name="tagmo_theme_details">將程式背景變更為自訂主題</string>
     <string name="pref_disable_debug">停用除錯日誌記錄</string>
     <string name="disable_debug_details">可改善執行效率，但將無法完整記錄用來診斷錯誤的所有細節資訊</string>
-    <string name="pref_stable_channel">檢查穩定版本更新</string>
-    <string name="stable_channel_details">檢查TagMo版本更新時，僅安裝穩定性分支的版本</string>
     <string name="pref_disclaimer">版權宣告</string>
 
     <string name="amiibo_info_updated">amiibo 資料庫已更新！</string>

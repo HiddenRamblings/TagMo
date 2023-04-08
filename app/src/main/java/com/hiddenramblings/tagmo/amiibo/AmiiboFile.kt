@@ -3,7 +3,10 @@ package com.hiddenramblings.tagmo.amiibo
 import android.os.Parcel
 import android.os.Parcelable
 import androidx.documentfile.provider.DocumentFile
+import com.hiddenramblings.tagmo.amiibo.tagdata.AmiiboData
 import com.hiddenramblings.tagmo.eightbit.os.Version
+import com.hiddenramblings.tagmo.nfctech.Foomiibo
+import com.hiddenramblings.tagmo.nfctech.TagArray
 import java.io.File
 
 open class AmiiboFile : Parcelable {
@@ -47,6 +50,21 @@ open class AmiiboFile : Parcelable {
         data = ByteArray(parcel.readInt()).also {
             parcel.readByteArray(it)
         }
+    }
+
+    fun withRandomSerials(keyManager: KeyManager, count: Int) : ArrayList<AmiiboData?> {
+        val serialList: ArrayList<AmiiboData?> = arrayListOf()
+        val tagData = data ?: docUri?.let {
+            TagArray.getValidatedDocument(keyManager, it)
+        } ?: filePath?.let {
+            TagArray.getValidatedFile(keyManager, it)
+        }
+        val newData = tagData?.let { AmiiboData(keyManager.decrypt(it)) }
+        for (i in 0 until count) {
+            newData?.uID = Foomiibo().generateRandomUID()
+            serialList.add(newData)
+        }
+        return serialList
     }
 
     companion object {

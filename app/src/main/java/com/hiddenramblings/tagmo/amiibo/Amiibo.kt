@@ -7,6 +7,7 @@ import com.hiddenramblings.tagmo.TagMo
 import com.hiddenramblings.tagmo.amiibo.tagdata.AmiiboData
 import com.hiddenramblings.tagmo.eightbit.io.Debug
 import com.hiddenramblings.tagmo.eightbit.os.Version
+import com.hiddenramblings.tagmo.nfctech.TagArray
 import java.io.IOException
 
 open class Amiibo : Comparable<Amiibo>, Parcelable {
@@ -59,13 +60,13 @@ open class Amiibo : Comparable<Amiibo>, Parcelable {
             if (Preferences(TagMo.appContext).databaseSource() == 0) RENDER_IMAGE else AMIIBO_IMAGE,
             head, tail
         )
-    val flaskTail: String?
+    val flaskTail: String
         get() = idToHex(id).let {
             try {
                 Integer.parseInt(it.substring(8, 16), 16).toString(36)
             } catch (nf: NumberFormatException) {
                 Debug.warn(nf)
-                null
+                String(TagArray.longToBytes(id))
             }
         }
     var flaskName: String? = null

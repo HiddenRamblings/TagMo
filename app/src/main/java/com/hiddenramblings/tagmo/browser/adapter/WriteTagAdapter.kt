@@ -27,8 +27,6 @@ import com.hiddenramblings.tagmo.browser.BrowserSettings.BrowserSettingsListener
 import com.hiddenramblings.tagmo.browser.BrowserSettings.VIEW
 import com.hiddenramblings.tagmo.eightbit.os.Storage
 import com.hiddenramblings.tagmo.eightbit.os.Version
-import com.hiddenramblings.tagmo.nfctech.Foomiibo
-import com.hiddenramblings.tagmo.nfctech.TagArray
 import com.hiddenramblings.tagmo.widget.BoldSpannable
 import java.util.*
 
@@ -42,7 +40,6 @@ class WriteTagAdapter(private val settings: BrowserSettings?) :
     private var filter: AmiiboFilter? = null
     private var firstRun = true
     private val amiiboList: ArrayList<AmiiboFile?> = arrayListOf()
-    private val serialList: ArrayList<AmiiboData?> = arrayListOf()
 
     init {
         filteredData = amiiboFiles
@@ -52,7 +49,6 @@ class WriteTagAdapter(private val settings: BrowserSettings?) :
     @SuppressLint("NotifyDataSetChanged")
     fun setListener(listener: OnAmiiboClickListener?, listSize: Int, isFillEnabled: Boolean) {
         amiiboList.clear()
-        serialList.clear()
         notifyDataSetChanged()
         this.listener = listener
         this.listSize = listSize
@@ -144,19 +140,10 @@ class WriteTagAdapter(private val settings: BrowserSettings?) :
         if (listSize > 1) {
             if (isFillEnabled) {
                 filteredData[position]?.let { amiiboFile ->
-                    val keyManager = KeyManager(holder.itemView.context)
-                    val data = amiiboFile.data ?: amiiboFile.docUri?.let {
-                        TagArray.getValidatedDocument(keyManager, it)
-                    } ?: amiiboFile.filePath?.let {
-                        TagArray.getValidatedFile(keyManager, it)
-                    }
-                    val amiiboData = data?.let { AmiiboData(keyManager.decrypt(it)) }
-                    for (i in 0 until listSize) {
-                        val newData = amiiboData?.let { AmiiboData(it.array()) }
-                        newData?.uID = Foomiibo().generateRandomUID()
-                        serialList.add(newData)
-                    }
-                    listener?.onAmiiboDataClicked(serialList)
+                    val clonesList = amiiboFile.withRandomSerials(
+                        KeyManager(holder.itemView.context), listSize
+                    )
+                    listener?.onAmiiboDataClicked(clonesList)
                 }
             } else {
                 if (amiiboList.contains(holder.amiiboFile)) {
@@ -437,7 +424,7 @@ class WriteTagAdapter(private val settings: BrowserSettings?) :
         fun onAmiiboClicked(amiiboFile: AmiiboFile?)
         fun onAmiiboImageClicked(amiiboFile: AmiiboFile?)
         fun onAmiiboListClicked(amiiboList: ArrayList<AmiiboFile?>?)
-        fun onAmiiboDataClicked(serialList: ArrayList<AmiiboData?>?)
+        fun onAmiiboDataClicked(clonesList: ArrayList<AmiiboData?>?)
     }
 
     companion object {

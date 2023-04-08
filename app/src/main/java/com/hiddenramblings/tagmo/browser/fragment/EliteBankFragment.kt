@@ -266,8 +266,8 @@ class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
                     override fun onAmiiboListClicked(amiiboList: ArrayList<AmiiboFile?>?) {
                         if (!amiiboList.isNullOrEmpty()) writeAmiiboFileCollection(amiiboList)
                     }
-                    override fun onAmiiboDataClicked(serialList: ArrayList<AmiiboData?>?) {
-                        if (!serialList.isNullOrEmpty()) writeAmiiboCollection(serialList)
+                    override fun onAmiiboDataClicked(clonesList: ArrayList<AmiiboData?>?) {
+                        if (!clonesList.isNullOrEmpty()) writeAmiiboCollection(clonesList)
                     }
                 }, count, writeSerials?.isChecked ?: false)
             }
@@ -600,7 +600,7 @@ class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
             }
 
             override fun onAmiiboListClicked(amiiboList: ArrayList<AmiiboFile?>?) {}
-            override fun onAmiiboDataClicked(serialList: ArrayList<AmiiboData?>?) {}
+            override fun onAmiiboDataClicked(clonesList: ArrayList<AmiiboData?>?) {}
         })
         bottomSheet?.state = BottomSheetBehavior.STATE_EXPANDED
     }

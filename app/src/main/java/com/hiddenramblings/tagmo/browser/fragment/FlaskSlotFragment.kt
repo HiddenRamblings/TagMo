@@ -573,7 +573,7 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
                 }
 
                 override fun onAmiiboListClicked(amiiboList: ArrayList<AmiiboFile?>?) {}
-                override fun onAmiiboDataClicked(serialList: ArrayList<AmiiboData?>?) {}
+                override fun onAmiiboDataClicked(clonesList: ArrayList<AmiiboData?>?) {}
             })
             bottomSheet?.setState(BottomSheetBehavior.STATE_EXPANDED)
         }
@@ -593,8 +593,8 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
                     override fun onAmiiboListClicked(amiiboList: ArrayList<AmiiboFile?>?) {
                         if (!amiiboList.isNullOrEmpty()) writeAmiiboFileCollection(amiiboList)
                     }
-                    override fun onAmiiboDataClicked(serialList: ArrayList<AmiiboData?>?) {
-                        if (!serialList.isNullOrEmpty()) writeAmiiboDataCollection(serialList)
+                    override fun onAmiiboDataClicked(clonesList: ArrayList<AmiiboData?>?) {
+                        if (!clonesList.isNullOrEmpty()) writeAmiiboDataCollection(clonesList)
                     }
                 }, count, writeSerials?.isChecked ?: false)
             }
@@ -956,7 +956,7 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
 
     @SuppressLint("MissingPermission")
     private fun selectBluetoothDevice() {
-        if (mBluetoothAdapter == null) {
+        if (mBluetoothAdapter?.isEnabled != true) {
             Toasty(requireActivity()).Long(R.string.fail_bluetooth_adapter)
             return
         }
@@ -1188,6 +1188,7 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
         mBluetoothAdapter = mBluetoothAdapter
             ?: bluetoothHandler?.getBluetoothAdapter(requireContext())
         mBluetoothAdapter?.let { adapter ->
+            if (!adapter.isEnabled) return
             if (Version.isLollipop) {
                 scanCallbackFlaskLP?.let {
                     adapter.bluetoothLeScanner.stopScan(it)
@@ -1239,9 +1240,9 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
     override fun onDestroy() {
         try {
             dismissGattDiscovery()
-        } catch (ignored: NullPointerException) {
-        }
+        } catch (ignored: NullPointerException) { }
         disconnectService()
+        bluetoothHandler?.unregisterResultContracts()
         super.onDestroy()
     }
 
@@ -1250,8 +1251,10 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
             fragmentHandler.postDelayed({
                 when (noticeState) {
                     STATE.SCANNING, STATE.TIMEOUT -> {
-                        showScanningNotice()
-                        selectBluetoothDevice()
+                        if (isBluetoothEnabled) {
+                            showScanningNotice()
+                            selectBluetoothDevice()
+                        }
                     }
                     STATE.CONNECT -> showConnectionNotice()
                     STATE.MISSING -> showDisconnectNotice()
@@ -1274,40 +1277,38 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
         onBottomSheetChanged(SHEET.AMIIBO)
         bottomSheet?.state = BottomSheetBehavior.STATE_EXPANDED
         if (amiibo is FlaskTag) {
+            val amiiboName = amiibo.flaskName ?: amiibo.name
+            val flaskTail = String(TagArray.longToBytes(amiibo.id))
             toolbar?.menu?.findItem(R.id.mnu_backup)?.isVisible = false
             toolbar?.setOnMenuItemClickListener { item: MenuItem ->
                 if (item.itemId == R.id.mnu_activate) {
-                    serviceFlask?.setActiveAmiibo(
-                        amiibo.name, String(TagArray.longToBytes(amiibo.id))
-                    )
+                    serviceFlask?.setActiveAmiibo(amiiboName, flaskTail)
                     servicePuck?.setActiveSlot(position)
                     return@setOnMenuItemClickListener true
                 } else if (item.itemId == R.id.mnu_delete) {
-                    serviceFlask?.deleteAmiibo(
-                        amiibo.flaskName ?: amiibo.name,
-                        String(TagArray.longToBytes(amiibo.id))
-                    )
+                    serviceFlask?.deleteAmiibo(amiiboName, flaskTail)
                     bottomSheet?.state = BottomSheetBehavior.STATE_COLLAPSED
                     return@setOnMenuItemClickListener true
                 }
                 false
             }
         } else amiibo?.let {
+            val amiiboName = it.flaskName ?: it.name
             toolbar?.menu?.findItem(R.id.mnu_backup)?.isVisible = true
             toolbar?.setOnMenuItemClickListener { item: MenuItem ->
                 when (item.itemId) {
                     R.id.mnu_activate -> {
-                        serviceFlask?.setActiveAmiibo(it.name, it.flaskTail)
+                        serviceFlask?.setActiveAmiibo(amiiboName, it.flaskTail)
                         servicePuck?.setActiveSlot(position)
                         return@setOnMenuItemClickListener true
                     }
                     R.id.mnu_delete -> {
-                        serviceFlask?.deleteAmiibo(it.flaskName ?: it.name, it.flaskTail)
+                        serviceFlask?.deleteAmiibo(amiiboName, it.flaskTail)
                         bottomSheet?.state = BottomSheetBehavior.STATE_COLLAPSED
                         return@setOnMenuItemClickListener true
                     }
                     R.id.mnu_backup -> {
-                        serviceFlask?.downloadAmiibo(it.name, it.flaskTail)
+                        serviceFlask?.downloadAmiibo(amiiboName, it.flaskTail)
                         bottomSheet?.state = BottomSheetBehavior.STATE_COLLAPSED
                         return@setOnMenuItemClickListener true
                     }
@@ -1333,22 +1334,16 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
 
     override fun onAdapterMissing() {
         this.mBluetoothAdapter = null
+        noticeState = STATE.MISSING
         setBottomSheetHidden(true)
         Toasty(requireActivity()).Long(R.string.fail_bluetooth_adapter)
     }
 
-    override fun onAdapterRestricted() {
-        bluetoothHandler?.getBluetoothAdapter(requireContext())
-    }
+    override fun onAdapterRestricted() { }
 
     override fun onAdapterEnabled(adapter: BluetoothAdapter?) {
         this.mBluetoothAdapter = adapter
         setBottomSheetHidden(false)
         selectBluetoothDevice()
-    }
-
-    override fun onStop() {
-        super.onStop()
-        bluetoothHandler?.unregisterResultContracts()
     }
 }

@@ -177,14 +177,12 @@ class BluetoothHandler(
                     .setMessage(R.string.tiramisu_bluetooth)
                     .setCancelable(false)
                     .setPositiveButton(R.string.proceed) { dialog: DialogInterface, _: Int ->
-                        listener.onAdapterMissing()
                         onRequestAdapter.launch(Intent(Settings.ACTION_BLUETOOTH_SETTINGS))
                         dialog.dismiss()
                     }
-                    .setNegativeButton(R.string.cancel) { _: DialogInterface?, _: Int ->
-                        listener.onAdapterMissing()
-                    }
+                    .setNegativeButton(R.string.cancel) { _: DialogInterface?, _: Int -> }
                     .show()
+                listener.onAdapterMissing()
             } else {
                 try {
                     @Suppress("DEPRECATION")

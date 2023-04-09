@@ -247,10 +247,8 @@ class PuckGattService : Service() {
         }
 
         // Previously connected device.  Try to reconnect.
-        if (address == mBluetoothDeviceAddress && mBluetoothGatt != null) {
-            return mBluetoothGatt!!.connect()
-        }
-        val device = mBluetoothAdapter!!.getRemoteDevice(address) ?: return false
+        if (address == mBluetoothDeviceAddress) mBluetoothGatt?.let { return it.connect() }
+        val device = mBluetoothAdapter?.getRemoteDevice(address) ?: return false
         // We want to directly connect to the device, so we are setting the autoConnect
         // parameter to false.
         mBluetoothGatt = device.connectGatt(this, false, mGattCallback)
@@ -276,10 +274,10 @@ class PuckGattService : Service() {
             )
             val value = BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE
             if (Version.isTiramisu) {
-                mBluetoothGatt!!.writeDescriptor(descriptorTX, value)
+                mBluetoothGatt?.writeDescriptor(descriptorTX, value)
             } else @Suppress("DEPRECATION") {
                 descriptorTX.value = value
-                mBluetoothGatt!!.writeDescriptor(descriptorTX)
+                mBluetoothGatt?.writeDescriptor(descriptorTX)
             }
         } catch (ignored: Exception) { }
         try {
@@ -288,10 +286,10 @@ class PuckGattService : Service() {
             )
             val value = BluetoothGattDescriptor.ENABLE_INDICATION_VALUE
             if (Version.isTiramisu) {
-                mBluetoothGatt!!.writeDescriptor(descriptorTX, value)
+                mBluetoothGatt?.writeDescriptor(descriptorTX, value)
             } else @Suppress("DEPRECATION") {
                 descriptorTX.value = value
-                mBluetoothGatt!!.writeDescriptor(descriptorTX)
+                mBluetoothGatt?.writeDescriptor(descriptorTX)
             }
         } catch (ignored: Exception) { }
     }
@@ -309,7 +307,7 @@ class PuckGattService : Service() {
         if (mBluetoothAdapter == null || mBluetoothGatt == null) {
             return
         }
-        mBluetoothGatt!!.setCharacteristicNotification(characteristic, enabled)
+        mBluetoothGatt?.setCharacteristicNotification(characteristic, enabled)
         setResponseDescriptors(characteristic)
     }
 
@@ -324,16 +322,14 @@ class PuckGattService : Service() {
 
     private fun getCharacteristicRX(mCustomService: BluetoothGattService): BluetoothGattCharacteristic {
         var mReadCharacteristic = mCustomService.getCharacteristic(PuckRX)
-        if (!mBluetoothGatt!!.readCharacteristic(mReadCharacteristic)) {
-            run breaking@{
-                mCustomService.characteristics.forEach {
-                    val customUUID = it.uuid
-                    /*get the read characteristic from the service*/
-                    if (customUUID.compareTo(PuckRX) == 0) {
-                        Debug.verbose(this.javaClass, "GattReadCharacteristic: $customUUID")
-                        mReadCharacteristic = mCustomService.getCharacteristic(customUUID)
-                        return@breaking
-                    }
+        if (mBluetoothGatt?.readCharacteristic(mReadCharacteristic) != true) run breaking@{
+            mCustomService.characteristics.forEach {
+                val customUUID = it.uuid
+                /*get the read characteristic from the service*/
+                if (customUUID.compareTo(PuckRX) == 0) {
+                    Debug.verbose(this.javaClass, "GattReadCharacteristic: $customUUID")
+                    mReadCharacteristic = mCustomService.getCharacteristic(customUUID)
+                    return@breaking
                 }
             }
         }

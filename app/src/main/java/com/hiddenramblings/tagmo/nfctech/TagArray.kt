@@ -12,7 +12,6 @@ import android.net.Uri
 import android.nfc.FormatException
 import android.nfc.Tag
 import android.nfc.tech.*
-import android.os.Build
 import android.text.Editable
 import androidx.documentfile.provider.DocumentFile
 import com.hiddenramblings.tagmo.Preferences
@@ -135,18 +134,14 @@ object TagArray {
 
     fun longToBytes(x: Long): ByteArray {
         return ByteBuffer.allocate(
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) java.lang.Long.BYTES else 8
+            if (Version.isNougat) java.lang.Long.BYTES else 8
         ).putLong(x).array()
     }
 
-    fun bytesToLong(bytes: ByteArray?): Long {
+    fun bytesToLong(bytes: ByteArray): Long {
         val buffer = ByteBuffer.allocate(
             if (Version.isNougat) java.lang.Long.BYTES else 8
-        )
-        bytes?.let {
-            buffer.put(it)
-            buffer.flip() // need flip
-        }
+        ).put(bytes).also { it.flip() }
         return try {
             buffer.long
         } catch (bue: BufferUnderflowException) {

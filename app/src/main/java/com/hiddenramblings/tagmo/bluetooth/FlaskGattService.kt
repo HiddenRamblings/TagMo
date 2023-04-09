@@ -132,7 +132,7 @@ class FlaskGattService : Service() {
                             && null != nameCompat && null != tailCompat
                         ) {
                             response = StringBuilder()
-                            tailCompat?.let { fixAmiiboName(nameCompat, it) }
+                            fixAmiiboName(nameCompat, tailCompat)
                             nameCompat = null
                             tailCompat = null
                             return
@@ -153,6 +153,8 @@ class FlaskGattService : Service() {
                             listener?.onFlaskActiveChanged(null)
                         }
                         response = StringBuilder()
+                        nameCompat = null
+                        tailCompat = null
                     }
                 } else if (progress.startsWith("tag.getList")) {
                     if (progress.endsWith(">") || progress.endsWith("\n")) {
@@ -169,9 +171,7 @@ class FlaskGattService : Service() {
                                 if (rangeIndex > 0) {
                                     rangeIndex = 0
                                     escapedList = escapedList.replace(" ...", "")
-                                    listener?.onFlaskListRetrieved(
-                                        JSONArray(escapedList)
-                                    )
+                                    listener?.onFlaskListRetrieved(JSONArray(escapedList))
                                 } else {
                                     rangeIndex += 1
                                     listener?.onFlaskListRetrieved(JSONArray())
@@ -382,10 +382,8 @@ class FlaskGattService : Service() {
         }
 
         // Previously connected device.  Try to reconnect.
-        if (address == mBluetoothDeviceAddress && mBluetoothGatt != null) {
-            return mBluetoothGatt!!.connect()
-        }
-        val device = mBluetoothAdapter!!.getRemoteDevice(address) ?: return false
+        if (address == mBluetoothDeviceAddress) mBluetoothGatt?.let { return it.connect() }
+        val device = mBluetoothAdapter?.getRemoteDevice(address) ?: return false
         // We want to directly connect to the device, so we are setting the autoConnect
         // parameter to false.
         mBluetoothGatt = device.connectGatt(this, false, mGattCallback)
@@ -411,10 +409,10 @@ class FlaskGattService : Service() {
             )
             val value = BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE
             if (Version.isTiramisu) {
-                mBluetoothGatt!!.writeDescriptor(descriptorTX, value)
+                mBluetoothGatt?.writeDescriptor(descriptorTX, value)
             } else @Suppress("DEPRECATION") {
                 descriptorTX.value = value
-                mBluetoothGatt!!.writeDescriptor(descriptorTX)
+                mBluetoothGatt?.writeDescriptor(descriptorTX)
             }
         } catch (ignored: Exception) { }
         try {
@@ -423,10 +421,10 @@ class FlaskGattService : Service() {
             )
             val value = BluetoothGattDescriptor.ENABLE_INDICATION_VALUE
             if (Version.isTiramisu) {
-                mBluetoothGatt!!.writeDescriptor(descriptorTX, value)
+                mBluetoothGatt?.writeDescriptor(descriptorTX, value)
             } else @Suppress("DEPRECATION") {
                 descriptorTX.value = value
-                mBluetoothGatt!!.writeDescriptor(descriptorTX)
+                mBluetoothGatt?.writeDescriptor(descriptorTX)
             }
         } catch (ignored: Exception) { }
     }
@@ -442,7 +440,7 @@ class FlaskGattService : Service() {
         characteristic: BluetoothGattCharacteristic?, enabled: Boolean
     ) {
         if (mBluetoothAdapter == null || mBluetoothGatt == null) return
-        mBluetoothGatt!!.setCharacteristicNotification(characteristic, enabled)
+        mBluetoothGatt?.setCharacteristicNotification(characteristic, enabled)
         setResponseDescriptors(characteristic)
     }
 
@@ -457,16 +455,14 @@ class FlaskGattService : Service() {
 
     private fun getCharacteristicRX(mCustomService: BluetoothGattService): BluetoothGattCharacteristic {
         var mReadCharacteristic = mCustomService.getCharacteristic(FlaskRX)
-        if (!mBluetoothGatt!!.readCharacteristic(mReadCharacteristic)) {
-            run breaking@{
-                mCustomService.characteristics.forEach {
-                    val customUUID = it.uuid
-                    /*get the read characteristic from the service*/
-                    if (customUUID.compareTo(FlaskRX) == 0) {
-                        Debug.verbose(this.javaClass, "GattReadCharacteristic: $customUUID")
-                        mReadCharacteristic = mCustomService.getCharacteristic(customUUID)
-                        return@breaking
-                    }
+        if (mBluetoothGatt?.readCharacteristic(mReadCharacteristic) != true) run breaking@{
+            mCustomService.characteristics.forEach {
+                val customUUID = it.uuid
+                /*get the read characteristic from the service*/
+                if (customUUID.compareTo(FlaskRX) == 0) {
+                    Debug.verbose(this.javaClass, "GattReadCharacteristic: $customUUID")
+                    mReadCharacteristic = mCustomService.getCharacteristic(customUUID)
+                    return@breaking
                 }
             }
         }
@@ -646,6 +642,10 @@ class FlaskGattService : Service() {
         queueScreenCharacteristic(value, commandCallbacks.size)
     }
 
+    private fun truncate(name: String, size: Int) : String {
+        return name.apply { if (size > 28) substring(0, length - (size - 28)) }
+    }
+
     fun uploadAmiiboFile(tagData: ByteArray, amiibo: Amiibo, index: Int, complete: Boolean) {
         delayedTagCharacteristic("startTagUpload(${tagData.size})")
         val parameters: ArrayList<String> = arrayListOf()
@@ -655,17 +655,12 @@ class FlaskGattService : Service() {
             )
             parameters.add("tagUploadChunk(\"$byteString\")")
         }
-        amiibo.flaskTail?.let {
-            val reserved = it.length + 3 // |tail|#
-            amiibo.name?.let { name ->
-                val nameUnicode = GattArray.stringToUnicode(name)
-                val nameIndexed = if (index > 0) "$index.$nameUnicode" else nameUnicode
-                val nameLength = nameIndexed.length + reserved
-                val amiiboName = if (nameLength > 28)
-                    nameIndexed.substring(0, nameIndexed.length - (nameLength - 28))
-                else nameIndexed
-                parameters.add("saveUploadedTag(\"$amiiboName|$it|0\")")
-            }
+        val reserved = amiibo.flaskTail.length + 3 // |tail|#
+        amiibo.name?.let { name ->
+            val nameUnicode = GattArray.stringToUnicode(name)
+            val nameIndexed = if (index > 0) "$index.$nameUnicode" else nameUnicode
+            val amiiboName = truncate(nameIndexed, nameIndexed.length + reserved)
+            parameters.add("saveUploadedTag(\"$amiiboName|${amiibo.flaskTail}|0\")")
         }
         if (complete) {
             parameters.add("uploadsComplete()")
@@ -687,27 +682,28 @@ class FlaskGattService : Service() {
             }
             tail?.let {
                 val reserved = it.length + 3 // |tail|#
-                val nameUnicode = GattArray.stringToUnicode(it)
-                val nameLength = nameUnicode.length + reserved
-                nameCompat = if (nameLength > 28)
-                    nameUnicode.substring(0, nameUnicode.length - (nameLength - 28))
-                else nameUnicode
+                nameCompat = GattArray.stringToUnicode(it).also { name ->
+                    truncate(name, name.length + reserved)
+                }
                 tailCompat = it
                 delayedTagCharacteristic("setTag(\"$nameCompat|$it|0\")")
             }
         }
     }
 
-    private fun fixAmiiboName(name: String?, tail: String) {
-        val reserved = tail.length + 3 // |tail|#
-        val nameUnicode = GattArray.stringToUnicode(name!!)
-        val amiiboName = if (nameUnicode.length + reserved > 28) nameUnicode.substring(
-            0, nameUnicode.length - (nameUnicode.length + reserved - 28)
-        ) else nameUnicode
-        promptTagCharacteristic(
-            "rename(\"$amiiboName|$tail\",\"$amiiboName|$tail|0\" )"
-        )
-        deviceAmiibo
+    private fun fixAmiiboName(amiiboName: String?, tail: String?) {
+        tail?.let {
+            val reserved = it.length + 3 // |tail|#
+            amiiboName?.let { amiibo ->
+                val fixedName = GattArray.stringToUnicode(amiibo).also { name ->
+                    truncate(name, name.length + reserved)
+                }
+                promptTagCharacteristic(
+                    "rename(\"$fixedName|$it\",\"$fixedName|$it|0\" )"
+                )
+                deviceAmiibo
+            }
+        }
     }
 
     fun deleteAmiibo(amiiboName: String?, tail: String?) {
@@ -719,11 +715,9 @@ class FlaskGattService : Service() {
             }
             tail?.let {
                 val reserved = it.length + 3 // |tail|#
-                val nameUnicode = GattArray.stringToUnicode(name)
-                val nameLength = nameUnicode.length + reserved
-                nameCompat = if (nameLength > 28)
-                    nameUnicode.substring(0, nameUnicode.length - (nameLength - 28))
-                else nameUnicode
+                nameCompat = GattArray.stringToUnicode(name).also { name ->
+                    truncate(name, name.length + reserved)
+                }
                 tailCompat = it
                 delayedTagCharacteristic("remove(\"$nameCompat|$it|0\")")
             }
@@ -733,12 +727,10 @@ class FlaskGattService : Service() {
     fun downloadAmiibo(fileName: String?, tail: String?) {
         tail?.let {
             val reserved = it.length + 3 // |tail|#
-            fileName?.let { name ->
-                val nameUnicode = GattArray.stringToUnicode(name)
-                val nameLength = nameUnicode.length + reserved
-                val amiiboName = if (nameLength > 28)
-                    nameUnicode.substring(0, nameUnicode.length - (nameLength - 28))
-                else nameUnicode
+            fileName?.let { file ->
+                val amiiboName = GattArray.stringToUnicode(file).also { name ->
+                    truncate(name, name.length + reserved)
+                }
                 delayedTagCharacteristic("download(\"$amiiboName|$it|0\")")
             }
         }

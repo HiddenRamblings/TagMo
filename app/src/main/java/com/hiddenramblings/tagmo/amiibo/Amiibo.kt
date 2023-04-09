@@ -60,7 +60,7 @@ open class Amiibo : Comparable<Amiibo>, Parcelable {
             if (Preferences(TagMo.appContext).databaseSource() == 0) RENDER_IMAGE else AMIIBO_IMAGE,
             head, tail
         )
-    val flaskTail: String
+    open val flaskTail: String
         get() = idToHex(id).let {
             try {
                 Integer.parseInt(it.substring(8, 16), 16).toString(36)
@@ -69,7 +69,7 @@ open class Amiibo : Comparable<Amiibo>, Parcelable {
                 String(TagArray.longToBytes(id))
             }
         }
-    var flaskName: String? = null
+    open var flaskName: String? = null
 
     override fun compareTo(other: Amiibo): Int {
         if (id == other.id) return 0

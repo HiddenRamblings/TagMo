@@ -69,7 +69,7 @@ object Version {
     }
 
     @JvmStatic
-    val isAndroid10: Boolean get() {
+    val isQuinceTart: Boolean get() {
         return Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q
     }
 

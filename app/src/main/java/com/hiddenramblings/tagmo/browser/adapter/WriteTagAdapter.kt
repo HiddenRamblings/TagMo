@@ -336,7 +336,7 @@ class WriteTagAdapter(private val settings: BrowserSettings?) :
                         context.theme.resolveAttribute(
                             android.R.attr.textColor, a, true
                         )
-                        if (Version.isAndroid10 && a.isColorType) {
+                        if (Version.isQuinceTart && a.isColorType) {
                             setTextColor(a.data)
                         } else if (a.type >= TypedValue.TYPE_FIRST_COLOR_INT
                             && a.type <= TypedValue.TYPE_LAST_COLOR_INT
@@ -355,7 +355,7 @@ class WriteTagAdapter(private val settings: BrowserSettings?) :
                         context.theme.resolveAttribute(
                             android.R.attr.textColor, a, true
                         )
-                        if (Version.isAndroid10 && a.isColorType) {
+                        if (Version.isQuinceTart && a.isColorType) {
                             setTextColor(a.data)
                         } else if (a.type >= TypedValue.TYPE_FIRST_COLOR_INT
                             && a.type <= TypedValue.TYPE_LAST_COLOR_INT

@@ -605,7 +605,7 @@ class NfcActivity : AppCompatActivity() {
             AlertDialog.Builder(this)
                 .setMessage(R.string.nfc_available)
                 .setPositiveButton(R.string.yes) { _: DialogInterface?, _: Int ->
-                    if (Version.isAndroid10)
+                    if (Version.isQuinceTart)
                         onNFCActivity.launch(Intent(Settings.Panel.ACTION_NFC))
                     else onNFCActivity.launch(Intent(Settings.ACTION_NFC_SETTINGS))
                 }

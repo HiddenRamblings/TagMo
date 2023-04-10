@@ -43,10 +43,9 @@ class BluetoothHandler(
     private var mBluetoothAdapter: BluetoothAdapter? = null
     private val listener: BluetoothListener
     private var onRequestLocationQ: ActivityResultLauncher<Array<String>>
-    private var onRequestBackgroundQ: ActivityResultLauncher<String>
     private var onRequestBluetoothS: ActivityResultLauncher<Array<String>>
     private var onRequestBluetooth: ActivityResultLauncher<Intent>
-    private var onRequestLocation: ActivityResultLauncher<Array<String>>
+    private var onRequestLocation: ActivityResultLauncher<String>
     private var onRequestAdapter: ActivityResultLauncher<Intent>
 
     init {
@@ -60,9 +59,6 @@ class BluetoothHandler(
             }
             if (isLocationAvailable) requestBluetooth(context) else listener.onPermissionsFailed()
         }
-        onRequestBackgroundQ = registry.register(
-            "BackgroundQ", ActivityResultContracts.RequestPermission()
-        ) { }
         onRequestBluetoothS = registry.register(
             "BluetoothS", ActivityResultContracts.RequestMultiplePermissions()
         ) { permissions: Map<String, Boolean> ->
@@ -84,14 +80,9 @@ class BluetoothHandler(
             mBluetoothAdapter?.let { listener.onAdapterEnabled(it) } ?: listener.onAdapterMissing()
         }
         onRequestLocation = registry.register(
-            "Location", ActivityResultContracts.RequestMultiplePermissions()
-        ) { permissions: Map<String, Boolean> ->
-            var isLocationAvailable = false
-            permissions.entries.forEach {
-                if (it.key == Manifest.permission.ACCESS_FINE_LOCATION)
-                    isLocationAvailable = it.value
-            }
-            if (isLocationAvailable) {
+            "Location", ActivityResultContracts.RequestPermission()
+        ) { granted ->
+            if (granted) {
                 val mBluetoothAdapter = getBluetoothAdapter(context)
                 mBluetoothAdapter?.let { listener.onAdapterEnabled(it) }
                     ?: onRequestBluetooth.launch(Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE))
@@ -115,53 +106,68 @@ class BluetoothHandler(
         }
     }
 
+    private fun showLocationRequest(context: Context) {
+        AlertDialog.Builder(context)
+            .setMessage(R.string.location_disclosure)
+            .setCancelable(false)
+            .setPositiveButton(R.string.accept) { dialog: DialogInterface, _: Int ->
+                dialog.dismiss()
+                if (Version.isQuinceTart)
+                    onRequestLocationQ.launch(PERMISSIONS_LOCATION)
+                else
+                    onRequestLocation.launch(PERMISSION_COURSE_LOCATION)
+            }
+            .setNegativeButton(R.string.deny) { _: DialogInterface?, _: Int ->
+                listener.onPermissionsFailed() }
+            .show()
+    }
+
     fun requestPermissions(activity: Activity) {
-        if (Version.isLowerThan(Build.VERSION_CODES.M)) {
-            val mBluetoothAdapter = getBluetoothAdapter(activity)
-            mBluetoothAdapter?.let { listener.onAdapterEnabled(it) }
-                ?: onRequestBluetooth.launch(Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE))
-        } else {
-            if (ActivityCompat.shouldShowRequestPermissionRationale(
-                    activity, Manifest.permission.ACCESS_FINE_LOCATION
-                )
-            ) {
-                AlertDialog.Builder(activity)
-                    .setMessage(R.string.location_disclosure)
-                    .setCancelable(false)
-                    .setPositiveButton(R.string.accept) { dialog: DialogInterface, _: Int ->
-                        dialog.dismiss()
-                        if (Version.isAndroid10) {
-                            onRequestLocationQ.launch(PERMISSIONS_LOCATION)
-                        } else {
-                            onRequestLocation.launch(PERMISSIONS_LOCATION)
-                        }
+        when {
+            Version.isLowerThan(Build.VERSION_CODES.M) -> {
+                val mBluetoothAdapter = getBluetoothAdapter(activity)
+                mBluetoothAdapter?.let { listener.onAdapterEnabled(it) }
+                    ?: onRequestBluetooth.launch(Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE))
+            }
+            Version.isSnowCone -> requestBluetooth(activity)
+            Version.isQuinceTart -> {
+                when {
+                    ActivityCompat.shouldShowRequestPermissionRationale(
+                        activity, PERMISSION_FINE_LOCATION
+                    ) -> {
+                        showLocationRequest(activity)
                     }
-                    .setNegativeButton(R.string.deny) { _: DialogInterface?, _: Int ->
-                        listener.onPermissionsFailed() }
-                    .show()
-            } else if (ContextCompat.checkSelfPermission(
-                    activity, Manifest.permission.ACCESS_FINE_LOCATION
-                ) == PackageManager.PERMISSION_GRANTED
-            ) {
-                requestBluetooth(activity)
-            } else {
-                if (BuildConfig.GOOGLE_PLAY) {
-                    AlertDialog.Builder(activity)
-                        .setMessage(R.string.location_disclosure)
-                        .setCancelable(false)
-                        .setPositiveButton(R.string.accept) { dialog: DialogInterface, _: Int ->
-                            dialog.dismiss()
-                            if (Version.isAndroid10)
-                                onRequestLocationQ.launch(PERMISSIONS_LOCATION)
-                            else onRequestLocation.launch(PERMISSIONS_LOCATION)
-                        }
-                        .setNegativeButton(R.string.deny) { _: DialogInterface?, _: Int ->
-                            listener.onPermissionsFailed() }
-                        .show()
-                } else {
-                    if (Version.isAndroid10)
-                        onRequestLocationQ.launch(PERMISSIONS_LOCATION)
-                    else onRequestLocation.launch(PERMISSIONS_LOCATION)
+                    ContextCompat.checkSelfPermission(
+                        activity, PERMISSION_FINE_LOCATION
+                    ) == PackageManager.PERMISSION_GRANTED -> {
+                        requestBluetooth(activity)
+                    }
+                    else -> {
+                        if (BuildConfig.GOOGLE_PLAY)
+                            showLocationRequest(activity)
+                        else
+                            onRequestLocationQ.launch(PERMISSIONS_LOCATION)
+                    }
+                }
+            }
+            else -> {
+                when {
+                    ActivityCompat.shouldShowRequestPermissionRationale(
+                        activity, PERMISSION_COURSE_LOCATION
+                    ) -> {
+                        showLocationRequest(activity)
+                    }
+                    ContextCompat.checkSelfPermission(
+                        activity, PERMISSION_COURSE_LOCATION
+                    ) == PackageManager.PERMISSION_GRANTED -> {
+                        requestBluetooth(activity)
+                    }
+                    else -> {
+                        if (BuildConfig.GOOGLE_PLAY)
+                            showLocationRequest(activity)
+                        else
+                            onRequestLocation.launch(PERMISSION_COURSE_LOCATION)
+                    }
                 }
             }
         }
@@ -212,7 +218,6 @@ class BluetoothHandler(
 
     fun unregisterResultContracts() {
         onRequestLocationQ.unregister()
-        onRequestBackgroundQ.unregister()
         onRequestBluetoothS.unregister()
         onRequestBluetooth.unregister()
         onRequestLocation.unregister()
@@ -220,9 +225,11 @@ class BluetoothHandler(
     }
 
     companion object {
+        private const val PERMISSION_COURSE_LOCATION = Manifest.permission.ACCESS_COARSE_LOCATION
+        private const val PERMISSION_FINE_LOCATION = Manifest.permission.ACCESS_FINE_LOCATION
         private val PERMISSIONS_LOCATION = arrayOf(
-            Manifest.permission.ACCESS_FINE_LOCATION,
-            Manifest.permission.ACCESS_COARSE_LOCATION
+            PERMISSION_FINE_LOCATION,
+            PERMISSION_COURSE_LOCATION
         )
         @RequiresApi(Build.VERSION_CODES.S)
         private val PERMISSIONS_BLUETOOTH = arrayOf(

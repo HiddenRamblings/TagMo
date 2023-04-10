@@ -436,7 +436,5 @@
     <string name="conversion_title">TagMo Critical Update</string>
     <string name="conversion_message">GitHub and Google Play builds are now universal.\nPlease click continue to resolve installation conflicts.</string>
 
-    <string name="notice_incomplete">Coming soon!</string>
-
     <string name="disclaimer_general">No statues were harmed in making this product.</string>
 </resources>

@@ -47,6 +47,5 @@
     <string name="conversion_title">TagMo Kritisches Update</string>
     <string name="conversion_message">GitHub- und Google Play-Versionen sind jetzt universell.\nKlicken Sie auf Weiter, um Installationskonflikte zu beheben.</string>
 
-    <string name="notice_incomplete">Kommt bald!</string>
     <string name="device_not_found">Kein Gerät / Tags gefunden!</string>
 </resources>

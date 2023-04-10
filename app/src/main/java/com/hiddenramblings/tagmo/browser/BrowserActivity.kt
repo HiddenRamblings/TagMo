@@ -1473,7 +1473,6 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
             }
             R.id.mnu_joy_con -> {
                 if (Version.isJellyBeanMR2) onShowJoyConFragment()
-                Toasty(this).Short(R.string.notice_incomplete)
             }
             R.id.send_donation -> {
                 showDonationPanel()

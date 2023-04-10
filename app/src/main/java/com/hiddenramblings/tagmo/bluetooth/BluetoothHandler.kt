@@ -180,7 +180,9 @@ class BluetoothHandler(
                         onRequestAdapter.launch(Intent(Settings.ACTION_BLUETOOTH_SETTINGS))
                         dialog.dismiss()
                     }
-                    .setNegativeButton(R.string.cancel) { _: DialogInterface?, _: Int -> }
+                    .setNegativeButton(R.string.cancel) { dialog: DialogInterface, _: Int ->
+                        dialog.dismiss()
+                    }
                     .show()
                 listener.onAdapterMissing()
             } else {

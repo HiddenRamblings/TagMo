@@ -429,7 +429,5 @@
     <string name="conversion_title">TagMo必要更新</string>
     <string name="conversion_message">目前GitHub的新版本已與Google Play商店同步更新。\n請點擊繼續，將核對版本並完成更新安裝。</string>
 
-    <string name="notice_incomplete">開發中，敬請期待!</string>
-
     <string name="disclaimer_general">程式開發期間，沒有損傷任何公仔</string>
 </resources>

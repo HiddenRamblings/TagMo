@@ -324,6 +324,7 @@ class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
                     dialog.dismiss()
                 }.show()
         }
+        onBottomSheetChanged(SHEET.LOCKED)
     }
 
     private fun updateEliteAdapter(amiiboList: ArrayList<String>?) {

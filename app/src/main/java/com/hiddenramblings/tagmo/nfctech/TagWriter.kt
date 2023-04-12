@@ -371,22 +371,22 @@ object TagWriter {
         var ret = 0.toByte()
         val hi = hex[0].code.toByte()
         val lo = hex[1].code.toByte()
-        if (hi >= NfcByte.CMD_READ && hi <= NfcByte.CMD_READ_CNT) {
-            ret = (hi - 0x30 shl 4).toByte()
-        } else if (hi >= 0x41.toByte() && hi <= NfcByte.N2_LOCK) {
-            ret = (hi - 0x41 + 0x0A shl 4).toByte()
-        } else if (hi >= 0x61.toByte() && hi <= 0x66.toByte()) {
-            ret = (hi - 0x61 + 0x0A shl 4).toByte()
+        when {
+            hi >= NfcByte.CMD_READ && hi <= NfcByte.CMD_READ_CNT ->
+                ret = (hi - 0x30 shl 4).toByte()
+            hi >= 0x41.toByte() && hi <= NfcByte.N2_LOCK ->
+                ret = (hi - 0x41 + 0x0A shl 4).toByte()
+            hi >= 0x61.toByte() && hi <= 0x66.toByte() ->
+                ret = (hi - 0x61 + 0x0A shl 4).toByte()
         }
-        if (lo >= NfcByte.CMD_READ && lo <= NfcByte.CMD_READ_CNT) {
-            return (lo - 0x30 or ret.toInt()).toByte()
+        return when {
+            lo >= NfcByte.CMD_READ && lo <= NfcByte.CMD_READ_CNT ->
+                (lo - 0x30 or ret.toInt()).toByte()
+            lo >= 0x41.toByte() && lo <= NfcByte.N2_LOCK ->
+                (lo - 0x41 + 0x0A or ret.toInt()).toByte()
+            lo < 0x61.toByte() || lo > 0x66.toByte() -> ret
+            else -> (lo - 0x61 + 0x0A or ret.toInt()).toByte()
         }
-        if (lo >= 0x41.toByte() && lo <= NfcByte.N2_LOCK) {
-            return (lo - 0x41 + 0x0A or ret.toInt()).toByte()
-        }
-        return if (lo < 0x61.toByte() || lo > 0x66.toByte()) {
-            ret
-        } else (lo - 0x61 + 0x0A or ret.toInt()).toByte()
     }
 
     @Throws(Exception::class)
@@ -394,75 +394,71 @@ object TagWriter {
         if (null == tag) return false
         val context = appContext
         var response: ByteArray? = ByteArray(1)
-        response!![0] = 0xFFFF.toByte()
+        response?.set(0, 0xFFFF.toByte())
         tag.initFirmware()
         tag.getVersion(true)
-        var br: BufferedReader? = null
         return try {
-            br = BufferedReader(InputStreamReader(
+            BufferedReader(InputStreamReader(
                     context.resources.openRawResource(R.raw.firmware)
-            ))
-            while (true) {
-                val strLine = br.readLine() ?: break
-                val parts =
-                    strLine.replace("\\s+".toRegex(), " ").split(" ".toRegex()).toTypedArray()
-                var i: Int
-                if (parts.isEmpty()) {
-                    break
-                } else if (parts[0] == "C-APDU") {
-                    val apduBuf = ByteArray(parts.size - 1)
-                    i = 1
-                    while (i < parts.size) {
-                        apduBuf[i - 1] = hexToByte(parts[i])
-                        i++
-                    }
-                    val sz: Int = apduBuf[4].toInt() and 0xFF
-                    val isoCmd = ByteArray(sz)
-                    if (apduBuf[4] + 5 <= apduBuf.size && apduBuf[4] <= isoCmd.size) {
-                        i = 0
-                        while (i < sz) {
-                            isoCmd[i] = apduBuf[i + 5]
+            )).use { br ->
+                while (true) {
+                    val strLine = br.readLine() ?: break
+                    val parts = strLine.replace(
+                        "\\s+".toRegex(), " "
+                    ).split(" ".toRegex()).toTypedArray()
+                    var i: Int
+                    if (parts.isEmpty()) {
+                        break
+                    } else if (parts[0] == "C-APDU") {
+                        val apduBuf = ByteArray(parts.size - 1)
+                        i = 1
+                        while (i < parts.size) {
+                            apduBuf[i - 1] = hexToByte(parts[i])
                             i++
                         }
-                        var done = false
-                        i = 0
-                        while (i < 10) {
-                            response = tag.transceive(isoCmd)
-                            if (null != response) {
-                                done = true
-                                break
+                        val sz: Int = apduBuf[4].toInt() and 0xFF
+                        val isoCmd = ByteArray(sz)
+                        if (apduBuf[4] + 5 <= apduBuf.size && apduBuf[4] <= isoCmd.size) {
+                            i = 0
+                            while (i < sz) {
+                                isoCmd[i] = apduBuf[i + 5]
+                                i++
                             }
+                            var done = false
+                            i = 0
+                            while (i < 10) {
+                                response = tag.transceive(isoCmd)
+                                if (null != response) {
+                                    done = true
+                                    break
+                                }
+                                i++
+                            }
+                            if (!done)
+                                throw Exception(context.getString(R.string.firmware_failed, 1))
+                        }
+                        return false
+                    } else if (parts[0] == "C-RPDU") {
+                        val rpduBuf = ByteArray(parts.size - 1)
+                        if (response?.size != parts.size - 3)
+                            throw Exception(context.getString(R.string.firmware_failed, 2))
+                        i = 1
+                        while (i < parts.size) {
+                            rpduBuf[i - 1] = hexToByte(parts[i])
                             i++
                         }
-                        if (!done) {
-                            throw Exception(context.getString(R.string.firmware_failed, 1))
+                        i = 0
+                        while (i < rpduBuf.size - 2) {
+                            if (response?.get(i) != rpduBuf[i])
+                                throw Exception(context.getString(R.string.firmware_failed, 3))
+                            i++
                         }
-                    }
-                    return false
-                } else if (parts[0] == "C-RPDU") {
-                    val rpduBuf = ByteArray(parts.size - 1)
-                    if (response!!.size != parts.size - 3) {
-                        throw Exception(context.getString(R.string.firmware_failed, 2))
-                    }
-                    i = 1
-                    while (i < parts.size) {
-                        rpduBuf[i - 1] = hexToByte(parts[i])
-                        i++
-                    }
-                    i = 0
-                    while (i < rpduBuf.size - 2) {
-                        if (rpduBuf[i] != response[i]) {
-                            throw Exception(context.getString(R.string.firmware_failed, 3))
-                        }
-                        i++
-                    }
-                } /* else if (!parts[0].equals("RESET") && parts[0].equals("LOGIN")) { } */
+                    } /* else if (!parts[0].equals("RESET") && parts[0].equals("LOGIN")) { } */
+                }
+                true
             }
-            true
         } catch (e: IOException) {
             throw Exception(context.getString(R.string.firmware_failed, 4))
-        } finally {
-            br?.close()
         }
     }
 }

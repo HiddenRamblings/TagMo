@@ -49,7 +49,7 @@ android {
             minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             applicationIdSuffix ".eightbit"
-            manifestPlaceholders.wearUsesFeature = "android.hardware.screen.portrait"
+            manifestPlaceholders.wearUsesFeature = "android.hardware.usb.host"
             buildConfigField "boolean", "WEAR_OS", "false"
         }
         debug {

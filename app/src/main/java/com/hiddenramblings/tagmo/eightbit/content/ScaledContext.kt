@@ -17,8 +17,26 @@ package com.hiddenramblings.tagmo.eightbit.content
 import android.content.Context
 import android.content.ContextWrapper
 import android.content.res.Configuration
+import android.util.DisplayMetrics
+import android.view.WindowManager
+import com.hiddenramblings.tagmo.eightbit.os.Version
+
 
 class ScaledContext(base: Context) : ContextWrapper(base) {
+
+    fun getDisplayParams(): IntArray {
+        with (getSystemService(WINDOW_SERVICE) as WindowManager) {
+            return if (Version.isRedVelvet) {
+                val metrics = maximumWindowMetrics.bounds
+                intArrayOf(metrics.width(), metrics.height())
+            } else {
+                val displayMetrics = DisplayMetrics()
+                @Suppress("DEPRECATION")
+                defaultDisplay.getMetrics(displayMetrics)
+                intArrayOf(displayMetrics.widthPixels, displayMetrics.heightPixels)
+            }
+        }
+    }
 
     fun screen(density: Float): ScaledContext {
         val metrics = resources.displayMetrics

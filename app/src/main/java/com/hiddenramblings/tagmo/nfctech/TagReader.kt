@@ -12,10 +12,10 @@ object TagReader {
     private const val BULK_READ_PAGE_COUNT = 4
     @Throws(IOException::class)
     fun validateBlankTag(mifare: NTAG215) {
-        val lockPage = mifare.readPages(0x02)
-        Debug.info(TagWriter::class.java, TagArray.bytesToHex(lockPage!!))
-        if (lockPage[2] == 0x0F.toByte() && lockPage[3] == 0xE0.toByte()) {
-            throw IOException(appContext.getString(R.string.error_tag_rewrite))
+        mifare.readPages(0x02)?.let {
+            Debug.info(TagWriter::class.java, TagArray.bytesToHex(it))
+            if (it[2] == 0x0F.toByte() && it[3] == 0xE0.toByte())
+                throw IOException(appContext.getString(R.string.error_tag_rewrite))
         }
         Debug.info(TagWriter::class.java, R.string.validation_success)
     }
@@ -89,9 +89,7 @@ object TagReader {
         while (i < numBanks and 0xFF) {
             try {
                 val tagData = readBankTitle(tag, i)
-                if (tagData?.size != 8) {
-                    throw NullPointerException()
-                }
+                if (tagData?.size != 8) throw NullPointerException()
                 tags.add(TagArray.bytesToHex(tagData))
                 i++
             } catch (e: Exception) {

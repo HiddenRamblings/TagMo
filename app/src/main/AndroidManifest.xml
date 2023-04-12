@@ -34,7 +34,7 @@
     <uses-feature android:name="android.hardware.nfc" android:required="false"/>
     <uses-feature android:name="android.hardware.bluetooth" android:required="false"/>
     <uses-feature android:name="android.hardware.bluetooth_le" android:required="false"/>
-    <uses-feature android:name="${wearUsesFeature}" />
+    <uses-feature android:name="${wearUsesFeature}" android:required="false"/>
 
     <uses-sdk tools:overrideLibrary="androidx.wear,
     com.google.mlkit.vision.barcode.bundled, com.google.mlkit.vision.barcode.common,

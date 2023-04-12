@@ -57,15 +57,9 @@ object TagArray {
                     }
                     return type
                 }
-                IsoDep::class.java.name == it -> {
-                    return context.getString(R.string.isodep)
-                }
-                Ndef::class.java.name == it -> {
-                    return context.getString(R.string.ndef)
-                }
-                NdefFormatable::class.java.name == it -> {
-                    return context.getString(R.string.ndef_formatable)
-                }
+                IsoDep::class.java.name == it -> { return context.getString(R.string.isodep) }
+                Ndef::class.java.name == it -> { return context.getString(R.string.ndef) }
+                NdefFormatable::class.java.name == it -> { return context.getString(R.string.ndef_formatable) }
             }
         }
         return type
@@ -98,7 +92,7 @@ object TagArray {
         var i = 0
         var j = offset
         while (j < len) {
-            if (data[j] != data2!![i]) return false
+            if (data2?.get(i) != data[j]) return false
             i++
             j++
         }
@@ -112,10 +106,8 @@ object TagArray {
 
     @JvmStatic
     fun bytesToHex(bytes: ByteArray?): String {
-        val sb = java.lang.StringBuilder()
-        bytes?.forEach {
-            sb.append(String.format("%02X", it))
-        }
+        val sb = StringBuilder()
+        bytes?.forEach { sb.append(String.format("%02X", it)) }
         return sb.toString()
     }
 
@@ -205,22 +197,29 @@ object TagArray {
             i += NfcByte.PAGE_SIZE
             j++
         }
-        if (pages[0]!![0] != 0x04.toByte())
-            throw Exception(context.getString(R.string.invalid_tag_prefix))
-        if (pages[2]!![2] != 0x0F.toByte() || pages[2]!![3] != 0xE0.toByte())
-            throw Exception(context.getString(R.string.invalid_tag_lock))
-        if (pages[3]!![0] != 0xF1.toByte() || pages[3]!![1] != 0x10.toByte()
-            || pages[3]!![2] != 0xFF.toByte() || pages[3]!![3] != 0xEE.toByte())
-            throw Exception(context.getString(R.string.invalid_tag_cc))
-        if (pages[0x82]!![0] != 0x01.toByte() || pages[0x82]!![1] != 0x0.toByte()
-            || pages[0x82]!![2] != 0x0F.toByte())
-            throw Exception(context.getString(R.string.invalid_tag_dynamic))
-        if (pages[0x83]!![0] != 0x0.toByte() || pages[0x83]!![1] != 0x0.toByte()
-            || pages[0x83]!![2] != 0x0.toByte() || pages[0x83]!![3] != 0x04.toByte())
-            throw Exception(context.getString(R.string.invalid_tag_cfg_zero))
-        if (pages[0x84]!![0] != 0x5F.toByte() || pages[0x84]!![1] != 0x0.toByte()
-            || pages[0x84]!![2] != 0x0.toByte() || pages[0x84]!![3] != 0x00.toByte())
-            throw Exception(context.getString(R.string.invalid_tag_cfg_one))
+        when {
+            pages[0]?.let {
+                it[0] != 0x04.toByte()
+            } ?: true -> throw Exception(context.getString(R.string.invalid_tag_prefix))
+            pages[2]?.let {
+                it[2] != 0x0F.toByte() || it[3] != 0xE0.toByte()
+            } ?: true -> throw Exception(context.getString(R.string.invalid_tag_lock))
+            pages[3]?.let {
+                it[0] != 0xF1.toByte() || it[1] != 0x10.toByte()
+                        || it[2] != 0xFF.toByte() || it[3] != 0xEE.toByte()
+            } ?: true -> throw Exception(context.getString(R.string.invalid_tag_cc))
+            pages[0x82]?.let {
+                it[0] != 0x01.toByte() || it[1] != 0x0.toByte() || it[2] != 0x0F.toByte()
+            } ?: true -> throw Exception(context.getString(R.string.invalid_tag_dynamic))
+            pages[0x83]?.let {
+                it[0] != 0x0.toByte() || it[1] != 0x0.toByte()
+                        || it[2] != 0x0.toByte() || it[3] != 0x04.toByte()
+            } ?: true -> throw Exception(context.getString(R.string.invalid_tag_cfg_zero))
+            pages[0x84]?.let {
+                it[0] != 0x5F.toByte() || it[1] != 0x0.toByte()
+                        || it[2] != 0x0.toByte() || it[3] != 0x00.toByte()
+            } ?: true -> throw Exception(context.getString(R.string.invalid_tag_cfg_one))
+        }
     }
 
     @JvmStatic
@@ -230,15 +229,15 @@ object TagArray {
         if (null == tagData) throw IOException(context.getString(R.string.no_source_data))
         if (validateNtag) {
             try {
-                val versionInfo = mifare.transceive(byteArrayOf(0x60.toByte()))
-                if (null == versionInfo || versionInfo.size != 8) throw Exception(
-                    context.getString(
-                        R.string.error_tag_version
-                    )
-                )
-                if (versionInfo[0x02] != 0x04.toByte() || versionInfo[0x06] != 0x11.toByte()) throw FormatException(
-                    context.getString(R.string.error_tag_specs)
-                )
+                mifare.transceive(byteArrayOf(0x60.toByte()))?.let {
+                    if (it.size != 8) throw Exception(context.getString(
+                            R.string.error_tag_version
+                        ))
+                    if (it[0x02] != 0x04.toByte() || it[0x06] != 0x11.toByte())
+                        throw FormatException(context.getString(R.string.error_tag_specs))
+                } ?: throw Exception(context.getString(
+                    R.string.error_tag_version
+                ))
             } catch (e: Exception) {
                 Debug.warn(R.string.error_version, e)
                 throw e

@@ -41,13 +41,16 @@ class JoyConFragment : DialogFragment(), BluetoothListener {
         super.onViewCreated(view, savedInstanceState)
     }
 
-    private val isBluetoothEnabled: Unit
+    private val isBluetoothEnabled: Boolean
         get() {
-            if (null != bluetoothHelper) return
-            bluetoothHandler = bluetoothHandler ?: BluetoothHandler(
-                requireContext(), requireActivity().activityResultRegistry, this@JoyConFragment
-            )
-            bluetoothHandler?.requestPermissions(requireActivity())
+            context?.run {
+                bluetoothHandler = bluetoothHandler ?: BluetoothHandler(
+                    this, requireActivity().activityResultRegistry,
+                    this@JoyConFragment
+                )
+                bluetoothHandler?.requestPermissions(requireActivity())
+            } ?: Handler(Looper.getMainLooper()).postDelayed({ isBluetoothEnabled }, 125)
+            return false
         }
 
     private fun delayedBluetoothEnable() {
@@ -71,6 +74,7 @@ class JoyConFragment : DialogFragment(), BluetoothListener {
     @SuppressLint("MissingPermission")
     override fun onAdapterEnabled(adapter: BluetoothAdapter?) {
         var hasProController = false
+        var hasRightJoyCon = false
         run breaking@{
             InputDevice.getDeviceIds().forEach { gamepad ->
                 Debug.verbose(
@@ -87,7 +91,7 @@ class JoyConFragment : DialogFragment(), BluetoothListener {
         if (hasProController) {
             adapter?.bondedDevices?.forEach {
                 if (it.name == "Pro Controller") {
-                    bluetoothHelper = BluetoothHelper().apply {
+                    bluetoothHelper = BluetoothHelper(adapter).apply {
                         register(requireContext(), object : StateChangedCallback {
                             override fun onStateChanged(
                                 name: String?, address: String?, state: Int

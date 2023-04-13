@@ -12,11 +12,12 @@ import android.os.Build
 import android.os.ParcelFileDescriptor
 import android.os.ParcelUuid
 import android.util.Log
+import com.hiddenramblings.tagmo.R
 import com.hiddenramblings.tagmo.parcelable
 import me.weishu.reflection.Reflection
 import java.lang.reflect.InvocationTargetException
 
-class BluetoothHelper : BluetoothProfile.ServiceListener {
+class BluetoothHelper(private val mAdapter: BluetoothAdapter) : BluetoothProfile.ServiceListener {
     companion object {
         private const val TAG = "BluetoothHelper"
         const val BT_STATE_NONE = 0
@@ -55,8 +56,7 @@ class BluetoothHelper : BluetoothProfile.ServiceListener {
                     }
                     BluetoothAdapter.ACTION_CONNECTION_STATE_CHANGED -> {
                         val state = intent.getIntExtra(BluetoothAdapter.EXTRA_CONNECTION_STATE, -1)
-                        val dev =
-                            intent.parcelable<BluetoothDevice>(BluetoothDevice.EXTRA_DEVICE)
+                        val dev = intent.parcelable<BluetoothDevice>(BluetoothDevice.EXTRA_DEVICE)
                         debug("connection state change -> device = $dev, state = $state")
                         when (state) {
                             BluetoothAdapter.STATE_CONNECTED -> {
@@ -83,8 +83,7 @@ class BluetoothHelper : BluetoothProfile.ServiceListener {
                     }
                     BluetoothDevice.ACTION_BOND_STATE_CHANGED -> {
                         val state = intent.getIntExtra(BluetoothDevice.EXTRA_BOND_STATE, -1)
-                        val dev =
-                            intent.parcelable<BluetoothDevice>(BluetoothDevice.EXTRA_DEVICE)
+                        val dev = intent.parcelable<BluetoothDevice>(BluetoothDevice.EXTRA_DEVICE)
                         debug("bond state change -> device = $dev, state = $state")
                         when (state) {
                             BluetoothDevice.BOND_BONDED -> {
@@ -111,8 +110,7 @@ class BluetoothHelper : BluetoothProfile.ServiceListener {
                     }
                     BluetoothHidHost.ACTION_HANDSHAKE -> {
                         val status = intent.getIntExtra(BluetoothHidHost.EXTRA_STATUS, -1)
-                        val dev =
-                            intent.parcelable<BluetoothDevice>(BluetoothDevice.EXTRA_DEVICE)
+                        val dev = intent.parcelable<BluetoothDevice>(BluetoothDevice.EXTRA_DEVICE)
                         debug("ACTION_HANDSHAKE -> device = $dev, status = $status")
                     }
                 }
@@ -120,20 +118,15 @@ class BluetoothHelper : BluetoothProfile.ServiceListener {
         }
     }
 
-    private val mAdapter: BluetoothAdapter by lazy { BluetoothAdapter.getDefaultAdapter() }
     private var mHidHost: BluetoothHidHost? = null
     private var mCallback: StateChangedCallback? = null
-    // private lateinit var mLocation: LocationManager
 
     fun getHidHost(): BluetoothHidHost? {
         return mHidHost
     }
 
     private fun checkOrThrow() {
-        /*
-          if (!PermissionHelper.check())
-              throw RuntimeException("location permissions not granted")
-      */
+        if (!mAdapter.isEnabled) throw RuntimeException("Bluetooth adapter unavailable!")
     }
 
     override fun onServiceConnected(p0: Int, p1: BluetoothProfile) {
@@ -151,7 +144,6 @@ class BluetoothHelper : BluetoothProfile.ServiceListener {
     }
 
     fun register(context: Context, callback: StateChangedCallback?) {
-        Reflection.unseal(context)
         mCallback = callback
         // mLocation = context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
         val filter = IntentFilter()
@@ -174,18 +166,6 @@ class BluetoothHelper : BluetoothProfile.ServiceListener {
 
     fun getBluetoothDevice(address: String): BluetoothDevice {
         return mAdapter.getRemoteDevice(address)
-    }
-
-    fun enable(on: Boolean) {
-        val enabled = mAdapter.isEnabled
-        if (enabled && !on) {
-            mAdapter.disable()
-            return
-        }
-        if (!enabled && on) {
-            mAdapter.enable()
-            return
-        }
     }
 
     fun discovery(on: Boolean) {

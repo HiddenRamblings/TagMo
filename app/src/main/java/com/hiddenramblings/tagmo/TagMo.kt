@@ -48,9 +48,10 @@ class TagMo : Application() {
             appContext.setTheme(R.style.AppTheme)
         }
         if (Version.isPie)
-            HiddenApiBypass.addHiddenApiExemptions("LBluetooth")
-        else if (Version.isLollipop)
-            Reflection.unseal(base)
+            HiddenApiBypass.addHiddenApiExemptions(
+                "Landroid/bluetooth/BluetoothHidHost;", "LBluetooth"
+            )
+        else if (Version.isLollipop) Reflection.unseal(base)
     }
 
     override fun onCreate() {

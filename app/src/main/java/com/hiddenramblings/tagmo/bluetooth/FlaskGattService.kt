@@ -132,7 +132,7 @@ class FlaskGattService : Service() {
                             && null != nameCompat && null != tailCompat
                         ) {
                             response = StringBuilder()
-                            fixAmiiboName(nameCompat, tailCompat)
+                            fixSlotDetails(nameCompat, tailCompat)
                             nameCompat = null
                             tailCompat = null
                             return
@@ -642,8 +642,23 @@ class FlaskGattService : Service() {
         queueScreenCharacteristic(value, commandCallbacks.size)
     }
 
-    private fun truncate(name: String, size: Int) : String {
-        return name.apply { if (size > 28) substring(0, length - (size - 28)) }
+    private fun truncateUnicode(unicodeName: String, tailSize: Int) : String {
+        return unicodeName.run {
+            val nameLength = length + tailSize + 3 // |tail|#
+            if (nameLength > 28) substring(0, length - (nameLength - 28)) else this
+        }
+    }
+
+    private fun fixSlotDetails(amiiboName: String?, tail: String?) {
+        tail?.let {
+            amiiboName?.let { amiibo ->
+                val fixedName = truncateUnicode(GattArray.stringToUnicode(amiibo), it.length)
+                promptTagCharacteristic(
+                    "rename(\"$fixedName|$it\",\"$fixedName|$it|0\" )"
+                )
+                deviceAmiibo
+            }
+        }
     }
 
     fun uploadAmiiboFile(tagData: ByteArray, amiibo: Amiibo, index: Int, complete: Boolean) {
@@ -655,11 +670,10 @@ class FlaskGattService : Service() {
             )
             parameters.add("tagUploadChunk(\"$byteString\")")
         }
-        val reserved = amiibo.flaskTail.length + 3 // |tail|#
         amiibo.name?.let { name ->
             val nameUnicode = GattArray.stringToUnicode(name)
             val nameIndexed = if (index > 0) "$index.$nameUnicode" else nameUnicode
-            val amiiboName = truncate(nameIndexed, nameIndexed.length + reserved)
+            val amiiboName = truncateUnicode(nameIndexed, amiibo.flaskTail.length)
             parameters.add("saveUploadedTag(\"$amiiboName|${amiibo.flaskTail}|0\")")
         }
         if (complete) {
@@ -676,32 +690,13 @@ class FlaskGattService : Service() {
     fun setActiveAmiibo(amiiboName: String?, tail: String?) {
         amiiboName?.let { name ->
             if (name.startsWith("New Tag")) {
-                // delayedTagCharacteristic("setTag(\"$name||$tail\")")
                 delayedTagCharacteristic("setTag(\"$name|$tail|0\")")
                 return
             }
             tail?.let {
-                val reserved = it.length + 3 // |tail|#
-                nameCompat = GattArray.stringToUnicode(it).also { name ->
-                    truncate(name, name.length + reserved)
-                }
+                nameCompat = truncateUnicode(GattArray.stringToUnicode(name), it.length)
                 tailCompat = it
                 delayedTagCharacteristic("setTag(\"$nameCompat|$it|0\")")
-            }
-        }
-    }
-
-    private fun fixAmiiboName(amiiboName: String?, tail: String?) {
-        tail?.let {
-            val reserved = it.length + 3 // |tail|#
-            amiiboName?.let { amiibo ->
-                val fixedName = GattArray.stringToUnicode(amiibo).also { name ->
-                    truncate(name, name.length + reserved)
-                }
-                promptTagCharacteristic(
-                    "rename(\"$fixedName|$it\",\"$fixedName|$it|0\" )"
-                )
-                deviceAmiibo
             }
         }
     }
@@ -714,10 +709,7 @@ class FlaskGattService : Service() {
                 return
             }
             tail?.let {
-                val reserved = it.length + 3 // |tail|#
-                nameCompat = GattArray.stringToUnicode(name).also { name ->
-                    truncate(name, name.length + reserved)
-                }
+                nameCompat = truncateUnicode(GattArray.stringToUnicode(it), it.length)
                 tailCompat = it
                 delayedTagCharacteristic("remove(\"$nameCompat|$it|0\")")
             }
@@ -726,11 +718,8 @@ class FlaskGattService : Service() {
 
     fun downloadAmiibo(fileName: String?, tail: String?) {
         tail?.let {
-            val reserved = it.length + 3 // |tail|#
             fileName?.let { file ->
-                val amiiboName = GattArray.stringToUnicode(file).also { name ->
-                    truncate(name, name.length + reserved)
-                }
+                val amiiboName = truncateUnicode(GattArray.stringToUnicode(file), it.length)
                 delayedTagCharacteristic("download(\"$amiiboName|$it|0\")")
             }
         }

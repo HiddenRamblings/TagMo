@@ -233,7 +233,7 @@ object Debug {
     }
 
     private fun getDeviceRAM(context: Context): String {
-        (context.getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager).run {
+        with (context.getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager) {
             val memInfo = ActivityManager.MemoryInfo()
             getMemoryInfo(memInfo)
             return bytesToSizeUnit(memInfo.totalMem)
@@ -277,7 +277,7 @@ object Debug {
     private fun submitLogcat(context: Context, logText: String) {
         if (BuildConfig.WEAR_OS) return
         val subject = context.getString(R.string.git_issue_title, BuildConfig.COMMIT)
-        (context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager).run {
+        with (context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager) {
             setPrimaryClip(ClipData.newPlainText(subject, logText))
         }
         try {

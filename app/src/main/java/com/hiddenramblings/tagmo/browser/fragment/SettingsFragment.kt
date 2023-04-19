@@ -47,6 +47,7 @@ import java.io.ByteArrayInputStream
 import java.io.IOException
 import java.io.InputStreamReader
 import java.net.URL
+import java.net.UnknownHostException
 import java.text.ParseException
 import java.util.*
 
@@ -83,21 +84,19 @@ class SettingsFragment : PreferenceFragmentCompat() {
                 onImportKeysClicked()
                 super@SettingsFragment.onPreferenceTreeClick(it)
             }
-        val tagTypeValidation = findPreference<CheckBoxPreference>(
+        findPreference<CheckBoxPreference>(
             getString(R.string.settings_tag_type_validation)
-        )
-        tagTypeValidation?.apply {
+        )?.apply {
             isChecked = prefs.tagTypeValidation()
             onPreferenceClickListener =
                 Preference.OnPreferenceClickListener {
-                    prefs.tagTypeValidation(tagTypeValidation.isChecked)
+                    prefs.tagTypeValidation(isChecked)
                     super@SettingsFragment.onPreferenceTreeClick(it)
                 }
         }
-        val automaticScan = findPreference<CheckBoxPreference>(
+        findPreference<CheckBoxPreference>(
             getString(R.string.settings_automatic_scan)
-        )
-        automaticScan?.apply {
+        )?.apply {
             isChecked = requireContext().packageManager.getComponentEnabledSetting(
                 FilterComponent
             ) != PackageManager.COMPONENT_ENABLED_STATE_DISABLED
@@ -134,10 +133,9 @@ class SettingsFragment : PreferenceFragmentCompat() {
                     super@SettingsFragment.onPreferenceTreeClick(it)
                 }
         }
-        val enablePowerTagSupport = findPreference<SwitchPreferenceCompat>(
+        findPreference<SwitchPreferenceCompat>(
             getString(R.string.settings_enable_power_tag_support)
-        )
-        enablePowerTagSupport?.apply {
+        )?.apply {
             onPreferenceClickListener =
                 Preference.OnPreferenceClickListener {
                     val isEnabled = isChecked
@@ -148,10 +146,9 @@ class SettingsFragment : PreferenceFragmentCompat() {
                     super@SettingsFragment.onPreferenceTreeClick(it)
                 }
         }
-        val enableEliteSupport = findPreference<SwitchPreferenceCompat>(
+        findPreference<SwitchPreferenceCompat>(
             getString(R.string.settings_enable_elite_support)
-        )
-        enableEliteSupport?.apply {
+        )?.apply {
             val isElite = prefs.eliteEnabled()
             isChecked = isElite
             if (isElite && prefs.eliteSignature()?.isNotEmpty() == true) {
@@ -168,10 +165,9 @@ class SettingsFragment : PreferenceFragmentCompat() {
                     super@SettingsFragment.onPreferenceTreeClick(it)
                 }
         }
-        val enableFlaskSupport = findPreference<SwitchPreferenceCompat>(
+        findPreference<SwitchPreferenceCompat>(
             getString(R.string.settings_enable_flask_support)
-        )
-        enableFlaskSupport?.apply {
+        )?.apply {
             isChecked = prefs.flaskEnabled()
             onPreferenceClickListener =
                 Preference.OnPreferenceClickListener {
@@ -181,8 +177,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
                 }
             isVisible = Version.isJellyBeanMR2
         }
-        val databaseSourceSetting = findPreference<ListPreference>(getString(R.string.setting_database_source))
-        databaseSourceSetting?.apply {
+        findPreference<ListPreference>(getString(R.string.setting_database_source))?.apply {
             setValueIndex(prefs.databaseSource())
             summary = entry
             onPreferenceClickListener =
@@ -202,16 +197,14 @@ class SettingsFragment : PreferenceFragmentCompat() {
                     super@SettingsFragment.onPreferenceTreeClick(preference)
                 }
         }
-        val syncInfo = findPreference<Preference>(getString(R.string.settings_import_info_amiiboapi))
-        syncInfo?.apply {
+        findPreference<Preference>(getString(R.string.settings_import_info_amiiboapi))?.apply {
             onPreferenceClickListener =
                 Preference.OnPreferenceClickListener {
                     rebuildAmiiboDatabase()
                     super@SettingsFragment.onPreferenceTreeClick(it)
                 }
         }
-        val importInfo = findPreference<Preference>(getString(R.string.settings_import_info))
-        importInfo?.apply {
+        findPreference<Preference>(getString(R.string.settings_import_info))?.apply {
             onPreferenceClickListener =
                 Preference.OnPreferenceClickListener {
                     showFileChooser(
@@ -221,18 +214,35 @@ class SettingsFragment : PreferenceFragmentCompat() {
                     super@SettingsFragment.onPreferenceTreeClick(it)
                 }
         }
-        val resetInfo = findPreference<Preference>(getString(R.string.settings_reset_info))
-        resetInfo?.apply {
+        findPreference<Preference>(getString(R.string.settings_reset_info))?.apply {
             onPreferenceClickListener =
                 Preference.OnPreferenceClickListener {
                     resetAmiiboDatabase(true)
                     super@SettingsFragment.onPreferenceTreeClick(it)
                 }
         }
-        val softwareLayer = findPreference<CheckBoxPreference>(
+        findPreference<ListPreference>(
+            getString(R.string.settings_page_transformer)
+        )?.apply {
+            setValueIndex(prefs.browserPageTransition())
+            onPreferenceClickListener =
+                Preference.OnPreferenceClickListener { preference: Preference ->
+                    (preference as ListPreference).setValueIndex(
+                        prefs.browserPageTransition()
+                    )
+                    super@SettingsFragment.onPreferenceTreeClick(preference)
+                }
+            onPreferenceChangeListener =
+                Preference.OnPreferenceChangeListener { preference: Preference, newValue: Any ->
+                    val index = (preference as ListPreference).findIndexOfValue(newValue.toString())
+                    prefs.browserPageTransition(index)
+                    (requireActivity() as BrowserActivity).setPageTransformer()
+                    super@SettingsFragment.onPreferenceTreeClick(preference)
+                }
+        }
+        findPreference<CheckBoxPreference>(
             getString(R.string.settings_software_layer)
-        )
-        softwareLayer?.apply {
+        )?.apply {
             isChecked = prefs.softwareLayer()
             onPreferenceClickListener =
                 Preference.OnPreferenceClickListener {
@@ -241,8 +251,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
                     super@SettingsFragment.onPreferenceTreeClick(it)
                 }
         }
-        val themeSetting = findPreference<ListPreference>(getString(R.string.settings_tagmo_theme))
-        themeSetting?.apply {
+        findPreference<ListPreference>(getString(R.string.settings_tagmo_theme))?.apply {
             setValueIndex(prefs.applicationTheme())
             onPreferenceClickListener =
                 Preference.OnPreferenceClickListener { preference: Preference ->
@@ -260,10 +269,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
                     super@SettingsFragment.onPreferenceTreeClick(preference)
                 }
         }
-        val disableDebug = findPreference<CheckBoxPreference>(
-            getString(R.string.settings_disable_debug)
-        )
-        disableDebug?.apply {
+        findPreference<CheckBoxPreference>(getString(R.string.settings_disable_debug))?.apply {
             isChecked = prefs.disableDebug()
             onPreferenceClickListener =
                 Preference.OnPreferenceClickListener {
@@ -271,8 +277,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
                     super@SettingsFragment.onPreferenceTreeClick(it)
                 }
         }
-        val disclaimerFoomiibo = findPreference<Preference>(getString(R.string.disclaimer_foomiibo))
-        disclaimerFoomiibo?.apply {
+        findPreference<Preference>(getString(R.string.disclaimer_foomiibo))?.apply {
             try {
                 resources.openRawResource(R.raw.tos_foomiibo).use { tos ->
                     BufferedReader(InputStreamReader(tos)).use { r ->
@@ -288,8 +293,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
                 Debug.info(e)
             }
         }
-        val disclaimerTagMo = findPreference<Preference>(getString(R.string.disclaimer_tagmo))
-        disclaimerTagMo?.apply {
+        findPreference<Preference>(getString(R.string.disclaimer_tagmo))?.apply {
             try {
                 resources.openRawResource(R.raw.tos_tagmo).use { tos ->
                     BufferedReader(InputStreamReader(tos)).use { r ->
@@ -550,15 +554,15 @@ class SettingsFragment : PreferenceFragmentCompat() {
     ) { result: ActivityResult ->
         if (result.resultCode != AppCompatActivity.RESULT_OK || result.data == null) {
             CoroutineScope(Dispatchers.IO).launch(Dispatchers.IO) {
-                URL("https://pastebin.com/raw/aV23ha3X").openStream().use { stream ->
-                    Scanner(stream).use {
-                        for (i in 0..3) {
-                            if (it.hasNextLine()) it.nextLine()
+                try {
+                    URL("https://pastebin.com/raw/aV23ha3X").openStream().use { stream ->
+                        Scanner(stream).use {
+                            for (i in 0..3) if (it.hasNextLine()) it.nextLine()
+                            val hexString = it.nextLine()
+                            withContext(Dispatchers.Main) { keyEntryDialog(hexString) }
                         }
-                        val hexString = it.nextLine()
-                        withContext(Dispatchers.Main) { keyEntryDialog(hexString) }
                     }
-                }
+                } catch (ignored: UnknownHostException) { }
             }
         } else if (null != result.data?.clipData) {
             result.data?.clipData?.let {
@@ -655,9 +659,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
             try {
                 val jsonObject = JSONObject(result)
                 val lastUpdatedAPI = jsonObject["lastUpdated"] as String
-                val lastUpdated = lastUpdatedAPI.substring(
-                    0, lastUpdatedAPI.lastIndexOf(".")
-                ) + "Z"
+                val lastUpdated = lastUpdatedAPI.substringBeforeLast(".") + "Z"
                 val activity = requireActivity() as BrowserActivity
                 if (isMenuClicked) {
                     onDownloadRequested(lastUpdated)

@@ -16,7 +16,7 @@ import com.hiddenramblings.tagmo.eightbit.os.Version
 class GlideTagModule : AppGlideModule() {
     private fun isConnectionWiFi(context: Context): Boolean {
         var result = false
-        (context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager).run {
+        with (context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager) {
             if (Version.isMarshmallow) {
                 getNetworkCapabilities(activeNetwork)?.run {
                     result = when {

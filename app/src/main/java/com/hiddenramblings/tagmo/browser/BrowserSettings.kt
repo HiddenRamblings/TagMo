@@ -71,8 +71,6 @@ open class BrowserSettings : Parcelable {
     protected var oldBrowserSettings: BrowserSettings? = null
     var amiiboFiles: ArrayList<AmiiboFile?> = arrayListOf()
     var folders: ArrayList<File?> = arrayListOf()
-    var browserRootFolder: File? = null
-    var browserRootDocument: Uri? = null
     var query: String? = null
     var sort = 0
     protected var filterCharacter: String? = null
@@ -82,6 +80,9 @@ open class BrowserSettings : Parcelable {
     protected var filterGameTitles: String? = null
     var amiiboView = 0
     var imageNetworkSettings: String? = null
+    var pageTransformer = 0
+    var browserRootFolder: File? = null
+    var browserRootDocument: Uri? = null
     var isRecursiveEnabled = false
     var lastUpdatedAPI: String? = null
     var lastUpdatedGit: Long = 0
@@ -94,8 +95,9 @@ open class BrowserSettings : Parcelable {
         amiiboFiles: ArrayList<AmiiboFile>, folders: ArrayList<File>,
         browserFolder: File?, query: String?, sort: Int, filterCharacter: String?,
         filterGameSeries: String?, filterAmiiboSeries: String?, filterAmiiboType: String?,
-        filterGameTitles: String?, browserAmiiboView: Int, imageNetworkSettings: String?,
-        recursiveFolders: Boolean, lastUpdatedAPI: String?, lastUpdatedGit: Long
+        filterGameTitles: String?, browserAmiiboView: Int, browserPageTransition: Int,
+        imageNetworkSettings: String?, recursiveFolders: Boolean,
+        lastUpdatedAPI: String?, lastUpdatedGit: Long
     ) : super() {
         this.amiiboFiles.addAll(amiiboFiles)
         this.folders.addAll(folders)
@@ -109,6 +111,7 @@ open class BrowserSettings : Parcelable {
         this.filterGameTitles = filterGameTitles
         amiiboView = browserAmiiboView
         this.imageNetworkSettings = imageNetworkSettings
+        pageTransformer = browserPageTransition
         isRecursiveEnabled = recursiveFolders
         this.lastUpdatedAPI = lastUpdatedAPI
         this.lastUpdatedGit = lastUpdatedGit
@@ -122,10 +125,6 @@ open class BrowserSettings : Parcelable {
 
     fun initialize(): BrowserSettings {
         val prefs = Preferences(appContext)
-        browserRootFolder = prefs.browserRootFolder()?.let {
-            File(Storage.getFile(prefs.preferEmulated()), it)
-        } ?: Storage.getDownloadDir(null)
-        browserRootDocument = prefs.browserRootDocument()?.let { Uri.parse(it) }
         query = prefs.query()
         sort = prefs.sort()
         setFilter(FILTER.CHARACTER, prefs.filterCharacter())
@@ -135,6 +134,11 @@ open class BrowserSettings : Parcelable {
         setFilter(FILTER.GAME_TITLES, prefs.filterGameTitles())
         amiiboView = prefs.browserAmiiboView()
         imageNetworkSettings = prefs.imageNetwork()
+        pageTransformer = prefs.browserPageTransition()
+        browserRootFolder = prefs.browserRootFolder()?.let {
+            File(Storage.getFile(prefs.preferEmulated()), it)
+        } ?: Storage.getDownloadDir(null)
+        browserRootDocument = prefs.browserRootDocument()?.let { Uri.parse(it) }
         isRecursiveEnabled = prefs.recursiveFolders()
         lastUpdatedAPI = prefs.lastUpdatedAPI()
         lastUpdatedGit = prefs.lastUpdatedGit()
@@ -204,9 +208,10 @@ open class BrowserSettings : Parcelable {
         copy.setFilter(FILTER.AMIIBO_TYPE, getFilter(FILTER.AMIIBO_TYPE))
         copy.setFilter(FILTER.GAME_TITLES, getFilter(FILTER.GAME_TITLES))
         copy.amiiboView = amiiboView
+        copy.imageNetworkSettings = imageNetworkSettings
+        copy.pageTransformer = pageTransformer
         copy.browserRootFolder = browserRootFolder
         copy.browserRootDocument = browserRootDocument
-        copy.imageNetworkSettings = imageNetworkSettings
         copy.isRecursiveEnabled = isRecursiveEnabled
         copy.lastUpdatedAPI = lastUpdatedAPI
         copy.lastUpdatedGit = lastUpdatedGit
@@ -220,8 +225,6 @@ open class BrowserSettings : Parcelable {
     override fun writeToParcel(dest: Parcel, flags: Int) {
         dest.writeTypedList(amiiboFiles)
         dest.writeList(folders)
-        dest.writeSerializable(browserRootFolder)
-        dest.writeString(browserRootDocument?.toString())
         dest.writeString(query)
         dest.writeInt(sort)
         dest.writeString(filterCharacter)
@@ -231,6 +234,9 @@ open class BrowserSettings : Parcelable {
         dest.writeString(filterGameTitles)
         dest.writeInt(amiiboView)
         dest.writeString(imageNetworkSettings)
+        dest.writeInt(pageTransformer)
+        dest.writeSerializable(browserRootFolder)
+        dest.writeString(browserRootDocument?.toString())
         dest.writeByte(if (isRecursiveEnabled) 1.toByte() else 0.toByte())
         dest.writeString(lastUpdatedAPI)
         dest.writeLong(lastUpdatedGit)
@@ -243,12 +249,6 @@ open class BrowserSettings : Parcelable {
             parcel.readList(folders, File::class.java.classLoader, File::class.java)
         else
             @Suppress("DEPRECATION") parcel.readList(folders, File::class.java.classLoader)
-        browserRootFolder = if (Version.isTiramisu)
-            parcel.readSerializable(File::class.java.classLoader, File::class.java)
-        else
-            @Suppress("DEPRECATION") parcel.readSerializable() as? File
-        val docs = parcel.readString()
-        browserRootDocument = if (!docs.isNullOrEmpty()) Uri.parse(docs) else null
         query = parcel.readString()
         sort = parcel.readInt()
         filterCharacter = parcel.readString()
@@ -258,6 +258,13 @@ open class BrowserSettings : Parcelable {
         filterGameTitles = parcel.readString()
         amiiboView = parcel.readInt()
         imageNetworkSettings = parcel.readString()
+        pageTransformer = parcel.readInt()
+        browserRootFolder = if (Version.isTiramisu)
+            parcel.readSerializable(File::class.java.classLoader, File::class.java)
+        else
+            @Suppress("DEPRECATION") parcel.readSerializable() as? File
+        val docs = parcel.readString()
+        browserRootDocument = if (!docs.isNullOrEmpty()) Uri.parse(docs) else null
         isRecursiveEnabled = parcel.readByte().toInt() != 0
         lastUpdatedAPI = parcel.readString()
         lastUpdatedGit = parcel.readLong()

@@ -532,7 +532,7 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
         if (BuildConfig.WEAR_OS) {
             searchView.isGone = true
         } else {
-            (activity.getSystemService(Context.SEARCH_SERVICE) as SearchManager).run {
+            with (activity.getSystemService(Context.SEARCH_SERVICE) as SearchManager) {
                 searchView.setSearchableInfo(getSearchableInfo(activity.componentName))
             }
             searchView.isSubmitButtonEnabled = false

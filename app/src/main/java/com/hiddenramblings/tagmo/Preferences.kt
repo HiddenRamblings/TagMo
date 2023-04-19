@@ -209,6 +209,15 @@ class Preferences(context: Context) {
         putBoolean(flaskEnabled, value)
     }
 
+    private val browserPageTranformer = "browserPageTranformer"
+    fun browserPageTransition(): Int {
+        return getInt(browserPageTranformer, 0 /*CardFlipTransformation*/)
+    }
+
+    fun browserPageTransition(value: Int) {
+        putInt(browserPageTranformer, value)
+    }
+
     private val softwareLayer = "settings_software_layer"
     fun softwareLayer(): Boolean {
         return getBoolean(softwareLayer, Debug.isOxygenOS)

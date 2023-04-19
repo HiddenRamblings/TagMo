@@ -235,7 +235,7 @@ class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
             bottomSheet?.setState(BottomSheetBehavior.STATE_EXPANDED)
         }
         searchView = rootLayout.findViewById<SearchView>(R.id.amiibo_search).apply {
-            (activity.getSystemService(Context.SEARCH_SERVICE) as SearchManager).run {
+            with (activity.getSystemService(Context.SEARCH_SERVICE) as SearchManager) {
                 setSearchableInfo(getSearchableInfo(activity.componentName))
             }
             isSubmitButtonEnabled = false

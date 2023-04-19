@@ -83,6 +83,7 @@ import com.hiddenramblings.tagmo.eightbit.material.IconifiedSnackbar
 import com.hiddenramblings.tagmo.eightbit.os.Storage
 import com.hiddenramblings.tagmo.eightbit.os.Version
 import com.hiddenramblings.tagmo.eightbit.view.AnimatedLinearLayout
+import com.hiddenramblings.tagmo.eightbit.viewpager.*
 import com.hiddenramblings.tagmo.hexcode.HexCodeViewer
 import com.hiddenramblings.tagmo.nfctech.NfcActivity
 import com.hiddenramblings.tagmo.nfctech.ScanTag
@@ -92,7 +93,6 @@ import com.hiddenramblings.tagmo.qrcode.QRCodeScanner
 import com.hiddenramblings.tagmo.update.UpdateManager
 import com.hiddenramblings.tagmo.wave9.DimensionActivity
 import com.hiddenramblings.tagmo.widget.Toasty
-import com.wajahatkarim3.easyflipviewpager.CardFlipPageTransformer2
 import eightbitlab.com.blurview.BlurView
 import eightbitlab.com.blurview.RenderEffectBlur
 import eightbitlab.com.blurview.RenderScriptBlur
@@ -233,9 +233,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
 
         viewPager.keepScreenOn = BuildConfig.WEAR_OS
         viewPager.adapter = pagerAdapter
-        val cardFlipPageTransformer = CardFlipPageTransformer2()
-        cardFlipPageTransformer.isScalable = true
-        viewPager.setPageTransformer(cardFlipPageTransformer)
+        setPageTransformer()
         setViewPagerSensitivity(viewPager, 4)
         if (BuildConfig.WEAR_OS) fragmentSettings = pagerAdapter.settings
         pagerAdapter.browser.run {
@@ -1564,7 +1562,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
         onRecursiveFilesChanged()
         menuUpdate.isVisible = updateManager?.hasPendingUpdate() == true
         (menuSearch.actionView as? SearchView)?.apply {
-            (getSystemService(SEARCH_SERVICE) as SearchManager).run {
+            with (getSystemService(SEARCH_SERVICE) as SearchManager) {
                 this@apply.setSearchableInfo(getSearchableInfo(componentName))
             }
             isSubmitButtonEnabled = false
@@ -1919,6 +1917,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
         prefs.filterAmiiboType(newBrowserSettings.getFilter(FILTER.AMIIBO_TYPE))
         prefs.filterGameTitles(newBrowserSettings.getFilter(FILTER.GAME_TITLES))
         prefs.browserAmiiboView(newBrowserSettings.amiiboView)
+        prefs.browserPageTransition(newBrowserSettings.pageTransformer)
         prefs.imageNetwork(newBrowserSettings.imageNetworkSettings)
         prefs.recursiveFolders(newBrowserSettings.isRecursiveEnabled)
         prefs.lastUpdatedAPI(newBrowserSettings.lastUpdatedAPI)
@@ -1941,11 +1940,13 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
 
     private fun onViewChanged() {
         if (null == menuViewSimple) return
-        when (VIEW.valueOf(settings!!.amiiboView)) {
-            VIEW.SIMPLE -> menuViewSimple!!.isChecked = true
-            VIEW.COMPACT -> menuViewCompact!!.isChecked = true
-            VIEW.LARGE -> menuViewLarge!!.isChecked = true
-            VIEW.IMAGE -> menuViewImage!!.isChecked = true
+        settings?.let {
+            when (VIEW.valueOf(it.amiiboView)) {
+                VIEW.SIMPLE -> menuViewSimple?.isChecked = true
+                VIEW.COMPACT -> menuViewCompact?.isChecked = true
+                VIEW.LARGE -> menuViewLarge?.isChecked = true
+                VIEW.IMAGE -> menuViewImage?.isChecked = true
+            }
         }
     }
 
@@ -2218,6 +2219,19 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
             }
             return if (columns < 1) 3 else columns.toInt()
         }
+
+    fun setPageTransformer() {
+        viewPager.setPageTransformer(when (prefs.browserPageTransition()) {
+            0 -> CardFlipTransformer().apply { isScalable = true }
+            1 -> ClockSpinTransformer()
+            2 -> DepthTransformer()
+            3 -> FidgetSpinTransformer()
+            4 -> PopTransformer()
+            5 -> SpinnerTransformer()
+            6 -> TossTransformer()
+            else -> null
+        })
+    }
 
     @Suppress("SameParameterValue")
     private fun setViewPagerSensitivity(viewPager: ViewPager2?, sensitivity: Int) {

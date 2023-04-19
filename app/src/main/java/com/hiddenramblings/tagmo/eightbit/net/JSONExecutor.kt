@@ -48,11 +48,11 @@ class JSONExecutor(activity: Activity, server: String, path: String? = null) {
             }
 
             override fun onProviderInstallFailed() {
-                if (activity is BrowserActivity) {
-                    Preferences(activity.getApplicationContext())
-                        .imageNetwork(GlideTagModule.IMAGE_NETWORK_NEVER)
+                Preferences(activity.applicationContext).imageNetwork(
+                    GlideTagModule.IMAGE_NETWORK_NEVER
+                )
+                if (activity is BrowserActivity)
                     CoroutineScope(Dispatchers.Main).launch { activity.settings?.notifyChanges() }
-                }
                 listener?.onResults(null)
                     ?: listenerDb?.onResults(null, false)
             }
@@ -76,7 +76,7 @@ class JSONExecutor(activity: Activity, server: String, path: String? = null) {
                     listenerDb?.onResults(it, isRawJSON(url)) ?: listener?.onResults(it)
                     return@launch
                 }
-            } catch (_: UnknownHostException) { }
+            } catch (ignored: UnknownHostException) { }
             try {
                 var conn = URL(url).openConnection() as HttpsURLConnection
                 conn.requestMethod = "GET"

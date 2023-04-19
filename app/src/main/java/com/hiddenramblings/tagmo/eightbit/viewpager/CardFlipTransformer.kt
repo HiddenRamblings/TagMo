@@ -15,14 +15,14 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package com.wajahatkarim3.easyflipviewpager
+package com.hiddenramblings.tagmo.eightbit.viewpager
 
 import android.view.View
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.ViewPager2
 import kotlin.math.abs
 
-class CardFlipPageTransformer2 : ViewPager2.PageTransformer {
+class CardFlipTransformer : ViewPager2.PageTransformer {
     var isScalable = false
 
     override fun transformPage(page: View, position: Float) {

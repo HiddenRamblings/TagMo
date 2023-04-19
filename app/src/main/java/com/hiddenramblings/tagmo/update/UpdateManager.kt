@@ -117,16 +117,15 @@ class UpdateManager internal constructor(activity: BrowserActivity) {
         if (apkUrl.isNullOrEmpty()) return
         CoroutineScope(Dispatchers.IO).launch(Dispatchers.IO) {
             val apk = File(
-                browserActivity.externalCacheDir,
-                apkUrl.substring(apkUrl.lastIndexOf(File.separator) + 1)
+                browserActivity.externalCacheDir, apkUrl.substringAfterLast(File.separator)
             )
             URL(apkUrl).openStream().use { stream ->
                 FileOutputStream(apk).use {
                     stream.copyTo(it)
                 }
             }
+            if (!apk.name.lowercase().endsWith(".apk")) apk.delete()
             try {
-                if (!apk.name.lowercase().endsWith(".apk")) apk.delete()
                 browserActivity.run {
                     if (Version.isNougat) {
                         val apkUri = Storage.getFileUri(apk)

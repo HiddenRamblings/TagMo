@@ -229,11 +229,11 @@ object Storage : Environment() {
     fun getRelativeDocument(uri: Uri?): String {
         val treeUri = unicodeString(
             if (uri.toString().contains("/tree/"))
-                uri.toString().substring(uri.toString().lastIndexOf("/tree/") + 6)
+                uri.toString().substringAfterLast("/tree/")
             else uri.toString()
         )
         return if (treeUri.contains("primary:"))
-            "/" + treeUri.substring(treeUri.lastIndexOf("primary:") + 8)
+            "/" + treeUri.substringAfterLast("primary:")
         else treeUri
     }
 }

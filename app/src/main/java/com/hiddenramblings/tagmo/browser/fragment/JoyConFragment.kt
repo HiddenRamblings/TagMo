@@ -73,20 +73,9 @@ class JoyConFragment : DialogFragment(), BluetoothListener {
 
     @SuppressLint("MissingPermission")
     override fun onAdapterEnabled(adapter: BluetoothAdapter?) {
-        var hasProController = false
         var hasRightJoyCon = false
-        run breaking@{
-            InputDevice.getDeviceIds().forEach { gamepad ->
-                Debug.verbose(
-                    JoyConFragment::class.java, "ID: " + gamepad + ", Name: "
-                            + InputDevice.getDevice(gamepad).name + ", Descriptor: "
-                            + InputDevice.getDevice(gamepad).descriptor
-                )
-                if (InputDevice.getDevice(gamepad).name == "Nintendo Switch Pro Controller") {
-                    hasProController = true
-                    return@breaking
-                }
-            }
+        val hasProController = InputDevice.getDeviceIds().any { gamepad ->
+            InputDevice.getDevice(gamepad).name == "Nintendo Switch Pro Controller"
         }
         if (hasProController) {
             adapter?.bondedDevices?.forEach {

@@ -811,12 +811,9 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
                                 }
                             }
                         }
-                        matches.forEach { amiibo ->
-                            if (null == amiibo.flaskName) {
-                                selectedAmiibo = amiibo.apply { flaskName = name[0] }
-                                return@breaking
-                            }
-                        }
+                        selectedAmiibo = matches.find {
+                            null == it.flaskName
+                        }?.apply { flaskName = name[0] }
                     }
                     if (null == selectedAmiibo && matches.isNotEmpty())
                         selectedAmiibo = matches[0]

@@ -40,15 +40,9 @@ class HexAdapter(tagData: ByteArray) : RecyclerView.Adapter<HexAdapter.ViewHolde
                         val text = String.format(
                             "%02X", java.lang.Byte.valueOf(tagData[index]).toInt() and 0xFF
                         )
-                        var color = Color.WHITE
-                        run breaking@{
-                            TagMap.getTagMap.forEach {
-                                if (it.index <= index) {
-                                    color = it.color
-                                    return@breaking
-                                }
-                            }
-                        }
+                        val color = TagMap.getTagMap.find {
+                            it.index <= index
+                        }?.color ?: Color.WHITE
                         hexItem = HexItem(text, color)
                     }
                 }

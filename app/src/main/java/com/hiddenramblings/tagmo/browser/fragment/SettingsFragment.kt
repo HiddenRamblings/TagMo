@@ -224,18 +224,18 @@ class SettingsFragment : PreferenceFragmentCompat() {
         findPreference<ListPreference>(
             getString(R.string.settings_page_transformer)
         )?.apply {
-            setValueIndex(prefs.browserPageTransition())
+            setValueIndex(prefs.browserPageTransformer())
             onPreferenceClickListener =
                 Preference.OnPreferenceClickListener { preference: Preference ->
                     (preference as ListPreference).setValueIndex(
-                        prefs.browserPageTransition()
+                        prefs.browserPageTransformer()
                     )
                     super@SettingsFragment.onPreferenceTreeClick(preference)
                 }
             onPreferenceChangeListener =
                 Preference.OnPreferenceChangeListener { preference: Preference, newValue: Any ->
                     val index = (preference as ListPreference).findIndexOfValue(newValue.toString())
-                    prefs.browserPageTransition(index)
+                    prefs.browserPageTransformer(index)
                     (requireActivity() as BrowserActivity).setPageTransformer()
                     super@SettingsFragment.onPreferenceTreeClick(preference)
                 }

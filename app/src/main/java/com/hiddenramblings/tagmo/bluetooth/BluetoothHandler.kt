@@ -62,13 +62,10 @@ class BluetoothHandler(
         onRequestBluetoothS = registry.register(
             "BluetoothS", ActivityResultContracts.RequestMultiplePermissions()
         ) { permissions: Map<String, Boolean> ->
-            var isBluetoothAvailable = true
-            permissions.entries.forEach {
-                if (!it.value) isBluetoothAvailable = false
-            }
-            if (isBluetoothAvailable) {
+            if (permissions.entries.all { it.value }) {
                 val mBluetoothAdapter = getBluetoothAdapter(context)
-                mBluetoothAdapter?.let { listener.onAdapterEnabled(it) } ?: listener.onAdapterMissing()
+                mBluetoothAdapter?.let { listener.onAdapterEnabled(it) }
+                    ?: listener.onAdapterMissing()
             } else {
                 listener.onAdapterMissing()
             }

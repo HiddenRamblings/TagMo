@@ -159,9 +159,7 @@ class QRGEncoder(data: String?, bundle: Bundle?, type: Int, private var dimensio
                 run {
                     keysPhone.forEach {
                         val phone = trim(bundle.getString(it))
-                        if (phone != null) {
-                            uniquePhones.add(phone)
-                        }
+                        if (phone != null) uniquePhones.add(phone)
                     }
                 }
                 uniquePhones.forEach {

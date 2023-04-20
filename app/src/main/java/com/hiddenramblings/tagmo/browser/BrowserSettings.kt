@@ -95,7 +95,7 @@ open class BrowserSettings : Parcelable {
         amiiboFiles: ArrayList<AmiiboFile>, folders: ArrayList<File>,
         browserFolder: File?, query: String?, sort: Int, filterCharacter: String?,
         filterGameSeries: String?, filterAmiiboSeries: String?, filterAmiiboType: String?,
-        filterGameTitles: String?, browserAmiiboView: Int, browserPageTransition: Int,
+        filterGameTitles: String?, browserAmiiboView: Int, browserPageTransformer: Int,
         imageNetworkSettings: String?, recursiveFolders: Boolean,
         lastUpdatedAPI: String?, lastUpdatedGit: Long
     ) : super() {
@@ -111,7 +111,7 @@ open class BrowserSettings : Parcelable {
         this.filterGameTitles = filterGameTitles
         amiiboView = browserAmiiboView
         this.imageNetworkSettings = imageNetworkSettings
-        pageTransformer = browserPageTransition
+        pageTransformer = browserPageTransformer
         isRecursiveEnabled = recursiveFolders
         this.lastUpdatedAPI = lastUpdatedAPI
         this.lastUpdatedGit = lastUpdatedGit
@@ -134,7 +134,7 @@ open class BrowserSettings : Parcelable {
         setFilter(FILTER.GAME_TITLES, prefs.filterGameTitles())
         amiiboView = prefs.browserAmiiboView()
         imageNetworkSettings = prefs.imageNetwork()
-        pageTransformer = prefs.browserPageTransition()
+        pageTransformer = prefs.browserPageTransformer()
         browserRootFolder = prefs.browserRootFolder()?.let {
             File(Storage.getFile(prefs.preferEmulated()), it)
         } ?: Storage.getDownloadDir(null)

@@ -209,13 +209,13 @@ class Preferences(context: Context) {
         putBoolean(flaskEnabled, value)
     }
 
-    private val browserPageTranformer = "browserPageTranformer"
-    fun browserPageTransition(): Int {
-        return getInt(browserPageTranformer, 0 /*CardFlipTransformation*/)
+    private val browserPageTransformer = "browserPageTransformer"
+    fun browserPageTransformer(): Int {
+        return getInt(browserPageTransformer, 0 /*CardFlipTransformer*/)
     }
 
-    fun browserPageTransition(value: Int) {
-        putInt(browserPageTranformer, value)
+    fun browserPageTransformer(value: Int) {
+        putInt(browserPageTransformer, value)
     }
 
     private val softwareLayer = "settings_software_layer"

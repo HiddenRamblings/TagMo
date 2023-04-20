@@ -188,8 +188,8 @@ class FoomiiboAdapter(
                 Collections.sort(filteredData, AmiiboComparator(settings))
                 val missingFiles: ArrayList<Amiibo> = arrayListOf()
                 val amiiboIds: HashSet<Long> = hashSetOf()
-                settings.amiiboFiles.forEach {
-                    amiiboIds.add(it!!.id)
+                settings.amiiboFiles.forEach { amiiboFile ->
+                    amiiboFile?.let { amiiboIds.add(it.id) }
                 }
                 val iterator = filteredData.iterator()
                 while (iterator.hasNext()) {

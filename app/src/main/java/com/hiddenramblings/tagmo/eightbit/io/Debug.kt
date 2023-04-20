@@ -78,14 +78,8 @@ object Debug {
     }
 
     fun hasException(e: Exception, className: String, methodName: String): Boolean {
-        if (e.stackTrace.isNullOrEmpty()) return false
-        e.stackTrace.forEach {
-            if (it.className == className && it.methodName == methodName)
-                return true
-            else
-                warn(javaClass, "${it.className}.${it.methodName}")
-        }
-        return false
+        return !e.stackTrace.isNullOrEmpty()
+                && e.stackTrace.any { it.className == className && it.methodName == methodName }
     }
 
     @JvmStatic

@@ -1917,7 +1917,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
         prefs.filterAmiiboType(newBrowserSettings.getFilter(FILTER.AMIIBO_TYPE))
         prefs.filterGameTitles(newBrowserSettings.getFilter(FILTER.GAME_TITLES))
         prefs.browserAmiiboView(newBrowserSettings.amiiboView)
-        prefs.browserPageTransition(newBrowserSettings.pageTransformer)
+        prefs.browserPageTransformer(newBrowserSettings.pageTransformer)
         prefs.imageNetwork(newBrowserSettings.imageNetworkSettings)
         prefs.recursiveFolders(newBrowserSettings.isRecursiveEnabled)
         prefs.lastUpdatedAPI(newBrowserSettings.lastUpdatedAPI)
@@ -2221,7 +2221,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
         }
 
     fun setPageTransformer() {
-        viewPager.setPageTransformer(when (prefs.browserPageTransition()) {
+        viewPager.setPageTransformer(when (prefs.browserPageTransformer()) {
             0 -> CardFlipTransformer().apply { isScalable = true }
             1 -> ClockSpinTransformer()
             2 -> DepthTransformer()
@@ -2343,11 +2343,8 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
 
     private fun getAdapterStats(amiiboManager: AmiiboManager): IntArray {
         if (amiibosView?.adapter is BrowserAdapter) {
-            val adapter = amiibosView!!.adapter as BrowserAdapter
-            var count = 0
-            amiiboManager.amiibos.values.forEach {
-                if (adapter.hasItem(it.id)) count += 1
-            }
+            val adapter = amiibosView?.adapter as BrowserAdapter
+            val count = amiiboManager.amiibos.values.count { adapter.hasItem(it.id) }
             return intArrayOf(adapter.itemCount, count)
         }
         return intArrayOf(0, 0)

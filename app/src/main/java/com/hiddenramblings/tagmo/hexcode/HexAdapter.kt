@@ -34,8 +34,8 @@ class HexAdapter(tagData: ByteArray) : RecyclerView.Adapter<HexAdapter.ViewHolde
                     )
                 } else {
                     val index = rowIndex * HEX + columnIndex
-                    if (index >= tagData.size) {
-                        hexItem = null
+                    hexItem = if (index >= tagData.size) {
+                        null
                     } else {
                         val text = String.format(
                             "%02X", java.lang.Byte.valueOf(tagData[index]).toInt() and 0xFF
@@ -43,7 +43,7 @@ class HexAdapter(tagData: ByteArray) : RecyclerView.Adapter<HexAdapter.ViewHolde
                         val color = TagMap.getTagMap.find {
                             it.index <= index
                         }?.color ?: Color.WHITE
-                        hexItem = HexItem(text, color)
+                        HexItem(text, color)
                     }
                 }
                 row[columnIndex + 1] = hexItem
@@ -59,7 +59,7 @@ class HexAdapter(tagData: ByteArray) : RecyclerView.Adapter<HexAdapter.ViewHolde
         return i.toLong()
     }
 
-    fun getItem(i: Int): Array<HexItem?> {
+    private fun getItem(i: Int): Array<HexItem?> {
         return data[i]
     }
 

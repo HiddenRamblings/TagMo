@@ -248,7 +248,7 @@ class WebsiteFragment : Fragment() {
         backupDialog.show()
     }
 
-    @Suppress("UNUSED")
+    @Suppress("unused")
     private inner class JavaScriptInterface {
         @JavascriptInterface
         @Throws(IOException::class)

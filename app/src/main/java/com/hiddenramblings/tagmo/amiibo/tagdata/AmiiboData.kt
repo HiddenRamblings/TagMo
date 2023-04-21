@@ -124,7 +124,7 @@ open class AmiiboData : Parcelable {
             putString(tagData, MII_AUTHOR_OFFSET, MII_TEXT_LENGTH, CharsetCompat.UTF_16LE, value)
         }
 
-    @Suppress("UNUSED")
+    @Suppress("unused")
     var titleID: Long
         get() = tagData.getLong(TITLE_ID_OFFSET)
         set(value) {

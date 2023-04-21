@@ -7,7 +7,7 @@ import com.hiddenramblings.tagmo.eightbit.io.Debug
 import com.hiddenramblings.tagmo.nfctech.NTAG215
 import java.io.IOException
 
-@Suppress("UNUSED")
+@Suppress("unused")
 class JSAPI(val activity: DimensionActivity, val web: WebView) {
 
     @JavascriptInterface

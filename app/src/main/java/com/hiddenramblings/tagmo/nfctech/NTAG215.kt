@@ -28,7 +28,7 @@ class NTAG215 : TagTechnology {
         }
     }
 
-    @Suppress("UNUSED")
+    @Suppress("unused")
     var timeout: Int
         get() = tagMifare?.timeout ?: tagNfcA?.timeout ?: 0
         set(timeout) {
@@ -95,7 +95,7 @@ class NTAG215 : TagTechnology {
         return transceive(command)
     }
 
-    @Suppress("UNUSED")
+    @Suppress("unused")
     val bankCount: ByteArray?
         get() {
             val req = ByteArray(1)

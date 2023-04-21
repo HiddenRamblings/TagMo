@@ -35,7 +35,7 @@ class PuckGattService : Service() {
     private val chunkTimeout = 30L
 
     // Command, Slot, Parameters
-    @Suppress("UNUSED")
+    @Suppress("unused")
     private enum class PUCK(bytes: Int) {
         INFO(0x01),
         READ(0x02),
@@ -471,7 +471,7 @@ class PuckGattService : Service() {
         )
     }
 
-    @Suppress("UNUSED")
+    @Suppress("unused")
     fun downloadSlotData(slot: Int) {
         sendCommand(byteArrayOf(PUCK.READ.bytes, slot.toByte(), 0x00, 0x3F), null)
         sendCommand(byteArrayOf(PUCK.READ.bytes, slot.toByte(), 0x3F, 0x3F), null)

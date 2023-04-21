@@ -48,7 +48,7 @@ class QRGEncoder(data: String?, bundle: Bundle?, type: Int, private var dimensio
         ContactsContract.Intents.Insert.SECONDARY_PHONE,
         ContactsContract.Intents.Insert.TERTIARY_PHONE
     )
-    @Suppress("UNUSED")
+    @Suppress("unused")
     private val keysTypePhone = arrayOf(
         ContactsContract.Intents.Insert.PHONE_TYPE,
         ContactsContract.Intents.Insert.SECONDARY_PHONE_TYPE,
@@ -59,7 +59,7 @@ class QRGEncoder(data: String?, bundle: Bundle?, type: Int, private var dimensio
         ContactsContract.Intents.Insert.SECONDARY_EMAIL,
         ContactsContract.Intents.Insert.TERTIARY_EMAIL
     )
-    @Suppress("UNUSED")
+    @Suppress("unused")
     private val keysTypeEmail = arrayOf(
         ContactsContract.Intents.Insert.EMAIL_TYPE,
         ContactsContract.Intents.Insert.SECONDARY_EMAIL_TYPE,
@@ -264,7 +264,7 @@ class QRGEncoder(data: String?, bundle: Bundle?, type: Int, private var dimensio
             null
         }
 
-    @Suppress("UNUSED")
+    @Suppress("unused")
     fun getBitmap(margin: Int?): Bitmap? {
         return if (!encoded) null else try {
             val hints: MutableMap<EncodeHintType?, Any?> = EnumMap(EncodeHintType::class.java)

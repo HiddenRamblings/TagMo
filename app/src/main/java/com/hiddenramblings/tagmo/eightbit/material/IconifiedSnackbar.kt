@@ -28,7 +28,7 @@ import com.google.android.material.snackbar.Snackbar
 import com.hiddenramblings.tagmo.R
 import com.hiddenramblings.tagmo.eightbit.os.Version.isJellyBeanMR
 
-@Suppress("UNUSED")
+@Suppress("unused")
 class IconifiedSnackbar @JvmOverloads constructor(activity: Activity, layout: ViewGroup? = null) {
     private val mActivity: Activity
     private val layout: ViewGroup?

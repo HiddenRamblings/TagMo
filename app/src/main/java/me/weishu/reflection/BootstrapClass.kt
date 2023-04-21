@@ -11,7 +11,7 @@ import java.lang.reflect.Method
  * @author AbandonedCart
  * @date 2023/1/31
  */
-@Suppress("UNUSED")
+@Suppress("unused")
 object BootstrapClass {
     private const val TAG = "BootstrapClass"
     private var sVmRuntime: Any? = null

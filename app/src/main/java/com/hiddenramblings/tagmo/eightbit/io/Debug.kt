@@ -32,7 +32,7 @@ import kotlinx.coroutines.withContext
 import java.io.*
 import java.util.*
 
-@Suppress("UNUSED")
+@Suppress("unused")
 object Debug {
     private val context: Context
         get() = TagMo.appContext

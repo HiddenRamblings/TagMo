@@ -13,7 +13,7 @@ import com.hiddenramblings.tagmo.R
  * FrameLayout that blurs its underlying content.
  * Can have children and draw them over blurred background.
  */
-@Suppress("UNUSED")
+@Suppress("unused")
 class BlurView : FrameLayout {
     private var blurController: BlurController = NoOpController()
 

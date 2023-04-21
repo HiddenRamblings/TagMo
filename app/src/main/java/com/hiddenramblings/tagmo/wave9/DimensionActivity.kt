@@ -69,7 +69,7 @@ class DimensionActivity : AppCompatActivity() {
         webViewSettings.domStorageEnabled = true
         webViewSettings.cacheMode = WebSettings.LOAD_NO_CACHE
         if (Version.isLowerThan(Build.VERSION_CODES.KITKAT))
-            @Suppress("DEPRECATION")
+            @Suppress("deprecation")
             webViewSettings.pluginState = WebSettings.PluginState.ON
         val assetLoader = WebViewAssetLoader.Builder().addPathHandler(
             "/assets/", WebViewAssetLoader.AssetsPathHandler(this)
@@ -115,9 +115,9 @@ class DimensionActivity : AppCompatActivity() {
             }
             WebView.setWebContentsDebuggingEnabled(true)
         } else {
-            @Suppress("DEPRECATION")
+            @Suppress("deprecation")
             webViewSettings.allowFileAccessFromFileURLs = true
-            @Suppress("DEPRECATION")
+            @Suppress("deprecation")
             webViewSettings.allowUniversalAccessFromFileURLs = true
         }
         mWebView.addJavascriptInterface(JSAPI(this, mWebView), jsInterface)

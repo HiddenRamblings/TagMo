@@ -1301,7 +1301,7 @@ class TagDataEditor : AppCompatActivity() {
         onAppDataSSBChecked(isAppDataInitialized)
     }
 
-    @Suppress("UNUSED")
+    @Suppress("unused")
     private fun enableAppDataSSBU(appData: ByteArray) {
         try {
             appDataSSBU = AppDataSSBU(appData)

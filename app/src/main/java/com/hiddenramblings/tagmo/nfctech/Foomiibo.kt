@@ -28,7 +28,7 @@ class Foomiibo {
         return uid
     }
 
-    @Suppress("UNUSED")
+    @Suppress("unused")
     private fun randomizeSerial(serial: String): String {
         val random = Random()
         val week = DecimalFormat("00").format((random.nextInt(52) + 1))

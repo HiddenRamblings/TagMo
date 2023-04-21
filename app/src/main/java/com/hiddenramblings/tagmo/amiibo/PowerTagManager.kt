@@ -45,7 +45,7 @@ object PowerTagManager {
         keys = keytable
     }
 
-    @Suppress("UNUSED")
+    @Suppress("unused")
     fun resetPowerTag(): Boolean {
         try {
             TagMo.appContext.resources.openRawResource(R.raw.powertag).use { stream ->

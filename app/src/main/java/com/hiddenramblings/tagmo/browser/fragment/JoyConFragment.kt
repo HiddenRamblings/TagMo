@@ -19,7 +19,6 @@ import com.hiddenramblings.tagmo.JoyCon
 import com.hiddenramblings.tagmo.R
 import com.hiddenramblings.tagmo.bluetooth.BluetoothHandler
 import com.hiddenramblings.tagmo.bluetooth.BluetoothHandler.BluetoothListener
-import com.hiddenramblings.tagmo.eightbit.io.Debug
 import com.hiddenramblings.tagmo.widget.Toasty
 import com.mumumusuc.libjoycon.BluetoothHelper
 import com.mumumusuc.libjoycon.BluetoothHelper.StateChangedCallback

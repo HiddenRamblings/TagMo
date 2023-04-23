@@ -1,7 +1,6 @@
 package com.hiddenramblings.tagmo.amiibo
 
 import com.hiddenramblings.tagmo.charset.CharsetCompat
-import com.hiddenramblings.tagmo.eightbit.io.Debug
 import com.hiddenramblings.tagmo.nfctech.TagArray
 
 class FlaskTag(name: List<String>) : Amiibo(null,

@@ -68,16 +68,16 @@ open class BrowserSettings : Parcelable {
     protected var listeners: ArrayList<BrowserSettingsListener?> = arrayListOf()
     var amiiboManager: AmiiboManager? = null
     var gamesManager: GamesManager? = null
-    protected var oldBrowserSettings: BrowserSettings? = null
+    private var oldBrowserSettings: BrowserSettings? = null
     var amiiboFiles: ArrayList<AmiiboFile?> = arrayListOf()
     var folders: ArrayList<File?> = arrayListOf()
     var query: String? = null
     var sort = 0
-    protected var filterCharacter: String? = null
-    protected var filterGameSeries: String? = null
-    protected var filterAmiiboSeries: String? = null
-    protected var filterAmiiboType: String? = null
-    protected var filterGameTitles: String? = null
+    private var filterCharacter: String? = null
+    private var filterGameSeries: String? = null
+    private var filterAmiiboSeries: String? = null
+    private var filterAmiiboType: String? = null
+    private var filterGameTitles: String? = null
     var amiiboView = 0
     var imageNetworkSettings: String? = null
     var pageTransformer = 0
@@ -101,7 +101,7 @@ open class BrowserSettings : Parcelable {
     ) : super() {
         this.amiiboFiles.addAll(amiiboFiles)
         this.folders.addAll(folders)
-        browserRootFolder = browserFolder
+        this.browserRootFolder = browserFolder
         this.query = query
         this.sort = sort
         this.filterCharacter = filterCharacter
@@ -109,10 +109,10 @@ open class BrowserSettings : Parcelable {
         this.filterAmiiboSeries = filterAmiiboSeries
         this.filterAmiiboType = filterAmiiboType
         this.filterGameTitles = filterGameTitles
-        amiiboView = browserAmiiboView
+        this.amiiboView = browserAmiiboView
         this.imageNetworkSettings = imageNetworkSettings
-        pageTransformer = browserPageTransformer
-        isRecursiveEnabled = recursiveFolders
+        this.pageTransformer = browserPageTransformer
+        this.isRecursiveEnabled = recursiveFolders
         this.lastUpdatedAPI = lastUpdatedAPI
         this.lastUpdatedGit = lastUpdatedGit
     }
@@ -196,26 +196,26 @@ open class BrowserSettings : Parcelable {
     }
 
     private fun copy(): BrowserSettings {
-        val copy = BrowserSettings(false)
-        copy.amiiboManager = amiiboManager
-        copy.amiiboFiles = amiiboFiles
-        copy.folders = folders
-        copy.query = query
-        copy.sort = sort
-        copy.setFilter(FILTER.CHARACTER, getFilter(FILTER.CHARACTER))
-        copy.setFilter(FILTER.GAME_SERIES, getFilter(FILTER.GAME_SERIES))
-        copy.setFilter(FILTER.AMIIBO_SERIES, getFilter(FILTER.AMIIBO_SERIES))
-        copy.setFilter(FILTER.AMIIBO_TYPE, getFilter(FILTER.AMIIBO_TYPE))
-        copy.setFilter(FILTER.GAME_TITLES, getFilter(FILTER.GAME_TITLES))
-        copy.amiiboView = amiiboView
-        copy.imageNetworkSettings = imageNetworkSettings
-        copy.pageTransformer = pageTransformer
-        copy.browserRootFolder = browserRootFolder
-        copy.browserRootDocument = browserRootDocument
-        copy.isRecursiveEnabled = isRecursiveEnabled
-        copy.lastUpdatedAPI = lastUpdatedAPI
-        copy.lastUpdatedGit = lastUpdatedGit
-        return copy
+        return BrowserSettings(false).also {
+            it.amiiboManager = amiiboManager
+            it.amiiboFiles = amiiboFiles
+            it.folders = folders
+            it.query = query
+            it.sort = sort
+            it.setFilter(FILTER.CHARACTER, getFilter(FILTER.CHARACTER))
+            it.setFilter(FILTER.GAME_SERIES, getFilter(FILTER.GAME_SERIES))
+            it.setFilter(FILTER.AMIIBO_SERIES, getFilter(FILTER.AMIIBO_SERIES))
+            it.setFilter(FILTER.AMIIBO_TYPE, getFilter(FILTER.AMIIBO_TYPE))
+            it.setFilter(FILTER.GAME_TITLES, getFilter(FILTER.GAME_TITLES))
+            it.amiiboView = amiiboView
+            it.imageNetworkSettings = imageNetworkSettings
+            it.pageTransformer = pageTransformer
+            it.browserRootFolder = browserRootFolder
+            it.browserRootDocument = browserRootDocument
+            it.isRecursiveEnabled = isRecursiveEnabled
+            it.lastUpdatedAPI = lastUpdatedAPI
+            it.lastUpdatedGit = lastUpdatedGit
+        }
     }
 
     override fun describeContents(): Int {
@@ -309,7 +309,7 @@ open class BrowserSettings : Parcelable {
     }
 
     companion object {
-        @JvmField
+        @JvmField @Suppress("unused")
         val CREATOR: Parcelable.Creator<BrowserSettings?> =
             object : Parcelable.Creator<BrowserSettings?> {
                 override fun createFromParcel(source: Parcel): BrowserSettings {

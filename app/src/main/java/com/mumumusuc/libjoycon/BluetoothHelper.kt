@@ -12,9 +12,7 @@ import android.os.Build
 import android.os.ParcelFileDescriptor
 import android.os.ParcelUuid
 import android.util.Log
-import com.hiddenramblings.tagmo.R
 import com.hiddenramblings.tagmo.parcelable
-import me.weishu.reflection.Reflection
 import java.lang.reflect.InvocationTargetException
 
 class BluetoothHelper(private val mAdapter: BluetoothAdapter) : BluetoothProfile.ServiceListener {

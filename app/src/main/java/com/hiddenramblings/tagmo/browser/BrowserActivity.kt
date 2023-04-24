@@ -96,7 +96,6 @@ import com.hiddenramblings.tagmo.widget.Toasty
 import eightbitlab.com.blurview.BlurView
 import eightbitlab.com.blurview.RenderEffectBlur
 import eightbitlab.com.blurview.RenderScriptBlur
-import eightbitlab.com.blurview.SupportRenderScriptBlur
 import kotlinx.coroutines.*
 import org.json.JSONException
 import java.io.File
@@ -380,16 +379,14 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
             }
         }.attach()
         val coordinator = findViewById<CoordinatorLayout>(R.id.coordinator)
-        if (Version.isJellyBeanMR) {
-            (amiiboContainer as BlurView?)!!.setupWith(
-                coordinator,
-                @Suppress("DEPRECATION") when {
-                    Version.isSnowCone -> RenderEffectBlur()
-                    Version.isJellyBeanMR -> RenderScriptBlur(this)
-                    else -> SupportRenderScriptBlur(this)
-                }
-            )
-                .setFrameClearDrawable(window.decorView.background)
+        if (Version.isJellyBeanMR && amiiboContainer is BlurView) {
+            (amiiboContainer as BlurView).setupWith(coordinator,
+                if (Version.isSnowCone)
+                    RenderEffectBlur()
+                else
+                    @Suppress("deprecation")
+                    RenderScriptBlur(this)
+            ).setFrameClearDrawable(window.decorView.background)
                 .setBlurRadius(2f).setBlurAutoUpdate(true)
         }
 
@@ -504,9 +501,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                     break
                 }
             }
-        } catch (e: Exception) {
-            Debug.warn(e)
-        }
+        } catch (e: Exception) { Debug.warn(e) }
         popup.menuInflater.inflate(R.menu.action_menu, popup.menu)
         nfcFab.setOnClickListener { showPopupMenu(popup) }
         findViewById<View>(R.id.amiiboContainer).setOnClickListener {
@@ -679,9 +674,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                             getString(R.string.wrote_file, fileName), Snackbar.LENGTH_SHORT
                         ).show()
                         onRootFolderChanged(true)
-                    } catch (e: Exception) {
-                        Toasty(this@BrowserActivity).Short(e.message)
-                    }
+                    } catch (e: Exception) { Toasty(this@BrowserActivity).Short(e.message) }
                     dialog.dismiss()
                 }
                 findViewById<View>(R.id.button_cancel).setOnClickListener { dialog.dismiss() }
@@ -1124,9 +1117,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                                 } ?: IconifiedSnackbar(this, viewPager).buildSnackbar(
                                     getString(R.string.fail_save_file), Snackbar.LENGTH_SHORT
                                 ).show()
-                            } catch (e: Exception) {
-                                Toasty(this).Short(e.message)
-                            }
+                            } catch (e: Exception) { Toasty(this).Short(e.message) }
                             backupDialog.dismiss()
                         }
                         view.findViewById<View>(R.id.button_cancel).setOnClickListener {
@@ -1634,9 +1625,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
             } else {
                 updateAmiiboView(tagData, amiiboFile)
             }
-        } catch (e: Exception) {
-            Debug.warn(e)
-        }
+        } catch (e: Exception) { Debug.warn(e) }
     }
 
     override fun onAmiiboRebind(itemView: View, amiiboFile: AmiiboFile?) {
@@ -1653,9 +1642,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
             } else {
                 updateAmiiboView(tagData, amiiboFile)
             }
-        } catch (e: Exception) {
-            Debug.warn(e)
-        }
+        } catch (e: Exception) { Debug.warn(e) }
     }
 
     override fun onAmiiboImageClicked(amiiboFile: AmiiboFile?) {
@@ -2119,9 +2106,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
             if (tagData?.isNotEmpty() == true) {
                 try {
                     amiiboId = Amiibo.dataToId(tagData)
-                } catch (e: Exception) {
-                    Debug.info(e)
-                }
+                } catch (e: Exception) { Debug.info(e) }
             }
             when (amiiboId) {
                 -1L -> {
@@ -2555,9 +2540,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                                 }
                                 withContext(Dispatchers.Main) { hideFakeSnackbar() }
                             }
-                        } catch (e: Exception) {
-                            Debug.warn(e)
-                        }
+                        } catch (e: Exception) { Debug.warn(e) }
                     }
                 } else {
                     rootFolder?.listFiles().also { directories ->
@@ -2587,9 +2570,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                                 }
                                 withContext(Dispatchers.Main) { hideFakeSnackbar() }
                             }
-                        } catch (e: Exception) {
-                            Debug.warn(e)
-                        }
+                        } catch (e: Exception) { Debug.warn(e) }
                     }
                 } else {
                     locateKeyFilesRecursive(Storage.getFile(prefs.preferEmulated()))

@@ -246,9 +246,7 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
                         override fun onFlaskFilesDownload(dataString: String) {
                             try {
                                 val tagData = dataString.toByteArray()
-                            } catch (e: Exception) {
-                                e.printStackTrace()
-                            }
+                            } catch (e: Exception) { e.printStackTrace() }
                         }
 
                         override fun onFlaskProcessFinish() {
@@ -847,9 +845,7 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
                 val headData = ByteBuffer.wrap(tagData!!)
                 val amiiboId = headData.getLong(0x28)
                 selectedAmiibo = it.amiibos[amiiboId]
-            } catch (e: Exception) {
-                Debug.info(e)
-            }
+            } catch (e: Exception) { Debug.info(e) }
         }
         return selectedAmiibo
     }
@@ -1035,9 +1031,7 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
                 val amiiboId = Amiibo.dataToId(amiiboData?.array())
                 amiibo = it.amiibos[amiiboId]
                 if (null == amiibo) amiibo = Amiibo(it, amiiboId, null, null)
-            } catch (e: Exception) {
-                Debug.warn(e)
-            }
+            } catch (e: Exception) { Debug.warn(e) }
         }
         amiibo?.let {
             amiiboData?.array()?.let { data ->
@@ -1057,9 +1051,7 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
                     val amiiboId = Amiibo.dataToId(file.data)
                     amiibo = it.amiibos[amiiboId]
                     if (null == amiibo) amiibo = Amiibo(it, amiiboId, null, null)
-                } catch (e: Exception) {
-                    Debug.warn(e)
-                }
+                } catch (e: Exception) { Debug.warn(e) }
             }
             amiibo?.let {
                 file.data?.let { data ->

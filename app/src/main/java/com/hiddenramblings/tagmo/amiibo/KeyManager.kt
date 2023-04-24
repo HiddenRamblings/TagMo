@@ -34,9 +34,7 @@ class KeyManager(var context: Context) {
                 if (fs.read(key) != NfcByte.KEY_FILE_SIZE) throw IOException(context.getString(R.string.key_size_invalid))
                 return key
             }
-        } catch (e: Exception) {
-            Debug.warn(R.string.key_read_error, e)
-        }
+        } catch (e: Exception) { Debug.warn(R.string.key_read_error, e) }
         return null
     }
 

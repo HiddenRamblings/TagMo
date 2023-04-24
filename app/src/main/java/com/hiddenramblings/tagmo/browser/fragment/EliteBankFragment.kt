@@ -527,9 +527,7 @@ class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
             CLICKED.VERIFY_TAG -> try {
                 TagArray.validateData(tagData)
                 Toasty(requireContext()).Dialog(R.string.validation_success)
-            } catch (e: Exception) {
-                Toasty(requireContext()).Dialog(e.message)
-            }
+            } catch (e: Exception) { Toasty(requireContext()).Dialog(e.message) }
             else -> {}
         }
         status = CLICKED.NOTHING
@@ -561,18 +559,14 @@ class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
                     TagArray.getValidatedDocument(keyManager, it)
                 }
                 args.putByteArray(NFCIntent.EXTRA_TAG_DATA, data)
-            } catch (e: Exception) {
-                Debug.warn(e)
-            }
+            } catch (e: Exception) { Debug.warn(e) }
         } else {
             try {
                 val data = amiiboFile.data ?: amiiboFile.filePath?.let {
                     TagArray.getValidatedFile(keyManager, it)
                 }
                 args.putByteArray(NFCIntent.EXTRA_TAG_DATA, data)
-            } catch (e: Exception) {
-                Debug.warn(e)
-            }
+            } catch (e: Exception) { Debug.warn(e) }
         }
         onUpdateTagResult.launch(Intent(requireContext(), NfcActivity::class.java).apply {
             putExtra(NFCIntent.EXTRA_SIGNATURE, prefs.eliteSignature())
@@ -626,9 +620,7 @@ class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
                 } ?: Toasty(requireContext()).Long(
                     getString(R.string.fail_save_file)
                 )
-            } catch (e: Exception) {
-                Toasty(requireActivity()).Short(e.message)
-            }
+            } catch (e: Exception) { Toasty(requireActivity()).Short(e.message) }
             backupDialog.dismiss()
         }
         view.findViewById<View>(R.id.button_cancel)
@@ -722,9 +714,7 @@ class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
                         try {
                             TagArray.validateData(tagData)
                             notice.Dialog(R.string.validation_success)
-                        } catch (e: Exception) {
-                            notice.Dialog(e.message)
-                        }
+                        } catch (e: Exception) { notice.Dialog(e.message) }
                     } else {
                         status = CLICKED.VERIFY_TAG
                         scanAmiiboBank(current_bank)
@@ -902,18 +892,14 @@ class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
                             TagArray.getValidatedDocument(keyManager, doc)
                         }
                         data?.let { bytesList.add(AmiiboData(data)) }
-                    } catch (e: Exception) {
-                        Debug.warn(e)
-                    }
+                    } catch (e: Exception) { Debug.warn(e) }
                 } else {
                     try {
                         val data = amiiboFile.data ?: amiiboFile.filePath?.let { file ->
                             TagArray.getValidatedFile(keyManager, file)
                         }
                         data?.let { bytesList.add(AmiiboData(data)) }
-                    } catch (e: Exception) {
-                        Debug.warn(e)
-                    }
+                    } catch (e: Exception) { Debug.warn(e) }
                 }
             }
         }

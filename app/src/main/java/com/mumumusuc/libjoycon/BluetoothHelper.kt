@@ -1,3 +1,5 @@
+@file:Suppress("unused", "WeakerAccess")
+
 package com.mumumusuc.libjoycon
 
 import android.bluetooth.BluetoothAdapter
@@ -12,6 +14,8 @@ import android.os.Build
 import android.os.ParcelFileDescriptor
 import android.os.ParcelUuid
 import android.util.Log
+import com.hiddenramblings.tagmo.eightbit.io.Debug
+import com.hiddenramblings.tagmo.eightbit.os.Version
 import com.hiddenramblings.tagmo.parcelable
 import java.lang.reflect.InvocationTargetException
 
@@ -31,7 +35,7 @@ class BluetoothHelper(private val mAdapter: BluetoothAdapter) : BluetoothProfile
     }
 
     private fun debug(msg: String) {
-        Log.d(TAG, msg)
+        Debug.verbose(this.javaClass, msg)
     }
 
     private val mReceiver by lazy {
@@ -168,17 +172,15 @@ class BluetoothHelper(private val mAdapter: BluetoothAdapter) : BluetoothProfile
 
     fun discovery(on: Boolean) {
         checkOrThrow()
-        if (isDiscovering && !on) {
+        if (mAdapter.isDiscovering && !on) {
             mAdapter.cancelDiscovery()
             return
         }
-        if (!isDiscovering && on) {
+        if (!mAdapter.isDiscovering && on) {
             mAdapter.startDiscovery()
             return
         }
     }
-
-    val isDiscovering: Boolean get() = mAdapter.isDiscovering
 
     fun pair(dev: BluetoothDevice) {
         checkOrThrow()
@@ -227,54 +229,30 @@ class BluetoothHelper(private val mAdapter: BluetoothAdapter) : BluetoothProfile
                     val BTSOCK_FLAG_NO_SDP = 4
                     val SEC_FLAG_AUTH_MITM = 8
                     val SEC_FLAG_AUTH_16_DIGIT = 16
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
-                        dev.setPin(byteArrayOf(0, 0, 0, 0))
+                    if (Version.isKitKat) dev.setPin(byteArrayOf(0, 0, 0, 0))
                     val pfd: ParcelFileDescriptor = try {
                         connectSocket.invoke(
-                            bsm,
-                            dev,
-                            3,
-                            null,
-                            17,
-                            0
+                            bsm, dev, 3, null, 17, 0
                         ) as ParcelFileDescriptor
                     } catch (ex: InvocationTargetException) {
                         connectSocket.invoke(
-                            bsm,
-                            dev,
-                            3,
-                            dev.uuids[0],
-                            17,
-                            0
+                            bsm, dev, 3, dev.uuids[0], 17, 0
                         ) as ParcelFileDescriptor
                     }
-                    val fd = pfd.fileDescriptor
-                    Log.d(TAG, "pfd = $pfd, fd = {$fd}")
+                    debug("pfd = $pfd, fd = ${pfd.fileDescriptor}")
                     try {
                         connectSocket.invoke(
-                            bsm,
-                            dev,
-                            3,
-                            null,
-                            19,
-                            0
+                            bsm, dev, 3, null, 19, 0
                         ) as ParcelFileDescriptor
                     } catch (ex: InvocationTargetException) {
                         connectSocket.invoke(
-                            bsm,
-                            dev,
-                            3,
-                            dev.uuids[0],
-                            19,
-                            0
+                            bsm, dev, 3, dev.uuids[0], 19, 0
                         ) as ParcelFileDescriptor
                     }
-                } catch (e: Exception) {
-                    Log.e(TAG, Log.getStackTraceString(e))
-                }
+                } catch (e: Exception) { Debug.error(e) }
             }.start()
         } catch (e: Exception) {
-            Log.e(TAG, Log.getStackTraceString(e))
+            Debug.error(e)
         }
     }
 
@@ -287,7 +265,7 @@ class BluetoothHelper(private val mAdapter: BluetoothAdapter) : BluetoothProfile
                 return
             }
             if (state == BluetoothAdapter.STATE_DISCONNECTED && on) {
-                if (isDiscovering) {
+                if (mAdapter.isDiscovering) {
                     discovery(false)
                 }
                 host.connect(dev)

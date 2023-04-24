@@ -289,9 +289,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
                         summary = total.toString()
                     }
                 }
-            } catch (e: Exception) {
-                Debug.info(e)
-            }
+            } catch (e: Exception) { Debug.info(e) }
         }
         findPreference<Preference>(getString(R.string.disclaimer_tagmo))?.apply {
             try {
@@ -305,9 +303,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
                         summary = total.toString()
                     }
                 }
-            } catch (e: Exception) {
-                Debug.info(e)
-            }
+            } catch (e: Exception) { Debug.info(e) }
         }
     }
 
@@ -342,9 +338,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
                         }
                     }
                 }
-            } catch (e: Exception) {
-                Debug.info(e)
-            }
+            } catch (e: Exception) { Debug.info(e) }
         }
     }
 
@@ -363,9 +357,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
                 )))
                 (requireActivity() as BrowserActivity).onKeysLoaded(true)
                 updateKeySummary()
-            } catch (e: Exception) {
-                Toasty(requireActivity()).Short(e.message)
-            }
+            } catch (e: Exception) { Toasty(requireActivity()).Short(e.message) }
             scannerDialog.dismiss()
         }
         view.findViewById<View>(R.id.button_cancel).setOnClickListener { scannerDialog.dismiss() }
@@ -621,7 +613,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
 
     private fun buildSnackbar(activity: AppCompatActivity, msgRes: Int, length: Int): Snackbar {
         return IconifiedSnackbar(activity).buildSnackbar(
-            requireActivity().findViewById(R.id.preferences), msgRes, length
+            activity.findViewById(R.id.preferences), msgRes, length
         )
     }
 
@@ -648,9 +640,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
                         } catch (ignored: IllegalStateException) { }
                     }
                 }
-            } catch (e: Exception) {
-                Debug.warn(e)
-            }
+            } catch (e: Exception) { Debug.warn(e) }
         }
     }
 
@@ -672,9 +662,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
                         ).setAction(R.string.sync) { onDownloadRequested(lastUpdated) }.show()
                     }
                 }
-            } catch (e: Exception) {
-                Debug.warn(e)
-            }
+            } catch (e: Exception) { Debug.warn(e) }
         }
     }
 

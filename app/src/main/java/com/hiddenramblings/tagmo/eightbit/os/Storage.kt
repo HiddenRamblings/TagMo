@@ -67,9 +67,7 @@ object Storage : Environment() {
                         }
                     }
                 }
-            } catch (e: Exception) {
-                e.printStackTrace()
-            }
+            } catch (e: Exception) { e.printStackTrace() }
             return out
         }
 

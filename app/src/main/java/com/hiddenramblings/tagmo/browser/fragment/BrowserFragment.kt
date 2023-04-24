@@ -254,9 +254,7 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
                 }
                 .setNegativeButton(R.string.cancel) { dialog: DialogInterface, _: Int -> dialog.dismiss() }
                 .show()
-        } catch (e: Exception) {
-            Toasty(requireContext()).Short(R.string.delete_virtual)
-        }
+        } catch (e: Exception) { Toasty(requireContext()).Short(R.string.delete_virtual) }
     }
 
     fun clearFoomiiboSet(activity: AppCompatActivity) {
@@ -278,9 +276,7 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
             TagArray.writeBytesToFile(
                 directory, TagArray.decipherFilename(amiibo, tagData, false), tagData
             )
-        } catch (e: Exception) {
-            Debug.warn(e)
-        }
+        } catch (e: Exception) { Debug.warn(e) }
     }
 
     fun buildFoomiiboFile(tagData: ByteArray) {
@@ -297,9 +293,7 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
             IconifiedSnackbar(requireActivity(), browserScroller).buildSnackbar(
                 getString(R.string.wrote_foomiibo, amiibo.name), Snackbar.LENGTH_SHORT
             ).show()
-        } catch (e: Exception) {
-            Debug.warn(e)
-        }
+        } catch (e: Exception) { Debug.warn(e) }
     }
 
     fun buildFoomiiboSet(activity: AppCompatActivity) {

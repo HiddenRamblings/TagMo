@@ -96,7 +96,7 @@ android {
         }
     }
 
-    def javaVersion = JavaVersion.VERSION_11
+    def javaVersion = JavaVersion.VERSION_17
     kotlinOptions {
         jvmTarget = javaVersion.toString()
     }
@@ -119,7 +119,7 @@ android {
 }
 
 dependencies {
-    implementation 'androidx.activity:activity-ktx:1.7.0'
+    implementation 'androidx.activity:activity-ktx:1.7.1'
     implementation 'androidx.appcompat:appcompat:1.6.1'
     implementation "androidx.browser:browser:1.5.0"
     implementation 'androidx.camera:camera-core:1.2.2'

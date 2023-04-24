@@ -46,9 +46,7 @@ object Debug {
                 val get = c.getMethod("get", String::class.java)
                 val name = get.invoke(c, "ro.product.manufacturer") as String
                 name.ifEmpty { "Unknown" }
-            } catch (e: Exception) {
-                Build.MANUFACTURER
-            }
+            } catch (e: Exception) { Build.MANUFACTURER }
         }
 
     val isOxygenOS: Boolean
@@ -58,9 +56,7 @@ object Debug {
             val get = c.getMethod("get", String::class.java)
             val name = get.invoke(c, "ro.vendor.oplus.market.name") as String
             name.isNotEmpty()
-        } catch (e: Exception) {
-            manufacturer == "OnePlus"
-        }
+        } catch (e: Exception) { manufacturer == "OnePlus" }
 
     private fun hasDebugging(): Boolean {
         return !mPrefs.disableDebug()

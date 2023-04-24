@@ -323,9 +323,7 @@ object AmiiboManager {
                     TagArray.getValidatedFile(keyManager, file).also { data ->
                         data?.let { amiiboFiles.add(AmiiboFile(file, Amiibo.dataToId(it), it)) }
                     }
-                } catch (e: Exception) {
-                    Debug.info(e)
-                }
+                } catch (e: Exception) { Debug.info(e) }
             }
         } else if (recursiveFiles) {
             val directories = rootFolder?.listFiles()
@@ -355,9 +353,7 @@ object AmiiboManager {
                         ))
                     }
                 }
-            } catch (e: Exception) {
-                Debug.info(e)
-            }
+            } catch (e: Exception) { Debug.info(e) }
         }
         return amiiboFiles
     }

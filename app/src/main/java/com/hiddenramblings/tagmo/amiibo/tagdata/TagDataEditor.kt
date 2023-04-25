@@ -261,8 +261,7 @@ class TagDataEditor : AppCompatActivity() {
             override fun onTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {}
             override fun afterTextChanged(editable: Editable) {
                 try {
-                    val writeCounter = txtWriteCounter.text.toString().toInt()
-                    amiiboData.checkWriteCount(writeCounter)
+                    amiiboData.checkWriteCount(editable.toString().toInt())
                     txtWriteCounter.error = null
                 } catch (e: Exception) {
                     txtWriteCounter.error = getString(
@@ -960,24 +959,23 @@ class TagDataEditor : AppCompatActivity() {
         }
     }
 
-    fun onHeartsUpdate() {
-        try {
-            val hearts = txtHearts1?.text.toString().toInt()
-            txtHearts2?.let {
-                it.isEnabled = hearts < 20
-                if (!it.isEnabled) {
-                    it.setSelection(0)
+    fun onHeartsUpdate(hearts: Int) {
+        txtHearts2?.let { spinner ->
+            txtHearts1?.let {
+                try {
+                    spinner.isEnabled = hearts < 20
+                    if (!spinner.isEnabled) spinner.setSelection(0)
+                    try {
+                        appDataZeldaTP?.checkHearts(hearts * 4)
+                        it.error = null
+                    } catch (e: Exception) {
+                        it.error = getString(R.string.error_min_max, 0, 20)
+                    }
+                } catch (e: NumberFormatException) {
+                    it.error = getString(R.string.error_min_max, 0, 20)
+                    spinner.isEnabled = it.isEnabled == true
                 }
             }
-            try {
-                appDataZeldaTP?.checkHearts(hearts * 4)
-                txtHearts1?.error = null
-            } catch (e: Exception) {
-                txtHearts1?.error = getString(R.string.error_min_max, 0, 20)
-            }
-        } catch (e: NumberFormatException) {
-            txtHearts1?.error = getString(R.string.error_min_max, 0, 20)
-            txtHearts2?.isEnabled = txtHearts1?.isEnabled == true
         }
     }
 
@@ -1021,28 +1019,29 @@ class TagDataEditor : AppCompatActivity() {
         txtHearts1?.setText((hearts / 4).toString())
         txtHearts2?.setSelection(hearts % 4)
         txtHearts2?.isEnabled = hearts / 4 < 20
-        txtLevelZeldaTP?.addTextChangedListener(object : TextWatcher {
-            override fun beforeTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {}
-            override fun onTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {
-                try {
-                    val text = txtLevelZeldaTP?.text.toString().toInt()
+        txtLevelZeldaTP?.let {
+            it.addTextChangedListener(object : TextWatcher {
+                override fun beforeTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {}
+                override fun onTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {
                     try {
-                        appDataZeldaTP?.checkLevel(text)
-                        txtLevelZeldaTP?.error = null
-                    } catch (e: Exception) {
-                        txtLevelZeldaTP?.error = getString(R.string.error_min_max, 0, 40)
+                        try {
+                            appDataZeldaTP?.checkLevel(charSequence.toString().toInt())
+                            it.error = null
+                        } catch (e: Exception) {
+                            it.error = getString(R.string.error_min_max, 0, 40)
+                        }
+                    } catch (e: NumberFormatException) {
+                        it.error = getString(R.string.error_min_max, 0, 40)
                     }
-                } catch (e: NumberFormatException) {
-                    txtLevelZeldaTP?.error = getString(R.string.error_min_max, 0, 40)
                 }
-            }
 
-            override fun afterTextChanged(editable: Editable) {}
-        })
+                override fun afterTextChanged(editable: Editable) {}
+            })
+        }
         txtHearts1?.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {}
             override fun onTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {
-                onHeartsUpdate()
+                onHeartsUpdate(charSequence.toString().toInt())
             }
 
             override fun afterTextChanged(editable: Editable) {}
@@ -1191,77 +1190,81 @@ class TagDataEditor : AppCompatActivity() {
         setEffectValue(spnEffect1, bonusEffect1)
         setEffectValue(spnEffect2, bonusEffect2)
         setEffectValue(spnEffect3, bonusEffect3)
-        txtLevelSSB?.addTextChangedListener(object : TextWatcher {
-            override fun beforeTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {}
-            override fun onTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {
-                try {
-                    val text = txtLevelSSB?.text.toString().toInt()
-                    if (text < 1 || text > 50) {
-                        txtLevelSSB?.error = getString(R.string.error_min_max, 1, 50)
-                    } else {
-                        txtLevelSSB?.error = null
-                    }
-                } catch (e: NumberFormatException) {
-                    txtLevelSSB?.error = getString(R.string.error_min_max, 1, 50)
-                }
-            }
-
-            override fun afterTextChanged(editable: Editable) {}
-        })
-        txtStatAttack?.addTextChangedListener(object : TextWatcher {
-            override fun beforeTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {}
-            override fun onTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {
-                try {
-                    val text = txtStatAttack?.text.toString().toInt()
+        txtLevelSSB?.let {
+            it.addTextChangedListener(object : TextWatcher {
+                override fun beforeTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {}
+                override fun onTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {
                     try {
-                        appDataSSB?.checkStat(text)
-                        txtStatAttack?.error = null
-                    } catch (e: Exception) {
-                        txtStatAttack?.error = getString(R.string.error_min_max, -200, 200)
+                        val text = charSequence.toString().toInt()
+                        if (text < 1 || text > 50)
+                            it.error = getString(R.string.error_min_max, 1, 50)
+                        else it.error = null
+                    } catch (e: NumberFormatException) {
+                        it.error = getString(R.string.error_min_max, 1, 50)
                     }
-                } catch (e: NumberFormatException) {
-                    txtStatAttack?.error = getString(R.string.error_min_max, -200, 200)
                 }
-            }
 
-            override fun afterTextChanged(editable: Editable) {}
-        })
-        txtStatDefense?.addTextChangedListener(object : TextWatcher {
-            override fun beforeTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {}
-            override fun onTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {
-                try {
-                    val text = txtStatDefense?.text.toString().toInt()
+                override fun afterTextChanged(editable: Editable) {}
+            })
+        }
+        txtStatAttack?.let {
+            it.addTextChangedListener(object : TextWatcher {
+                override fun beforeTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {}
+                override fun onTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {
                     try {
-                        appDataSSB?.checkStat(text)
-                        txtStatDefense?.error = null
-                    } catch (e: Exception) {
-                        txtStatDefense?.error = getString(R.string.error_min_max, -200, 200)
+                        val text = charSequence.toString().toInt()
+                        try {
+                            appDataSSB?.checkStat(text)
+                            it.error = null
+                        } catch (e: Exception) {
+                            it.error = getString(R.string.error_min_max, -200, 200)
+                        }
+                    } catch (e: NumberFormatException) {
+                        it.error = getString(R.string.error_min_max, -200, 200)
                     }
-                } catch (e: NumberFormatException) {
-                    txtStatDefense?.error = getString(R.string.error_min_max, -200, 200)
                 }
-            }
 
-            override fun afterTextChanged(editable: Editable) {}
-        })
-        txtStatSpeed?.addTextChangedListener(object : TextWatcher {
-            override fun beforeTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {}
-            override fun onTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {
-                try {
-                    val text = txtStatSpeed?.text.toString().toInt()
+                override fun afterTextChanged(editable: Editable) {}
+            })
+        }
+        txtStatDefense?.let {
+            it.addTextChangedListener(object : TextWatcher {
+                override fun beforeTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {}
+                override fun onTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {
                     try {
-                        appDataSSB?.checkStat(text)
-                        txtStatSpeed?.error = null
-                    } catch (e: Exception) {
-                        txtStatSpeed?.error = getString(R.string.error_min_max, -200, 200)
+                        try {
+                            appDataSSB?.checkStat(charSequence.toString().toInt())
+                            it.error = null
+                        } catch (e: Exception) {
+                            it.error = getString(R.string.error_min_max, -200, 200)
+                        }
+                    } catch (e: NumberFormatException) {
+                        it.error = getString(R.string.error_min_max, -200, 200)
                     }
-                } catch (e: NumberFormatException) {
-                    txtStatSpeed?.error = getString(R.string.error_min_max, -200, 200)
                 }
-            }
 
-            override fun afterTextChanged(editable: Editable) {}
-        })
+                override fun afterTextChanged(editable: Editable) {}
+            })
+        }
+        txtStatSpeed?.let {
+            it.addTextChangedListener(object : TextWatcher {
+                override fun beforeTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {}
+                override fun onTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {
+                    try {
+                        try {
+                            appDataSSB?.checkStat(charSequence.toString().toInt())
+                            it.error = null
+                        } catch (e: Exception) {
+                            it.error = getString(R.string.error_min_max, -200, 200)
+                        }
+                    } catch (e: NumberFormatException) {
+                        it.error = getString(R.string.error_min_max, -200, 200)
+                    }
+                }
+
+                override fun afterTextChanged(editable: Editable) {}
+            })
+        }
         onAppDataSSBChecked(isAppDataInitialized)
     }
 
@@ -1327,77 +1330,84 @@ class TagDataEditor : AppCompatActivity() {
         txtStatAttackU?.setText(statAttack.toString())
         txtStatDefenseU?.setText(statDefense.toString())
         txtStatSpeedU?.setText(statSpeed.toString())
-        txtLevelSSBU?.addTextChangedListener(object : TextWatcher {
-            override fun beforeTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {}
-            override fun onTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {
-                try {
-                    val text = txtLevelSSBU?.text.toString().toInt()
-                        txtLevelSSBU?.error = if (text < 1 || text > 50)
+        txtLevelSSBU?.let {
+            it.addTextChangedListener(object : TextWatcher {
+                override fun beforeTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {}
+                override fun onTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {
+                    try {
+                        val text = charSequence.toString().toInt()
+                        it.error = if (text < 1 || text > 50)
                             getString(R.string.error_min_max, 1, 50)
                         else null
-                } catch (e: NumberFormatException) {
-                    txtLevelSSBU?.error = getString(R.string.error_min_max, 1, 50)
-                }
-            }
-
-            override fun afterTextChanged(editable: Editable) {}
-        })
-        txtStatAttackU?.addTextChangedListener(object : TextWatcher {
-            override fun beforeTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {}
-            override fun onTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {
-                try {
-                    val text = txtStatAttackU?.text.toString().toInt()
-                    try {
-                        appDataSSBU?.checkStat(text)
-                        txtStatAttackU?.error = null
-                    } catch (e: Exception) {
-                        txtStatAttackU?.error = getString(R.string.error_min_max, -0, 2500)
+                    } catch (e: NumberFormatException) {
+                        it.error = getString(R.string.error_min_max, 1, 50)
                     }
-                } catch (e: NumberFormatException) {
-                    txtStatAttackU?.error = getString(R.string.error_min_max, 0, 2500)
                 }
-            }
 
-            override fun afterTextChanged(editable: Editable) {}
-        })
-        txtStatDefenseU?.addTextChangedListener(object : TextWatcher {
-            override fun beforeTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {}
-            override fun onTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {
-                try {
-                    val text = txtStatDefenseU?.text.toString().toInt()
+                override fun afterTextChanged(editable: Editable) {}
+            })
+        }
+        txtStatAttackU?.let {
+            it.addTextChangedListener(object : TextWatcher {
+                override fun beforeTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {}
+                override fun onTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {
                     try {
-                        appDataSSBU?.checkStat(text)
-                        txtStatDefenseU?.error = null
-                    } catch (e: Exception) {
-                        txtStatDefenseU?.error = getString(R.string.error_min_max, 0, 2500)
+                        try {
+                            appDataSSBU?.checkStat(charSequence.toString().toInt())
+                            it.error = null
+                        } catch (e: Exception) {
+                            it.error = getString(R.string.error_min_max, -0, 2500)
+                        }
+                    } catch (e: NumberFormatException) {
+                        it.error = getString(R.string.error_min_max, 0, 2500)
                     }
-                } catch (e: NumberFormatException) {
-                    txtStatDefenseU?.error = getString(R.string.error_min_max, 0, 2500)
                 }
-            }
 
-            override fun afterTextChanged(editable: Editable) {}
-        })
+                override fun afterTextChanged(editable: Editable) {}
+            })
+        }
+        txtStatDefenseU?.let {
+            it.addTextChangedListener(object : TextWatcher {
+                override fun beforeTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {}
+                override fun onTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {
+                    try {
+                        try {
+                            appDataSSBU?.checkStat(charSequence.toString().toInt())
+                            it.error = null
+                        } catch (e: Exception) {
+                            it.error = getString(R.string.error_min_max, 0, 2500)
+                        }
+                    } catch (e: NumberFormatException) {
+                        it.error = getString(R.string.error_min_max, 0, 2500)
+                    }
+                }
+
+                override fun afterTextChanged(editable: Editable) {}
+            })
+        }
     }
 
     private fun onAppDataZeldaTPChecked(enabled: Boolean) {
-        if (null == txtHearts2) return
-        txtHearts1?.isEnabled = enabled
-        onHeartsUpdate()
+        txtHearts1?.let {
+            it.isEnabled = enabled
+            onHeartsUpdate(it.text.toString().toInt())
+        }
         txtLevelZeldaTP?.isEnabled = enabled
     }
 
     private fun onAppDataSplatoonChecked(enabled: Boolean) {
-        if (null == buttonInject) return
-        appDataSplatoon?.let {
-            buttonInject?.isEnabled = enabled && !it.checkSaveData()
+        buttonInject?.let {
+            appDataSplatoon?.let { appData ->
+                it.isEnabled = enabled && !appData.checkSaveData()
+            }
         }
     }
 
     private fun onAppDataSplatoon3Checked(enabled: Boolean) {
-        if (null == buttonInject3) return
-        appDataSplatoon3?.let {
-            buttonInject3?.isEnabled = enabled && !it.checkSaveData()
+        buttonInject3?.let {
+            appDataSplatoon3?.let { appData ->
+                it.isEnabled = enabled && !appData.checkSaveData()
+            }
         }
     }
 
@@ -1429,21 +1439,22 @@ class TagDataEditor : AppCompatActivity() {
 
     @Throws(NumberFormatException::class)
     private fun onAppDataZeldaTPSaved(): ByteArray? {
-        try {
-            val level = txtLevelZeldaTP?.text.toString().toInt()
-            appDataZeldaTP?.level = level
-        } catch (e: NumberFormatException) {
-            txtLevelZeldaTP?.requestFocus()
-            throw e
-        }
-        try {
-            val hearts1 = txtHearts1?.text.toString().toInt()
-            txtHearts2?.selectedItemPosition?.let { appDataZeldaTP?.hearts = hearts1 * 4 + it }
-        } catch (e: NumberFormatException) {
-            txtHearts1?.requestFocus()
-            throw e
-        }
-        return appDataZeldaTP?.array()
+        return appDataZeldaTP?.apply {
+            try {
+                val level = txtLevelZeldaTP?.text.toString().toInt()
+                this.level = level
+            } catch (e: NumberFormatException) {
+                txtLevelZeldaTP?.requestFocus()
+                throw e
+            }
+            try {
+                val hearts1 = txtHearts1?.text.toString().toInt()
+                txtHearts2?.selectedItemPosition?.let { this.hearts = hearts1 * 4 + it }
+            } catch (e: NumberFormatException) {
+                txtHearts1?.requestFocus()
+                throw e
+            }
+        }?.array()
     }
 
     private fun onAppDataSplatoonSaved(): ByteArray? {
@@ -1456,141 +1467,140 @@ class TagDataEditor : AppCompatActivity() {
 
     @Throws(Exception::class)
     private fun onAppDataSSBSaved(): ByteArray? {
-        try {
-            spnAppearance?.let {
-                appDataSSB?.appearence = it.selectedItemPosition
+        return appDataSSB?.apply {
+            try {
+                spnAppearance?.let {
+                    this.appearence = it.selectedItemPosition
+                }
+            } catch (e: NumberFormatException) {
+                spnAppearance?.requestFocus()
+                throw e
             }
-        } catch (e: NumberFormatException) {
-            spnAppearance?.requestFocus()
-            throw e
-        }
-        try {
-            val level = txtLevelSSB?.text.toString().toInt()
-            val oldLevel: Int? = try {
-                appDataSSB?.level
-            } catch (e: Exception) { null }
+            try {
+                val level = txtLevelSSB?.text.toString().toInt()
+                val oldLevel: Int? = try {
+                    this.level
+                } catch (e: Exception) { null }
 
-            // level is a granular value, so we don't want to overwrite it halfway through a level
-            if (null == oldLevel || level != oldLevel) {
-                appDataSSB?.level = level
+                // level is a granular value, so we don't want to overwrite it halfway through a level
+                if (null == oldLevel || level != oldLevel) this.level = level
+            } catch (e: NumberFormatException) {
+                txtLevelSSB?.requestFocus()
+                throw e
             }
-        } catch (e: NumberFormatException) {
-            txtLevelSSB?.requestFocus()
-            throw e
-        }
-        try {
-            spnSpecialNeutral?.let {
-                appDataSSB?.specialNeutral = it.selectedItemPosition
+            try {
+                spnSpecialNeutral?.let {
+                    this.specialNeutral = it.selectedItemPosition
+                }
+            } catch (e: NumberFormatException) {
+                spnSpecialNeutral?.requestFocus()
+                throw e
             }
-        } catch (e: NumberFormatException) {
-            spnSpecialNeutral?.requestFocus()
-            throw e
-        }
-        try {
-            spnSpecialSide?.let {
-                appDataSSB?.specialSide = it.selectedItemPosition
+            try {
+                spnSpecialSide?.let {
+                    this.specialSide = it.selectedItemPosition
+                }
+            } catch (e: NumberFormatException) {
+                spnSpecialSide?.requestFocus()
+                throw e
             }
-        } catch (e: NumberFormatException) {
-            spnSpecialSide?.requestFocus()
-            throw e
-        }
-        try {
-            spnSpecialUp?.let {
-                appDataSSB?.specialUp = it.selectedItemPosition
+            try {
+                spnSpecialUp?.let {
+                    this.specialUp = it.selectedItemPosition
+                }
+            } catch (e: NumberFormatException) {
+                spnSpecialUp?.requestFocus()
+                throw e
             }
-        } catch (e: NumberFormatException) {
-            spnSpecialUp?.requestFocus()
-            throw e
-        }
-        try {
-            spnSpecialDown?.let {
-                appDataSSB?.specialDown = it.selectedItemPosition
+            try {
+                spnSpecialDown?.let {
+                    this.specialDown = it.selectedItemPosition
+                }
+            } catch (e: NumberFormatException) {
+                spnSpecialDown?.requestFocus()
+                throw e
             }
-        } catch (e: NumberFormatException) {
-            spnSpecialDown?.requestFocus()
-            throw e
-        }
-        try {
-            val statAttack = txtStatAttack?.text.toString().toInt()
-            appDataSSB?.statAttack = statAttack
-        } catch (e: NumberFormatException) {
-            txtStatAttack?.requestFocus()
-            throw e
-        }
-        try {
-            val statDefense = txtStatDefense?.text.toString().toInt()
-            appDataSSB?.statDefense = statDefense
-        } catch (e: NumberFormatException) {
-            txtStatDefense?.requestFocus()
-            throw e
-        }
-        try {
-            val statSpeed = txtStatSpeed?.text.toString().toInt()
-            appDataSSB?.statSpeed = statSpeed
-        } catch (e: NumberFormatException) {
-            txtStatSpeed?.requestFocus()
-            throw e
-        }
-        try {
-            appDataSSB?.bonusEffect1 = getEffectValue(spnEffect1)
-        } catch (e: NumberFormatException) {
-            spnEffect1?.requestFocus()
-            throw e
-        }
-        try {
-            appDataSSB?.bonusEffect2 = getEffectValue(spnEffect2)
-        } catch (e: NumberFormatException) {
-            spnEffect2?.requestFocus()
-            throw e
-        }
-        try {
-            appDataSSB?.bonusEffect3 = getEffectValue(spnEffect3)
-        } catch (e: NumberFormatException) {
-            spnEffect3?.requestFocus()
-            throw e
-        }
-        return appDataSSB?.array()
+            try {
+                val statAttack = txtStatAttack?.text.toString().toInt()
+                this.statAttack = statAttack
+            } catch (e: NumberFormatException) {
+                txtStatAttack?.requestFocus()
+                throw e
+            }
+            try {
+                val statDefense = txtStatDefense?.text.toString().toInt()
+                this.statDefense = statDefense
+            } catch (e: NumberFormatException) {
+                txtStatDefense?.requestFocus()
+                throw e
+            }
+            try {
+                val statSpeed = txtStatSpeed?.text.toString().toInt()
+                this.statSpeed = statSpeed
+            } catch (e: NumberFormatException) {
+                txtStatSpeed?.requestFocus()
+                throw e
+            }
+            try {
+                this.bonusEffect1 = getEffectValue(spnEffect1)
+            } catch (e: NumberFormatException) {
+                spnEffect1?.requestFocus()
+                throw e
+            }
+            try {
+                this.bonusEffect2 = getEffectValue(spnEffect2)
+            } catch (e: NumberFormatException) {
+                spnEffect2?.requestFocus()
+                throw e
+            }
+            try {
+                this.bonusEffect3 = getEffectValue(spnEffect3)
+            } catch (e: NumberFormatException) {
+                spnEffect3?.requestFocus()
+                throw e
+            }
+        }?.array()
     }
 
     @Throws(Exception::class)
     private fun onAppDataSSBUSaved(): ByteArray? {
-        try {
-            spnAppearanceU?.let {
-                appDataSSB?.appearence = it.selectedItemPosition
+        return appDataSSBU?.apply {
+            try {
+                spnAppearanceU?.let {
+                    this.appearence = it.selectedItemPosition
+                }
+            } catch (e: NumberFormatException) {
+                spnAppearanceU?.requestFocus()
+                throw e
             }
-        } catch (e: NumberFormatException) {
-            spnAppearanceU?.requestFocus()
-            throw e
-        }
-        try {
-            val level = txtLevelSSBU?.text.toString().toInt()
-            val oldLevel: Int? = try {
-                appDataSSBU?.level
-            } catch (e: Exception) { null }
+            try {
+                val level = txtLevelSSBU?.text.toString().toInt()
+                val oldLevel: Int? = try {
+                    this.level
+                } catch (e: Exception) { null }
 
-            // level is a granular value, so we don't want to overwrite it halfway through a level
-            if (null == oldLevel || level != oldLevel) {
-                appDataSSBU?.level = level
+                // level is a granular value, so we don't want to overwrite it halfway through a level
+                if (null == oldLevel || level != oldLevel) this.level = level
+            } catch (e: NumberFormatException) {
+                txtLevelSSBU?.requestFocus()
+                throw e
             }
-        } catch (e: NumberFormatException) {
-            txtLevelSSBU?.requestFocus()
-            throw e
-        }
-        try {
-            val statAttack = txtStatAttackU?.text.toString().toInt()
-            appDataSSBU?.statAttack = statAttack
-        } catch (e: NumberFormatException) {
-            txtStatAttackU?.requestFocus()
-            throw e
-        }
-        try {
-            val statDefense = txtStatDefenseU?.text.toString().toInt()
-            appDataSSBU?.statDefense = statDefense
-        } catch (e: NumberFormatException) {
-            txtStatDefenseU?.requestFocus()
-            throw e
-        }
-        return appDataSSBU?.withChecksum()?.array()
+            try {
+                val statAttack = txtStatAttackU?.text.toString().toInt()
+                this.statAttack = statAttack
+            } catch (e: NumberFormatException) {
+                txtStatAttackU?.requestFocus()
+                throw e
+            }
+            try {
+                val statDefense = txtStatDefenseU?.text.toString().toInt()
+                this.statDefense = statDefense
+            } catch (e: NumberFormatException) {
+                txtStatDefenseU?.requestFocus()
+                throw e
+            }
+            withChecksum()
+        }?.array()
     }
 
     private fun showErrorDialog(msgRes: Int) {

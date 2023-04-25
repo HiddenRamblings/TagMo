@@ -1513,9 +1513,7 @@ class TagDataEditor : AppCompatActivity() {
             val level = txtLevelSSB?.text.toString().toInt()
             val oldLevel: Int? = try {
                 appDataSSB?.level
-            } catch (e: Exception) {
-                null
-            }
+            } catch (e: Exception) { null }
 
             // level is a granular value, so we don't want to overwrite it halfway through a level
             if (null == oldLevel || level != oldLevel) {
@@ -1613,9 +1611,7 @@ class TagDataEditor : AppCompatActivity() {
             val level = txtLevelSSBU?.text.toString().toInt()
             val oldLevel: Int? = try {
                 appDataSSBU?.level
-            } catch (e: Exception) {
-                null
-            }
+            } catch (e: Exception) { null }
 
             // level is a granular value, so we don't want to overwrite it halfway through a level
             if (null == oldLevel || level != oldLevel) {

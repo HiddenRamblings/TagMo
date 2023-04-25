@@ -524,27 +524,42 @@ class TagDataEditor : AppCompatActivity() {
             if (appDataSwitch.isChecked && null != appDataZeldaTP) {
                 try {
                     onAppDataZeldaTPSaved()?.let { newAmiiboData.appData = it }
-                } catch (e: Exception) { return }
+                } catch (e: Exception) {
+                    Debug.verbose(e)
+                    return
+                }
             }
             if (appDataSwitch.isChecked && null != appDataSplatoon) {
                 try {
                     onAppDataSplatoonSaved()?.let { newAmiiboData.appData = it }
-                } catch (e: Exception) { return }
+                } catch (e: Exception) {
+                    Debug.verbose(e)
+                    return
+                }
             }
             if (appDataSwitch.isChecked && null != appDataSplatoon3) {
                 try {
                     onAppDataSplatoon3Saved()?.let { newAmiiboData.appData = it }
-                } catch (e: Exception) { return }
+                } catch (e: Exception) {
+                    Debug.verbose(e)
+                    return
+                }
             }
             if (appDataSwitch.isChecked && null != appDataSSBU) {
                 try {
                     onAppDataSSBUSaved()?.let { newAmiiboData.appData = it }
-                } catch (e: Exception) { return }
+                } catch (e: Exception) {
+                    Debug.verbose(e)
+                    return
+                }
             }
             if (appDataSwitch.isChecked && null != appDataSSB) {
                 try {
                     onAppDataSSBSaved()?.let { newAmiiboData.appData = it }
-                } catch (e: Exception) { return }
+                } catch (e: Exception) {
+                    Debug.verbose(e)
+                    return
+                }
             }
         }
         try {
@@ -1565,42 +1580,41 @@ class TagDataEditor : AppCompatActivity() {
     @Throws(Exception::class)
     private fun onAppDataSSBUSaved(): ByteArray? {
         return appDataSSBU?.apply {
-            try {
-                spnAppearanceU?.let {
-                    this.appearence = it.selectedItemPosition
+                try {
+                    spnAppearanceU?.let {
+                        this.appearence = it.selectedItemPosition
+                    }
+                } catch (e: NumberFormatException) {
+                    spnAppearanceU?.requestFocus()
+                    throw e
                 }
-            } catch (e: NumberFormatException) {
-                spnAppearanceU?.requestFocus()
-                throw e
-            }
-            try {
-                val level = txtLevelSSBU?.text.toString().toInt()
-                val oldLevel: Int? = try {
-                    this.level
-                } catch (e: Exception) { null }
+                try {
+                    val level = txtLevelSSBU?.text.toString().toInt()
+                    val oldLevel: Int? = try {
+                        this.level
+                    } catch (e: Exception) { null }
 
-                // level is a granular value, so we don't want to overwrite it halfway through a level
-                if (null == oldLevel || level != oldLevel) this.level = level
-            } catch (e: NumberFormatException) {
-                txtLevelSSBU?.requestFocus()
-                throw e
-            }
-            try {
-                val statAttack = txtStatAttackU?.text.toString().toInt()
-                this.statAttack = statAttack
-            } catch (e: NumberFormatException) {
-                txtStatAttackU?.requestFocus()
-                throw e
-            }
-            try {
-                val statDefense = txtStatDefenseU?.text.toString().toInt()
-                this.statDefense = statDefense
-            } catch (e: NumberFormatException) {
-                txtStatDefenseU?.requestFocus()
-                throw e
-            }
-            withChecksum()
-        }?.array()
+                    // level is a granular value, so we don't want to overwrite it halfway through a level
+                    if (null == oldLevel || level != oldLevel) this.level = level
+                } catch (e: NumberFormatException) {
+                    txtLevelSSBU?.requestFocus()
+                    throw e
+                }
+                try {
+                    val statAttack = txtStatAttackU?.text.toString().toInt()
+                    this.statAttack = statAttack
+                } catch (e: NumberFormatException) {
+                    txtStatAttackU?.requestFocus()
+                    throw e
+                }
+                try {
+                    val statDefense = txtStatDefenseU?.text.toString().toInt()
+                    this.statDefense = statDefense
+                } catch (e: NumberFormatException) {
+                    txtStatDefenseU?.requestFocus()
+                    throw e
+                }
+            }?.withChecksum(amiiboData.array())?.array()
     }
 
     private fun showErrorDialog(msgRes: Int) {

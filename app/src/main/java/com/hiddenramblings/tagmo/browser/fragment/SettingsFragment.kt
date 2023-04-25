@@ -227,9 +227,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
             setValueIndex(prefs.browserPageTransformer())
             onPreferenceClickListener =
                 Preference.OnPreferenceClickListener { preference: Preference ->
-                    (preference as ListPreference).setValueIndex(
-                        prefs.browserPageTransformer()
-                    )
+                    (preference as ListPreference).setValueIndex(prefs.browserPageTransformer())
                     super@SettingsFragment.onPreferenceTreeClick(preference)
                 }
             onPreferenceChangeListener =

@@ -11,7 +11,7 @@ package com.hiddenramblings.tagmo.amiibo.tagdata
 
 import java.nio.ByteBuffer
 
-class Checksum {
+object ChecksumSSBU {
     private val u0: ByteArray
 
     init {

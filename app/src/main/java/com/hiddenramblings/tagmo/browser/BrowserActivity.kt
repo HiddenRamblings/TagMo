@@ -1026,8 +1026,12 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
         false
     }
 
-    private fun onCreateToolbarMenu(toolbar: Toolbar?, tagData: ByteArray?, amiiboFile: AmiiboFile?) {
-        if (null == toolbar) return
+    private fun onCreateToolbarMenu(itemView: View?, tagData: ByteArray?, amiiboFile: AmiiboFile?) {
+        val toolbar = when (itemView) {
+            is Toolbar -> itemView
+            else -> itemView?.findViewById<View>(R.id.menu_options)
+                ?.findViewById(R.id.toolbar) ?: return
+        }
         if (!toolbar.menu.hasVisibleItems()) toolbar.inflateMenu(R.menu.amiibo_menu)
         var available = (null != tagData) && tagData.isNotEmpty()
         if (available) {
@@ -1064,6 +1068,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
         }
         toolbar.setOnMenuItemClickListener { menuItem ->
             clickedAmiibo = amiiboFile
+            itemView.performClick()
             val scan = Intent(this, NfcActivity::class.java)
             when (menuItem.itemId) {
                 R.id.mnu_scan -> {
@@ -1268,9 +1273,8 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
     }
 
     private fun getGameCompatibility(txtUsage: TextView, tagData: ByteArray?) {
-        val usageLabel = findViewById<TextView>(R.id.txtUsageLabel)
-        settings?.gamesManager?.let {
-            usageLabel.run {
+        findViewById<TextView>(R.id.txtUsageLabel).run {
+            settings?.gamesManager?.let {
                 isVisible = true
                 CoroutineScope(Dispatchers.Default).launch {
                     val usage: String? = try {
@@ -1284,9 +1288,9 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                         txtUsage.text = usage
                     }
                 }
+            } ?: {
+                isGone = true
             }
-        } ?: usageLabel.run {
-            isGone = true
         }
     }
 
@@ -1616,8 +1620,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
             val tagData = TagArray.getValidatedData(keyManager, amiiboFile)
             if (settings?.amiiboView != VIEW.IMAGE.value) {
                 val menuOptions = itemView.findViewById<LinearLayout>(R.id.menu_options)
-                val toolbar = menuOptions.findViewById<Toolbar>(R.id.toolbar)
-                if (menuOptions.isGone) onCreateToolbarMenu(toolbar, tagData, amiiboFile)
+                if (menuOptions.isGone) onCreateToolbarMenu(itemView, tagData, amiiboFile)
                 menuOptions.isGone = menuOptions.isVisible
                 val txtUsage = itemView.findViewById<TextView>(R.id.txtUsage)
                 if (txtUsage.isGone) getGameCompatibility(txtUsage, tagData)
@@ -1634,10 +1637,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
             val tagData = amiiboFile.data
                 ?: TagArray.getValidatedFile(keyManager, amiiboFile.filePath)
             if (settings?.amiiboView != VIEW.IMAGE.value) {
-                onCreateToolbarMenu(
-                    itemView.findViewById<View>(R.id.menu_options).findViewById(R.id.toolbar),
-                    tagData, amiiboFile
-                )
+                onCreateToolbarMenu(itemView, tagData, amiiboFile)
                 getGameCompatibility(itemView.findViewById(R.id.txtUsage), tagData)
             } else {
                 updateAmiiboView(tagData, amiiboFile)
@@ -1648,7 +1648,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
     override fun onAmiiboImageClicked(amiiboFile: AmiiboFile?) {
         this.startActivity(Intent(this, ImageActivity::class.java)
             .putExtras(Bundle().apply {
-                putLong(NFCIntent.EXTRA_AMIIBO_ID, amiiboFile!!.id)
+                amiiboFile?.let { putLong(NFCIntent.EXTRA_AMIIBO_ID, it.id) }
             })
         )
     }
@@ -2164,9 +2164,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                     )
                     txtUsage.isGone = txtUsage.isVisible
                 }
-            } catch (ex: Exception) {
-                Debug.warn(ex)
-            }
+            } catch (ex: Exception) { Debug.warn(ex) }
             if (hasSpoofData(amiiboHexId)) txtTagId?.isEnabled = false
             imageAmiibo?.let {
                 it.setImageResource(0)

@@ -226,11 +226,9 @@ class AppDataSSBU(appData: ByteArray?) : AppData(appData!!) { // 0xE2 - 0D // 0x
     fun withChecksum(): ByteBuffer {
         val bb = ByteBuffer.allocate(4)
         bb.order(ByteOrder.LITTLE_ENDIAN)
-        bb.putInt(Checksum().generate(appData))
+        bb.putInt(ChecksumSSBU.generate(appData))
         val crc32 = bb.array()
-        crc32.indices.forEach {
-            appData.put(GAME_CRC32_OFFSET + it, crc32[it])
-        }
+        crc32.indices.forEach {appData.put(GAME_CRC32_OFFSET + it, crc32[it]) }
         return appData
     }
 

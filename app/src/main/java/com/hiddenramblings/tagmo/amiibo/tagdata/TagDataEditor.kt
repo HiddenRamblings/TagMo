@@ -46,6 +46,7 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 class TagDataEditor : AppCompatActivity() {
+
     private lateinit var txtError: TextView
     private lateinit var txtTagId: TextView
     private lateinit var txtName: TextView
@@ -126,6 +127,7 @@ class TagDataEditor : AppCompatActivity() {
     private var txtLevelCPU: EditText? = null
     private var txtStatAttackU: EditText? = null
     private var txtStatDefenseU: EditText? = null
+    private var txtStatSpeedU: EditText? = null
     private var appDataSSBU: AppDataSSBU? = null
 
     public override fun onCreate(savedInstanceState: Bundle?) {
@@ -523,37 +525,27 @@ class TagDataEditor : AppCompatActivity() {
             if (appDataSwitch.isChecked && null != appDataZeldaTP) {
                 try {
                     onAppDataZeldaTPSaved()?.let { newAmiiboData.appData = it }
-                } catch (e: Exception) {
-                    return
-                }
+                } catch (e: Exception) { return }
             }
             if (appDataSwitch.isChecked && null != appDataSplatoon) {
                 try {
                     onAppDataSplatoonSaved()?.let { newAmiiboData.appData = it }
-                } catch (e: Exception) {
-                    return
-                }
+                } catch (e: Exception) { return }
             }
             if (appDataSwitch.isChecked && null != appDataSplatoon3) {
                 try {
                     onAppDataSplatoon3Saved()?.let { newAmiiboData.appData = it }
-                } catch (e: Exception) {
-                    return
-                }
+                } catch (e: Exception) { return }
             }
             if (appDataSwitch.isChecked && null != appDataSSBU) {
                 try {
                     onAppDataSSBUSaved()?.let { newAmiiboData.appData = it }
-                } catch (e: Exception) {
-                    return
-                }
+                } catch (e: Exception) { return }
             }
             if (appDataSwitch.isChecked && null != appDataSSB) {
                 try {
                     onAppDataSSBSaved()?.let { newAmiiboData.appData = it }
-                } catch (e: Exception) {
-                    return
-                }
+                } catch (e: Exception) { return }
             }
         }
         try {
@@ -1019,14 +1011,10 @@ class TagDataEditor : AppCompatActivity() {
             appDataZeldaTP?.let {
                 level = try {
                     it.level
-                } catch (e: Exception) {
-                    40
-                }
+                } catch (e: Exception) { 40 }
                 hearts = try {
                     it.hearts
-                } catch (e: Exception) {
-                    AppDataZeldaTP.HEARTS_MAX_VALUE
-                }
+                } catch (e: Exception) { AppDataZeldaTP.HEARTS_MAX_VALUE }
             }
         }
         txtLevelZeldaTP?.setText(level.toString())
@@ -1142,64 +1130,40 @@ class TagDataEditor : AppCompatActivity() {
             appDataSSB?.let {
                 appearance = try {
                     it.appearence
-                } catch (e: Exception) {
-                    AppDataSSB.APPEARANCE_MIN_VALUE
-                }
+                } catch (e: Exception) { AppDataSSB.APPEARANCE_MIN_VALUE }
                 level = try {
                     it.level
-                } catch (e: Exception) {
-                    AppDataSSB.LEVEL_MAX_VALUE
-                }
+                } catch (e: Exception) { AppDataSSB.LEVEL_MAX_VALUE }
                 statAttack = try {
                     it.statAttack
-                } catch (e: Exception) {
-                    AppDataSSB.STATS_MAX_VALUE
-                }
+                } catch (e: Exception) { AppDataSSB.STATS_MAX_VALUE }
                 statDefense = try {
                     it.statDefense
-                } catch (e: Exception) {
-                    AppDataSSB.STATS_MAX_VALUE
-                }
+                } catch (e: Exception) { AppDataSSB.STATS_MAX_VALUE }
                 statSpeed = try {
                     it.statSpeed
-                } catch (e: Exception) {
-                    AppDataSSB.STATS_MAX_VALUE
-                }
+                } catch (e: Exception) { AppDataSSB.STATS_MAX_VALUE }
                 specialNeutral = try {
                     it.specialNeutral
-                } catch (e: Exception) {
-                    AppDataSSB.SPECIAL_MIN_VALUE
-                }
+                } catch (e: Exception) { AppDataSSB.SPECIAL_MIN_VALUE }
                 specialSide = try {
                     it.specialSide
-                } catch (e: Exception) {
-                    AppDataSSB.SPECIAL_MIN_VALUE
-                }
+                } catch (e: Exception) { AppDataSSB.SPECIAL_MIN_VALUE }
                 specialUp = try {
                     it.specialUp
-                } catch (e: Exception) {
-                    AppDataSSB.SPECIAL_MIN_VALUE
-                }
+                } catch (e: Exception) { AppDataSSB.SPECIAL_MIN_VALUE }
                 specialDown = try {
                     it.specialDown
-                } catch (e: Exception) {
-                    AppDataSSB.SPECIAL_MIN_VALUE
-                }
+                } catch (e: Exception) { AppDataSSB.SPECIAL_MIN_VALUE }
                 bonusEffect1 = try {
                     it.bonusEffect1
-                } catch (e: Exception) {
-                    AppDataSSB.BONUS_MAX_VALUE
-                }
+                } catch (e: Exception) { AppDataSSB.BONUS_MAX_VALUE }
                 bonusEffect2 = try {
                     it.bonusEffect2
-                } catch (e: Exception) {
-                    AppDataSSB.BONUS_MAX_VALUE
-                }
+                } catch (e: Exception) { AppDataSSB.BONUS_MAX_VALUE }
                 bonusEffect3 = try {
                     it.bonusEffect3
-                } catch (e: Exception) {
-                    AppDataSSB.BONUS_MAX_VALUE
-                }
+                } catch (e: Exception) { AppDataSSB.BONUS_MAX_VALUE }
             }
         } else {
             appearance = AppDataSSB.APPEARANCE_MIN_VALUE
@@ -1315,6 +1279,7 @@ class TagDataEditor : AppCompatActivity() {
         txtLevelCPU = findViewById(R.id.txtLevelCPU)
         txtStatAttackU = findViewById(R.id.txtStatAttackU)
         txtStatDefenseU = findViewById(R.id.txtStatDefenseU)
+        txtStatSpeedU = findViewById(R.id.txtStatSpeedU)
         setListForSpinners(arrayOf(spnAppearanceU), R.array.ssb_appearance_values)
         var appearance: Int = AppDataSSBU.APPEARANCE_MIN_VALUE
         var level: Int = AppDataSSBU.LEVEL_MIN_VALUE
@@ -1334,34 +1299,25 @@ class TagDataEditor : AppCompatActivity() {
             appDataSSBU?.let {
                 appearance = try {
                    it.appearence
-                } catch (e: Exception) {
-                    AppDataSSBU.APPEARANCE_MIN_VALUE
-                }
+                } catch (e: Exception) { AppDataSSBU.APPEARANCE_MIN_VALUE }
                 level = try {
                     it.level
-                } catch (e: Exception) {
-                    AppDataSSBU.LEVEL_MIN_VALUE
-                }
+                } catch (e: Exception) { AppDataSSBU.LEVEL_MIN_VALUE }
                 giftCount = try {
                     it.giftCount
-                } catch (e: Exception) {
-                    0
-                }
+                } catch (e: Exception) { 0 }
                 levelCPU = try {
                     it.levelCPU
-                } catch (e: Exception) {
-                    AppDataSSBU.LEVEL_MIN_VALUE
-                }
+                } catch (e: Exception) { AppDataSSBU.LEVEL_MIN_VALUE }
                 statAttack = try {
                     it.statAttack
-                } catch (e: Exception) {
-                    0
-                }
+                } catch (e: Exception) { 0 }
                 statDefense = try {
                     it.statDefense
-                } catch (e: Exception) {
-                    0
-                }
+                } catch (e: Exception) { 0 }
+                statSpeed = try {
+                    it.statSpeed
+                } catch (e: Exception) { 0 }
             }
         }
         spnAppearanceU?.setSelection(appearance)
@@ -1370,16 +1326,15 @@ class TagDataEditor : AppCompatActivity() {
         txtLevelCPU?.setText(levelCPU.toString())
         txtStatAttackU?.setText(statAttack.toString())
         txtStatDefenseU?.setText(statDefense.toString())
+        txtStatSpeedU?.setText(statSpeed.toString())
         txtLevelSSBU?.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {}
             override fun onTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {
                 try {
                     val text = txtLevelSSBU?.text.toString().toInt()
-                    if (text < 1 || text > 50) {
-                        txtLevelSSBU?.error = getString(R.string.error_min_max, 1, 50)
-                    } else {
-                        txtLevelSSBU?.error = null
-                    }
+                        txtLevelSSBU?.error = if (text < 1 || text > 50)
+                            getString(R.string.error_min_max, 1, 50)
+                        else null
                 } catch (e: NumberFormatException) {
                     txtLevelSSBU?.error = getString(R.string.error_min_max, 1, 50)
                 }
@@ -1467,7 +1422,7 @@ class TagDataEditor : AppCompatActivity() {
         spnAppearanceU?.isEnabled = enabled
         txtLevelSSBU?.isEnabled = enabled
         // txtGiftCount?.isEnabled = enabled
-        // txtLevelCPU?.isEnabled = enabled
+        txtLevelCPU?.isEnabled = enabled
         txtStatAttackU?.isEnabled = enabled
         txtStatDefenseU?.isEnabled = enabled
     }

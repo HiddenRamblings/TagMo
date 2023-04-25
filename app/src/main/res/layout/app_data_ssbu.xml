@@ -216,7 +216,7 @@
                 android:text="@string/speed"/>
 
             <EditText
-                android:id="@+id/txtStatSpeed"
+                android:id="@+id/txtStatSpeedU"
                 style="@style/TagEditor.EditNumber"
                 android:inputType="numberDecimal|numberSigned"
                 android:importantForAutofill="no"

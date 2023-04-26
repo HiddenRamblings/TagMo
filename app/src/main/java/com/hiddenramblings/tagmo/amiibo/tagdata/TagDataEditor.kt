@@ -71,6 +71,7 @@ class TagDataEditor : AppCompatActivity() {
     private lateinit var userDataSwitch: SwitchCompat
     private lateinit var generateSerial: AppCompatButton
     private lateinit var appDataViewZeldaTP: LinearLayout
+    private lateinit var appDataViewMLPaperJam: LinearLayout
     private lateinit var appDataViewSplatoon: LinearLayout
     private lateinit var appDataViewSplatoon3: LinearLayout
     private lateinit var appDataViewSSB: LinearLayout
@@ -99,7 +100,8 @@ class TagDataEditor : AppCompatActivity() {
     private var txtLevelZeldaTP: EditText? = null
     private var appDataZeldaTP: AppDataZeldaTP? = null
     private val appDataMHStories: AppDataMHStories? = null
-    private val appDataMLPaperJam: AppDataMLPaperJam? = null
+    private var appDataMLPaperJam: AppDataMLPaperJam? = null
+    private var buttonUnlock: AppCompatButton? = null
     private val appDataMLSuperstarSaga: AppDataMLSuperstarSaga? = null
     private val appDataMSSuperstars: AppDataMSSuperstars? = null
     private val appDataMarioTennis: AppDataMarioTennis? = null
@@ -165,6 +167,7 @@ class TagDataEditor : AppCompatActivity() {
         userDataSwitch = findViewById(R.id.userDataSwitch)
         generateSerial = findViewById(R.id.random_serial)
         appDataViewZeldaTP = findViewById(R.id.appDataZeldaTP)
+        appDataViewMLPaperJam = findViewById(R.id.appDataMLPaperJam)
         appDataViewSplatoon = findViewById(R.id.appDataSplatoon)
         appDataViewSplatoon3 = findViewById(R.id.appDataSplatoon3)
         appDataViewSSB = findViewById(R.id.appDataSSB)
@@ -529,6 +532,14 @@ class TagDataEditor : AppCompatActivity() {
                     return
                 }
             }
+            if (appDataSwitch.isChecked && null != appDataMLPaperJam) {
+                try {
+                    onAppDataMLPaperJamSaved()?.let { newAmiiboData.appData = it }
+                } catch (e: Exception) {
+                    Debug.verbose(e)
+                    return
+                }
+            }
             if (appDataSwitch.isChecked && null != appDataSplatoon) {
                 try {
                     onAppDataSplatoonSaved()?.let { newAmiiboData.appData = it }
@@ -595,6 +606,7 @@ class TagDataEditor : AppCompatActivity() {
 
     private fun updateAppDataEnabled(isAppDataInitialized: Boolean) {
         if (null != appDataZeldaTP) onAppDataZeldaTPChecked(isAppDataInitialized)
+        if (null != appDataMLPaperJam) onAppDataMLPaperJamChecked(isAppDataInitialized)
         if (null != appDataSplatoon) onAppDataSplatoonChecked(isAppDataInitialized)
         if (null != appDataSplatoon3) onAppDataSplatoon3Checked(isAppDataInitialized)
         if (null != appDataSSBU) onAppDataSSBUChecked(isAppDataInitialized)
@@ -811,6 +823,8 @@ class TagDataEditor : AppCompatActivity() {
         appDataViewZeldaTP.isGone = true
         appDataZeldaTP = null
         appDataViewSplatoon.isGone = true
+        appDataMLPaperJam = null
+        appDataViewMLPaperJam.isGone = true
         appDataSplatoon = null
         appDataViewSplatoon3.isGone = true
         appDataSplatoon3 = null
@@ -823,6 +837,10 @@ class TagDataEditor : AppCompatActivity() {
                 AppId_ZeldaTP -> {
                     appDataViewZeldaTP.isVisible = true
                     enableAppDataZeldaTP(amiiboData.appData)
+                }
+                AppId_MLPaperJam -> {
+                    appDataViewMLPaperJam.isVisible = true
+                    enableAppDataMLPaperJam(amiiboData.appData)
                 }
                 AppId_Splatoon -> {
                     appDataViewSplatoon.isVisible = true
@@ -1062,6 +1080,23 @@ class TagDataEditor : AppCompatActivity() {
             override fun afterTextChanged(editable: Editable) {}
         })
         onAppDataZeldaTPChecked(isAppDataInitialized)
+    }
+
+    private fun enableAppDataMLPaperJam(appData: ByteArray) {
+        try {
+            appDataMLPaperJam = AppDataMLPaperJam(appData)
+        } catch (e: Exception) {
+            appDataViewMLPaperJam.isGone = true
+            return
+        }
+        buttonUnlock = findViewById(R.id.unlock_sparkle_cards)
+        buttonUnlock?.setOnClickListener {
+            appDataMLPaperJam?.let { appData ->
+                appData.unlockSparkleCards()
+                it.isEnabled = !appData.checkSparkleCards()
+            }
+        }
+        onAppDataMLPaperJamChecked(isAppDataInitialized)
     }
 
     private fun enableAppDataSplatoon(appData: ByteArray) {
@@ -1410,6 +1445,14 @@ class TagDataEditor : AppCompatActivity() {
         txtLevelZeldaTP?.isEnabled = enabled
     }
 
+    private fun onAppDataMLPaperJamChecked(enabled: Boolean) {
+        buttonUnlock?.let {
+            appDataMLPaperJam?.let { appData ->
+                it.isEnabled = enabled && !appData.checkSparkleCards()
+            }
+        }
+    }
+
     private fun onAppDataSplatoonChecked(enabled: Boolean) {
         buttonInject?.let {
             appDataSplatoon?.let { appData ->
@@ -1470,6 +1513,10 @@ class TagDataEditor : AppCompatActivity() {
                 throw e
             }
         }?.array()
+    }
+
+    private fun onAppDataMLPaperJamSaved(): ByteArray? {
+        return appDataMLPaperJam?.array()
     }
 
     private fun onAppDataSplatoonSaved(): ByteArray? {

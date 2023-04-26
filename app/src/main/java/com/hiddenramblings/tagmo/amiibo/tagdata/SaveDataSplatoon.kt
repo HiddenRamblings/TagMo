@@ -42,8 +42,7 @@ class SaveDataSplatoon(appData: ByteArray?) : AppData(appData!!) {
 
     fun injectSaveData() : ByteBuffer {
         val appDataBytes = if (Random().nextBoolean()) saveDataBytes else saveDataBytes2
-        // appDataBytes.indices.forEach { appData.put(GAME_DATA_OFFSET + it, appDataBytes[it]) }
-        appData.put(appDataBytes, GAME_DATA_OFFSET, appDataBytes.size)
+        appDataBytes.indices.forEach { appData.put(GAME_DATA_OFFSET + it, appDataBytes[it]) }
         return appData
     }
 

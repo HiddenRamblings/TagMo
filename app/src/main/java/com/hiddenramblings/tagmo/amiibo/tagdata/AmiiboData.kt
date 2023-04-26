@@ -103,6 +103,9 @@ open class AmiiboData : Parcelable {
             putDate(tagData, MODIFIED_DATA_OFFSET, value)
         }
 
+    val miiData: ByteArray
+        get() = tagData.array().copyOfRange(0xA0, 0xFE)
+
     @get:Throws(UnsupportedEncodingException::class)
     var nickname: String
         get() = getString(tagData, NICKNAME_OFFSET, NICKNAME_LENGTH, CharsetCompat.UTF_16BE)
@@ -414,7 +417,7 @@ open class AmiiboData : Parcelable {
             )
         }
 
-        @JvmField
+        @JvmField @Suppress("unused")
         val CREATOR: Parcelable.Creator<AmiiboData?> = object : Parcelable.Creator<AmiiboData?> {
             override fun createFromParcel(source: Parcel): AmiiboData {
                 return AmiiboData(source)

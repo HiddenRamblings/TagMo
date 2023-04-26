@@ -13,6 +13,10 @@
             android:id="@+id/appDataZeldaTP" />
 
         <include
+            layout="@layout/app_data_ml_paper_jam"
+            android:id="@+id/appDataMLPaperJam" />
+
+        <include
             layout="@layout/app_data_splatoon"
             android:id="@+id/appDataSplatoon" />
 

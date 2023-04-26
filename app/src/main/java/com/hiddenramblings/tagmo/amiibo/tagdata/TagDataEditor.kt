@@ -822,9 +822,9 @@ class TagDataEditor : AppCompatActivity() {
     private fun updateAppDataView(appId: Int?) {
         appDataViewZeldaTP.isGone = true
         appDataZeldaTP = null
-        appDataViewSplatoon.isGone = true
-        appDataMLPaperJam = null
         appDataViewMLPaperJam.isGone = true
+        appDataMLPaperJam = null
+        appDataViewSplatoon.isGone = true
         appDataSplatoon = null
         appDataViewSplatoon3.isGone = true
         appDataSplatoon3 = null
@@ -1661,7 +1661,7 @@ class TagDataEditor : AppCompatActivity() {
                     txtStatDefenseU?.requestFocus()
                     throw e
                 }
-            }?.withChecksum(amiiboData.array())?.array()
+            }?.withChecksum(amiiboData.miiData)?.array()
     }
 
     private fun showErrorDialog(msgRes: Int) {

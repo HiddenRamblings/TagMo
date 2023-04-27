@@ -1,10 +1,9 @@
 package com.hiddenramblings.tagmo.amiibo.tagdata
 
 import com.hiddenramblings.tagmo.nfctech.TagArray
-import java.nio.ByteBuffer
 import java.util.*
 
-class SaveDataSplatoon(appData: ByteArray?) : AppData(appData!!) {
+open class SaveDataSplatoon(appData: ByteArray?) : AppData(appData!!) {
     private var saveDataHex = "01 01 00 00" +
             "00 00 00 00 42 C0 7B 0A 36 FA 8F C1 48 F5 09 60" +
             "C3 8E C5 52 EE E2 9A CE 27 71 5C 65 40 5B C3 F1" +
@@ -35,16 +34,16 @@ class SaveDataSplatoon(appData: ByteArray?) : AppData(appData!!) {
             "78 CO 3F 99 89 47 37 37 ED 6A E2 C8 9E C5 32 67" +
             "AA 42 4E 6D"
     private var saveDataBytes2 = TagArray.hexToByteArray(saveDataHex2.filter { !it.isWhitespace() })
-    fun checkSaveData(): Boolean {
+    open fun hasUnlockData(): Boolean {
         val saveData = appData.array().copyOfRange(GAME_DATA_OFFSET, saveDataBytes.size)
         return saveDataBytes.contentEquals(saveData) || saveDataBytes2.contentEquals(saveData)
     }
 
-    fun injectSaveData() : ByteBuffer {
-        val appDataBytes = if (Random().nextBoolean()) saveDataBytes else saveDataBytes2
-        appDataBytes.indices.forEach { appData.put(GAME_DATA_OFFSET + it, appDataBytes[it]) }
-        return appData
-    }
+    val saveData
+        get() = run {
+            val appDataBytes = if (Random().nextBoolean()) saveDataBytes else saveDataBytes2
+            appDataBytes.indices.forEach { appData.put(GAME_DATA_OFFSET + it, appDataBytes[it]) }
+        }
 
     companion object {
         const val GAME_DATA_OFFSET = 0x0

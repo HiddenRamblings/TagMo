@@ -6,6 +6,7 @@ import com.hiddenramblings.tagmo.R
 import com.hiddenramblings.tagmo.TagMo
 import com.hiddenramblings.tagmo.charset.CharsetCompat
 import com.hiddenramblings.tagmo.nfctech.NfcByte
+import com.hiddenramblings.tagmo.nfctech.TagArray
 import java.io.IOException
 import java.io.UnsupportedEncodingException
 import java.nio.ByteBuffer
@@ -103,8 +104,25 @@ open class AmiiboData : Parcelable {
             putDate(tagData, MODIFIED_DATA_OFFSET, value)
         }
 
-    val miiData: ByteArray
-        get() = tagData.array().copyOfRange(0xA0, 0xFE)
+    val miiChecksum
+        get() = run {
+            var crc16 = 0x0000
+            tagData.array().copyOfRange(0xA0, 0xFE).forEach {
+//                for (x in 0x7 downTo 0x0) {
+//                    crc16 = crc16 shl 0x1 or (it.toInt() shr x and 0x1) xor 0x1021
+//                }
+                crc16 = crc16 xor Integer.reverseBytes(it.toInt()) shl 8
+                for (x in 0..0x7) {
+                    crc16 = crc16 shl 1
+                    if (crc16 and 0x10000 > 0) crc16 = crc16 xor 0x1021
+                }
+            }
+//            for (x in 0x16 downTo 0x1) {
+//                crc16 = crc16 shl 0x1 xor if (crc16 and 0x8000 != 0) 0x1021 else 0
+//            }
+            val crcHex = TagArray.hexToByteArray(String.format("%04X", crc16 and 0xFFFF))
+            crcHex.indices.forEach { tagData.put(0xFE + it, crcHex[it]) }
+        }
 
     @get:Throws(UnsupportedEncodingException::class)
     var nickname: String

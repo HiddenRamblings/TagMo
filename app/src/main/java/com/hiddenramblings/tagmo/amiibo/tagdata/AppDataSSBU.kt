@@ -9,27 +9,25 @@
  */
 package com.hiddenramblings.tagmo.amiibo.tagdata
 
-import com.hiddenramblings.tagmo.nfctech.TagArray
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 
 class AppDataSSBU(appData: ByteArray?) : AppData(appData!!) { // 0xE2 - 0D // 0xE3 - 01
 
-    private val checksum: ByteArray
-
+    private val u0: ByteArray
     init {
         var p0 = 0xEDB88320 or 0x80000000
         p0 = p0 shr 0
-        checksum = ByteArray(0x100)
+        u0 = ByteArray(0x100)
         var i = 0x1
         while (i and 0xFF != 0) {
             var t0 = i
-            for (x in 0..0x8) {
-                val b = (t0 and 0x1) shr 0
-                t0 = (t0 shr 0x1) shr 0
-                if (b == 0x1) t0 = (t0 xor p0.toInt()) shr 0
+            for (x in 0..0x7) {
+                val b = t0 and 0x1 shr 0
+                t0 = t0 shr 0x1 shr 0
+                if (b == 0x1) t0 = t0 xor p0.toInt() shr 0
             }
-            checksum[i] = (t0 shr 0).toByte()
+            u0[i] = (t0 shr 0).toByte()
             i += 0x1
         }
     }
@@ -248,33 +246,21 @@ class AppDataSSBU(appData: ByteArray?) : AppData(appData!!) { // 0xE2 - 0D // 0x
     val levelCPU: Int
         get() = experienceToLevel(experienceCPU, LEVEL_THRESHOLDS_CPU)
 
-    fun withChecksum(miiData: ByteArray): ByteBuffer {
-        var t = 0xFFFFFFFF.toInt()
-        appData.array().copyOfRange(0x04, 0xD8).forEach { // 0xE0 + 0xD4
-            t = (t shr 0x8) xor checksum[(it.toInt() xor t) and 0xFF].toInt()
-        }
-        val crc32 = ByteBuffer.allocate(4).apply {
-            order(ByteOrder.LITTLE_ENDIAN)
-            putInt((t xor 0xFFFFFFFF.toInt()) shr 0)
-        }.array()
-        crc32.indices.forEach { appData.put(GAME_CRC32_OFFSET + it, crc32[it]) }
-
-        var crc16 = 0
-        miiData.forEach {
-            crc16 = crc16 xor (Integer.reverseBytes(it.toInt()) shl 8)
-            for (x in 0..0x8) {
-                crc16 = crc16 shl 1
-                if ((crc16 and 0x10000) > 0) crc16 = crc16 xor 0x1021
+    val checksum
+        get() = run {
+            var t = 0xFFFFFFFF.toInt()
+            appData.array().copyOfRange(0x04, 0xD8).forEach { // 0xE0 + 0xD4
+                t = t shr 0x8 xor u0[it.toInt() xor t and 0xFF].toInt()
             }
+            val crc32 = ByteBuffer.allocate(4).apply {
+                order(ByteOrder.LITTLE_ENDIAN)
+                putInt(t xor 0xFFFFFFFF.toInt() shr 0)
+            }.array()
+            crc32.indices.forEach { appData.put(GAME_CRC32_OFFSET + it, crc32[it]) }
         }
-        val crcHex = TagArray.hexToByteArray(String.format("%04X", crc16 and 0xFFFF))
-        crcHex.indices.forEach { appData.put(GAME_CRC16_OFFSET + it, crcHex[it]) }
-        return appData
-    }
 
     companion object {
         const val GAME_CRC32_OFFSET = 0x0 // 0xDC
-        const val GAME_CRC16_OFFSET = 0x22 // 0xFE - AmiiboData.APP_DATA_OFFSET
         const val APPEARANCE_OFFSET = 0xC7
         const val APPEARANCE_MIN_VALUE = 0
         const val APPEARANCE_MAX_VALUE = 7

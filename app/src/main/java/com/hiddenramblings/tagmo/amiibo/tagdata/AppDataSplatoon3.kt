@@ -5,13 +5,4 @@
  */
 package com.hiddenramblings.tagmo.amiibo.tagdata
 
-class AppDataSplatoon3(appData: ByteArray?) : AppData(appData!!) {
-
-    fun checkSaveData(): Boolean {
-        return SaveDataSplatoon(appData.array()).checkSaveData()
-    }
-
-    fun injectSaveData() {
-        appData = SaveDataSplatoon(appData.array()).injectSaveData()
-    }
-}
+class AppDataSplatoon3(appData: ByteArray?) : SaveDataSplatoon(appData!!) { }

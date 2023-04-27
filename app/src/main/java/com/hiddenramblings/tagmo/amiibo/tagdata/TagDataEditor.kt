@@ -559,6 +559,7 @@ class TagDataEditor : AppCompatActivity() {
             if (appDataSwitch.isChecked && null != appDataSSBU) {
                 try {
                     onAppDataSSBUSaved()?.let { newAmiiboData.appData = it }
+                    newAmiiboData.miiChecksum
                 } catch (e: Exception) {
                     Debug.verbose(e)
                     return
@@ -1109,8 +1110,8 @@ class TagDataEditor : AppCompatActivity() {
         buttonInject = findViewById(R.id.inject_game_data)
         buttonInject?.setOnClickListener {
             appDataSplatoon?.let { appData ->
-                appData.injectSaveData()
-                it.isEnabled = !appData.checkSaveData()
+                appData.saveData
+                it.isEnabled = !appData.hasUnlockData()
             }
         }
         onAppDataSplatoonChecked(isAppDataInitialized)
@@ -1126,8 +1127,8 @@ class TagDataEditor : AppCompatActivity() {
         buttonInject3 = findViewById(R.id.inject_game_data_3)
         buttonInject3?.setOnClickListener {
             appDataSplatoon3?.let { appData ->
-                appData.injectSaveData()
-                it.isEnabled = !appData.checkSaveData()
+                appData.saveData
+                it.isEnabled = !appData.hasUnlockData()
             }
         }
         onAppDataSplatoon3Checked(isAppDataInitialized)
@@ -1456,7 +1457,7 @@ class TagDataEditor : AppCompatActivity() {
     private fun onAppDataSplatoonChecked(enabled: Boolean) {
         buttonInject?.let {
             appDataSplatoon?.let { appData ->
-                it.isEnabled = enabled && !appData.checkSaveData()
+                it.isEnabled = enabled && !appData.hasUnlockData()
             }
         }
     }
@@ -1464,7 +1465,7 @@ class TagDataEditor : AppCompatActivity() {
     private fun onAppDataSplatoon3Checked(enabled: Boolean) {
         buttonInject3?.let {
             appDataSplatoon3?.let { appData ->
-                it.isEnabled = enabled && !appData.checkSaveData()
+                it.isEnabled = enabled && !appData.hasUnlockData()
             }
         }
     }
@@ -1498,9 +1499,8 @@ class TagDataEditor : AppCompatActivity() {
     @Throws(NumberFormatException::class)
     private fun onAppDataZeldaTPSaved(): ByteArray? {
         return appDataZeldaTP?.apply {
-            try {
-                val level = txtLevelZeldaTP?.text.toString().toInt()
-                this.level = level
+            this.level = try {
+                txtLevelZeldaTP?.text.toString().toInt()
             } catch (e: NumberFormatException) {
                 txtLevelZeldaTP?.requestFocus()
                 throw e
@@ -1530,10 +1530,8 @@ class TagDataEditor : AppCompatActivity() {
     @Throws(Exception::class)
     private fun onAppDataSSBSaved(): ByteArray? {
         return appDataSSB?.apply {
-            try {
-                spnAppearance?.let {
-                    this.appearence = it.selectedItemPosition
-                }
+            this.appearence = try {
+                spnAppearance?.selectedItemPosition ?: appearence
             } catch (e: NumberFormatException) {
                 spnAppearance?.requestFocus()
                 throw e
@@ -1550,73 +1548,62 @@ class TagDataEditor : AppCompatActivity() {
                 txtLevelSSB?.requestFocus()
                 throw e
             }
-            try {
-                spnSpecialNeutral?.let {
-                    this.specialNeutral = it.selectedItemPosition
-                }
+            this.specialNeutral = try {
+                spnSpecialNeutral?.selectedItemPosition ?: specialNeutral
             } catch (e: NumberFormatException) {
                 spnSpecialNeutral?.requestFocus()
                 throw e
             }
-            try {
-                spnSpecialSide?.let {
-                    this.specialSide = it.selectedItemPosition
-                }
+            this.specialSide = try {
+                spnSpecialSide?.selectedItemPosition ?: specialSide
             } catch (e: NumberFormatException) {
                 spnSpecialSide?.requestFocus()
                 throw e
             }
-            try {
-                spnSpecialUp?.let {
-                    this.specialUp = it.selectedItemPosition
-                }
+            this.specialUp = try {
+                spnSpecialUp?.selectedItemPosition ?: specialUp
             } catch (e: NumberFormatException) {
                 spnSpecialUp?.requestFocus()
                 throw e
             }
-            try {
-                spnSpecialDown?.let {
-                    this.specialDown = it.selectedItemPosition
-                }
+            this.specialDown = try {
+                spnSpecialDown?.selectedItemPosition ?: specialDown
             } catch (e: NumberFormatException) {
                 spnSpecialDown?.requestFocus()
                 throw e
             }
-            try {
-                val statAttack = txtStatAttack?.text.toString().toInt()
-                this.statAttack = statAttack
+            this.statAttack = try {
+                txtStatAttack?.text.toString().toInt()
             } catch (e: NumberFormatException) {
                 txtStatAttack?.requestFocus()
                 throw e
             }
-            try {
-                val statDefense = txtStatDefense?.text.toString().toInt()
-                this.statDefense = statDefense
+            this.statDefense = try {
+                txtStatDefense?.text.toString().toInt()
             } catch (e: NumberFormatException) {
                 txtStatDefense?.requestFocus()
                 throw e
             }
-            try {
-                val statSpeed = txtStatSpeed?.text.toString().toInt()
-                this.statSpeed = statSpeed
+            this.statSpeed = try {
+                txtStatSpeed?.text.toString().toInt()
             } catch (e: NumberFormatException) {
                 txtStatSpeed?.requestFocus()
                 throw e
             }
-            try {
-                this.bonusEffect1 = getEffectValue(spnEffect1)
+            this.bonusEffect1 = try {
+                getEffectValue(spnEffect1)
             } catch (e: NumberFormatException) {
                 spnEffect1?.requestFocus()
                 throw e
             }
-            try {
-                this.bonusEffect2 = getEffectValue(spnEffect2)
+            this.bonusEffect2 = try {
+                getEffectValue(spnEffect2)
             } catch (e: NumberFormatException) {
                 spnEffect2?.requestFocus()
                 throw e
             }
-            try {
-                this.bonusEffect3 = getEffectValue(spnEffect3)
+            this.bonusEffect3 = try {
+                getEffectValue(spnEffect3)
             } catch (e: NumberFormatException) {
                 spnEffect3?.requestFocus()
                 throw e
@@ -1627,41 +1614,38 @@ class TagDataEditor : AppCompatActivity() {
     @Throws(Exception::class)
     private fun onAppDataSSBUSaved(): ByteArray? {
         return appDataSSBU?.apply {
-                try {
-                    spnAppearanceU?.let {
-                        this.appearence = it.selectedItemPosition
-                    }
-                } catch (e: NumberFormatException) {
-                    spnAppearanceU?.requestFocus()
-                    throw e
-                }
-                try {
-                    val level = txtLevelSSBU?.text.toString().toInt()
-                    val oldLevel: Int? = try {
-                        this.level
-                    } catch (e: Exception) { null }
+            this.appearence = try {
+                spnAppearanceU?.selectedItemPosition ?: appearence
+            } catch (e: NumberFormatException) {
+                spnAppearanceU?.requestFocus()
+                throw e
+            }
+            try {
+                val level = txtLevelSSBU?.text.toString().toInt()
+                val oldLevel: Int? = try {
+                    this.level
+                } catch (e: Exception) { null }
 
-                    // level is a granular value, so we don't want to overwrite it halfway through a level
-                    if (null == oldLevel || level != oldLevel) this.level = level
-                } catch (e: NumberFormatException) {
-                    txtLevelSSBU?.requestFocus()
-                    throw e
-                }
-                try {
-                    val statAttack = txtStatAttackU?.text.toString().toInt()
-                    this.statAttack = statAttack
-                } catch (e: NumberFormatException) {
-                    txtStatAttackU?.requestFocus()
-                    throw e
-                }
-                try {
-                    val statDefense = txtStatDefenseU?.text.toString().toInt()
-                    this.statDefense = statDefense
-                } catch (e: NumberFormatException) {
-                    txtStatDefenseU?.requestFocus()
-                    throw e
-                }
-            }?.withChecksum(amiiboData.miiData)?.array()
+                // level is a granular value, so we don't want to overwrite it halfway through a level
+                if (null == oldLevel || level != oldLevel) this.level = level
+            } catch (e: NumberFormatException) {
+                txtLevelSSBU?.requestFocus()
+                throw e
+            }
+            this.statAttack = try {
+                txtStatAttackU?.text.toString().toInt()
+            } catch (e: NumberFormatException) {
+                txtStatAttackU?.requestFocus()
+                throw e
+            }
+            this.statDefense = try {
+                txtStatDefenseU?.text.toString().toInt()
+            } catch (e: NumberFormatException) {
+                txtStatDefenseU?.requestFocus()
+                throw e
+            }
+            checksum
+        }?.array()
     }
 
     private fun showErrorDialog(msgRes: Int) {

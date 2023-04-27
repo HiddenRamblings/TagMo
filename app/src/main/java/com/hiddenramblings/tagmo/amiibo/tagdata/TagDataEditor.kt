@@ -70,8 +70,14 @@ class TagDataEditor : AppCompatActivity() {
     private lateinit var appDataSwitch: SwitchCompat
     private lateinit var userDataSwitch: SwitchCompat
     private lateinit var generateSerial: AppCompatButton
+    private lateinit var appDataViewChibiRobo: LinearLayout
     private lateinit var appDataViewZeldaTP: LinearLayout
+    private lateinit var appDataViewMHStories: LinearLayout
     private lateinit var appDataViewMLPaperJam: LinearLayout
+    private lateinit var appDataViewMLSuperstarSaga: LinearLayout
+    private lateinit var appDataViewMSSuperstars: LinearLayout
+    private lateinit var appDataViewMarioTennis: LinearLayout
+    private lateinit var appDataViewPikmin: LinearLayout
     private lateinit var appDataViewSplatoon: LinearLayout
     private lateinit var appDataViewSplatoon3: LinearLayout
     private lateinit var appDataViewSSB: LinearLayout
@@ -94,18 +100,18 @@ class TagDataEditor : AppCompatActivity() {
     private var initializedDate: Date? = null
     private var modifiedDate: Date? = null
     private var appId: Int? = null
-    private val appDataChibiRobo: AppDataChibiRobo? = null
+    private var appDataChibiRobo: AppDataChibiRobo? = null
     private var txtHearts1: EditText? = null
     private var txtHearts2: Spinner? = null
     private var txtLevelZeldaTP: EditText? = null
     private var appDataZeldaTP: AppDataZeldaTP? = null
-    private val appDataMHStories: AppDataMHStories? = null
+    private var appDataMHStories: AppDataMHStories? = null
     private var appDataMLPaperJam: AppDataMLPaperJam? = null
     private var buttonUnlock: AppCompatButton? = null
-    private val appDataMLSuperstarSaga: AppDataMLSuperstarSaga? = null
-    private val appDataMSSuperstars: AppDataMSSuperstars? = null
-    private val appDataMarioTennis: AppDataMarioTennis? = null
-    private val appDataPikmin: AppDataPikmin? = null
+    private var appDataMLSuperstarSaga: AppDataMLSuperstarSaga? = null
+    private var appDataMSSuperstars: AppDataMSSuperstars? = null
+    private var appDataMarioTennis: AppDataMarioTennis? = null
+    private var appDataPikmin: AppDataPikmin? = null
     private var appDataSplatoon: AppDataSplatoon? = null
     private var buttonInject: AppCompatButton? = null
     private var appDataSplatoon3: AppDataSplatoon3? = null
@@ -131,6 +137,10 @@ class TagDataEditor : AppCompatActivity() {
     private var txtStatDefenseU: EditText? = null
     private var txtStatSpeedU: EditText? = null
     private var appDataSSBU: AppDataSSBU? = null
+
+    private fun getDateString(date: Date): String {
+        return SimpleDateFormat("dd/MM/yyyy", Locale.US).format(date)
+    }
 
     public override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -166,8 +176,14 @@ class TagDataEditor : AppCompatActivity() {
         appDataSwitch = findViewById(R.id.appDataSwitch)
         userDataSwitch = findViewById(R.id.userDataSwitch)
         generateSerial = findViewById(R.id.random_serial)
+        appDataViewChibiRobo = findViewById(R.id.appDataChibiRobo)
         appDataViewZeldaTP = findViewById(R.id.appDataZeldaTP)
+        appDataViewMHStories = findViewById(R.id.appDataMHStories)
         appDataViewMLPaperJam = findViewById(R.id.appDataMLPaperJam)
+        appDataViewMLSuperstarSaga = findViewById(R.id.appDataMLSuperstarSaga)
+        appDataViewMSSuperstars = findViewById(R.id.appDataMSSuperstars)
+        appDataViewMarioTennis = findViewById(R.id.appDataMarioTennis)
+        appDataViewPikmin = findViewById(R.id.appDataPikmin)
         appDataViewSplatoon = findViewById(R.id.appDataSplatoon)
         appDataViewSplatoon3 = findViewById(R.id.appDataSplatoon3)
         appDataViewSSB = findViewById(R.id.appDataSSB)
@@ -454,7 +470,7 @@ class TagDataEditor : AppCompatActivity() {
     private fun onSaveClicked() {
         val newAmiiboData: AmiiboData
         try {
-            newAmiiboData = AmiiboData(amiiboData.array())
+            newAmiiboData = AmiiboData(amiiboData.array)
             newAmiiboData.isUserDataInitialized = isUserDataInitialized
             newAmiiboData.isAppDataInitialized = isUserDataInitialized && isAppDataInitialized
         } catch (e: Exception) {
@@ -575,7 +591,7 @@ class TagDataEditor : AppCompatActivity() {
             }
         }
         try {
-            keyManager.encrypt(newAmiiboData.array()).let {
+            keyManager.encrypt(newAmiiboData.array).let {
                 setResult(RESULT_OK, Intent(NFCIntent.ACTION_EDIT_COMPLETE)
                     .putExtra(NFCIntent.EXTRA_TAG_DATA, it)
                 )
@@ -821,10 +837,22 @@ class TagDataEditor : AppCompatActivity() {
     }
 
     private fun updateAppDataView(appId: Int?) {
+        appDataViewChibiRobo.isGone = true
+        appDataChibiRobo = null
         appDataViewZeldaTP.isGone = true
         appDataZeldaTP = null
+        appDataViewMHStories.isGone = true
+        appDataMHStories = null
         appDataViewMLPaperJam.isGone = true
         appDataMLPaperJam = null
+        appDataViewMLSuperstarSaga.isGone = true
+        appDataMLSuperstarSaga = null
+        appDataViewMSSuperstars.isGone = true
+        appDataMSSuperstars = null
+        appDataViewMarioTennis.isGone = true
+        appDataMarioTennis = null
+        appDataViewPikmin.isGone = true
+        appDataPikmin = null
         appDataViewSplatoon.isGone = true
         appDataSplatoon = null
         appDataViewSplatoon3.isGone = true
@@ -835,27 +863,51 @@ class TagDataEditor : AppCompatActivity() {
         appDataSSBU = null
         appId?.let {
             when (it) {
-                AppId_ZeldaTP -> {
+                AppId.ChibiRobo -> {
+                    appDataViewChibiRobo.isVisible = true
+                    enableAppDataChibiRobo(amiiboData.appData)
+                }
+                AppId.ZeldaTP -> {
                     appDataViewZeldaTP.isVisible = true
                     enableAppDataZeldaTP(amiiboData.appData)
                 }
-                AppId_MLPaperJam -> {
+                AppId.MHStories -> {
+                    appDataViewMHStories.isVisible = true
+                    enableAppDataMHStories(amiiboData.appData)
+                }
+                AppId.MLSuperstarSaga -> {
+                    appDataViewMLSuperstarSaga.isVisible = true
+                    enableAppDataMLSuperstarSaga(amiiboData.appData)
+                }
+                AppId.MSSuperstars -> {
+                    appDataViewMSSuperstars.isVisible = true
+                    enableAppDataMSSuperstars(amiiboData.appData)
+                }
+                AppId.MarioTennis -> {
+                    appDataViewMarioTennis.isVisible = true
+                    enableAppDataMarioTennis(amiiboData.appData)
+                }
+                AppId.Pikmin -> {
+                    appDataViewPikmin.isVisible = true
+                    enableAppDataPikmin(amiiboData.appData)
+                }
+                AppId.MLPaperJam -> {
                     appDataViewMLPaperJam.isVisible = true
                     enableAppDataMLPaperJam(amiiboData.appData)
                 }
-                AppId_Splatoon -> {
+                AppId.Splatoon -> {
                     appDataViewSplatoon.isVisible = true
                     enableAppDataSplatoon(amiiboData.appData)
                 }
-                AppId_Splatoon3 -> {
+                AppId.Splatoon3 -> {
                     appDataViewSplatoon3.isVisible = true
                     enableAppDataSplatoon3(amiiboData.appData)
                 }
-                AppId_SSB -> {
+                AppId.SSB -> {
                     appDataViewSSB.isVisible = true
                     enableAppDataSSB(amiiboData.appData)
                 }
-                AppId_SSBU -> {
+                AppId.SSBU -> {
                     appDataViewSSBU.isVisible = true
                     enableAppDataSSBU(amiiboData.appData)
                 }
@@ -1024,6 +1076,16 @@ class TagDataEditor : AppCompatActivity() {
         return value
     }
 
+    private fun enableAppDataChibiRobo(appData: ByteArray) {
+        try {
+            appDataChibiRobo = AppDataChibiRobo(appData)
+        } catch (e: Exception) {
+            appDataViewChibiRobo.isGone = true
+            return
+        }
+        onAppDataChibiRoboChecked(isAppDataInitialized)
+    }
+
     private fun enableAppDataZeldaTP(appData: ByteArray) {
         try {
             appDataZeldaTP = AppDataZeldaTP(appData)
@@ -1083,6 +1145,16 @@ class TagDataEditor : AppCompatActivity() {
         onAppDataZeldaTPChecked(isAppDataInitialized)
     }
 
+    private fun enableAppDataMHStories(appData: ByteArray) {
+        try {
+            appDataMHStories = AppDataMHStories(appData)
+        } catch (e: Exception) {
+            appDataViewMHStories.isGone = true
+            return
+        }
+        onAppDataMHStoriesChecked(isAppDataInitialized)
+    }
+
     private fun enableAppDataMLPaperJam(appData: ByteArray) {
         try {
             appDataMLPaperJam = AppDataMLPaperJam(appData)
@@ -1099,6 +1171,46 @@ class TagDataEditor : AppCompatActivity() {
             }
         }
         onAppDataMLPaperJamChecked(isAppDataInitialized)
+    }
+
+    private fun enableAppDataMLSuperstarSaga(appData: ByteArray) {
+        try {
+            appDataMLSuperstarSaga = AppDataMLSuperstarSaga(appData)
+        } catch (e: Exception) {
+            appDataViewMLSuperstarSaga.isGone = true
+            return
+        }
+        onAppDataMLSuperstarSagaChecked(isAppDataInitialized)
+    }
+
+    private fun enableAppDataMSSuperstars(appData: ByteArray) {
+        try {
+            appDataMSSuperstars = AppDataMSSuperstars(appData)
+        } catch (e: Exception) {
+            appDataViewMSSuperstars.isGone = true
+            return
+        }
+        onAppDataMSSuperstarsChecked(isAppDataInitialized)
+    }
+
+    private fun enableAppDataMarioTennis(appData: ByteArray) {
+        try {
+            appDataMarioTennis = AppDataMarioTennis(appData)
+        } catch (e: Exception) {
+            appDataViewMarioTennis.isGone = true
+            return
+        }
+        onAppDataMarioTennisChecked(isAppDataInitialized)
+    }
+
+    private fun enableAppDataPikmin(appData: ByteArray) {
+        try {
+            appDataPikmin = AppDataPikmin(appData)
+        } catch (e: Exception) {
+            appDataViewPikmin.isGone = true
+            return
+        }
+        onAppDataPikminChecked(isAppDataInitialized)
     }
 
     private fun enableAppDataSplatoon(appData: ByteArray) {
@@ -1449,6 +1561,10 @@ class TagDataEditor : AppCompatActivity() {
         }
     }
 
+    private fun onAppDataChibiRoboChecked(enabled: Boolean) {
+
+    }
+
     private fun onAppDataZeldaTPChecked(enabled: Boolean) {
         txtHearts1?.let {
             it.isEnabled = enabled
@@ -1457,10 +1573,30 @@ class TagDataEditor : AppCompatActivity() {
         txtLevelZeldaTP?.isEnabled = enabled
     }
 
+    private fun onAppDataMHStoriesChecked(enabled: Boolean) {
+
+    }
+
     private fun onAppDataMLPaperJamChecked(enabled: Boolean) {
         appDataMLPaperJam?.let { appData -> buttonUnlock?.let {
             it.isEnabled = enabled && !appData.checkSparkleCards()
         } }
+    }
+
+    private fun onAppDataMLSuperstarSagaChecked(enabled: Boolean) {
+
+    }
+
+    private fun onAppDataMSSuperstarsChecked(enabled: Boolean) {
+
+    }
+
+    private fun onAppDataMarioTennisChecked(enabled: Boolean) {
+
+    }
+
+    private fun onAppDataPikminChecked(enabled: Boolean) {
+
     }
 
     private fun onAppDataSplatoonChecked(enabled: Boolean) {
@@ -1519,19 +1655,19 @@ class TagDataEditor : AppCompatActivity() {
                 txtHearts1?.requestFocus()
                 throw e
             }
-        }?.array()
+        }?.array
     }
 
     private fun onAppDataMLPaperJamSaved(): ByteArray? {
-        return appDataMLPaperJam?.array()
+        return appDataMLPaperJam?.array
     }
 
     private fun onAppDataSplatoonSaved(): ByteArray? {
-        return appDataSplatoon?.array()
+        return appDataSplatoon?.array
     }
 
     private fun onAppDataSplatoon3Saved(): ByteArray? {
-        return appDataSplatoon3?.array()
+        return appDataSplatoon3?.array
     }
 
     @Throws(Exception::class)
@@ -1615,7 +1751,7 @@ class TagDataEditor : AppCompatActivity() {
                 spnEffect3?.requestFocus()
                 throw e
             }
-        }?.array()
+        }?.array
     }
 
     @Throws(Exception::class)
@@ -1652,7 +1788,7 @@ class TagDataEditor : AppCompatActivity() {
                 throw e
             }
             checksum
-        }?.array()
+        }?.array
     }
 
     private fun showErrorDialog(msgRes: Int) {
@@ -1662,24 +1798,5 @@ class TagDataEditor : AppCompatActivity() {
             .setPositiveButton(R.string.close) { _: DialogInterface?, _: Int -> finish() }
             .show()
         setResult(RESULT_OK, Intent(NFCIntent.ACTION_FIX_BANK_DATA))
-    }
-
-    companion object {
-        const val AppId_ChibiRobo = 0x00152600
-        const val AppId_ZeldaTP = 0x1019C800
-        const val AppId_MHStories = 0x0016E100
-        const val AppId_MLPaperJam = 0x00132600
-        const val AppId_MLSuperstarSaga = 0x00194B00
-        const val AppId_MSSuperstars = 0x00188B00
-        const val AppId_MarioTennis = 0x10199000
-        const val AppId_Pikmin = 0x001A9200
-        const val AppId_Splatoon = 0x10162B00
-        const val AppId_Splatoon3 = 0x38600500
-        const val AppId_SSB = 0x10110E00
-        const val AppId_SSBU = 0x34F80200
-        const val AppId_Unspecified = 0x00000000
-        private fun getDateString(date: Date): String {
-            return SimpleDateFormat("dd/MM/yyyy", Locale.US).format(date)
-        }
     }
 }

@@ -5,4 +5,4 @@
  */
 package com.hiddenramblings.tagmo.amiibo.tagdata
 
-class AppDataSplatoon(appData: ByteArray?) : SaveDataSplatoon(appData!!) { }
+class AppDataSplatoon(appData: ByteArray?) : SaveDataSplatoon(appData!!)

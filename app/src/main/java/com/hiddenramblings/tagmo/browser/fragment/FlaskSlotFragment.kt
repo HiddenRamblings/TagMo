@@ -1028,13 +1028,13 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
         var amiibo: Amiibo? = null
         settings.amiiboManager?.let {
             try {
-                val amiiboId = Amiibo.dataToId(amiiboData?.array())
+                val amiiboId = Amiibo.dataToId(amiiboData?.array)
                 amiibo = it.amiibos[amiiboId]
                 if (null == amiibo) amiibo = Amiibo(it, amiiboId, null, null)
             } catch (e: Exception) { Debug.warn(e) }
         }
         amiibo?.let {
-            amiiboData?.array()?.let { data ->
+            amiiboData?.array?.let { data ->
                 serviceFlask?.uploadAmiiboFile(
                     data, it, flaskAdapter?.getDuplicates(it) ?: 0, complete
                 )

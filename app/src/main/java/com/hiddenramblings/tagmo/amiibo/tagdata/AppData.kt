@@ -8,14 +8,12 @@ import java.nio.ByteBuffer
 
 open class AppData(appData: ByteArray) {
     var appData: ByteBuffer
-    fun array(): ByteArray {
-        return appData.array()
-    }
+    val array: ByteArray
+        get() = appData.array()
 
     init {
-        if (appData.size < APP_FILE_SIZE) throw IOException(
-            TagMo.appContext.getString(R.string.invalid_app_data)
-        )
+        if (appData.size < APP_FILE_SIZE)
+            throw IOException(TagMo.appContext.getString(R.string.invalid_app_data))
         this.appData = ByteBuffer.wrap(appData)
     }
 
@@ -39,30 +37,19 @@ open class AppData(appData: ByteArray) {
         var transferData: ByteArray? = null
 
         init {
-            appIds[TagDataEditor.AppId_ChibiRobo] =
-                context.getString(R.string.chibi_robo)
-            appIds[TagDataEditor.AppId_ZeldaTP] =
-                context.getString(R.string.zelda_twilight)
-            appIds[TagDataEditor.AppId_MHStories] =
-                context.getString(R.string.mh_stories)
-            appIds[TagDataEditor.AppId_MLPaperJam] =
-                context.getString(R.string.ml_paper_jam)
-            appIds[TagDataEditor.AppId_MLSuperstarSaga] =
-                context.getString(R.string.ml_superstar_saga)
-            appIds[TagDataEditor.AppId_MSSuperstars] =
-                context.getString(R.string.ms_superstars)
-            appIds[TagDataEditor.AppId_MarioTennis] =
-                context.getString(R.string.mario_tennis)
-            appIds[TagDataEditor.AppId_Pikmin] =
-                context.getString(R.string.pikmin)
-            appIds[TagDataEditor.AppId_Splatoon] =
-                context.getString(R.string.splatoon)
-            appIds[TagDataEditor.AppId_Splatoon3] =
-                context.getString(R.string.splatoon_three)
-            appIds[TagDataEditor.AppId_SSB] = context.getString(R.string.super_smash)
-            appIds[TagDataEditor.AppId_SSBU] = context.getString(R.string.smash_ultimate)
-            appIds[TagDataEditor.AppId_Unspecified] =
-                context.getString(R.string.unspecified)
+            appIds[AppId.ChibiRobo] = context.getString(R.string.chibi_robo)
+            appIds[AppId.ZeldaTP] = context.getString(R.string.zelda_twilight)
+            appIds[AppId.MHStories] = context.getString(R.string.mh_stories)
+            appIds[AppId.MLPaperJam] = context.getString(R.string.ml_paper_jam)
+            appIds[AppId.MLSuperstarSaga] = context.getString(R.string.ml_superstar_saga)
+            appIds[AppId.MSSuperstars] = context.getString(R.string.ms_superstars)
+            appIds[AppId.MarioTennis] = context.getString(R.string.mario_tennis)
+            appIds[AppId.Pikmin] = context.getString(R.string.pikmin)
+            appIds[AppId.Splatoon] = context.getString(R.string.splatoon)
+            appIds[AppId.Splatoon3] = context.getString(R.string.splatoon_three)
+            appIds[AppId.SSB] = context.getString(R.string.super_smash)
+            appIds[AppId.SSBU] = context.getString(R.string.smash_ultimate)
+            appIds[AppId.Unspecified] = context.getString(R.string.unspecified)
         }
     }
 }

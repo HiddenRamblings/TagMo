@@ -9,12 +9,36 @@
         android:padding="2dp">
 
         <include
+            layout="@layout/app_data_chibi_robo"
+            android:id="@+id/appDataChibiRobo" />
+
+        <include
             layout="@layout/app_data_zelda_tp"
             android:id="@+id/appDataZeldaTP" />
 
         <include
+            layout="@layout/app_data_mh_stories"
+            android:id="@+id/appDataMHStories" />
+
+        <include
             layout="@layout/app_data_ml_paper_jam"
             android:id="@+id/appDataMLPaperJam" />
+
+        <include
+            layout="@layout/app_data_ml_superstar_saga"
+            android:id="@+id/appDataMLSuperstarSaga" />
+
+        <include
+            layout="@layout/app_data_ms_superstars"
+            android:id="@+id/appDataMSSuperstars" />
+
+        <include
+            layout="@layout/app_data_mario_tennis"
+            android:id="@+id/appDataMarioTennis" />
+
+        <include
+            layout="@layout/app_data_pikmin"
+            android:id="@+id/appDataPikmin" />
 
         <include
             layout="@layout/app_data_splatoon"

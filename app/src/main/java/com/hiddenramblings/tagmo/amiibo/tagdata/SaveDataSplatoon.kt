@@ -34,7 +34,7 @@ open class SaveDataSplatoon(appData: ByteArray?) : AppData(appData!!) {
             "78 CO 3F 99 89 47 37 37 ED 6A E2 C8 9E C5 32 67" +
             "AA 42 4E 6D"
     private var saveDataBytes2 = TagArray.hexToByteArray(saveDataHex2.filter { !it.isWhitespace() })
-    open fun hasUnlockData(): Boolean {
+    fun hasUnlockData(): Boolean {
         val saveData = appData.array().copyOfRange(GAME_DATA_OFFSET, saveDataBytes.size)
         return saveDataBytes.contentEquals(saveData) || saveDataBytes2.contentEquals(saveData)
     }

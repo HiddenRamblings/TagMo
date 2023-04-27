@@ -16,9 +16,8 @@ import java.util.*
 open class AmiiboData : Parcelable {
     private val context = TagMo.appContext
     private val tagData: ByteBuffer
-    fun array(): ByteArray {
-        return tagData.array()
-    }
+    val array: ByteArray
+        get() = tagData.array()
 
     constructor(tagData: ByteArray) {
         if (tagData.size < NfcByte.TAG_DATA_SIZE) throw IOException(
@@ -107,7 +106,7 @@ open class AmiiboData : Parcelable {
     val miiChecksum
         get() = run {
             var crc16 = 0x0000
-            tagData.array().copyOfRange(0xA0, 0xFE).forEach {
+            array.copyOfRange(0xA0, 0xFE).forEach {
 //                for (x in 0x7 downTo 0x0) {
 //                    crc16 = crc16 shl 0x1 or (it.toInt() shr x and 0x1) xor 0x1021
 //                }
@@ -452,7 +451,7 @@ open class AmiiboData : Parcelable {
     }
 
     override fun writeToParcel(dest: Parcel, flags: Int) {
-        tagData.array().run {
+        array.run {
             dest.writeInt(size)
             dest.writeByteArray(this)
         }

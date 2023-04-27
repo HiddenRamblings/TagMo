@@ -983,13 +983,11 @@ class TagDataEditor : AppCompatActivity() {
         }
     }
 
-    private fun setListForSpinners(controls: Array<Spinner?>, list: Int) {
-        controls.forEach {
-            it?.adapter = ArrayAdapter.createFromResource(
-                this, list, R.layout.spinner_text
-            ).apply {
-                setDropDownViewResource(android.R.layout.simple_dropdown_item_1line)
-            }
+    private fun setListForSpinner(control: Spinner?, list: Int) {
+        control?.adapter = ArrayAdapter.createFromResource(
+            this, list, R.layout.spinner_text
+        ).apply {
+            setDropDownViewResource(android.R.layout.simple_dropdown_item_1line)
         }
     }
 
@@ -1033,10 +1031,6 @@ class TagDataEditor : AppCompatActivity() {
             appDataViewZeldaTP.isGone = true
             return
         }
-        txtHearts1 = findViewById(R.id.txtHearts1)
-        txtHearts2 = findViewById(R.id.txtHearts2)
-        txtLevelZeldaTP = findViewById(R.id.txtLevelZeldaTP)
-        setListForSpinners(arrayOf(txtHearts2), R.array.editor_tp_hearts)
         var level = 40
         var hearts: Int = AppDataZeldaTP.HEARTS_MAX_VALUE
         if (initialAppDataInitialized) {
@@ -1049,37 +1043,43 @@ class TagDataEditor : AppCompatActivity() {
                 } catch (e: Exception) { AppDataZeldaTP.HEARTS_MAX_VALUE }
             }
         }
-        txtLevelZeldaTP?.setText(level.toString())
-        txtHearts1?.setText((hearts / 4).toString())
-        txtHearts2?.setSelection(hearts % 4)
-        txtHearts2?.isEnabled = hearts / 4 < 20
-        txtLevelZeldaTP?.let {
-            it.addTextChangedListener(object : TextWatcher {
+        txtHearts1 = findViewById<EditText>(R.id.txtHearts1).apply {
+            setText((hearts / 4).toString())
+            addTextChangedListener(object : TextWatcher {
                 override fun beforeTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {}
                 override fun onTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {
-                    try {
+                    onHeartsUpdate(charSequence.toString().toInt())
+                }
+
+                override fun afterTextChanged(editable: Editable) {}
+            })
+        }
+        txtHearts2 = findViewById<Spinner>(R.id.txtHearts2).also {
+            setListForSpinner(it, R.array.editor_tp_hearts)
+        }. apply {
+            setSelection(hearts % 4)
+            isEnabled = hearts / 4 < 20
+        }
+        txtLevelZeldaTP = findViewById<EditText>(R.id.txtLevelZeldaTP).apply {
+            setText(level.toString())
+            addTextChangedListener(object : TextWatcher {
+                override fun beforeTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {}
+                override fun onTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {
+                    error = try {
                         try {
                             appDataZeldaTP?.checkLevel(charSequence.toString().toInt())
-                            it.error = null
+                            null
                         } catch (e: Exception) {
-                            it.error = getString(R.string.error_min_max, 0, 40)
+                            getString(R.string.error_min_max, 0, 40)
                         }
                     } catch (e: NumberFormatException) {
-                        it.error = getString(R.string.error_min_max, 0, 40)
+                        getString(R.string.error_min_max, 0, 40)
                     }
                 }
 
                 override fun afterTextChanged(editable: Editable) {}
             })
         }
-        txtHearts1?.addTextChangedListener(object : TextWatcher {
-            override fun beforeTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {}
-            override fun onTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {
-                onHeartsUpdate(charSequence.toString().toInt())
-            }
-
-            override fun afterTextChanged(editable: Editable) {}
-        })
         onAppDataZeldaTPChecked(isAppDataInitialized)
     }
 
@@ -1090,11 +1090,12 @@ class TagDataEditor : AppCompatActivity() {
             appDataViewMLPaperJam.isGone = true
             return
         }
-        buttonUnlock = findViewById(R.id.unlock_sparkle_cards)
-        buttonUnlock?.setOnClickListener {
-            appDataMLPaperJam?.let { appData ->
-                appData.unlockSparkleCards()
-                it.isEnabled = !appData.checkSparkleCards()
+        buttonUnlock = findViewById<AppCompatButton>(R.id.unlock_sparkle_cards).apply {
+            setOnClickListener {
+                appDataMLPaperJam?.let { appData ->
+                    appData.unlockSparkleCards()
+                    it.isEnabled = !appData.checkSparkleCards()
+                }
             }
         }
         onAppDataMLPaperJamChecked(isAppDataInitialized)
@@ -1107,11 +1108,12 @@ class TagDataEditor : AppCompatActivity() {
             appDataViewSplatoon.isGone = true
             return
         }
-        buttonInject = findViewById(R.id.inject_game_data)
-        buttonInject?.setOnClickListener {
-            appDataSplatoon?.let { appData ->
-                appData.saveData
-                it.isEnabled = !appData.hasUnlockData()
+        buttonInject = findViewById<AppCompatButton>(R.id.inject_game_data).apply {
+            setOnClickListener {
+                appDataSplatoon?.let { appData ->
+                    appData.saveData
+                    it.isEnabled = !appData.hasUnlockData()
+                }
             }
         }
         onAppDataSplatoonChecked(isAppDataInitialized)
@@ -1124,11 +1126,12 @@ class TagDataEditor : AppCompatActivity() {
             appDataViewSplatoon3.isGone = true
             return
         }
-        buttonInject3 = findViewById(R.id.inject_game_data_3)
-        buttonInject3?.setOnClickListener {
-            appDataSplatoon3?.let { appData ->
-                appData.saveData
-                it.isEnabled = !appData.hasUnlockData()
+        buttonInject3 = findViewById<AppCompatButton>(R.id.inject_game_data_3).apply {
+            setOnClickListener {
+                appDataSplatoon3?.let { appData ->
+                    appData.saveData
+                    it.isEnabled = !appData.hasUnlockData()
+                }
             }
         }
         onAppDataSplatoon3Checked(isAppDataInitialized)
@@ -1141,29 +1144,6 @@ class TagDataEditor : AppCompatActivity() {
             appDataViewSSB.isGone = true
             return
         }
-        spnAppearance = findViewById(R.id.spnAppearance)
-        txtLevelSSB = findViewById(R.id.txtLevelSSB)
-        spnSpecialNeutral = findViewById(R.id.spnSpecial1)
-        spnSpecialSide = findViewById(R.id.spnSpecial2)
-        spnSpecialUp = findViewById(R.id.spnSpecial3)
-        spnSpecialDown = findViewById(R.id.spnSpecial4)
-        spnEffect1 = findViewById(R.id.spnEffect1)
-        spnEffect2 = findViewById(R.id.spnEffect2)
-        spnEffect3 = findViewById(R.id.spnEffect3)
-        txtStatAttack = findViewById(R.id.txtStatAttack)
-        txtStatDefense = findViewById(R.id.txtStatDefense)
-        txtStatSpeed = findViewById(R.id.txtStatSpeed)
-        setListForSpinners(arrayOf(spnAppearance), R.array.ssb_appearance_values)
-        setListForSpinners(
-            arrayOf(
-                spnSpecialNeutral, spnSpecialSide,
-                spnSpecialUp, spnSpecialDown
-            ), R.array.ssb_specials_values
-        )
-        setListForSpinners(
-            arrayOf(spnEffect1, spnEffect2, spnEffect3),
-            R.array.ssb_bonus_effects
-        )
         var appearance: Int = AppDataSSB.APPEARANCE_MIN_VALUE
         var level: Int = AppDataSSB.LEVEL_MAX_VALUE
         var statAttack: Int = AppDataSSB.STATS_MAX_VALUE
@@ -1229,92 +1209,121 @@ class TagDataEditor : AppCompatActivity() {
             bonusEffect2 = AppDataSSB.BONUS_MAX_VALUE
             bonusEffect3 = AppDataSSB.BONUS_MAX_VALUE
         }
-        spnAppearance?.setSelection(appearance)
-        txtLevelSSB?.setText(level.toString())
-        txtStatAttack?.setText(statAttack.toString())
-        txtStatDefense?.setText(statDefense.toString())
-        txtStatSpeed?.setText(statSpeed.toString())
-        spnSpecialNeutral?.setSelection(specialNeutral)
-        spnSpecialSide?.setSelection(specialSide)
-        spnSpecialUp?.setSelection(specialUp)
-        spnSpecialDown?.setSelection(specialDown)
-        setEffectValue(spnEffect1, bonusEffect1)
-        setEffectValue(spnEffect2, bonusEffect2)
-        setEffectValue(spnEffect3, bonusEffect3)
-        txtLevelSSB?.let {
-            it.addTextChangedListener(object : TextWatcher {
+        spnAppearance = findViewById<Spinner>(R.id.spnAppearance).also {
+            setListForSpinner(it, R.array.ssb_appearance_values)
+        }.apply {
+            setSelection(appearance)
+        }
+        txtLevelSSB = findViewById<EditText>(R.id.txtLevelSSB).apply {
+            setText(level.toString())
+            addTextChangedListener(object : TextWatcher {
                 override fun beforeTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {}
                 override fun onTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {
-                    try {
+                    error = try {
                         val text = charSequence.toString().toInt()
                         if (text < 1 || text > 50)
-                            it.error = getString(R.string.error_min_max, 1, 50)
-                        else it.error = null
+                            getString(R.string.error_min_max, 1, 50)
+                        else null
                     } catch (e: NumberFormatException) {
-                        it.error = getString(R.string.error_min_max, 1, 50)
+                        getString(R.string.error_min_max, 1, 50)
                     }
                 }
 
                 override fun afterTextChanged(editable: Editable) {}
             })
         }
-        txtStatAttack?.let {
-            it.addTextChangedListener(object : TextWatcher {
+        spnSpecialNeutral = findViewById<Spinner>(R.id.spnSpecial1).also {
+            setListForSpinner(it, R.array.ssb_specials_values)
+        }.apply {
+            setSelection(specialNeutral)
+        }
+        spnSpecialSide = findViewById<Spinner>(R.id.spnSpecial2).also {
+            setListForSpinner(it, R.array.ssb_specials_values)
+        }.apply {
+            setSelection(specialSide)
+        }
+        spnSpecialUp = findViewById<Spinner>(R.id.spnSpecial3).also {
+            setListForSpinner(it, R.array.ssb_specials_values)
+        }.apply {
+            setSelection(specialUp)
+        }
+        spnSpecialDown = findViewById<Spinner>(R.id.spnSpecial4).also {
+            setListForSpinner(it, R.array.ssb_specials_values)
+        }.apply {
+            setSelection(specialDown)
+        }
+        txtStatAttack = findViewById<EditText>(R.id.txtStatAttack).apply {
+            setText(statAttack.toString())
+            addTextChangedListener(object : TextWatcher {
                 override fun beforeTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {}
                 override fun onTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {
-                    try {
+                    error = try {
                         val text = charSequence.toString().toInt()
                         try {
                             appDataSSB?.checkStat(text)
-                            it.error = null
+                            null
                         } catch (e: Exception) {
-                            it.error = getString(R.string.error_min_max, -200, 200)
+                            getString(R.string.error_min_max, -200, 200)
                         }
                     } catch (e: NumberFormatException) {
-                        it.error = getString(R.string.error_min_max, -200, 200)
+                        getString(R.string.error_min_max, -200, 200)
                     }
                 }
 
                 override fun afterTextChanged(editable: Editable) {}
             })
         }
-        txtStatDefense?.let {
-            it.addTextChangedListener(object : TextWatcher {
+        txtStatDefense = findViewById<EditText>(R.id.txtStatDefense).apply {
+            setText(statDefense.toString())
+            addTextChangedListener(object : TextWatcher {
                 override fun beforeTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {}
                 override fun onTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {
-                    try {
+                    error = try {
                         try {
                             appDataSSB?.checkStat(charSequence.toString().toInt())
-                            it.error = null
+                            null
                         } catch (e: Exception) {
-                            it.error = getString(R.string.error_min_max, -200, 200)
+                            getString(R.string.error_min_max, -200, 200)
                         }
                     } catch (e: NumberFormatException) {
-                        it.error = getString(R.string.error_min_max, -200, 200)
+                        getString(R.string.error_min_max, -200, 200)
                     }
                 }
 
                 override fun afterTextChanged(editable: Editable) {}
             })
         }
-        txtStatSpeed?.let {
-            it.addTextChangedListener(object : TextWatcher {
+        txtStatSpeed = findViewById<EditText>(R.id.txtStatSpeed).apply {
+            setText(statSpeed.toString())
+            addTextChangedListener(object : TextWatcher {
                 override fun beforeTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {}
                 override fun onTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {
-                    try {
+                    error = try {
                         try {
                             appDataSSB?.checkStat(charSequence.toString().toInt())
-                            it.error = null
+                            null
                         } catch (e: Exception) {
-                            it.error = getString(R.string.error_min_max, -200, 200)
+                            getString(R.string.error_min_max, -200, 200)
                         }
                     } catch (e: NumberFormatException) {
-                        it.error = getString(R.string.error_min_max, -200, 200)
+                        getString(R.string.error_min_max, -200, 200)
                     }
                 }
 
                 override fun afterTextChanged(editable: Editable) {}
             })
+        }
+        spnEffect1 = findViewById<Spinner>(R.id.spnEffect1).also {
+            setListForSpinner(it, R.array.ssb_bonus_effects)
+            setEffectValue(spnEffect1, bonusEffect1)
+        }
+        spnEffect2 = findViewById<Spinner>(R.id.spnEffect2).also {
+            setListForSpinner(it, R.array.ssb_bonus_effects)
+            setEffectValue(spnEffect2, bonusEffect2)
+        }
+        spnEffect3 = findViewById<Spinner>(R.id.spnEffect3).also {
+            setListForSpinner(it, R.array.ssb_bonus_effects)
+            setEffectValue(spnEffect3, bonusEffect3)
         }
         onAppDataSSBChecked(isAppDataInitialized)
     }
@@ -1327,14 +1336,6 @@ class TagDataEditor : AppCompatActivity() {
             appDataViewSSBU.isGone = true
             return
         }
-        spnAppearanceU = findViewById(R.id.spnAppearanceU)
-        txtLevelSSBU = findViewById(R.id.txtLevelSSBU)
-        txtGiftCount = findViewById(R.id.txtGiftCount)
-        txtLevelCPU = findViewById(R.id.txtLevelCPU)
-        txtStatAttackU = findViewById(R.id.txtStatAttackU)
-        txtStatDefenseU = findViewById(R.id.txtStatDefenseU)
-        txtStatSpeedU = findViewById(R.id.txtStatSpeedU)
-        setListForSpinners(arrayOf(spnAppearanceU), R.array.ssb_appearance_values)
         var appearance: Int = AppDataSSBU.APPEARANCE_MIN_VALUE
         var level: Int = AppDataSSBU.LEVEL_MIN_VALUE
         var giftCount = 0
@@ -1374,67 +1375,77 @@ class TagDataEditor : AppCompatActivity() {
                 } catch (e: Exception) { 0 }
             }
         }
-        spnAppearanceU?.setSelection(appearance)
-        txtLevelSSBU?.setText(level.toString())
-        txtGiftCount?.setText(giftCount.toString())
-        txtLevelCPU?.setText(levelCPU.toString())
-        txtStatAttackU?.setText(statAttack.toString())
-        txtStatDefenseU?.setText(statDefense.toString())
-        txtStatSpeedU?.setText(statSpeed.toString())
-        txtLevelSSBU?.let {
-            it.addTextChangedListener(object : TextWatcher {
+        spnAppearanceU = findViewById<Spinner>(R.id.spnAppearanceU).also {
+            setListForSpinner(it, R.array.ssb_appearance_values)
+        }.apply {
+            setSelection(appearance)
+        }
+        txtLevelSSBU = findViewById<EditText>(R.id.txtLevelSSBU).apply {
+            setText(level.toString())
+            addTextChangedListener(object : TextWatcher {
                 override fun beforeTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {}
                 override fun onTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {
-                    try {
+                    error = try {
                         val text = charSequence.toString().toInt()
-                        it.error = if (text < 1 || text > 50)
+                        if (text < 1 || text > 50)
                             getString(R.string.error_min_max, 1, 50)
                         else null
                     } catch (e: NumberFormatException) {
-                        it.error = getString(R.string.error_min_max, 1, 50)
+                        getString(R.string.error_min_max, 1, 50)
                     }
                 }
 
                 override fun afterTextChanged(editable: Editable) {}
             })
         }
-        txtStatAttackU?.let {
-            it.addTextChangedListener(object : TextWatcher {
+        txtGiftCount = findViewById<EditText>(R.id.txtGiftCount).apply {
+            setText(giftCount.toString())
+        }
+        txtLevelCPU = findViewById<EditText>(R.id.txtLevelCPU).apply {
+            setText(levelCPU.toString())
+        }
+        txtStatAttackU = findViewById<EditText>(R.id.txtStatAttackU).apply {
+            setText(statAttack.toString())
+            addTextChangedListener(object : TextWatcher {
                 override fun beforeTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {}
                 override fun onTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {
-                    try {
+                    error = try {
                         try {
                             appDataSSBU?.checkStat(charSequence.toString().toInt())
-                            it.error = null
+                            null
                         } catch (e: Exception) {
-                            it.error = getString(R.string.error_min_max, -0, 2500)
+                            getString(R.string.error_min_max, -0, 2500)
                         }
                     } catch (e: NumberFormatException) {
-                        it.error = getString(R.string.error_min_max, 0, 2500)
+                        getString(R.string.error_min_max, 0, 2500)
                     }
                 }
 
                 override fun afterTextChanged(editable: Editable) {}
             })
         }
-        txtStatDefenseU?.let {
-            it.addTextChangedListener(object : TextWatcher {
+        txtStatDefenseU = findViewById<EditText>(R.id.txtStatDefenseU).apply {
+            setText(statDefense.toString())
+            addTextChangedListener(object : TextWatcher {
                 override fun beforeTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {}
                 override fun onTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {
-                    try {
+                    error = try {
                         try {
                             appDataSSBU?.checkStat(charSequence.toString().toInt())
-                            it.error = null
+                            null
                         } catch (e: Exception) {
-                            it.error = getString(R.string.error_min_max, 0, 2500)
+                            getString(R.string.error_min_max, 0, 2500)
                         }
                     } catch (e: NumberFormatException) {
-                        it.error = getString(R.string.error_min_max, 0, 2500)
+                        getString(R.string.error_min_max, 0, 2500)
                     }
                 }
 
                 override fun afterTextChanged(editable: Editable) {}
             })
+        }
+        txtStatSpeedU = findViewById<EditText>(R.id.txtStatSpeedU).apply {
+            setText(statSpeed.toString())
         }
     }
 
@@ -1447,53 +1458,49 @@ class TagDataEditor : AppCompatActivity() {
     }
 
     private fun onAppDataMLPaperJamChecked(enabled: Boolean) {
-        buttonUnlock?.let {
-            appDataMLPaperJam?.let { appData ->
-                it.isEnabled = enabled && !appData.checkSparkleCards()
-            }
-        }
+        appDataMLPaperJam?.let { appData -> buttonUnlock?.let {
+            it.isEnabled = enabled && !appData.checkSparkleCards()
+        } }
     }
 
     private fun onAppDataSplatoonChecked(enabled: Boolean) {
-        buttonInject?.let {
-            appDataSplatoon?.let { appData ->
-                it.isEnabled = enabled && !appData.hasUnlockData()
-            }
-        }
+        appDataSplatoon?.let { appData -> buttonInject?.let {
+            it.isEnabled = enabled && !appData.hasUnlockData()
+        } }
     }
 
     private fun onAppDataSplatoon3Checked(enabled: Boolean) {
-        buttonInject3?.let {
-            appDataSplatoon3?.let { appData ->
-                it.isEnabled = enabled && !appData.hasUnlockData()
-            }
-        }
+        appDataSplatoon3?.let { appData ->buttonInject3?.let {
+            it.isEnabled = enabled && !appData.hasUnlockData()
+        } }
     }
 
     private fun onAppDataSSBChecked(enabled: Boolean) {
-        if (null == spnAppearance) return
-        spnAppearance?.isEnabled = enabled
-        txtLevelSSB?.isEnabled = enabled
-        spnSpecialNeutral?.isEnabled = enabled
-        spnSpecialSide?.isEnabled = enabled
-        spnSpecialUp?.isEnabled = enabled
-        spnSpecialDown?.isEnabled = enabled
-        txtStatAttack?.isEnabled = enabled
-        txtStatDefense?.isEnabled = enabled
-        txtStatSpeed?.isEnabled = enabled
-        spnEffect1?.isEnabled = enabled
-        spnEffect2?.isEnabled = enabled
-        spnEffect3?.isEnabled = enabled
+        spnAppearance?.let {
+            it.isEnabled = enabled
+            txtLevelSSB?.isEnabled = enabled
+            spnSpecialNeutral?.isEnabled = enabled
+            spnSpecialSide?.isEnabled = enabled
+            spnSpecialUp?.isEnabled = enabled
+            spnSpecialDown?.isEnabled = enabled
+            txtStatAttack?.isEnabled = enabled
+            txtStatDefense?.isEnabled = enabled
+            txtStatSpeed?.isEnabled = enabled
+            spnEffect1?.isEnabled = enabled
+            spnEffect2?.isEnabled = enabled
+            spnEffect3?.isEnabled = enabled
+        }
     }
 
     private fun onAppDataSSBUChecked(enabled: Boolean) {
-        if (null == spnAppearanceU) return
-        spnAppearanceU?.isEnabled = enabled
-        txtLevelSSBU?.isEnabled = enabled
-        // txtGiftCount?.isEnabled = enabled
-        txtLevelCPU?.isEnabled = enabled
-        txtStatAttackU?.isEnabled = enabled
-        txtStatDefenseU?.isEnabled = enabled
+        spnAppearanceU?.let {
+            it.isEnabled = enabled
+            txtLevelSSBU?.isEnabled = enabled
+            // txtGiftCount?.isEnabled = enabled
+            txtLevelCPU?.isEnabled = enabled
+            txtStatAttackU?.isEnabled = enabled
+            txtStatDefenseU?.isEnabled = enabled
+        }
     }
 
     @Throws(NumberFormatException::class)

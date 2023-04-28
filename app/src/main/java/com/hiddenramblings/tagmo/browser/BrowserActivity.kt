@@ -108,8 +108,9 @@ import java.util.concurrent.Executors
 
 class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
     BrowserAdapter.OnAmiiboClickListener {
-    private lateinit var prefs: Preferences
-    private lateinit var keyManager: KeyManager
+    private val prefs: Preferences by lazy { Preferences(applicationContext) }
+    private val keyManager: KeyManager by lazy { KeyManager(this) }
+
     private var filteredCount = 0
     private var clickedAmiibo: AmiiboFile? = null
     var settings: BrowserSettings? = null
@@ -173,7 +174,6 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
 
     public override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        prefs = Preferences(applicationContext)
         if (BuildConfig.WEAR_OS) {
             supportActionBar?.hide()
         } else {
@@ -182,7 +182,6 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
             supportActionBar?.setHomeAsUpIndicator(R.drawable.ic_menu_24)
         }
         setContentView(R.layout.activity_browser)
-        keyManager = KeyManager(this)
         fakeSnackbar = findViewById(R.id.fake_snackbar)
         fakeSnackbarText = findViewById(R.id.snackbar_text)
         fakeSnackbarItem = findViewById(R.id.snackbar_item)

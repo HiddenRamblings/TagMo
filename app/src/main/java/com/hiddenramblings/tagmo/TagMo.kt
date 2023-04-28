@@ -43,10 +43,6 @@ class TagMo : Application() {
 
     override fun attachBaseContext(base: Context) {
         super.attachBaseContext(base)
-        if (BuildConfig.WEAR_OS) {
-            appContext = ScaledContext(appContext).watch(2f)
-            appContext.setTheme(R.style.AppTheme)
-        }
         if (Version.isPie)
             HiddenApiBypass.addHiddenApiExemptions(
                 "Landroid/bluetooth/BluetoothHidHost;", "LBluetooth"
@@ -80,7 +76,7 @@ class TagMo : Application() {
     }
 
     init {
-        appContext = this
+        appContext = if (BuildConfig.WEAR_OS) ScaledContext(this).watch(2f) else this
     }
 
     companion object {

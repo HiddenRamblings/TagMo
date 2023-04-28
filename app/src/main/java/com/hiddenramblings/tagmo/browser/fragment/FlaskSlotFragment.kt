@@ -38,6 +38,7 @@ import com.hiddenramblings.tagmo.amiibo.AmiiboManager
 import com.hiddenramblings.tagmo.amiibo.AmiiboManager.getAmiiboManager
 import com.hiddenramblings.tagmo.amiibo.AmiiboManager.hasSpoofData
 import com.hiddenramblings.tagmo.amiibo.FlaskTag
+import com.hiddenramblings.tagmo.amiibo.KeyManager
 import com.hiddenramblings.tagmo.amiibo.tagdata.AmiiboData
 import com.hiddenramblings.tagmo.bluetooth.BluetoothHandler
 import com.hiddenramblings.tagmo.bluetooth.BluetoothHandler.BluetoothListener
@@ -67,7 +68,8 @@ import java.text.ParseException
 
 @SuppressLint("NewApi")
 open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListener, BluetoothListener {
-    private lateinit var prefs: Preferences
+    private val prefs: Preferences by lazy { Preferences(requireContext().applicationContext) }
+
     private var bluetoothHandler: BluetoothHandler? = null
     private var isFragmentVisible = false
     private lateinit var rootLayout: CoordinatorLayout
@@ -404,7 +406,6 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR2) return
         rootLayout = view as CoordinatorLayout
         val activity = requireActivity() as BrowserActivity
-        prefs = Preferences(activity.applicationContext)
         amiiboTile = rootLayout.findViewById(R.id.active_tile_layout)
         amiiboCard = rootLayout.findViewById(R.id.active_card_layout)
         amiiboCard?.findViewById<View>(R.id.txtError)?.isGone = true

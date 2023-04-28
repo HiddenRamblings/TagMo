@@ -52,10 +52,11 @@ import java.text.ParseException
 import java.util.*
 
 class SettingsFragment : PreferenceFragmentCompat() {
-    private lateinit var prefs: Preferences
+    private val prefs: Preferences by lazy { Preferences(requireContext().applicationContext) }
+    private val keyManager: KeyManager by lazy { KeyManager(requireContext()) }
+
     private var importKeys: Preference? = null
     var imageNetworkSetting: ListPreference? = null
-    private lateinit var keyManager: KeyManager
 
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         setPreferencesFromResource(R.xml.preference_screen, rootKey)
@@ -63,11 +64,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        prefs = Preferences(requireContext().applicationContext)
-        keyManager = KeyManager(requireContext())
-        if (!keyManager.isKeyMissing) {
-            onUpdateRequested(false)
-        }
+        if (!keyManager.isKeyMissing) onUpdateRequested(false)
         importKeys = findPreference(getString(R.string.settings_import_keys))
         updateKeySummary()
         imageNetworkSetting = findPreference(getString(R.string.image_network_settings))

@@ -36,7 +36,9 @@ import java.util.concurrent.Executors
 
 class NfcActivity : AppCompatActivity() {
 
-    private lateinit var prefs: Preferences
+    private val prefs: Preferences by lazy { Preferences(applicationContext) }
+    private val keyManager: KeyManager by lazy { KeyManager(this) }
+
     private lateinit var txtMessage: TextView
     private lateinit var txtError: TextView
     private lateinit var imgNfcBar: AppCompatImageView
@@ -46,7 +48,6 @@ class NfcActivity : AppCompatActivity() {
     private lateinit var nfcAnimation: Animation
 
     private var nfcAdapter: NfcAdapter? = null
-    private lateinit var keyManager: KeyManager
     private val foomiibo = Foomiibo()
 
     private var isEliteIntent = false
@@ -72,14 +73,12 @@ class NfcActivity : AppCompatActivity() {
 
     public override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        prefs = Preferences(applicationContext)
 
         supportActionBar?.setHomeButtonEnabled(true)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         setContentView(R.layout.activity_nfc)
 
         nfcAdapter = NfcAdapter.getDefaultAdapter(this)
-        keyManager = KeyManager(this)
         txtMessage = findViewById(R.id.txtMessage)
         txtError = findViewById(R.id.txtError)
         imgNfcBar = findViewById(R.id.imgNfcBar)

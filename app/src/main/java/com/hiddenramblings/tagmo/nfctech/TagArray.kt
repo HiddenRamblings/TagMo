@@ -35,34 +35,35 @@ import java.util.*
 object TagArray {
     @JvmStatic
     fun Tag?.technology(): String {
-        val context = TagMo.appContext
-        var type = context.getString(R.string.unknown_type)
-        if (null == this) return type
-        techList.forEach {
-            when {
-                MifareClassic::class.java.name == it -> {
-                    type = when (MifareClassic.get(this).type) {
-                        MifareClassic.TYPE_CLASSIC -> context.getString(R.string.mifare_classic)
-                        MifareClassic.TYPE_PLUS -> context.getString(R.string.mifare_plus)
-                        MifareClassic.TYPE_PRO -> context.getString(R.string.mifare_pro)
-                        else -> context.getString(R.string.mifare_classic)
+        with (TagMo.appContext) {
+            var type = getString(R.string.unknown_type)
+            if (null == this@technology) return type
+            techList.forEach {
+                when {
+                    MifareClassic::class.java.name == it -> {
+                        type = when (MifareClassic.get(this@technology).type) {
+                            MifareClassic.TYPE_CLASSIC -> getString(R.string.mifare_classic)
+                            MifareClassic.TYPE_PLUS -> getString(R.string.mifare_plus)
+                            MifareClassic.TYPE_PRO -> getString(R.string.mifare_pro)
+                            else -> getString(R.string.mifare_classic)
+                        }
+                        return type
                     }
-                    return type
-                }
-                MifareUltralight::class.java.name == it -> {
-                    type = when (MifareUltralight.get(this).type) {
-                        MifareUltralight.TYPE_ULTRALIGHT -> context.getString(R.string.mifare_ultralight)
-                        MifareUltralight.TYPE_ULTRALIGHT_C -> context.getString(R.string.mifare_ultralight_c)
-                        else -> context.getString(R.string.mifare_ultralight)
+                    MifareUltralight::class.java.name == it -> {
+                        type = when (MifareUltralight.get(this@technology).type) {
+                            MifareUltralight.TYPE_ULTRALIGHT -> getString(R.string.mifare_ultralight)
+                            MifareUltralight.TYPE_ULTRALIGHT_C -> getString(R.string.mifare_ultralight_c)
+                            else -> getString(R.string.mifare_ultralight)
+                        }
+                        return type
                     }
-                    return type
+                    IsoDep::class.java.name == it -> { return getString(R.string.isodep) }
+                    Ndef::class.java.name == it -> { return getString(R.string.ndef) }
+                    NdefFormatable::class.java.name == it -> { return getString(R.string.ndef_formatable) }
                 }
-                IsoDep::class.java.name == it -> { return context.getString(R.string.isodep) }
-                Ndef::class.java.name == it -> { return context.getString(R.string.ndef) }
-                NdefFormatable::class.java.name == it -> { return context.getString(R.string.ndef_formatable) }
             }
+            return type
         }
-        return type
     }
 
     private val mPrefs = Preferences(TagMo.appContext)
@@ -180,77 +181,80 @@ object TagArray {
     @JvmStatic
     @Throws(Exception::class)
     fun validateData(data: ByteArray?) {
-        val context = TagMo.appContext
-        if (null == data) throw IOException(context.getString(R.string.invalid_data_null))
-        /* TagWriter.splitPages(data) */
-        if (data.size == NfcByte.KEY_FILE_SIZE || data.size == NfcByte.KEY_RETAIL_SZ)
-            throw IOException(context.getString(R.string.invalid_tag_key))
-        else if (data.size < NfcByte.TAG_DATA_SIZE)
-            throw IOException(context.getString(
-                R.string.invalid_data_size, data.size, NfcByte.TAG_DATA_SIZE
-            ))
-        val pages = arrayOfNulls<ByteArray>(data.size / NfcByte.PAGE_SIZE)
-        var i = 0
-        var j = 0
-        while (i < data.size) {
-            pages[j] = Arrays.copyOfRange(data, i, i + NfcByte.PAGE_SIZE)
-            i += NfcByte.PAGE_SIZE
-            j++
-        }
-        when {
-            pages[0]?.let {
-                it[0] != 0x04.toByte()
-            } ?: true -> throw Exception(context.getString(R.string.invalid_tag_prefix))
-            pages[2]?.let {
-                it[2] != 0x0F.toByte() || it[3] != 0xE0.toByte()
-            } ?: true -> throw Exception(context.getString(R.string.invalid_tag_lock))
-            pages[3]?.let {
-                it[0] != 0xF1.toByte() || it[1] != 0x10.toByte()
-                        || it[2] != 0xFF.toByte() || it[3] != 0xEE.toByte()
-            } ?: true -> throw Exception(context.getString(R.string.invalid_tag_cc))
-            pages[0x82]?.let {
-                it[0] != 0x01.toByte() || it[1] != 0x0.toByte() || it[2] != 0x0F.toByte()
-            } ?: true -> throw Exception(context.getString(R.string.invalid_tag_dynamic))
-            pages[0x83]?.let {
-                it[0] != 0x0.toByte() || it[1] != 0x0.toByte()
-                        || it[2] != 0x0.toByte() || it[3] != 0x04.toByte()
-            } ?: true -> throw Exception(context.getString(R.string.invalid_tag_cfg_zero))
-            pages[0x84]?.let {
-                it[0] != 0x5F.toByte() || it[1] != 0x0.toByte()
-                        || it[2] != 0x0.toByte() || it[3] != 0x00.toByte()
-            } ?: true -> throw Exception(context.getString(R.string.invalid_tag_cfg_one))
+        with (TagMo.appContext) {
+            if (null == data) throw IOException(getString(R.string.invalid_data_null))
+            /* TagWriter.splitPages(data) */
+            if (data.size == NfcByte.KEY_FILE_SIZE || data.size == NfcByte.KEY_RETAIL_SZ)
+                throw IOException(getString(R.string.invalid_tag_key))
+            else if (data.size < NfcByte.TAG_DATA_SIZE)
+                throw IOException(
+                    getString(R.string.invalid_data_size, data.size, NfcByte.TAG_DATA_SIZE)
+                )
+            val pages = arrayOfNulls<ByteArray>(data.size / NfcByte.PAGE_SIZE)
+            var i = 0
+            var j = 0
+            while (i < data.size) {
+                pages[j] = Arrays.copyOfRange(data, i, i + NfcByte.PAGE_SIZE)
+                i += NfcByte.PAGE_SIZE
+                j++
+            }
+            when {
+                pages[0]?.let {
+                    it[0] != 0x04.toByte()
+                } ?: true -> throw Exception(getString(R.string.invalid_tag_prefix))
+
+                pages[2]?.let {
+                    it[2] != 0x0F.toByte() || it[3] != 0xE0.toByte()
+                } ?: true -> throw Exception(getString(R.string.invalid_tag_lock))
+
+                pages[3]?.let {
+                    it[0] != 0xF1.toByte() || it[1] != 0x10.toByte()
+                            || it[2] != 0xFF.toByte() || it[3] != 0xEE.toByte()
+                } ?: true -> throw Exception(getString(R.string.invalid_tag_cc))
+
+                pages[0x82]?.let {
+                    it[0] != 0x01.toByte() || it[1] != 0x0.toByte() || it[2] != 0x0F.toByte()
+                } ?: true -> throw Exception(getString(R.string.invalid_tag_dynamic))
+
+                pages[0x83]?.let {
+                    it[0] != 0x0.toByte() || it[1] != 0x0.toByte()
+                            || it[2] != 0x0.toByte() || it[3] != 0x04.toByte()
+                } ?: true -> throw Exception(getString(R.string.invalid_tag_cfg_zero))
+
+                pages[0x84]?.let {
+                    it[0] != 0x5F.toByte() || it[1] != 0x0.toByte()
+                            || it[2] != 0x0.toByte() || it[3] != 0x00.toByte()
+                } ?: true -> throw Exception(getString(R.string.invalid_tag_cfg_one))
+
+                else -> {}
+            }
         }
     }
 
     @JvmStatic
     @Throws(Exception::class)
     fun validateNtag(mifare: NTAG215, tagData: ByteArray?, validateNtag: Boolean) {
-        val context = TagMo.appContext
-        if (null == tagData) throw IOException(context.getString(R.string.no_source_data))
-        if (validateNtag) {
-            try {
-                mifare.transceive(byteArrayOf(0x60.toByte()))?.let {
-                    if (it.size != 8) throw Exception(context.getString(
-                            R.string.error_tag_version
-                        ))
-                    if (it[0x02] != 0x04.toByte() || it[0x06] != 0x11.toByte())
-                        throw FormatException(context.getString(R.string.error_tag_specs))
-                } ?: throw Exception(context.getString(
-                    R.string.error_tag_version
-                ))
-            } catch (e: Exception) {
-                Debug.warn(R.string.error_version, e)
-                throw e
+        with (TagMo.appContext) {
+            if (null == tagData) throw IOException(getString(R.string.no_source_data))
+            if (validateNtag) {
+                try {
+                    mifare.transceive(byteArrayOf(0x60.toByte()))?.let {
+                        if (it.size != 8) throw Exception(getString(R.string.error_tag_version))
+                        if (it[0x02] != 0x04.toByte() || it[0x06] != 0x11.toByte())
+                            throw FormatException(getString(R.string.error_tag_specs))
+                    } ?: throw Exception(getString(R.string.error_tag_version))
+                } catch (e: Exception) {
+                    Debug.warn(R.string.error_version, e)
+                    throw e
+                }
             }
+            val pages = mifare.readPages(0)
+            if (null == pages || pages.size != NfcByte.PAGE_SIZE * 4)
+                throw Exception(getString(R.string.fail_read_size))
+            if (!compareRange(pages, tagData, 9))
+                throw Exception(getString(R.string.fail_mismatch_uid))
+            Debug.info(TagWriter::class.java, R.string.validation_success)
         }
-        val pages = mifare.readPages(0)
-        if (null == pages || pages.size != NfcByte.PAGE_SIZE * 4)
-            throw Exception(context.getString(
-                R.string.fail_read_size
-            ))
-        if (!compareRange(pages, tagData, 9))
-            throw Exception(context.getString(R.string.fail_mismatch_uid))
-        Debug.info(TagWriter::class.java, R.string.validation_success)
     }
 
     @JvmStatic

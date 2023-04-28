@@ -64,7 +64,9 @@ import java.io.IOException
 import java.text.ParseException
 
 class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
-    private lateinit var prefs: Preferences
+    private val prefs: Preferences by lazy { Preferences(requireContext().applicationContext) }
+    private val keyManager: KeyManager by lazy { KeyManager(requireContext()) }
+
     private lateinit var rootLayout: CoordinatorLayout
     var eliteContent: RecyclerView? = null
         private set
@@ -89,7 +91,6 @@ class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
     private lateinit var settings: BrowserSettings
     var bottomSheet: BottomSheetBehavior<View>? = null
         private set
-    private lateinit var keyManager: KeyManager
     private var amiibos: ArrayList<EliteTag?> = arrayListOf()
     private var clickedPosition = 0
 
@@ -116,8 +117,6 @@ class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
         super.onViewCreated(view, savedInstanceState)
         rootLayout = view as CoordinatorLayout
         val activity = requireActivity() as BrowserActivity
-        prefs = Preferences(activity.applicationContext)
-        keyManager = KeyManager(activity)
         eliteContent = rootLayout.findViewById(R.id.elite_content)
         if (prefs.softwareLayer())
             eliteContent?.setLayerType(View.LAYER_TYPE_SOFTWARE, null)

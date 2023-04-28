@@ -26,7 +26,7 @@ import kotlinx.coroutines.*
 import java.util.*
 
 class DonationManager internal constructor(private val activity: BrowserActivity) {
-    private var billingClient: BillingClient? = null
+    private lateinit var billingClient: BillingClient
     private val iapSkuDetails: ArrayList<ProductDetails> = arrayListOf()
     private val subSkuDetails: ArrayList<ProductDetails> = arrayListOf()
 
@@ -50,7 +50,7 @@ class DonationManager internal constructor(private val activity: BrowserActivity
     private fun handlePurchaseIAP(purchase: Purchase) {
         val consumeParams = ConsumeParams.newBuilder()
             .setPurchaseToken(purchase.purchaseToken)
-        billingClient?.consumeAsync(consumeParams.build(), consumeResponseListener)
+        billingClient.consumeAsync(consumeParams.build(), consumeResponseListener)
     }
 
     private val acknowledgePurchaseResponseListener =
@@ -62,7 +62,7 @@ class DonationManager internal constructor(private val activity: BrowserActivity
     private fun handlePurchaseSub(purchase: Purchase) {
         val acknowledgePurchaseParams = AcknowledgePurchaseParams
             .newBuilder().setPurchaseToken(purchase.purchaseToken)
-        billingClient?.acknowledgePurchase(
+        billingClient.acknowledgePurchase(
             acknowledgePurchaseParams.build(),
             acknowledgePurchaseResponseListener
         )
@@ -111,7 +111,7 @@ class DonationManager internal constructor(private val activity: BrowserActivity
                 purchases?.forEach {
                     subsPurchased.addAll(it.products)
                 }
-                billingClient?.queryPurchasesAsync(
+                billingClient.queryPurchasesAsync(
                     QueryPurchasesParams.newBuilder().setProductType(
                         BillingClient.ProductType.SUBS
                     ).build(), subsOwnedListener
@@ -138,7 +138,7 @@ class DonationManager internal constructor(private val activity: BrowserActivity
             .setListener(purchasesUpdatedListener).enablePendingPurchases().build()
         iapSkuDetails.clear()
         subSkuDetails.clear()
-        billingClient?.startConnection(object : BillingClientStateListener {
+        billingClient.startConnection(object : BillingClientStateListener {
             override fun onBillingServiceDisconnected() {}
             override fun onBillingSetupFinished(billingResult: BillingResult) {
                 backgroundScope.launch(Dispatchers.IO) {
@@ -155,11 +155,11 @@ class DonationManager internal constructor(private val activity: BrowserActivity
                                 .setProductType(BillingClient.ProductType.INAPP).build()
                             val params = QueryProductDetailsParams
                                 .newBuilder().setProductList(listOf(productList))
-                            billingClient!!.queryProductDetailsAsync(
+                            billingClient.queryProductDetailsAsync(
                                 params.build()
                             ) { _: BillingResult?, productDetailsList: List<ProductDetails>? ->
                                 iapSkuDetails.addAll(productDetailsList!!)
-                                billingClient!!.queryPurchaseHistoryAsync(
+                                billingClient.queryPurchaseHistoryAsync(
                                     QueryPurchaseHistoryParams.newBuilder().setProductType(
                                         BillingClient.ProductType.INAPP
                                     ).build(), iapHistoryListener
@@ -179,13 +179,13 @@ class DonationManager internal constructor(private val activity: BrowserActivity
                             .setProductType(BillingClient.ProductType.SUBS).build()
                         val params = QueryProductDetailsParams
                             .newBuilder().setProductList(listOf(productList))
-                        billingClient!!.queryProductDetailsAsync(
+                        billingClient.queryProductDetailsAsync(
                             params.build()
                         ) { _: BillingResult?, productDetailsList: List<ProductDetails>? ->
                             subSkuDetails.addAll(
                                 productDetailsList!!
                             )
-                            billingClient!!.queryPurchaseHistoryAsync(
+                            billingClient.queryPurchaseHistoryAsync(
                                 QueryPurchaseHistoryParams.newBuilder().setProductType(
                                     BillingClient.ProductType.SUBS
                                 ).build(), subHistoryListener
@@ -228,7 +228,7 @@ class DonationManager internal constructor(private val activity: BrowserActivity
         button.setOnClickListener {
             val productDetailsParamsList = ProductDetailsParams
                 .newBuilder().setProductDetails(skuDetail).build()
-            billingClient?.launchBillingFlow(
+            billingClient.launchBillingFlow(
                 activity, BillingFlowParams.newBuilder()
                     .setProductDetailsParamsList(listOf(productDetailsParamsList))
                     .build()
@@ -274,7 +274,7 @@ class DonationManager internal constructor(private val activity: BrowserActivity
                     val productDetailsParamsList = ProductDetailsParams.newBuilder()
                         .setOfferToken(skuDetail.subscriptionOfferDetails!![0].offerToken)
                         .setProductDetails(skuDetail).build()
-                    billingClient?.launchBillingFlow(
+                    billingClient.launchBillingFlow(
                         activity, BillingFlowParams.newBuilder()
                             .setProductDetailsParamsList(listOf(productDetailsParamsList))
                             .build()

@@ -49,7 +49,9 @@ import kotlinx.coroutines.*
 import java.io.File
 
 class BrowserFragment : Fragment(), OnFoomiiboClickListener {
-    private lateinit var prefs: Preferences
+    private val prefs: Preferences by lazy { Preferences(requireContext().applicationContext) }
+    private val keyManager: KeyManager by lazy { KeyManager(requireContext()) }
+
     private var chipList: FlexboxLayout? = null
     private var browserScroller: RecyclerViewFastScroller? = null
     var browserContent: RecyclerView? = null
@@ -57,7 +59,6 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
     var foomiiboContent: RecyclerView? = null
         private set
     private lateinit var directory: File
-    private lateinit var keyManager: KeyManager
     private val foomiibo = Foomiibo()
     private lateinit var settings: BrowserSettings
     private val resultData: ArrayList<ByteArray> = arrayListOf()
@@ -100,8 +101,6 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val activity = requireActivity() as BrowserActivity
-        prefs = Preferences(activity.applicationContext)
-        keyManager = KeyManager(activity)
         settings = activity.settings ?: BrowserSettings().initialize()
         directory = File(activity.filesDir, "Foomiibo")
         directory.mkdirs()

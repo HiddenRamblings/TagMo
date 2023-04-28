@@ -46,11 +46,12 @@ import java.util.*
 
 class TagDataEditor : AppCompatActivity() {
 
+    private val keyManager: KeyManager by lazy { KeyManager(this) }
+
     private lateinit var txtError: TextView
     private lateinit var txtTagId: TextView
     private lateinit var txtName: TextView
     private lateinit var txtGameSeries: TextView
-
     // private TextView txtCharacter;
     private lateinit var txtAmiiboType: TextView
     private lateinit var txtAmiiboSeries: TextView
@@ -69,6 +70,7 @@ class TagDataEditor : AppCompatActivity() {
     private lateinit var appDataSwitch: SwitchCompat
     private lateinit var userDataSwitch: SwitchCompat
     private lateinit var generateSerial: AppCompatButton
+
     private lateinit var appDataViewChibiRobo: LinearLayout
     private lateinit var appDataViewZeldaTP: LinearLayout
     private lateinit var appDataViewMHStories: LinearLayout
@@ -88,7 +90,6 @@ class TagDataEditor : AppCompatActivity() {
     private var ignoreAppNameSelected = false
 
     private var tagData: ByteArray? = null
-    private lateinit var keyManager: KeyManager
     private var amiiboManager: AmiiboManager? = null
     private lateinit var amiiboData: AmiiboData
 
@@ -148,7 +149,6 @@ class TagDataEditor : AppCompatActivity() {
             ViewGroup.LayoutParams.MATCH_PARENT,
             ViewGroup.LayoutParams.MATCH_PARENT
         )
-        keyManager = KeyManager(this)
         if (keyManager.isKeyMissing) {
             showErrorDialog(R.string.no_decrypt_key)
             return
@@ -162,19 +162,10 @@ class TagDataEditor : AppCompatActivity() {
         txtAmiiboSeries = findViewById(R.id.txtAmiiboSeries)
         imageAmiibo = findViewById(R.id.imageAmiibo)
         txtUID = findViewById(R.id.txtUID)
-        txtCountryCode = findViewById(R.id.txtCountryCode)
-        txtInitDate = findViewById(R.id.txtInitDate)
-        txtModifiedDate = findViewById(R.id.txtModifiedDate)
         txtNickname = findViewById(R.id.txtNickname)
         txtMiiName = findViewById(R.id.txtMiiName)
         txtMiiAuthor = findViewById(R.id.txtMiiAuthor)
-        txtWriteCounter = findViewById(R.id.txtWriteCounter)
-        txtSerialNumber = findViewById(R.id.txtSerialNumber)
-        txtAppName = findViewById(R.id.txtAppName)
-        txtAppId = findViewById(R.id.txtAppId)
-        appDataSwitch = findViewById(R.id.appDataSwitch)
-        userDataSwitch = findViewById(R.id.userDataSwitch)
-        generateSerial = findViewById(R.id.random_serial)
+
         appDataViewChibiRobo = findViewById(R.id.appDataChibiRobo)
         appDataViewZeldaTP = findViewById(R.id.appDataZeldaTP)
         appDataViewMHStories = findViewById(R.id.appDataMHStories)
@@ -187,8 +178,6 @@ class TagDataEditor : AppCompatActivity() {
         appDataViewSplatoon3 = findViewById(R.id.appDataSplatoon3)
         appDataViewSSB = findViewById(R.id.appDataSSB)
         appDataViewSSBU = findViewById(R.id.appDataSSBU)
-        appDataFormat = findViewById(R.id.format_app_data)
-        appDataTransfer = findViewById(R.id.transfer_app_data)
 
         tagData = intent.getByteArrayExtra(NFCIntent.EXTRA_TAG_DATA)
         try {
@@ -203,50 +192,63 @@ class TagDataEditor : AppCompatActivity() {
                 return
             }
         }
-        val toolbar = findViewById<Toolbar>(R.id.toolbar)
-        toolbar.setTitle(R.string.edit_props)
-        toolbar.inflateMenu(R.menu.save_menu)
-        toolbar.setNavigationIcon(android.R.drawable.ic_menu_revert)
-        toolbar.setNavigationOnClickListener { finish() }
-        toolbar.setOnMenuItemClickListener { item: MenuItem ->
-            if (item.itemId == R.id.mnu_save) {
-                onSaveClicked()
-                return@setOnMenuItemClickListener true
+        findViewById<Toolbar>(R.id.toolbar).apply {
+            setTitle(R.string.edit_props)
+            inflateMenu(R.menu.save_menu)
+            setNavigationIcon(android.R.drawable.ic_menu_revert)
+            setNavigationOnClickListener { finish() }
+            setOnMenuItemClickListener { item: MenuItem ->
+                if (item.itemId == R.id.mnu_save) {
+                    onSaveClicked()
+                    return@setOnMenuItemClickListener true
+                }
+                false
             }
-            false
         }
-        userDataSwitch.setOnCheckedChangeListener { _: CompoundButton?, checked: Boolean ->
-            onUserDataSwitchClicked(checked)
+
+        userDataSwitch = findViewById<SwitchCompat>(R.id.userDataSwitch).apply {
+            setOnCheckedChangeListener { _: CompoundButton?, checked: Boolean ->
+                onUserDataSwitchClicked(checked)
+            }
         }
-        appDataSwitch.setOnCheckedChangeListener { _: CompoundButton?, checked: Boolean ->
-            onAppDataSwitchClicked(checked)
+        appDataSwitch = findViewById<SwitchCompat>(R.id.appDataSwitch).apply {
+            setOnCheckedChangeListener { _: CompoundButton?, checked: Boolean ->
+                onAppDataSwitchClicked(checked)
+            }
         }
-        generateSerial.setOnClickListener {
-            txtSerialNumber.setText(TagArray.bytesToHex(Foomiibo().generateRandomUID()))
+        txtSerialNumber = findViewById(R.id.txtSerialNumber)
+        generateSerial = findViewById<AppCompatButton>(R.id.random_serial).apply {
+            setOnClickListener {
+                txtSerialNumber.setText(TagArray.bytesToHex(Foomiibo().generateRandomUID()))
+            }
         }
-        findViewById<View>(R.id.txtInitDate).setOnClickListener {
-            val calendar = Calendar.getInstance()
-            initializedDate?.let { calendar.time = it }
-            val datePickerDialog = DatePickerDialog(
-                this@TagDataEditor,
-                onInitDateSet,
-                calendar[Calendar.YEAR],
-                calendar[Calendar.MONTH],
-                calendar[Calendar.DAY_OF_MONTH]
-            )
-            datePickerDialog.show()
+        txtInitDate = findViewById<EditText>(R.id.txtInitDate).apply {
+            setOnClickListener {
+                val calendar = Calendar.getInstance()
+                initializedDate?.let { calendar.time = it }
+                val datePickerDialog = DatePickerDialog(
+                    this@TagDataEditor,
+                    onInitDateSet,
+                    calendar[Calendar.YEAR],
+                    calendar[Calendar.MONTH],
+                    calendar[Calendar.DAY_OF_MONTH]
+                )
+                datePickerDialog.show()
+            }
         }
-        findViewById<View>(R.id.txtModifiedDate).setOnClickListener {
-            val calendar = Calendar.getInstance()
-            modifiedDate?.let { calendar.time = it }
-            val datePickerDialog = DatePickerDialog(
-                this@TagDataEditor,
-                onModifiedDateSet,
-                calendar[Calendar.YEAR],
-                calendar[Calendar.MONTH],
-                calendar[Calendar.DAY_OF_MONTH]
-            )
-            datePickerDialog.show()
+        txtModifiedDate = findViewById<EditText>(R.id.txtModifiedDate).apply {
+            setOnClickListener {
+                val calendar = Calendar.getInstance()
+                modifiedDate?.let { calendar.time = it }
+                val datePickerDialog = DatePickerDialog(
+                    this@TagDataEditor,
+                    onModifiedDateSet,
+                    calendar[Calendar.YEAR],
+                    calendar[Calendar.MONTH],
+                    calendar[Calendar.DAY_OF_MONTH]
+                )
+                datePickerDialog.show()
+            }
         }
         updateAmiiboView(tagData)
         CoroutineScope(Dispatchers.Main + Job()).launch {
@@ -269,47 +271,59 @@ class TagDataEditor : AppCompatActivity() {
             }
         }
         countryCodeAdapter = CountryCodesAdapter(AmiiboData.countryCodes)
-        txtCountryCode.adapter = countryCodeAdapter
+        txtCountryCode = findViewById<Spinner>(R.id.txtCountryCode).apply {
+            adapter = countryCodeAdapter
+        }
         appIdAdapter = AppIdAdapter(AppId.apps)
-        txtAppName.adapter = appIdAdapter
-        txtAppName.onItemSelectedListener = onAppNameSelected
-        txtAppId.addTextChangedListener(onAppIdChange)
-        txtWriteCounter.addTextChangedListener(object : TextWatcher {
-            override fun beforeTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {}
-            override fun onTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {}
-            override fun afterTextChanged(editable: Editable) {
-                try {
-                    amiiboData.checkWriteCount(editable.toString().toInt())
-                    txtWriteCounter.error = null
-                } catch (e: Exception) {
-                    txtWriteCounter.error = getString(
-                        R.string.error_min_max,
-                        AmiiboData.WRITE_COUNT_MIN_VALUE, AmiiboData.WRITE_COUNT_MAX_VALUE
-                    )
+        txtAppName = findViewById<Spinner>(R.id.txtAppName).apply {
+            adapter = appIdAdapter
+            onItemSelectedListener = onAppNameSelected
+        }
+        txtAppId = findViewById<MaskedEditText>(R.id.txtAppId).apply {
+            addTextChangedListener(onAppIdChange)
+        }
+        txtWriteCounter = findViewById<EditText>(R.id.txtWriteCounter).apply {
+            addTextChangedListener(object : TextWatcher {
+                override fun beforeTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {}
+                override fun onTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {}
+                override fun afterTextChanged(editable: Editable) {
+                    try {
+                        amiiboData.checkWriteCount(editable.toString().toInt())
+                        txtWriteCounter.error = null
+                    } catch (e: Exception) {
+                        txtWriteCounter.error = getString(
+                            R.string.error_min_max,
+                            AmiiboData.WRITE_COUNT_MIN_VALUE, AmiiboData.WRITE_COUNT_MAX_VALUE
+                        )
+                    }
+                }
+            })
+        }
+        appDataFormat = findViewById<AppCompatButton>(R.id.format_app_data).apply {
+            setOnClickListener {
+                amiiboData.appId = 0
+                amiiboData.appData = ByteArray(amiiboData.appData.size)
+                loadData()
+            }
+        }
+        appDataTransfer = findViewById<AppCompatButton>(R.id.transfer_app_data).apply {
+            text = getString(R.string.import_app_data)
+            setOnClickListener {
+                if (null != AppData.transferData) {
+                    transferData()
+                    val button = it as AppCompatButton
+                    button.text = getString(R.string.export_app_data)
+                    button.isEnabled = false
+                } else {
+                    AppData.apply {
+                        transferId = amiiboData.appId
+                        transferData = amiiboData.appData
+                    }
+                    finish()
                 }
             }
-        })
+        }
         loadData()
-        appDataFormat.setOnClickListener {
-            amiiboData.appId = 0
-            amiiboData.appData = ByteArray(amiiboData.appData.size)
-            loadData()
-        }
-        AppData.transferData?.run { appDataTransfer.text = getString(R.string.import_app_data) }
-        appDataTransfer.setOnClickListener {
-            if (null != AppData.transferData) {
-                transferData()
-                val button = it as AppCompatButton
-                button.text = getString(R.string.export_app_data)
-                button.isEnabled = false
-            } else {
-                AppData.apply {
-                    transferId = amiiboData.appId
-                    transferData = amiiboData.appData
-                }
-                finish()
-            }
-        }
     }
 
     private val imageTarget: CustomTarget<Bitmap?> = object : CustomTarget<Bitmap?>() {

@@ -451,10 +451,8 @@ open class AmiiboData : Parcelable {
     }
 
     override fun writeToParcel(dest: Parcel, flags: Int) {
-        array.run {
-            dest.writeInt(size)
-            dest.writeByteArray(this)
-        }
+        dest.writeInt(array.size)
+        dest.writeByteArray(array)
     }
 
     protected constructor(parcel: Parcel) {

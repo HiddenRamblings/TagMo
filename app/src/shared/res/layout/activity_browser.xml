@@ -50,10 +50,9 @@
                     android:layout_centerInParent="true"
                     android:layout_toStartOf="@id/snackbar_item"
                     android:layout_toEndOf="@id/snackbar_icon"
-                    android:layout_weight="1"
                     android:gravity="center"
                     android:singleLine="true"
-                    android:textColor="@android:color/white"
+                    android:textColor="@color/snackbarText"
                     android:textSize="16sp" />
             </RelativeLayout>
         </com.hiddenramblings.tagmo.eightbit.view.AnimatedLinearLayout>
@@ -65,7 +64,7 @@
             app:tabMaxWidth="0dp"
             app:tabGravity="fill"
             app:tabMode="fixed"
-            app:tabTextColor="@android:color/white"
+            app:tabTextColor="@color/tabText"
             android:background="?attr/colorPrimaryDark" />
 
         <androidx.coordinatorlayout.widget.CoordinatorLayout

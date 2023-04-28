@@ -66,7 +66,7 @@
                 android:marqueeRepeatLimit="marquee_forever"
                 android:singleLine="true"
                 android:text="@string/bluup_flask"
-                android:textColor="@android:color/white"
+                android:textColor="@color/bottomSheetText"
                 android:textSize="14sp" />
 
             <androidx.appcompat.widget.AppCompatImageView
@@ -74,7 +74,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
-                app:srcCompat="@drawable/ic_expand_more_white_24dp"
+                app:srcCompat="@drawable/ic_expand_more_24dp"
                 android:contentDescription="@string/imageview_toggle" />
         </LinearLayout>
 
@@ -89,7 +89,7 @@
             android:ellipsize="marquee"
             android:marqueeRepeatLimit="marquee_forever"
             android:text="@string/device_not_found"
-            android:textColor="@android:color/white"
+            android:textColor="@color/bottomSheetText"
             android:textSize="14sp"/>
 
         <include

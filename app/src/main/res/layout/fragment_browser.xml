@@ -77,7 +77,7 @@
                 android:ellipsize="marquee"
                 android:singleLine="true"
                 android:text="@string/foomiibo"
-                android:textColor="@android:color/white"
+                android:textColor="@color/dividerText"
                 android:textSize="14sp" />
 
             <androidx.appcompat.widget.AppCompatImageView

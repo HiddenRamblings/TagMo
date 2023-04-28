@@ -26,6 +26,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.io.BufferedReader
+import java.io.FileNotFoundException
 import java.io.IOException
 import java.io.InputStreamReader
 import java.net.URL
@@ -76,6 +77,9 @@ class JSONExecutor(activity: Activity, server: String, path: String? = null) {
                     listenerDb?.onResults(it, isRawJSON(url)) ?: listener?.onResults(it)
                     return@launch
                 }
+            } catch (fnf: FileNotFoundException) {
+                Debug.warn(fnf)
+                return@launch
             } catch (ignored: UnknownHostException) { }
             try {
                 var conn = URL(url).openConnection() as HttpsURLConnection

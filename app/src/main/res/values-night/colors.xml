@@ -11,6 +11,11 @@
     <color name="tagWarningLight">#FF0000</color>
     <color name="tagWarningDark">#FF00FF</color>
 
+    <color name="tabText">@android:color/white</color>
+    <color name="snackbarText">@android:color/white</color>
+    <color name="dividerText">@android:color/white</color>
+    <color name="bottomSheetText">@android:color/white</color>
+
     <color name="snackbar_dark">#222</color>
     <!-- Equivalent to 0xff000000 -->
     <color name="background_dark">#ff000000</color>

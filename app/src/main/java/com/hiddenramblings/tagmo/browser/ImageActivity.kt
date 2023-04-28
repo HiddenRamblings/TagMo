@@ -84,20 +84,21 @@ class ImageActivity : AppCompatActivity() {
             }
             false
         }
-        bottomSheetBehavior = BottomSheetBehavior.from(bottomSheet)
-        bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
-        bottomSheetBehavior.addBottomSheetCallback(
-            object : BottomSheetCallback() {
-                override fun onStateChanged(bottomSheet: View, newState: Int) {
-                    if (newState == BottomSheetBehavior.STATE_COLLAPSED) {
-                        toggle.setImageResource(R.drawable.ic_expand_less_white_24dp)
-                    } else if (newState == BottomSheetBehavior.STATE_EXPANDED) {
-                        toggle.setImageResource(R.drawable.ic_expand_more_white_24dp)
+        bottomSheetBehavior = BottomSheetBehavior.from(bottomSheet).apply {
+            state = BottomSheetBehavior.STATE_COLLAPSED
+            addBottomSheetCallback(
+                object : BottomSheetCallback() {
+                    override fun onStateChanged(bottomSheet: View, newState: Int) {
+                        if (newState == BottomSheetBehavior.STATE_COLLAPSED) {
+                            toggle.setImageResource(R.drawable.ic_expand_less_white_24dp)
+                        } else if (newState == BottomSheetBehavior.STATE_EXPANDED) {
+                            toggle.setImageResource(R.drawable.ic_expand_more_white_24dp)
+                        }
                     }
-                }
 
-                override fun onSlide(bottomSheet: View, slideOffset: Float) {}
-            })
+                    override fun onSlide(bottomSheet: View, slideOffset: Float) {}
+                })
+        }
         findViewById<View>(R.id.group0).addOnLayoutChangeListener {
                 view: View, _: Int, _: Int, _: Int, _: Int, _: Int, _: Int, _: Int, _: Int ->
             val height = view.height + bottomSheet.paddingTop

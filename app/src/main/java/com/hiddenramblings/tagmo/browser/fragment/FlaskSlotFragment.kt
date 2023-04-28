@@ -476,38 +476,41 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
             amiiboFilesView.setLayerType(View.LAYER_TYPE_SOFTWARE, null)
         // amiiboFilesView.setHasFixedSize(true);
         val toggle = rootLayout.findViewById<AppCompatImageView>(R.id.toggle)
-        bottomSheet = BottomSheetBehavior.from(rootLayout.findViewById(R.id.bottom_sheet))
-        bottomSheet?.state = BottomSheetBehavior.STATE_COLLAPSED
-        setBottomSheetHidden(false)
-        bottomSheet?.addBottomSheetCallback(object : BottomSheetCallback() {
-            override fun onStateChanged(bottomSheet: View, newState: Int) {
-                if (newState == BottomSheetBehavior.STATE_COLLAPSED) {
-                    if (writeSlotsLayout?.visibility == View.VISIBLE)
-                        onBottomSheetChanged(SHEET.MENU)
-                    toggle.setImageResource(R.drawable.ic_expand_less_white_24dp)
-                } else if (newState == BottomSheetBehavior.STATE_EXPANDED) {
-                    toggle.setImageResource(R.drawable.ic_expand_more_white_24dp)
+        bottomSheet = BottomSheetBehavior.from(rootLayout.findViewById(R.id.bottom_sheet)).apply {
+            state = BottomSheetBehavior.STATE_COLLAPSED
+            addBottomSheetCallback(object : BottomSheetCallback() {
+                override fun onStateChanged(bottomSheet: View, newState: Int) {
+                    if (newState == BottomSheetBehavior.STATE_COLLAPSED) {
+                        if (writeSlotsLayout?.visibility == View.VISIBLE)
+                            onBottomSheetChanged(SHEET.MENU)
+                        toggle.setImageResource(R.drawable.ic_expand_less_24dp)
+                    } else if (newState == BottomSheetBehavior.STATE_EXPANDED) {
+                        toggle.setImageResource(R.drawable.ic_expand_more_24dp)
+                    }
                 }
-            }
 
-            override fun onSlide(view: View, slideOffset: Float) {
-                val mainLayout = rootLayout.findViewById<ViewGroup>(R.id.flask_content)
-                if (mainLayout.bottom >= view.top) {
-                    val bottomHeight: Int = (view.measuredHeight - bottomSheet!!.peekHeight)
-                    mainLayout.setPadding(
-                        0, 0, 0,
-                        if (slideOffset > 0) (bottomHeight * slideOffset).toInt() else 0
-                    )
+                override fun onSlide(view: View, slideOffset: Float) {
+                    val mainLayout = rootLayout.findViewById<ViewGroup>(R.id.flask_content)
+                    if (mainLayout.bottom >= view.top) {
+                        val bottomHeight: Int = (view.measuredHeight - bottomSheet!!.peekHeight)
+                        mainLayout.setPadding(
+                            0, 0, 0,
+                            if (slideOffset > 0) (bottomHeight * slideOffset).toInt() else 0
+                        )
+                    }
                 }
-            }
-        })
-        toggle.setOnClickListener {
-            if (bottomSheet?.state == BottomSheetBehavior.STATE_COLLAPSED) {
-                bottomSheet?.setState(BottomSheetBehavior.STATE_EXPANDED)
-            } else {
-                bottomSheet?.setState(BottomSheetBehavior.STATE_COLLAPSED)
+            })
+        }.also { bottomSheet ->
+            setBottomSheetHidden(false)
+            toggle.setOnClickListener {
+                if (bottomSheet.state == BottomSheetBehavior.STATE_COLLAPSED) {
+                    bottomSheet.setState(BottomSheetBehavior.STATE_EXPANDED)
+                } else {
+                    bottomSheet.setState(BottomSheetBehavior.STATE_COLLAPSED)
+                }
             }
         }
+        toggle.setImageResource(R.drawable.ic_expand_more_24dp)
         toolbar?.inflateMenu(R.menu.flask_menu)
         if (settings.amiiboView == BrowserSettings.VIEW.IMAGE.value)
             amiiboFilesView.layoutManager = GridLayoutManager(activity, activity.columnCount)
@@ -619,6 +622,7 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
 
     private fun onBottomSheetChanged(sheet: SHEET) {
         bottomSheet?.state = BottomSheetBehavior.STATE_COLLAPSED
+        bottomSheet?.isFitToContents = true
         requireActivity().runOnUiThread {
             when (sheet) {
                 SHEET.LOCKED -> {
@@ -643,6 +647,7 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
                     flaskContent?.requestLayout()
                 }
                 SHEET.WRITE -> {
+                    bottomSheet?.isFitToContents = false
                     amiiboCard?.isGone = true
                     switchMenuOptions?.isGone = true
                     slotOptionsMenu?.isGone = true

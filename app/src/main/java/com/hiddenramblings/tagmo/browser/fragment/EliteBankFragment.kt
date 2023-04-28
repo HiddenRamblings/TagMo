@@ -176,38 +176,41 @@ class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
         eraseOpenBanks = rootLayout.findViewById(R.id.erase_open_banks)
         settings = activity.settings ?: BrowserSettings().initialize()
         val toggle = rootLayout.findViewById<AppCompatImageView>(R.id.toggle)
-        bottomSheet = BottomSheetBehavior.from(rootLayout.findViewById(R.id.bottom_sheet))
-        bottomSheet?.state = BottomSheetBehavior.STATE_COLLAPSED
-        bottomSheet?.addBottomSheetCallback(object : BottomSheetCallback() {
-            override fun onStateChanged(view: View, newState: Int) {
-                if (newState == BottomSheetBehavior.STATE_COLLAPSED) {
-                    if (writeBankLayout?.visibility == View.VISIBLE)
-                        onBottomSheetChanged(SHEET.MENU)
-                    toggle.setImageResource(R.drawable.ic_expand_less_white_24dp)
-                } else if (newState == BottomSheetBehavior.STATE_EXPANDED) {
-                    toggle.setImageResource(R.drawable.ic_expand_more_white_24dp)
+        bottomSheet = BottomSheetBehavior.from(rootLayout.findViewById(R.id.bottom_sheet)).apply {
+            state = BottomSheetBehavior.STATE_COLLAPSED
+            addBottomSheetCallback(object : BottomSheetCallback() {
+                override fun onStateChanged(view: View, newState: Int) {
+                    if (newState == BottomSheetBehavior.STATE_COLLAPSED) {
+                        if (writeBankLayout?.visibility == View.VISIBLE)
+                            onBottomSheetChanged(SHEET.MENU)
+                        toggle.setImageResource(R.drawable.ic_expand_less_24dp)
+                    } else if (newState == BottomSheetBehavior.STATE_EXPANDED) {
+                        toggle.setImageResource(R.drawable.ic_expand_more_24dp)
+                    }
                 }
-            }
 
-            override fun onSlide(view: View, slideOffset: Float) {
-                val mainLayout = rootLayout.findViewById<ViewGroup>(R.id.main_layout)
-                if (mainLayout.bottom >= view.top) {
-                    val bottomHeight: Int = (view.measuredHeight - bottomSheet!!.peekHeight)
-                    mainLayout.setPadding(
-                        0, 0, 0,
-                        if (slideOffset > 0) (bottomHeight * slideOffset).toInt() else 0
-                    )
+                override fun onSlide(view: View, slideOffset: Float) {
+                    val mainLayout = rootLayout.findViewById<ViewGroup>(R.id.main_layout)
+                    if (mainLayout.bottom >= view.top) {
+                        val bottomHeight: Int = (view.measuredHeight - bottomSheet!!.peekHeight)
+                        mainLayout.setPadding(
+                            0, 0, 0,
+                            if (slideOffset > 0) (bottomHeight * slideOffset).toInt() else 0
+                        )
+                    }
+                    if (slideOffset > 0) eliteContent!!.smoothScrollToPosition(clickedPosition)
                 }
-                if (slideOffset > 0) eliteContent!!.smoothScrollToPosition(clickedPosition)
-            }
-        })
-        toggle.setOnClickListener {
-            if (bottomSheet?.state == BottomSheetBehavior.STATE_COLLAPSED) {
-                bottomSheet?.setState(BottomSheetBehavior.STATE_EXPANDED)
-            } else {
-                bottomSheet?.setState(BottomSheetBehavior.STATE_COLLAPSED)
+            })
+        }.also { bottomSheet ->
+            toggle.setOnClickListener {
+                if (bottomSheet.state == BottomSheetBehavior.STATE_COLLAPSED) {
+                    bottomSheet.setState(BottomSheetBehavior.STATE_EXPANDED)
+                } else {
+                    bottomSheet.setState(BottomSheetBehavior.STATE_COLLAPSED)
+                }
             }
         }
+        toggle.setImageResource(R.drawable.ic_expand_more_24dp)
         toolbar?.inflateMenu(R.menu.bank_menu)
         if (settings.amiiboView == BrowserSettings.VIEW.IMAGE.value)
             eliteContent?.layoutManager = GridLayoutManager(activity, activity.columnCount)
@@ -392,6 +395,7 @@ class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
 
     private fun onBottomSheetChanged(sheet: SHEET) {
         bottomSheet?.state = BottomSheetBehavior.STATE_COLLAPSED
+        bottomSheet?.isFitToContents = true
         when (sheet) {
             SHEET.LOCKED -> {
                 amiiboCard?.isGone = true
@@ -418,6 +422,7 @@ class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
                 eliteContent?.requestLayout()
             }
             SHEET.WRITE -> {
+                bottomSheet?.isFitToContents = false
                 amiiboCard?.isGone = true
                 switchMenuOptions?.isGone = true
                 bankOptionsMenu?.isGone = true

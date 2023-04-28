@@ -234,11 +234,10 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
         setPageTransformer()
         setViewPagerSensitivity(viewPager, 4)
         if (BuildConfig.WEAR_OS) fragmentSettings = pagerAdapter.settings
-        pagerAdapter.browser.run {
-            amiibosView = browserContent
-            foomiiboView = foomiiboContent
-        }
+        amiibosView = pagerAdapter.browser.browserContent
+        foomiiboView = pagerAdapter.browser.foomiiboContent
         browserSheet = bottomSheetBehavior
+
         viewPager.registerOnPageChangeCallback(object : OnPageChangeCallback() {
             @SuppressLint("NewApi")
             override fun onPageSelected(position: Int) {
@@ -342,6 +341,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                 super.onPageScrollStateChanged(state)
             }
         })
+
         TabLayoutMediator(findViewById(R.id.navigation_tabs), viewPager, true,
             Version.isJellyBeanMR2
         ) { tab: TabLayout.Tab, position: Int ->
@@ -414,25 +414,27 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
         settings?.addChangeListener(foldersView.adapter as BrowserSettingsListener?)
 
         val toggle = findViewById<AppCompatImageView>(R.id.toggle)
-        bottomSheetBehavior = BottomSheetBehavior.from(findViewById(R.id.bottom_sheet))
-        bottomSheetBehavior?.state = BottomSheetBehavior.STATE_COLLAPSED
-        bottomSheetBehavior?.addBottomSheetCallback(object : BottomSheetCallback() {
-            override fun onStateChanged(bottomSheet: View, newState: Int) {
-                if (newState == BottomSheetBehavior.STATE_COLLAPSED) {
-                    toggle.setImageResource(R.drawable.ic_expand_less_white_24dp)
-                } else if (newState == BottomSheetBehavior.STATE_EXPANDED) {
-                    setFolderText(settings)
-                    toggle.setImageResource(R.drawable.ic_expand_more_white_24dp)
+        bottomSheetBehavior = BottomSheetBehavior.from(findViewById(R.id.bottom_sheet)).apply {
+            state = BottomSheetBehavior.STATE_COLLAPSED
+            addBottomSheetCallback(object : BottomSheetCallback() {
+                override fun onStateChanged(bottomSheet: View, newState: Int) {
+                    if (newState == BottomSheetBehavior.STATE_COLLAPSED) {
+                        toggle.setImageResource(R.drawable.ic_expand_less_white_24dp)
+                    } else if (newState == BottomSheetBehavior.STATE_EXPANDED) {
+                        setFolderText(settings)
+                        toggle.setImageResource(R.drawable.ic_expand_more_white_24dp)
+                    }
                 }
-            }
 
-            override fun onSlide(bottomSheet: View, slideOffset: Float) {}
-        })
-        toggle.setOnClickListener {
-            if (bottomSheetBehavior?.state == BottomSheetBehavior.STATE_COLLAPSED) {
-                bottomSheetBehavior?.setState(BottomSheetBehavior.STATE_EXPANDED)
-            } else {
-                bottomSheetBehavior?.setState(BottomSheetBehavior.STATE_COLLAPSED)
+                override fun onSlide(bottomSheet: View, slideOffset: Float) {}
+            })
+        }.also { bottomSheet ->
+            toggle.setOnClickListener {
+                if (bottomSheet.state == BottomSheetBehavior.STATE_COLLAPSED) {
+                    bottomSheet.setState(BottomSheetBehavior.STATE_EXPANDED)
+                } else {
+                    bottomSheet.setState(BottomSheetBehavior.STATE_COLLAPSED)
+                }
             }
         }
         if (BuildConfig.WEAR_OS) {

@@ -25,6 +25,7 @@
         android:layout_height="match_parent"
         android:clipToPadding="false"
         android:paddingBottom="@dimen/recyclerview_padding"
+        android:background="?attr/colorPrimaryDark"
         android:scrollbars="vertical" />
 </LinearLayout>
 </merge>

@@ -97,9 +97,9 @@
     <string name="ignore_tag_id">忽略此Tag ID #</string>
     <string name="random_serial">隨機序號</string>
     <string name="inject_game_data">寫入遊戲儲存數據</string>
-    <string name="export_app_data">匯出APP數據</string>
-    <string name="import_app_data">匯入APP數據</string>
-    <string name="format_app_data">格式化APP數據</string>
+    <string name="export_app_data">匯出</string>
+    <string name="import_app_data">匯入</string>
+    <string name="format_app_data">格式化</string>
     <string name="game_titles_view">檢視可支援的相關遊戲</string>
     <string name="game_titles_hide">隱藏可支援的相關遊戲</string>
 

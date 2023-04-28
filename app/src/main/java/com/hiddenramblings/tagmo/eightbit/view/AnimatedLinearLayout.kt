@@ -37,15 +37,11 @@ class AnimatedLinearLayout : LinearLayout {
 
     override fun onAnimationStart() {
         super.onAnimationStart()
-        if (mAnimationListener != null) {
-            mAnimationListener!!.onAnimationStart(this)
-        }
+        mAnimationListener?.onAnimationStart(this)
     }
 
     override fun onAnimationEnd() {
         super.onAnimationEnd()
-        if (mAnimationListener != null) {
-            mAnimationListener!!.onAnimationEnd(this)
-        }
+        mAnimationListener?.onAnimationEnd(this)
     }
 }

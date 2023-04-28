@@ -18,7 +18,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:background="@color/colorPrimary">
+                android:background="?attr/colorPrimary">
 
                 <androidx.appcompat.widget.Toolbar
                     android:id="@+id/drawer_layout"
@@ -74,10 +74,9 @@
                         android:layout_centerInParent="true"
                         android:layout_toStartOf="@id/snackbar_item"
                         android:layout_toEndOf="@id/snackbar_icon"
-                        android:layout_weight="1"
                         android:gravity="center"
                         android:singleLine="true"
-                        android:textColor="@android:color/white"
+                        android:textColor="@color/snackbarText"
                         android:textSize="16sp" />
                 </RelativeLayout>
             </com.hiddenramblings.tagmo.eightbit.view.AnimatedLinearLayout>
@@ -89,7 +88,7 @@
                 app:tabMaxWidth="0dp"
                 app:tabGravity="fill"
                 app:tabMode="fixed"
-                app:tabTextColor="@android:color/white"
+                app:tabTextColor="@color/tabText"
                 app:tabTextAppearance="@style/WearTabText"
                 android:background="?attr/colorPrimaryDark" />
 

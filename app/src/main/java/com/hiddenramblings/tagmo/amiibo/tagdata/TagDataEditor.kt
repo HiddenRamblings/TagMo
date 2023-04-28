@@ -30,7 +30,6 @@ import com.hiddenramblings.tagmo.R
 import com.hiddenramblings.tagmo.amiibo.Amiibo
 import com.hiddenramblings.tagmo.amiibo.AmiiboManager
 import com.hiddenramblings.tagmo.amiibo.KeyManager
-import com.hiddenramblings.tagmo.amiibo.tagdata.AppData.Companion.appIds
 import com.hiddenramblings.tagmo.eightbit.io.Debug
 import com.hiddenramblings.tagmo.eightbit.os.Version
 import com.hiddenramblings.tagmo.nfctech.Foomiibo
@@ -271,7 +270,7 @@ class TagDataEditor : AppCompatActivity() {
         }
         countryCodeAdapter = CountryCodesAdapter(AmiiboData.countryCodes)
         txtCountryCode.adapter = countryCodeAdapter
-        appIdAdapter = AppIdAdapter(appIds)
+        appIdAdapter = AppIdAdapter(AppId.apps)
         txtAppName.adapter = appIdAdapter
         txtAppName.onItemSelectedListener = onAppNameSelected
         txtAppId.addTextChangedListener(onAppIdChange)

@@ -62,7 +62,7 @@ class UpdateManager internal constructor(activity: BrowserActivity) {
             configurePlay()
         } else {
             if (Version.isLollipop) {
-                activity.applicationContext.packageManager.packageInstaller.run {
+                with (activity.applicationContext.packageManager.packageInstaller) {
                     mySessions.forEach {
                         try {
                             abandonSession(it.sessionId)
@@ -130,7 +130,7 @@ class UpdateManager internal constructor(activity: BrowserActivity) {
                     if (Version.isNougat) {
                         val apkUri = Storage.getFileUri(apk)
                         applicationContext.contentResolver.openInputStream(apkUri).use { apkStream ->
-                            val session = applicationContext.packageManager.packageInstaller.run {
+                            val session = with (applicationContext.packageManager.packageInstaller) {
                                 val params = PackageInstaller.SessionParams(
                                     PackageInstaller.SessionParams.MODE_FULL_INSTALL
                                 )

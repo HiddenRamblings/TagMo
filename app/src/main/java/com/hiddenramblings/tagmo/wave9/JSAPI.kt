@@ -12,10 +12,8 @@ class JSAPI(val activity: DimensionActivity, val web: WebView) {
 
     @JavascriptInterface
     fun readTag(page: Byte): String? {
-        val mifare = NTAG215[activity.tag]
-        return mifare?.let {
+        return NTAG215[activity.tag]?.let {
             try {
-                it.connect()
                 // val payload = mifare.readPages(page.toInt())
                 val message = byteArrayOf(0x30, (page.toInt() and 0xFF).toByte())
                 it.transceive(message)?.let { payload ->
@@ -42,10 +40,8 @@ class JSAPI(val activity: DimensionActivity, val web: WebView) {
     @JavascriptInterface
     fun writeTag(page: Byte, payload: String?): Boolean {
         val data = Base64.decode(payload, 0)
-        val mifare = NTAG215[activity.tag]
-        return mifare?.let {
+        return NTAG215[activity.tag]?.let {
             try {
-                it.connect()
                 Debug.info(javaClass, String.format(
                     "Writing %02X%02X%02X%02X", data[0], data[1], data[2], data[3]
                 ))

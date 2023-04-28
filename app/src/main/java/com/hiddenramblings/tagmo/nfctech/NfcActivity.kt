@@ -224,7 +224,6 @@ class NfcActivity : AppCompatActivity() {
             NTAG215.getBlind(tag) else NTAG215[tag]
         try {
             mifare?.let { ntag ->
-                ntag.connect()
                 if (!hasTestedElite) {
                     hasTestedElite = true
                     if (TagArray.isPowerTag(ntag)) {

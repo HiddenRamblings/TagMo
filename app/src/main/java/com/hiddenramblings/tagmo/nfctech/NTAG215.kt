@@ -292,21 +292,30 @@ class NTAG215 : TagTechnology {
 
         private const val NXP_MANUFACTURER_ID = 0x04
         private const val MAX_PAGE_COUNT = 256
-        operator fun get(tag: Tag?): NTAG215? {
-            val mifare = MifareUltralight.get(tag)
-            if (null != mifare) return NTAG215(mifare)
-            val nfcA = NfcA.get(tag)
-            return if (null != nfcA)
-                if (nfcA.sak equals 0x00 && tag?.id?.get(0)?.toInt() == NXP_MANUFACTURER_ID)
-                    NTAG215(nfcA)
+
+        private fun getMifareUltralight(tag: Tag?): NTAG215? {
+            return MifareUltralight.get(tag)?.let { NTAG215(it) }
+        }
+
+        private fun getNfcA(tag: Tag?): NTAG215? {
+            return NfcA.get(tag)?.let {
+                if (it.sak equals 0x00 && tag?.id?.get(0)?.toInt() == NXP_MANUFACTURER_ID)
+                    NTAG215(it)
                 else null
-            else null
+            }
+        }
+
+        operator fun get(tag: Tag?): NTAG215? {
+            return try {
+                getMifareUltralight(tag)?.also { it.connect() }
+            } catch (e: IOException) {
+                getNfcA(tag)?.also { it.connect() }
+            } ?: getNfcA(tag)?.also { it.connect() }
         }
 
         @Throws(IOException::class)
         fun getBlind(tag: Tag?): NTAG215 {
-            val nfcA = NfcA.get(tag)
-            return nfcA?.let { NTAG215(it) } ?: throw IOException(
+            return NfcA.get(tag)?.let { NTAG215(it) } ?: throw IOException(
                 TagMo.appContext.getString(R.string.error_tag_unavailable)
             )
         }

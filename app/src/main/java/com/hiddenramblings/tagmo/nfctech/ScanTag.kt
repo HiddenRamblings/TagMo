@@ -33,10 +33,9 @@ class ScanTag {
         val prefs = Preferences(activity.applicationContext)
         val tag = intent.parcelable<Tag>(NfcAdapter.EXTRA_TAG)
         val tagTech = tag.technology()
-        val mifare: NTAG215 = NTAG215[tag] ?: NTAG215.getBlind(tag)
+        val mifare = NTAG215[tag]
         try {
-            mifare.let { ntag ->
-                ntag.connect()
+            mifare?.let { ntag ->
                 if (!hasTestedElite) {
                     hasTestedElite = true
                     if (!isPowerTag(ntag)) isEliteDevice = isElite(ntag)

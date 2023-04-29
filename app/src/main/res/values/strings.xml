@@ -131,7 +131,7 @@
     <string name="report_problem">Report Problem</string>
     <string name="logcat_crash">ERROR! Submit a log?</string>
     <string name="send_donation">Send a Donation</string>
-    <string name="settings_donate">Send a donation to support development</string>
+    <string name="settings_donate">Support development with a donation</string>
     <string name="google_link">Donate with Google Play</string>
     <string name="sponsor_link">Sponsor on GitHub</string>
     <string name="paypal_link">Donate with PayPal</string>
@@ -213,9 +213,9 @@
     <string name="enable_tag_validation">NTAG215 validation</string>
     <string name="tag_validation_details">Not all NFC chipsets correctly verify tags.\nDisable to ignore tag compatibility checks.</string>
     <string name="enable_automatic_scan">Automatic NFC Scan</string>
-    <string name="automatic_scan_details">Disable to prevent unexpected scan attempts.</string>
+    <string name="automatic_scan_details">Disable to prevent unexpected scans.</string>
     <string name="hide_foomiibo_panel">Hide Foomiibo Panel</string>
-    <string name="hide_foomiibo_details">Remove Foomiibo panel from Browser screen.</string>
+    <string name="hide_foomiibo_details">Remove Foomiibo panel from Browser.</string>
     <string name="tag_devices">Tag Devices</string>
     <string name="enable_power_tag">Power Tag support</string>
     <string name="power_tag_details">See Github for limitations and use.</string>

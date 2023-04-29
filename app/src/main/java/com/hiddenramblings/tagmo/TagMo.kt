@@ -84,20 +84,17 @@ class TagMo : Application() {
         lateinit var appContext : Context
             private set
         const val uiDelay = 50
-        private const val commitHash = "#" + BuildConfig.COMMIT
-        private val versionLabel = ("TagMo " + BuildConfig.VERSION_NAME + " (" + (
-                if (BuildConfig.GOOGLE_PLAY)
-                    "Google Play"
-                else
-                    "GitHub"
-                ) + " " + (
-                if (BuildConfig.WEAR_OS)
-                    "Wear OS"
-                else if (BuildConfig.BUILD_TYPE == "release")
-                    "Release"
-                else
-                    "Debug"
-                ) + ") " + commitHash)
+
+        private const val commitHash = "#${BuildConfig.COMMIT}"
+        private val versionLabel = "TagMo ${BuildConfig.VERSION_NAME} (${
+            if (BuildConfig.GOOGLE_PLAY) "Play" else "GitHub"
+        } ${
+            when {
+                BuildConfig.WEAR_OS -> "Wear OS"
+                BuildConfig.BUILD_TYPE == "release" -> "Release"
+                else -> "Debug"
+            }
+        }) $commitHash"
         private const val commitLink = ("<a href=https://github.com/HiddenRamblings/TagMo/commit/"
                 + BuildConfig.COMMIT + ">" + commitHash + "</a>")
 

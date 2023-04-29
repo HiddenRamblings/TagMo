@@ -2,6 +2,7 @@
 <resources>
     <dimen name="activity_horizontal_margin">16dp</dimen>
     <dimen name="activity_vertical_margin">16dp</dimen>
+    <dimen name="fab_bottom_margin">36dp</dimen>
     <dimen name="card_radius">4dp</dimen>
     <dimen name="divider_radius">12dp</dimen>
     <dimen name="snackbar_icon_padding">12dp</dimen>

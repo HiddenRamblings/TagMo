@@ -1076,17 +1076,19 @@ class TagDataEditor : AppCompatActivity() {
         }
     }
 
-    private fun setEffectValue(spinner: Spinner?, value: Int) {
+    private fun setEffectValue(spinner: Spinner, value: Int) {
         var spinValue = value
         if (spinValue == 0xFF) spinValue = 0 else spinValue++
-        if (spinValue > spinner!!.adapter.count) spinValue = 0
+        if (spinValue > spinner.adapter.count) spinValue = 0
         spinner.setSelection(spinValue)
     }
 
     private fun getEffectValue(spinner: Spinner?): Int {
-        var value = spinner!!.selectedItemPosition
-        if (value == 0) value = 0xFF else value--
-        return value
+        return spinner?.let {
+            var value = it.selectedItemPosition
+            if (value == 0) value = 0xFF else value--
+            value
+        } ?: 0xFF
     }
 
     private fun enableAppDataChibiRobo(appData: ByteArray) {
@@ -1440,15 +1442,15 @@ class TagDataEditor : AppCompatActivity() {
         }
         spnEffect1 = findViewById<Spinner>(R.id.spnEffect1).also {
             setListForSpinner(it, R.array.ssb_bonus_effects)
-            setEffectValue(spnEffect1, bonusEffect1)
+            setEffectValue(it, bonusEffect1)
         }
         spnEffect2 = findViewById<Spinner>(R.id.spnEffect2).also {
             setListForSpinner(it, R.array.ssb_bonus_effects)
-            setEffectValue(spnEffect2, bonusEffect2)
+            setEffectValue(it, bonusEffect2)
         }
         spnEffect3 = findViewById<Spinner>(R.id.spnEffect3).also {
             setListForSpinner(it, R.array.ssb_bonus_effects)
-            setEffectValue(spnEffect3, bonusEffect3)
+            setEffectValue(it, bonusEffect3)
         }
         onAppDataSSBChecked(isAppDataInitialized)
     }

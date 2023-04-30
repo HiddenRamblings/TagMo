@@ -1,3 +1,8 @@
+/*
+ * ====================================================================
+ * N2 Elite Copyright (C) 2019 MasterCheaterz
+ * ====================================================================
+ */
 package com.hiddenramblings.tagmo.nfctech
 
 import android.nfc.Tag
@@ -10,6 +15,7 @@ import com.hiddenramblings.tagmo.eightbit.io.Debug
 import java.io.IOException
 
 class NTAG215 : TagTechnology {
+
     private val tagMifare: MifareUltralight?
     private val tagNfcA: NfcA?
     private var maxTransceiveLength: Int = 0
@@ -36,6 +42,24 @@ class NTAG215 : TagTechnology {
             tagNfcA?.timeout = timeout
         }
 
+    @Throws(IOException::class)
+    override fun connect() {
+        tagMifare?.connect() ?: tagNfcA?.connect()
+    }
+
+    override fun isConnected(): Boolean {
+        return tagNfcA?.isConnected == true
+    }
+
+    @Throws(IOException::class)
+    override fun close() {
+        tagMifare?.close() ?: tagNfcA?.close()
+    }
+
+    override fun getTag(): Tag? {
+        return tagMifare?.tag ?: tagNfcA?.tag
+    }
+
     fun transceive(data: ByteArray?): ByteArray? {
         return try {
             tagMifare?.transceive(data) ?: tagNfcA?.transceive(data)
@@ -43,6 +67,13 @@ class NTAG215 : TagTechnology {
             Debug.warn(e)
             null
         }
+    }
+
+    fun getVersion(isGeneric: Boolean): ByteArray? {
+        val command = if (isGeneric)
+            byteArrayOf(NfcByte.CMD_GET_VERSION.toByte())
+        else byteArrayOf(NfcByte.N2_GET_VERSION.toByte())
+        return transceive(command)
     }
 
     @Throws(IOException::class)
@@ -73,26 +104,6 @@ class NTAG215 : TagTechnology {
         } else {
             throw IOException()
         }
-    }
-
-    @Throws(IOException::class)
-    override fun connect() {
-        tagMifare?.connect() ?: tagNfcA?.connect()
-    }
-
-    @Throws(IOException::class)
-    override fun close() {
-        tagMifare?.close() ?: tagNfcA?.close()
-    }
-
-    override fun getTag(): Tag? {
-        return tagMifare?.tag ?: tagNfcA?.tag
-    }
-
-    fun getVersion(isGeneric: Boolean): ByteArray? {
-        val command =
-            if (isGeneric) byteArrayOf(NfcByte.CMD_GET_VERSION.toByte()) else byteArrayOf(NfcByte.N2_GET_VERSION.toByte())
-        return transceive(command)
     }
 
     @Suppress("unused")
@@ -282,43 +293,12 @@ class NTAG215 : TagTechnology {
         transceive(byteArrayOf(NfcByte.N2_UNLOCK_2.toByte()))
     }
 
-    override fun isConnected(): Boolean {
-        return tagNfcA?.isConnected == true
-    }
-
     companion object {
 
         private infix fun Short.equals(i: Int): Boolean = this == i.toShort()
 
         private const val NXP_MANUFACTURER_ID = 0x04
         private const val MAX_PAGE_COUNT = 256
-
-        private fun getMifareUltralight(tag: Tag?): NTAG215? {
-            return MifareUltralight.get(tag)?.let { NTAG215(it) }
-        }
-
-        private fun getNfcA(tag: Tag?): NTAG215? {
-            return NfcA.get(tag)?.let {
-                if (it.sak equals 0x00 && tag?.id?.get(0)?.toInt() == NXP_MANUFACTURER_ID)
-                    NTAG215(it)
-                else null
-            }
-        }
-
-        operator fun get(tag: Tag?): NTAG215? {
-            return try {
-                getMifareUltralight(tag)?.also { it.connect() }
-            } catch (e: IOException) {
-                getNfcA(tag)?.also { it.connect() }
-            } ?: getNfcA(tag)?.also { it.connect() }
-        }
-
-        @Throws(IOException::class)
-        fun getBlind(tag: Tag?): NTAG215 {
-            return NfcA.get(tag)?.let { NTAG215(it) } ?: throw IOException(
-                TagMo.appContext.getString(R.string.error_tag_unavailable)
-            )
-        }
 
         private fun validatePageIndex(pageIndex: Int) {
             // Do not be too strict on upper bounds checking, since some cards
@@ -328,6 +308,33 @@ class NTAG215 : TagTechnology {
             // helper to guard against obvious programming mistakes.
             if (pageIndex < 0 || pageIndex >= MAX_PAGE_COUNT)
                 throw IndexOutOfBoundsException("page out of bounds: $pageIndex")
+        }
+
+        private fun getMifareUltralight(tag: Tag?): NTAG215? {
+            return MifareUltralight.get(tag)?.let { NTAG215(it) }
+        }
+
+        private fun getNfcA(tag: Tag?): NTAG215? {
+            return NfcA.get(tag)?.let {
+                if (it.sak equals 0x00 && it.tag.id[0].toInt() == NXP_MANUFACTURER_ID)
+                    NTAG215(it)
+                else null
+            }
+        }
+
+        @Throws(IOException::class)
+        fun getBlind(tag: Tag?): NTAG215 {
+            return NfcA.get(tag)?.let { NTAG215(it) } ?: throw IOException(
+                TagMo.appContext.getString(R.string.error_tag_unavailable)
+            )
+        }
+
+        operator fun get(tag: Tag?): NTAG215? {
+            return try {
+                getMifareUltralight(tag)?.also { it.connect() }
+            } catch (e: IOException) {
+                getNfcA(tag)?.also { it.connect() }
+            } ?: getNfcA(tag)?.also { it.connect() }
         }
     }
 }

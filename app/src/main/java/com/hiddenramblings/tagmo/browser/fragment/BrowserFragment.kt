@@ -66,27 +66,28 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
     val onUpdateTagResult = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
     ) { result: ActivityResult ->
-        if (result.resultCode != AppCompatActivity.RESULT_OK || null == result.data)
-            return@registerForActivityResult
-        if (NFCIntent.ACTION_NFC_SCANNED != result.data!!.action
-            && NFCIntent.ACTION_UPDATE_TAG != result.data!!.action
-            && NFCIntent.ACTION_EDIT_COMPLETE != result.data!!.action
-        ) return@registerForActivityResult
-        val tagData = result.data?.getByteArrayExtra(NFCIntent.EXTRA_TAG_DATA)
-        if (tagData?.isNotEmpty() == true) {
-            var updated = false
-            run breaking@{
-                resultData.forEach { data ->
-                    try {
-                        if (data.isNotEmpty() && Amiibo.dataToId(data) == Amiibo.dataToId(tagData)) {
-                            updated = true
-                            resultData[resultData.indexOf(data)] = tagData
-                            return@breaking
-                        }
-                    } catch (ignored: Exception) { }
+        if (result.resultCode != AppCompatActivity.RESULT_OK) return@registerForActivityResult
+        result.data?.let { intent ->
+            if (NFCIntent.ACTION_NFC_SCANNED != intent.action
+                && NFCIntent.ACTION_UPDATE_TAG != intent.action
+                && NFCIntent.ACTION_EDIT_COMPLETE != intent.action
+            ) return@registerForActivityResult
+            val tagData = intent.getByteArrayExtra(NFCIntent.EXTRA_TAG_DATA)
+            if (tagData?.isNotEmpty() == true) {
+                var updated = false
+                run breaking@{
+                    resultData.forEach { data ->
+                        try {
+                            if (data.isNotEmpty() && Amiibo.dataToId(data) == Amiibo.dataToId(tagData)) {
+                                updated = true
+                                resultData[resultData.indexOf(data)] = tagData
+                                return@breaking
+                            }
+                        } catch (ignored: Exception) { }
+                    }
                 }
+                if (!updated) resultData.add(tagData)
             }
-            if (!updated) resultData.add(tagData)
         }
     }
 
@@ -109,7 +110,8 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
 
         browserContent = view.findViewById(R.id.browser_content)
         if (prefs.softwareLayer())
-            browserContent?.setLayerType(View.LAYER_TYPE_SOFTWARE, null)
+            // browserContent?.setLayerType(View.LAYER_TYPE_SOFTWARE, null)
+            browserContent?.setLayerType(View.LAYER_TYPE_NONE, null)
         browserContent?.layoutManager = if (settings.amiiboView == BrowserSettings.VIEW.IMAGE.value)
             GridLayoutManager(activity, activity.columnCount)
         else LinearLayoutManager(activity)
@@ -118,7 +120,8 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
 
         foomiiboContent = view.findViewById(R.id.foomiibo_list)
         if (prefs.softwareLayer())
-            foomiiboContent?.setLayerType(View.LAYER_TYPE_SOFTWARE, null)
+            // foomiiboContent?.setLayerType(View.LAYER_TYPE_SOFTWARE, null)
+            foomiiboContent?.setLayerType(View.LAYER_TYPE_NONE, null)
         foomiiboContent?.layoutManager = if (settings.amiiboView == BrowserSettings.VIEW.IMAGE.value)
             GridLayoutManager(activity, activity.columnCount)
         else LinearLayoutManager(activity)

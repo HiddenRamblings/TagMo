@@ -564,9 +564,8 @@ class SettingsFragment : PreferenceFragmentCompat() {
     private val onImportAmiiboDatabase = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
     ) { result: ActivityResult ->
-        if (result.resultCode != AppCompatActivity.RESULT_OK || result.data == null)
-            return@registerForActivityResult
-        updateAmiiboDatabase(result.data!!.data)
+        if (result.resultCode != AppCompatActivity.RESULT_OK) return@registerForActivityResult
+        result.data?.let { intent -> updateAmiiboDatabase(intent.data) }
     }
 
     private fun showFileChooser(title: String, resultCode: Int) {

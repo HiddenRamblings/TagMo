@@ -1342,7 +1342,9 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
         Toasty(requireActivity()).Long(R.string.fail_bluetooth_adapter)
     }
 
-    override fun onAdapterRestricted() { }
+    override fun onAdapterRestricted() {
+        delayedBluetoothEnable()
+    }
 
     override fun onAdapterEnabled(adapter: BluetoothAdapter?) {
         this.mBluetoothAdapter = adapter

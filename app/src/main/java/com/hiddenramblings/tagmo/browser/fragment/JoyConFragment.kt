@@ -48,7 +48,7 @@ class JoyConFragment : DialogFragment(), BluetoothListener {
                     this@JoyConFragment
                 )
                 bluetoothHandler?.requestPermissions(requireActivity())
-            } ?: Handler(Looper.getMainLooper()).postDelayed({ isBluetoothEnabled }, 125)
+            } ?: delayedBluetoothEnable()
             return false
         }
 
@@ -67,7 +67,7 @@ class JoyConFragment : DialogFragment(), BluetoothListener {
     }
 
     override fun onAdapterRestricted() {
-        bluetoothHandler?.getBluetoothAdapter(requireContext())
+        delayedBluetoothEnable()
     }
 
     @SuppressLint("MissingPermission")

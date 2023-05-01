@@ -9,6 +9,8 @@ import android.content.res.Resources
 import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
@@ -492,11 +494,14 @@ class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
                 updateEliteAdapter(intent.getStringArrayListExtra(NFCIntent.EXTRA_AMIIBO_LIST))
             }
             updateAmiiboView(amiiboCard, tagData, -1, clickedPosition)
-            bottomSheet?.state = BottomSheetBehavior.STATE_EXPANDED
             if (status == CLICKED.ERASE_BANK) {
                 status = CLICKED.NOTHING
                 onBottomSheetChanged(SHEET.MENU)
                 amiibos[clickedPosition] = null
+            } else {
+                Handler(Looper.getMainLooper()).postDelayed({
+                    bottomSheet?.state = BottomSheetBehavior.STATE_EXPANDED
+                }, 125)
             }
         }
     }
@@ -627,8 +632,7 @@ class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
             } catch (e: Exception) { Toasty(requireActivity()).Short(e.message) }
             backupDialog.dismiss()
         }
-        view.findViewById<View>(R.id.button_cancel)
-            .setOnClickListener { backupDialog.dismiss() }
+        view.findViewById<View>(R.id.button_cancel).setOnClickListener { backupDialog.dismiss() }
         backupDialog.show()
     }
 

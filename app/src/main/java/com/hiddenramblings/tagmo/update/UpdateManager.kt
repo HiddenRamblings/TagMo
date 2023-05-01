@@ -97,20 +97,20 @@ class UpdateManager internal constructor(activity: BrowserActivity) {
     }
 
     private fun configureGit() {
-            CoroutineScope(Dispatchers.IO).launch(Dispatchers.IO) {
-                JSONExecutor(
-                    browserActivity, TAGMO_GIT_API
-                ).setResultListener(object : JSONExecutor.ResultListener {
-                    override fun onResults(result: String?) {
-                        result?.let { parseUpdateJSON(it) }
+        CoroutineScope(Dispatchers.IO).launch(Dispatchers.IO) {
+            JSONExecutor(
+                browserActivity, TAGMO_GIT_API
+            ).setResultListener(object : JSONExecutor.ResultListener {
+                override fun onResults(result: String?) {
+                    result?.let { parseUpdateJSON(it) }
+                }
+                override fun onException(e: Exception) {
+                    CoroutineScope(Dispatchers.Main).launch {
+                        Toasty(browserActivity).Short(R.string.fail_update_git)
                     }
-                    override fun onException(e: Exception) {
-                        CoroutineScope(Dispatchers.Main).launch {
-                            Toasty(browserActivity).Short(R.string.fail_update_git)
-                        }
-                    }
-                })
-            }
+                }
+            })
+        }
     }
 
     fun installDownload(apkUrl: String?) {
@@ -120,9 +120,7 @@ class UpdateManager internal constructor(activity: BrowserActivity) {
                 browserActivity.externalCacheDir, apkUrl.substringAfterLast(File.separator)
             )
             URL(apkUrl).openStream().use { stream ->
-                FileOutputStream(apk).use {
-                    stream.copyTo(it)
-                }
+                FileOutputStream(apk).use { stream.copyTo(it) }
             }
             if (!apk.name.lowercase().endsWith(".apk")) apk.delete()
             try {

@@ -19,7 +19,6 @@
 package androidmads.library.qrgenearator
 
 import android.graphics.Bitmap
-import android.os.Build
 import android.os.Bundle
 import android.provider.ContactsContract
 import android.telephony.PhoneNumberUtils
@@ -27,8 +26,7 @@ import com.google.mlkit.vision.barcode.common.Barcode
 import com.google.zxing.BarcodeFormat
 import com.google.zxing.EncodeHintType
 import com.google.zxing.MultiFormatWriter
-import com.hiddenramblings.tagmo.charset.CharsetCompat
-import com.hiddenramblings.tagmo.eightbit.io.Debug
+import com.hiddenramblings.tagmo.eightbit.charset.CharsetCompat
 import com.hiddenramblings.tagmo.eightbit.os.Version
 import java.util.*
 

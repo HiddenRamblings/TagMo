@@ -324,9 +324,8 @@ class NTAG215 : TagTechnology {
 
         @Throws(IOException::class)
         fun getBlind(tag: Tag?): NTAG215 {
-            return NfcA.get(tag)?.let { NTAG215(it) } ?: throw IOException(
-                TagMo.appContext.getString(R.string.error_tag_unavailable)
-            )
+            return NfcA.get(tag)?.let { nfcA -> NTAG215(nfcA).also { it.connect() } }
+                ?: throw IOException(TagMo.appContext.getString(R.string.error_tag_unavailable))
         }
 
         operator fun get(tag: Tag?): NTAG215? {

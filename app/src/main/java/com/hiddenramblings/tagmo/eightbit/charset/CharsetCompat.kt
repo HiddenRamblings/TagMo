@@ -1,4 +1,4 @@
-package com.hiddenramblings.tagmo.charset
+package com.hiddenramblings.tagmo.eightbit.charset
 
 import com.hiddenramblings.tagmo.eightbit.os.Version
 import java.nio.charset.Charset

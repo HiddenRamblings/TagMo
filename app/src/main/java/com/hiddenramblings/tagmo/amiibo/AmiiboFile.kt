@@ -61,8 +61,8 @@ open class AmiiboFile : Parcelable {
         }
         val newData = tagData?.let { AmiiboData(keyManager.decrypt(it)) }
         for (i in 0 until count) {
-            newData?.uID = Foomiibo().generateRandomUID()
             serialList.add(newData)
+            serialList[i]?.uID = Foomiibo().generateRandomUID()
         }
         return serialList
     }

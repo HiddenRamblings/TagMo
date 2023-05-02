@@ -30,14 +30,13 @@ import com.hiddenramblings.tagmo.browser.BrowserSettings.*
 import com.hiddenramblings.tagmo.eightbit.os.Storage
 import com.hiddenramblings.tagmo.eightbit.os.Version
 import com.hiddenramblings.tagmo.widget.BoldSpannable
-import com.qtalk.recyclerviewfastscroller.RecyclerViewFastScroller
+import me.zhanghai.android.fastscroll.PopupTextProvider
 import java.util.*
 
 class BrowserAdapter(
     private val settings: BrowserSettings, private val listener: OnAmiiboClickListener
 ) : RecyclerView.Adapter<BrowserAdapter.AmiiboViewHolder>(),
-    RecyclerViewFastScroller.OnPopupViewUpdate,
-    Filterable, BrowserSettingsListener {
+    PopupTextProvider, Filterable, BrowserSettingsListener {
     private var data: ArrayList<AmiiboFile?> = arrayListOf()
     private var filteredData: ArrayList<AmiiboFile?> = arrayListOf()
     private var filter: AmiiboFilter? = null
@@ -122,7 +121,7 @@ class BrowserAdapter(
         }
     }
 
-    override fun onUpdate(position: Int, popupTextView: TextView) {
+    override fun getPopupText(position: Int) : CharSequence {
         val item = filteredData[position]
         val amiiboId = item?.id
         var amiibo: Amiibo? = null
@@ -131,7 +130,7 @@ class BrowserAdapter(
             if (null == amiibo && null != amiiboId)
                 amiibo = Amiibo(it, amiiboId, null, null)
         }
-        popupTextView.text = amiibo?.let { when (SORT.valueOf(settings.sort)) {
+        return amiibo?.let { when (SORT.valueOf(settings.sort)) {
             SORT.NAME -> it.name ?: "?"
             SORT.CHARACTER -> it.character?.name ?: "?"
             SORT.GAME_SERIES -> it.gameSeries?.name ?: "?"

@@ -143,7 +143,6 @@ dependencies {
     annotationProcessor 'com.github.bumptech.glide:compiler:4.15.1'
 
     implementation 'com.github.8bitDream:NumberPicker:80b06ed3ba'
-    implementation 'com.github.8bitDream:RecyclerView-FastScroller:22c2e93d08'
 
     implementation 'com.google.android.flexbox:flexbox:3.0.0'
     // Required for Lollipop Amiibo API download compatibility
@@ -160,4 +159,6 @@ dependencies {
     implementation 'io.github.vicmikhailau:MaskedEditText:4.0.7'
 
     implementation 'org.lsposed.hiddenapibypass:hiddenapibypass:4.3'
+
+    implementation 'me.zhanghai.android.fastscroll:library:1.2.0'
 }

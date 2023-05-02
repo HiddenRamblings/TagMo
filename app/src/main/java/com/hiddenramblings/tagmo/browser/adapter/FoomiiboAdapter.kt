@@ -22,16 +22,14 @@ import com.hiddenramblings.tagmo.amiibo.AmiiboComparator
 import com.hiddenramblings.tagmo.amiibo.AmiiboManager
 import com.hiddenramblings.tagmo.browser.BrowserSettings
 import com.hiddenramblings.tagmo.browser.BrowserSettings.*
-import com.hiddenramblings.tagmo.browser.adapter.FoomiiboAdapter.FoomiiboViewHolder
 import com.hiddenramblings.tagmo.widget.BoldSpannable
-import com.qtalk.recyclerviewfastscroller.RecyclerViewFastScroller
+import me.zhanghai.android.fastscroll.PopupTextProvider
 import java.util.*
 
 class FoomiiboAdapter(
     private val settings: BrowserSettings, private val listener: OnFoomiiboClickListener
-) : RecyclerView.Adapter<FoomiiboViewHolder>(),
-    RecyclerViewFastScroller.OnPopupViewUpdate,
-    Filterable, BrowserSettingsListener {
+) : RecyclerView.Adapter<FoomiiboAdapter.FoomiiboViewHolder>(),
+    PopupTextProvider, Filterable, BrowserSettingsListener {
     private var data: ArrayList<Amiibo> = arrayListOf()
     private var filteredData: ArrayList<Amiibo> = arrayListOf()
     private var filter: FoomiiboFilter? = null
@@ -108,9 +106,9 @@ class FoomiiboAdapter(
         }
     }
 
-    override fun onUpdate(position: Int, popupTextView: TextView) {
+    override fun getPopupText(position: Int) : CharSequence {
         val item = filteredData[position]
-        popupTextView.text = when (SORT.valueOf(settings.sort)) {
+        return when (SORT.valueOf(settings.sort)) {
             SORT.NAME -> item.name ?: "?"
             SORT.CHARACTER -> item.character?.name ?: "?"
             SORT.GAME_SERIES -> item.gameSeries?.name ?: "?"

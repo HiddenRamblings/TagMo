@@ -36,7 +36,7 @@
     <uses-feature android:name="android.hardware.bluetooth_le" android:required="false"/>
     <uses-feature android:name="${wearUsesFeature}" android:required="false"/>
 
-    <uses-sdk tools:overrideLibrary="androidx.wear,
+    <uses-sdk tools:overrideLibrary="androidx.wear, me.zhanghai.android.fastscroll,
     com.google.mlkit.vision.barcode.bundled, com.google.mlkit.vision.barcode.common,
     com.google.mlkit.vision.common, com.google.mlkit.common, com.google.mlkit.vision.interfaces,
     androidx.camera.camera2, androidx.camera.core, androidx.camera.view, androidx.camera.lifecycle" />

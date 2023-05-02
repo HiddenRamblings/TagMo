@@ -4,7 +4,9 @@ import android.annotation.SuppressLint
 import android.content.DialogInterface
 import android.content.Intent
 import android.content.res.Configuration
+import android.content.res.Resources
 import android.os.Bundle
+import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
@@ -42,18 +44,21 @@ import com.hiddenramblings.tagmo.nfctech.Foomiibo
 import com.hiddenramblings.tagmo.nfctech.TagArray
 import com.hiddenramblings.tagmo.widget.ProgressAlert
 import com.hiddenramblings.tagmo.widget.Toasty
-import com.qtalk.recyclerviewfastscroller.RecyclerViewFastScroller
 import com.robertlevonyan.views.chip.Chip
 import com.robertlevonyan.views.chip.OnCloseClickListener
 import kotlinx.coroutines.*
+import me.zhanghai.android.fastscroll.FastScrollerBuilder
 import java.io.File
+
+private val Number.toPx get() = TypedValue.applyDimension(
+    TypedValue.COMPLEX_UNIT_DIP, this.toFloat(), Resources.getSystem().displayMetrics
+).toInt()
 
 class BrowserFragment : Fragment(), OnFoomiiboClickListener {
     private val prefs: Preferences by lazy { Preferences(requireContext().applicationContext) }
     private val keyManager: KeyManager by lazy { KeyManager(requireContext()) }
 
     private var chipList: FlexboxLayout? = null
-    private var browserScroller: RecyclerViewFastScroller? = null
     var browserContent: RecyclerView? = null
         private set
     var foomiiboContent: RecyclerView? = null
@@ -108,33 +113,36 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
         chipList = view.findViewById(R.id.chip_list)
         chipList?.isGone = true
 
-        browserContent = view.findViewById(R.id.browser_content)
-        if (prefs.softwareLayer())
-            // browserContent?.setLayerType(View.LAYER_TYPE_SOFTWARE, null)
-            browserContent?.setLayerType(View.LAYER_TYPE_NONE, null)
-        browserContent?.layoutManager = if (settings.amiiboView == BrowserSettings.VIEW.IMAGE.value)
-            GridLayoutManager(activity, activity.columnCount)
-        else LinearLayoutManager(activity)
-        browserContent?.adapter = BrowserAdapter(settings, activity)
-        settings.addChangeListener(browserContent?.adapter as BrowserSettingsListener?)
+        browserContent = view.findViewById<RecyclerView>(R.id.browser_content).apply {
+            if (prefs.softwareLayer())
+                // setLayerType(View.LAYER_TYPE_SOFTWARE, null)
+                setLayerType(View.LAYER_TYPE_NONE, null)
+            layoutManager = if (settings.amiiboView == BrowserSettings.VIEW.IMAGE.value)
+                GridLayoutManager(activity, activity.columnCount)
+            else LinearLayoutManager(activity)
+            adapter = BrowserAdapter(settings, activity)
+            settings.addChangeListener(adapter as BrowserSettingsListener?)
+            FastScrollerBuilder(this).build().setPadding(0, (-2).toPx,0,0)
+        }
 
-        foomiiboContent = view.findViewById(R.id.foomiibo_list)
-        if (prefs.softwareLayer())
-            // foomiiboContent?.setLayerType(View.LAYER_TYPE_SOFTWARE, null)
-            foomiiboContent?.setLayerType(View.LAYER_TYPE_NONE, null)
-        foomiiboContent?.layoutManager = if (settings.amiiboView == BrowserSettings.VIEW.IMAGE.value)
-            GridLayoutManager(activity, activity.columnCount)
-        else LinearLayoutManager(activity)
-        foomiiboContent?.adapter = FoomiiboAdapter(settings, this)
-        settings.addChangeListener(foomiiboContent?.adapter as BrowserSettingsListener?)
+        foomiiboContent = view.findViewById<RecyclerView>(R.id.foomiibo_list).apply {
+            if (prefs.softwareLayer())
+                // setLayerType(View.LAYER_TYPE_SOFTWARE, null)
+                setLayerType(View.LAYER_TYPE_NONE, null)
+            layoutManager = if (settings.amiiboView == BrowserSettings.VIEW.IMAGE.value)
+                GridLayoutManager(activity, activity.columnCount)
+            else LinearLayoutManager(activity)
+            adapter = FoomiiboAdapter(settings, this@BrowserFragment)
+            settings.addChangeListener(adapter as BrowserSettingsListener?)
+            FastScrollerBuilder(this).build()
+        }
 
         view.findViewById<View>(R.id.list_divider).isGone = true
-        browserScroller = view.findViewById(R.id.browser_scroller)
-        val browserParams = browserScroller?.layoutParams
+        val browserParams = browserContent?.layoutParams
         if (BuildConfig.WEAR_OS && null != browserParams)
             browserParams.height = browserParams.height / 3
         view.findViewById<View>(R.id.list_divider).setOnTouchListener { v: View, event: MotionEvent ->
-            browserScroller?.layoutParams?.let { layoutParams ->
+            browserParams?.let { layoutParams ->
                 val srcHeight = layoutParams.height
                 val y = event.y.toInt()
                 if (layoutParams.height + y >= -0.5f) {
@@ -151,7 +159,7 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
                                 layoutParams.height = view.height - minHeight.toInt()
                         }
                     }
-                    browserScroller?.let {
+                    browserContent?.let {
                         if (srcHeight != layoutParams.height) it.requestLayout()
                         prefs.foomiiboOffset(it.layoutParams.height) }
                 }
@@ -188,28 +196,27 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
         val peekHeight = activity.bottomSheetBehavior?.peekHeight ?: 0
         val minHeight = (peekHeight + divider.height + requireContext().resources
             .getDimension(R.dimen.sliding_bar_margin))
-        val layoutParams = browserScroller?.layoutParams
-        val srcHeight = layoutParams?.height
-        layoutParams?.let {
-            if (it.height > requireView().height - minHeight.toInt()) {
-                it.height = requireView().height - minHeight.toInt()
+        browserContent?.layoutParams?.let {
+            val srcHeight = it.height
+                if (it.height > requireView().height - minHeight.toInt()) {
+                    it.height = requireView().height - minHeight.toInt()
+                } else {
+                    val valueY = prefs.foomiiboOffset()
+                    it.height = if (valueY != -1) valueY else it.height
+                }
+            if (prefs.foomiiboDisabled()) {
+                divider.isGone = true
+                it.height = requireView().height
             } else {
-                val valueY = prefs.foomiiboOffset()
-                it.height = if (valueY != -1) valueY else it.height
+                divider.isVisible = true
             }
+            if (srcHeight != it.height) browserContent?.requestLayout()
         }
-        if (prefs.foomiiboDisabled()) {
-            divider.isGone = true
-            layoutParams?.height = requireView().height
-        } else {
-            divider.isVisible = true
-        }
-        if (srcHeight != layoutParams?.height) browserScroller?.requestLayout()
     }
 
     override fun onResume() {
         super.onResume()
-        browserScroller?.postDelayed({ setFoomiiboVisibility() }, TagMo.uiDelay.toLong())
+        browserContent?.postDelayed({ setFoomiiboVisibility() }, TagMo.uiDelay.toLong())
     }
 
     private suspend fun deleteDir(dialog: ProgressAlert?, dir: File?) {
@@ -245,7 +252,7 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
                 .setMessage(getString(R.string.warn_delete_file, amiiboFile.name))
                 .setPositiveButton(R.string.delete) { dialog: DialogInterface, _: Int ->
                     if (amiiboFile.delete()) {
-                        IconifiedSnackbar(requireActivity(), browserScroller).buildSnackbar(
+                        IconifiedSnackbar(requireActivity(), browserContent).buildSnackbar(
                             getString(R.string.delete_foomiibo, amiibo.name),
                             Snackbar.LENGTH_SHORT
                         ).show()
@@ -292,7 +299,7 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
                     amiibo, foomiiboData, false
                 ), foomiiboData
             )
-            IconifiedSnackbar(requireActivity(), browserScroller).buildSnackbar(
+            IconifiedSnackbar(requireActivity(), browserContent).buildSnackbar(
                 getString(R.string.wrote_foomiibo, amiibo.name), Snackbar.LENGTH_SHORT
             ).show()
         } catch (e: Exception) { Debug.warn(e) }
@@ -415,6 +422,6 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
     override fun onConfigurationChanged(newConfig: Configuration) {
         super.onConfigurationChanged(newConfig)
         if (null == view) return
-        browserScroller?.postDelayed({ setFoomiiboVisibility() }, TagMo.uiDelay.toLong())
+        browserContent?.postDelayed({ setFoomiiboVisibility() }, TagMo.uiDelay.toLong())
     }
 }

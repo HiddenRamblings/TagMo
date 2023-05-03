@@ -505,6 +505,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
         } catch (e: Exception) { Debug.warn(e) }
         popup.menuInflater.inflate(R.menu.action_menu, popup.menu)
         nfcFab.setOnClickListener { showPopupMenu(popup) }
+
         findViewById<View>(R.id.amiiboContainer).setOnClickListener {
             amiiboContainer?.isGone = true
         }
@@ -724,6 +725,10 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
         popup.setOnMenuItemClickListener { item: MenuItem ->
             when (item.itemId) {
                 R.id.mnu_scan -> {
+                    if (BuildConfig.WEAR_OS) {
+                        Toasty(this).Short(R.string.feature_unavailable)
+                        return@setOnMenuItemClickListener true
+                    }
                     onNFCActivity.launch(
                         Intent(this, NfcActivity::class.java)
                             .setAction(NFCIntent.ACTION_SCAN_TAG)
@@ -731,12 +736,20 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                     return@setOnMenuItemClickListener true
                 }
                 R.id.mnu_backup -> {
+                    if (BuildConfig.WEAR_OS) {
+                        Toasty(this).Short(R.string.feature_unavailable)
+                        return@setOnMenuItemClickListener true
+                    }
                     val backup = Intent(this, NfcActivity::class.java)
                     backup.action = NFCIntent.ACTION_BACKUP_AMIIBO
                     onBackupActivity.launch(backup)
                     return@setOnMenuItemClickListener true
                 }
                 R.id.mnu_validate -> {
+                    if (BuildConfig.WEAR_OS) {
+                        Toasty(this).Short(R.string.feature_unavailable)
+                        return@setOnMenuItemClickListener true
+                    }
                     onValidateActivity.launch(
                         Intent(this, NfcActivity::class.java)
                             .setAction(NFCIntent.ACTION_SCAN_TAG)
@@ -744,6 +757,10 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                     return@setOnMenuItemClickListener true
                 }
                 R.id.mnu_lego -> {
+                    if (BuildConfig.WEAR_OS) {
+                        Toasty(this).Short(R.string.feature_unavailable)
+                        return@setOnMenuItemClickListener true
+                    }
                     onReturnableIntent.launch(
                         Intent(this, DimensionActivity::class.java)
                     )
@@ -2451,10 +2468,6 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
         }
     }
 
-    fun showDonationPanel() {
-        donationManager.onSendDonationClicked()
-    }
-
     private fun showBrowserInterface() {
         bottomSheetBehavior?.state = BottomSheetBehavior.STATE_COLLAPSED
         sheetHandler.postDelayed(
@@ -2462,6 +2475,10 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
             TagMo.uiDelay.toLong()
         )
         showActionButton()
+    }
+
+    fun showDonationPanel() {
+        donationManager.onSendDonationClicked()
     }
 
     fun closePrefsDrawer(): Boolean {

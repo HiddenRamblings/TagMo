@@ -107,6 +107,7 @@ class FoomiiboAdapter(
     }
 
     override fun getPopupText(position: Int) : CharSequence {
+        if (position >= filteredData.size) return "?"
         val item = filteredData[position]
         return when (SORT.valueOf(settings.sort)) {
             SORT.NAME -> item.name ?: "?"
@@ -115,7 +116,7 @@ class FoomiiboAdapter(
             SORT.AMIIBO_SERIES -> item.amiiboSeries?.name ?: "?"
             SORT.AMIIBO_TYPE -> item.amiiboType?.name ?: "?"
             else -> { "?" }
-        }.toString()[0].uppercase()
+        }[0].uppercase()
     }
 
     private fun handleClickEvent(holder: FoomiiboViewHolder) {

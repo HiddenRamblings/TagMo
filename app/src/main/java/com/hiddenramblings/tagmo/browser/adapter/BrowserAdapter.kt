@@ -122,6 +122,7 @@ class BrowserAdapter(
     }
 
     override fun getPopupText(position: Int) : CharSequence {
+        if (position >= filteredData.size) return "?"
         val item = filteredData[position]
         val amiiboId = item?.id
         var amiibo: Amiibo? = null
@@ -137,7 +138,7 @@ class BrowserAdapter(
             SORT.AMIIBO_SERIES -> it.amiiboSeries?.name ?: "?"
             SORT.AMIIBO_TYPE -> it.amiiboType?.name ?: "?"
             else -> { "?" }
-        }.toString()[0].uppercase() } ?: "?"
+        }[0].uppercase() } ?: "?"
     }
 
     private fun handleClickEvent(holder: AmiiboViewHolder) {

@@ -123,22 +123,21 @@ class BrowserAdapter(
 
     override fun getPopupText(position: Int) : CharSequence {
         if (position >= filteredData.size) return "?"
-        val item = filteredData[position]
-        val amiiboId = item?.id
-        var amiibo: Amiibo? = null
-        settings.amiiboManager?.let {
-            amiibo = it.amiibos[amiiboId]
-            if (null == amiibo && null != amiiboId)
-                amiibo = Amiibo(it, amiiboId, null, null)
+        val amiibo: Amiibo? = filteredData[position]?.let { file ->
+            settings.amiiboManager?.let {
+                it.amiibos[file.id] ?: Amiibo(it, file.id, null, null)
+            }
         }
-        return amiibo?.let { when (SORT.valueOf(settings.sort)) {
-            SORT.NAME -> it.name ?: "?"
-            SORT.CHARACTER -> it.character?.name ?: "?"
-            SORT.GAME_SERIES -> it.gameSeries?.name ?: "?"
-            SORT.AMIIBO_SERIES -> it.amiiboSeries?.name ?: "?"
-            SORT.AMIIBO_TYPE -> it.amiiboType?.name ?: "?"
-            else -> { "?" }
-        }[0].uppercase() } ?: "?"
+        return amiibo?.let {
+            when (SORT.valueOf(settings.sort)) {
+                SORT.NAME -> it.name ?: "?"
+                SORT.CHARACTER -> it.character?.name ?: "?"
+                SORT.GAME_SERIES -> it.gameSeries?.name ?: "?"
+                SORT.AMIIBO_SERIES -> it.amiiboSeries?.name ?: "?"
+                SORT.AMIIBO_TYPE -> it.amiiboType?.name ?: "?"
+                else -> "?"
+            }[0].uppercase()
+        } ?: "?"
     }
 
     private fun handleClickEvent(holder: AmiiboViewHolder) {

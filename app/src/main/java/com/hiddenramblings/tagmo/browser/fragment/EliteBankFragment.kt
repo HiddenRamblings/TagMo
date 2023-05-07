@@ -925,7 +925,7 @@ class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
             val activeBank = extras.getInt(
                 NFCIntent.EXTRA_ACTIVE_BANK, prefs.eliteActiveBank()
             )
-            (rootLayout.findViewById<View>(R.id.hardware_info) as TextView).text = getString(
+            rootLayout.findViewById<TextView>(R.id.hardware_info).text = getString(
                 R.string.elite_signature, extras.getString(NFCIntent.EXTRA_SIGNATURE)
             )
             eliteBankCount.value = bankCount

@@ -969,13 +969,11 @@ class TagDataEditor : AppCompatActivity() {
         }
 
         override fun getView(position: Int, view: View?, parent: ViewGroup): View {
-            var viewItem = view
-            if (null == view) {
-                viewItem = LayoutInflater.from(parent.context)
-                    .inflate(R.layout.spinner_text, parent, false)
+            return view ?: LayoutInflater.from(parent.context).inflate(
+                R.layout.spinner_text, parent, false
+            ).apply {
+                (this as TextView).text = getItem(position).value
             }
-            (viewItem as TextView).text = getItem(position).value
-            return viewItem
         }
 
         override fun getFilter(): Filter {

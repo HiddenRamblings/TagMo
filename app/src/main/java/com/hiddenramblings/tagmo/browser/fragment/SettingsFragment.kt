@@ -344,7 +344,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
     private fun keyEntryDialog() {
         val view = layoutInflater.inflate(R.layout.dialog_save_item, null)
         val dialog = AlertDialog.Builder(requireContext())
-        (view.findViewById<View>(R.id.save_item_label) as TextView).setText(R.string.key_hex_entry)
+        view.findViewById<TextView>(R.id.save_item_label).setText(R.string.key_hex_entry)
         val input = view.findViewById<EditText>(R.id.save_item_entry)
         val scannerDialog: Dialog = dialog.setView(view).create()
         scannerDialog.setCancelable(false)

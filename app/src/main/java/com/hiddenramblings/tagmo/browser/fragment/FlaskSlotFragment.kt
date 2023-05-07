@@ -135,8 +135,9 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
                                 flaskSlotCount.maxValue = maxSlotCount
                                 screenOptions?.isVisible = true
                                 createBlank?.isVisible = true
-                                (rootLayout.findViewById<View>(R.id.hardware_info) as TextView)
-                                    .text = deviceProfile
+                                rootLayout.findViewById<TextView>(
+                                    R.id.hardware_info
+                                ).text = deviceProfile
                             }
                             try {
                                 setFlaskCharacteristicRX()
@@ -295,8 +296,9 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
                                 flaskSlotCount.maxValue = maxSlotCount
                                 screenOptions?.isGone = true
                                 createBlank?.isGone = true
-                                (rootLayout.findViewById<View>(R.id.hardware_info) as TextView)
-                                    .text = deviceProfile
+                                rootLayout.findViewById<TextView>(
+                                    R.id.hardware_info
+                                ).text = deviceProfile
                                 flaskSlotCount.maxValue = maxSlotCount
                             }
                             try {
@@ -860,8 +862,8 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
         deviceDialog: AlertDialog, device: BluetoothDevice, deviceType: Int
     ) : View {
         val item = this.layoutInflater.inflate(R.layout.device_bluetooth, null)
-        (item.findViewById<View>(R.id.device_name) as TextView).text = device.name
-        (item.findViewById<View>(R.id.device_address) as TextView).text =
+        item.findViewById<TextView>(R.id.device_name).text = device.name
+        item.findViewById<TextView>(R.id.device_address).text =
             requireActivity().getString(R.string.device_address, device.address)
         item.findViewById<View>(R.id.connect_flask).setOnClickListener {
             deviceDialog.dismiss()
@@ -1126,7 +1128,7 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
     private fun showProcessingNotice(upload: Boolean) {
         val builder = AlertDialog.Builder(requireContext())
         val view = layoutInflater.inflate(R.layout.dialog_process, null)
-        (view.findViewById<View>(R.id.process_text) as TextView).setText(
+        view.findViewById<TextView>(R.id.process_text).setText(
             if (upload) R.string.flask_upload else R.string.flask_remove
         )
         builder.setView(view)

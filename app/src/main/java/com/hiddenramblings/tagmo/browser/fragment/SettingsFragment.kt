@@ -17,12 +17,19 @@ import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import androidx.preference.*
+import androidx.preference.CheckBoxPreference
+import androidx.preference.ListPreference
+import androidx.preference.Preference
+import androidx.preference.PreferenceFragmentCompat
+import androidx.preference.SwitchPreferenceCompat
 import com.google.android.material.snackbar.Snackbar
-import com.hiddenramblings.tagmo.*
+import com.hiddenramblings.tagmo.GlideApp
+import com.hiddenramblings.tagmo.GlideTagModule
 import com.hiddenramblings.tagmo.NFCIntent.FilterComponent
 import com.hiddenramblings.tagmo.NFCIntent.getIntent
+import com.hiddenramblings.tagmo.Preferences
 import com.hiddenramblings.tagmo.R
+import com.hiddenramblings.tagmo.TagMo
 import com.hiddenramblings.tagmo.amiibo.AmiiboManager
 import com.hiddenramblings.tagmo.amiibo.AmiiboManager.parse
 import com.hiddenramblings.tagmo.amiibo.AmiiboManager.parseAmiiboAPI
@@ -46,10 +53,7 @@ import java.io.BufferedReader
 import java.io.ByteArrayInputStream
 import java.io.IOException
 import java.io.InputStreamReader
-import java.net.URL
-import java.net.UnknownHostException
 import java.text.ParseException
-import java.util.*
 
 class SettingsFragment : PreferenceFragmentCompat() {
     private val prefs: Preferences by lazy { Preferences(requireContext().applicationContext) }
@@ -337,15 +341,16 @@ class SettingsFragment : PreferenceFragmentCompat() {
         }
     }
 
-    private suspend fun keyEntryDialog(hexString: String) = withContext(Dispatchers.Main) {
+    private fun keyEntryDialog() {
         val view = layoutInflater.inflate(R.layout.dialog_save_item, null)
         val dialog = AlertDialog.Builder(requireContext())
         (view.findViewById<View>(R.id.save_item_label) as TextView).setText(R.string.key_hex_entry)
         val input = view.findViewById<EditText>(R.id.save_item_entry)
-        input.setText(hexString)
         val scannerDialog: Dialog = dialog.setView(view).create()
         scannerDialog.setCancelable(false)
         view.findViewById<View>(R.id.button_save).setOnClickListener {
+            scannerDialog.dismiss()
+            if (input.text.isNullOrEmpty()) return@setOnClickListener
             try {
                 keyManager.evaluateKey(ByteArrayInputStream(TagArray.hexToByteArray(
                     input.text.toString().filter { !it.isWhitespace() }
@@ -353,7 +358,6 @@ class SettingsFragment : PreferenceFragmentCompat() {
                 (requireActivity() as BrowserActivity).onKeysLoaded(true)
                 updateKeySummary()
             } catch (e: Exception) { Toasty(requireActivity()).Short(e.message) }
-            scannerDialog.dismiss()
         }
         view.findViewById<View>(R.id.button_cancel).setOnClickListener { scannerDialog.dismiss() }
         scannerDialog.show()
@@ -540,17 +544,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
         ActivityResultContracts.StartActivityForResult()
     ) { result: ActivityResult ->
         if (result.resultCode != AppCompatActivity.RESULT_OK || result.data == null) {
-            CoroutineScope(Dispatchers.IO).launch(Dispatchers.IO) {
-                try {
-                    URL("https://pastebin.com/raw/aV23ha3X").openStream().use { stream ->
-                        Scanner(stream).use {
-                            for (i in 0..3) if (it.hasNextLine()) it.nextLine()
-                            val hexString = it.nextLine()
-                            withContext(Dispatchers.Main) { keyEntryDialog(hexString) }
-                        }
-                    }
-                } catch (ignored: UnknownHostException) { }
-            }
+            keyEntryDialog()
         } else if (null != result.data?.clipData) {
             result.data?.clipData?.let {
                 for (i in 0 until it.itemCount) {

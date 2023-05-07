@@ -38,7 +38,6 @@ import com.hiddenramblings.tagmo.amiibo.AmiiboManager
 import com.hiddenramblings.tagmo.amiibo.AmiiboManager.getAmiiboManager
 import com.hiddenramblings.tagmo.amiibo.AmiiboManager.hasSpoofData
 import com.hiddenramblings.tagmo.amiibo.FlaskTag
-import com.hiddenramblings.tagmo.amiibo.KeyManager
 import com.hiddenramblings.tagmo.amiibo.tagdata.AmiiboData
 import com.hiddenramblings.tagmo.bluetooth.BluetoothHandler
 import com.hiddenramblings.tagmo.bluetooth.BluetoothHandler.BluetoothListener
@@ -987,6 +986,7 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
     }
 
     private fun writeAmiiboDataCollection(bytesList: ArrayList<AmiiboData?>) {
+        settings.removeChangeListener(writeTagAdapter)
         AlertDialog.Builder(requireContext())
             .setMessage(R.string.gatt_write_confirm)
             .setPositiveButton(R.string.proceed) { dialog: DialogInterface, _: Int ->
@@ -997,12 +997,10 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
                     }, 30L * it)
                 }
                 onBottomSheetChanged(SHEET.MENU)
-                settings.removeChangeListener(writeTagAdapter)
                 dialog.dismiss()
             }
             .setNegativeButton(R.string.cancel) { dialog: DialogInterface, _: Int ->
                 onBottomSheetChanged(SHEET.MENU)
-                settings.removeChangeListener(writeTagAdapter)
                 dialog.dismiss()
             }
             .show()

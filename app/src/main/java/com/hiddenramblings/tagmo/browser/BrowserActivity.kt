@@ -2418,21 +2418,24 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
 
     private fun hideFakeSnackbar() {
         CoroutineScope(Dispatchers.Main).launch {
-            if (fakeSnackbar?.isVisible == true) {
-                val animate = TranslateAnimation(
-                    0f, 0f, 0f, (-fakeSnackbar!!.height).toFloat()
-                )
-                animate.duration = 150
-                animate.fillAfter = false
-                fakeSnackbar?.setAnimationListener(object : AnimatedLinearLayout.AnimationListener {
-                    override fun onAnimationStart(layout: AnimatedLinearLayout?) {}
-                    override fun onAnimationEnd(layout: AnimatedLinearLayout?) {
-                        fakeSnackbar!!.clearAnimation()
-                        layout!!.setAnimationListener(null)
-                        fakeSnackbar!!.isGone = true
-                    }
-                })
-                fakeSnackbar?.startAnimation(animate)
+            fakeSnackbar?.let {
+                if (it.isVisible) {
+                    val animate = TranslateAnimation(
+                        0f, 0f, 0f, (-it.height).toFloat()
+                    )
+                    animate.duration = 150
+                    animate.fillAfter = false
+                    it.setAnimationListener(object :
+                        AnimatedLinearLayout.AnimationListener {
+                        override fun onAnimationStart(layout: AnimatedLinearLayout?) {}
+                        override fun onAnimationEnd(layout: AnimatedLinearLayout?) {
+                            it.clearAnimation()
+                            layout?.setAnimationListener(null)
+                            it.isGone = true
+                        }
+                    })
+                    it.startAnimation(animate)
+                }
             }
         }
     }

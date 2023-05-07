@@ -868,6 +868,7 @@ class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
     }
 
     private fun writeAmiiboCollection(bytesList: ArrayList<AmiiboData?>) {
+        settings.removeChangeListener(writeTagAdapter)
         AlertDialog.Builder(requireContext())
             .setMessage(R.string.elite_write_confirm)
             .setPositiveButton(R.string.proceed) { dialog: DialogInterface, _: Int ->
@@ -879,12 +880,10 @@ class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
                     putExtra(NFCIntent.EXTRA_AMIIBO_BYTES, bytesList)
                 })
                 onBottomSheetChanged(SHEET.MENU)
-                settings.removeChangeListener(writeTagAdapter)
                 dialog.dismiss()
             }
             .setNegativeButton(R.string.cancel) { dialog: DialogInterface, _: Int ->
                 onBottomSheetChanged(SHEET.MENU)
-                settings.removeChangeListener(writeTagAdapter)
                 dialog.dismiss()
             }
             .show()

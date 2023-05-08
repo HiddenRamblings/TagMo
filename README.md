@@ -3,11 +3,14 @@
 </p>
 
 <p align="center">
-TagMo is an Android NTAG215, Power Tag, N2 Elite, & Flask content manager for 3DS, WiiU, and Switch
-<br /><br />
-To contribute, please address PRs to the <a href="https://github.com/HiddenRamblings/TagMo/tree/conversion">conversion</a> branch. Thank you.
-<br />
-<p align="center">
+  TagMo is an Android NTAG215, Power Tag, N2 Elite, & Flask content manager for 3DS, WiiU, and Switch
+  <br /><br />
+  <a href="https://github.com/HiddenRamblings/TagMo/actions/workflows/android.yml" target="_blank">
+    <img src="https://github.com/HiddenRamblings/TagMo/actions/workflows/android.yml/badge.svg">
+  </a>
+  <br /><br />
+  To contribute, please address PRs to the <a href="https://github.com/HiddenRamblings/TagMo/tree/conversion">conversion</a> branch. Thank you.
+</p>
 
 ## [Instructions](https://tagmo.gitlab.io/)
 

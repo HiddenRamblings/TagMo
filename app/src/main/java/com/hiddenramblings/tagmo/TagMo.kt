@@ -72,7 +72,8 @@ class TagMo : Application() {
             try {
                 Debug.processException(this, exception.toString())
             } catch (ignored: Exception) { }
-            exitProcess(0)
+            android.os.Process.killProcess(android.os.Process.myPid())
+            exitProcess(-1)
         }
         setThemePreference()
     }

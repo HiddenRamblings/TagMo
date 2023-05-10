@@ -142,13 +142,14 @@ dependencies {
     kapt 'com.github.bumptech.glide:compiler:4.15.1'
     annotationProcessor 'com.github.bumptech.glide:compiler:4.15.1'
 
+    implementation 'com.github.8bitdream:AndroidFastScroll:bc9a2b7b6f'
     implementation 'com.github.8bitDream:NumberPicker:80b06ed3ba'
 
     implementation 'com.google.android.flexbox:flexbox:3.0.0'
     // Required for Lollipop Amiibo API download compatibility
     implementation 'com.google.android.gms:play-services-safetynet:18.0.1'
     // implementation 'com.google.android.gms:play-services-mlkit-barcode-scanning:18.1.0'
-    implementation 'com.google.android.material:material:1.8.0'
+    implementation 'com.google.android.material:material:1.9.0'
     implementation 'com.google.android.play:core:1.10.3'
     implementation 'com.google.mlkit:barcode-scanning:17.1.0'
     implementation 'com.google.zxing:core:3.5.0'
@@ -159,6 +160,4 @@ dependencies {
     implementation 'io.github.vicmikhailau:MaskedEditText:4.0.7'
 
     implementation 'org.lsposed.hiddenapibypass:hiddenapibypass:4.3'
-
-    implementation 'me.zhanghai.android.fastscroll:library:1.2.0'
 }

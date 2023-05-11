@@ -367,19 +367,24 @@ object TagArray {
         return newFile?.name
     }
 
-    fun writeBytesWithName(context: Context, input: Editable?, tagData: ByteArray?) : String? {
-        val prefs = Preferences(context.applicationContext)
-        return input?.toString()?.let { name ->
-            if (prefs.isDocumentStorage) {
-                val rootDocument = prefs.browserRootDocument()?.let { uri ->
-                    DocumentFile.fromTreeUri(context, Uri.parse(uri))
-                } ?: throw NullPointerException()
-                writeBytesToDocument(context, rootDocument, name, tagData)
-            } else {
-                writeBytesToFile(
-                    Storage.getDownloadDir("TagMo", "Backups"), name, tagData
-                )
+    fun writeBytesWithName(context: Context, fileName: String?, tagData: ByteArray?) : String? {
+        return with (Preferences(context.applicationContext)) {
+            fileName?.let { name ->
+                if (isDocumentStorage) {
+                    val rootDocument = browserRootDocument()?.let { uri ->
+                        DocumentFile.fromTreeUri(context, Uri.parse(uri))
+                    } ?: throw NullPointerException()
+                    writeBytesToDocument(context, rootDocument, name, tagData)
+                } else {
+                    writeBytesToFile(
+                        Storage.getDownloadDir("TagMo", "Backups"), name, tagData
+                    )
+                }
             }
         }
+    }
+
+    fun writeBytesWithName(context: Context, input: Editable?, tagData: ByteArray?) : String? {
+        return writeBytesWithName(context, input?.toString(), tagData)
     }
 }

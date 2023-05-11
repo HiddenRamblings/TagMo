@@ -53,18 +53,19 @@ open class AmiiboFile : Parcelable {
     }
 
     fun withRandomSerials(keyManager: KeyManager, count: Int) : ArrayList<AmiiboData?> {
-        val serialList: ArrayList<AmiiboData?> = arrayListOf()
         val tagData = data ?: docUri?.let {
             TagArray.getValidatedDocument(keyManager, it)
         } ?: filePath?.let {
             TagArray.getValidatedFile(keyManager, it)
         }
         val newData = tagData?.let { AmiiboData(keyManager.decrypt(it)) }
-        for (i in 0 until count) {
-            serialList.add(newData)
-            serialList[i]?.uID = Foomiibo().generateRandomUID()
+        return arrayListOf<AmiiboData?>().apply {
+            for (i in 0 until count) {
+                newData?.let {
+                    add(it.apply { uID = Foomiibo().generateRandomUID() })
+                }
+            }
         }
-        return serialList
     }
 
     companion object {

@@ -93,6 +93,7 @@
     <string name="hex_code">Hex Code</string>
     <string name="share_qr">Share QR Code</string>
     <string name="edit_props">Edit Properties</string>
+    <string name="bin_copier">Bin Duplicator</string>
     <string name="delete_binary">Delete Binary</string>
     <string name="ignore_tag_id">Ignore Tag ID #</string>
     <string name="random_serial">Random Serial Number</string>
@@ -201,7 +202,7 @@
     <string name="qr_raw">QR Text</string>
     <string name="qr_bytes">QR Data</string>
     <string name="qr_mii">Mii Data</string>
-    <string name="qr_amiibo">QR amiibo</string>
+    <string name="qr_amiibo">amiibo QR</string>
     <string name="qr_invalid">Input null or invalid</string>
 
     <string name="settings">Settings</string>

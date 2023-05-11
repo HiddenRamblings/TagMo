@@ -17218,6 +17218,18 @@
 							"write": true
 						}
 					]
+				},
+				{
+					"gameName": "The Legend of Zelda: Tears of the Kingdom",
+					"gameID": [
+						"0100F2C0115B6000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive helpful materials, weapons, or a paraglider fabric depending on the character",
+							"write": false
+						}
+					]
 				}
 			]
 		},
@@ -17316,6 +17328,18 @@
 					"amiiboUsage": [
 						{
 							"Usage": "Unlock a character-based puzzle",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Style Savvy: Styling Star",
+					"gameID": [
+						"00040000001C2500"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Unlock a Legend of Zelda pattern",
 							"write": false
 						}
 					]
@@ -17585,6 +17609,18 @@
 						{
 							"Usage": "Save your Chamber Dungeon to the amiibo to share with friends",
 							"write": true
+						}
+					]
+				},
+				{
+					"gameName": "The Legend of Zelda: Tears of the Kingdom",
+					"gameID": [
+						"0100F2C0115B6000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive helpful materials, weapons, or a paraglider fabric depending on the character",
+							"write": false
 						}
 					]
 				}
@@ -17966,6 +18002,18 @@
 						{
 							"Usage": "Save your Chamber Dungeon to the amiibo to share with friends",
 							"write": true
+						}
+					]
+				},
+				{
+					"gameName": "The Legend of Zelda: Tears of the Kingdom",
+					"gameID": [
+						"0100F2C0115B6000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive helpful materials, weapons, or a paraglider fabric depending on the character",
+							"write": false
 						}
 					]
 				}
@@ -18357,6 +18405,18 @@
 							"write": true
 						}
 					]
+				},
+				{
+					"gameName": "The Legend of Zelda: Tears of the Kingdom",
+					"gameID": [
+						"0100F2C0115B6000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive helpful materials, weapons, or a paraglider fabric depending on the character",
+							"write": false
+						}
+					]
 				}
 			]
 		},
@@ -18736,6 +18796,18 @@
 						{
 							"Usage": "Save your Chamber Dungeon to the amiibo to share with friends",
 							"write": true
+						}
+					]
+				},
+				{
+					"gameName": "The Legend of Zelda: Tears of the Kingdom",
+					"gameID": [
+						"0100F2C0115B6000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive helpful materials, weapons, or a paraglider fabric depending on the character",
+							"write": false
 						}
 					]
 				}
@@ -19119,6 +19191,18 @@
 							"write": true
 						}
 					]
+				},
+				{
+					"gameName": "The Legend of Zelda: Tears of the Kingdom",
+					"gameID": [
+						"0100F2C0115B6000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive helpful materials, weapons, or a paraglider fabric depending on the character",
+							"write": false
+						}
+					]
 				}
 			]
 		},
@@ -19498,6 +19582,18 @@
 						{
 							"Usage": "Save your Chamber Dungeon to the amiibo to share with friends",
 							"write": true
+						}
+					]
+				},
+				{
+					"gameName": "The Legend of Zelda: Tears of the Kingdom",
+					"gameID": [
+						"0100F2C0115B6000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive helpful materials, weapons, or a paraglider fabric depending on the character",
+							"write": false
 						}
 					]
 				}
@@ -19881,6 +19977,18 @@
 							"write": true
 						}
 					]
+				},
+				{
+					"gameName": "The Legend of Zelda: Tears of the Kingdom",
+					"gameID": [
+						"0100F2C0115B6000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive helpful materials, weapons, or a paraglider fabric depending on the character",
+							"write": false
+						}
+					]
 				}
 			]
 		},
@@ -20248,6 +20356,18 @@
 						{
 							"Usage": "Save your Chamber Dungeon to the amiibo to share with friends",
 							"write": true
+						}
+					]
+				},
+				{
+					"gameName": "The Legend of Zelda: Tears of the Kingdom",
+					"gameID": [
+						"0100F2C0115B6000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive helpful materials, weapons, or a paraglider fabric depending on the character",
+							"write": false
 						}
 					]
 				}
@@ -20643,8 +20763,25 @@
 							"write": true
 						}
 					]
+				},
+				{
+					"gameName": "The Legend of Zelda: Tears of the Kingdom",
+					"gameID": [
+						"0100F2C0115B6000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive helpful materials, weapons, or a paraglider fabric depending on the character",
+							"write": false
+						}
+					]
 				}
 			]
+		},
+		"0x0100000004180902": {
+			"games3DS": [],
+			"gamesWiiU": [],
+			"gamesSwitch": []
 		},
 		"0x0100010000160002": {
 			"games3DS": [
@@ -20808,7 +20945,7 @@
 					],
 					"amiiboUsage": [
 						{
-							"Usage": "Unlock the Spinner weapon",
+							"Usage": "Receive a weapon rated 3 stars or higher",
 							"write": false
 						}
 					]
@@ -20822,7 +20959,7 @@
 					],
 					"amiiboUsage": [
 						{
-							"Usage": "Receive a weapon rated 3 stars or higher",
+							"Usage": "Unlock the Spinner weapon",
 							"write": false
 						}
 					]
@@ -21020,6 +21157,18 @@
 						{
 							"Usage": "Save your Chamber Dungeon to the amiibo to share with friends",
 							"write": true
+						}
+					]
+				},
+				{
+					"gameName": "The Legend of Zelda: Tears of the Kingdom",
+					"gameID": [
+						"0100F2C0115B6000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive helpful materials, weapons, or a paraglider fabric depending on the character",
+							"write": false
 						}
 					]
 				}
@@ -21413,6 +21562,18 @@
 							"write": true
 						}
 					]
+				},
+				{
+					"gameName": "The Legend of Zelda: Tears of the Kingdom",
+					"gameID": [
+						"0100F2C0115B6000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive helpful materials, weapons, or a paraglider fabric depending on the character",
+							"write": false
+						}
+					]
 				}
 			]
 		},
@@ -21739,6 +21900,18 @@
 						{
 							"Usage": "Save your Chamber Dungeon to the amiibo to share with friends",
 							"write": true
+						}
+					]
+				},
+				{
+					"gameName": "The Legend of Zelda: Tears of the Kingdom",
+					"gameID": [
+						"0100F2C0115B6000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive helpful materials, weapons, or a paraglider fabric depending on the character",
+							"write": false
 						}
 					]
 				}
@@ -22081,6 +22254,18 @@
 							"write": true
 						}
 					]
+				},
+				{
+					"gameName": "The Legend of Zelda: Tears of the Kingdom",
+					"gameID": [
+						"0100F2C0115B6000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive helpful materials, weapons, or a paraglider fabric depending on the character",
+							"write": false
+						}
+					]
 				}
 			]
 		},
@@ -22421,6 +22606,18 @@
 							"write": true
 						}
 					]
+				},
+				{
+					"gameName": "The Legend of Zelda: Tears of the Kingdom",
+					"gameID": [
+						"0100F2C0115B6000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive helpful materials, weapons, or a paraglider fabric depending on the character",
+							"write": false
+						}
+					]
 				}
 			]
 		},
@@ -22747,6 +22944,18 @@
 						{
 							"Usage": "Save your Chamber Dungeon to the amiibo to share with friends",
 							"write": true
+						}
+					]
+				},
+				{
+					"gameName": "The Legend of Zelda: Tears of the Kingdom",
+					"gameID": [
+						"0100F2C0115B6000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive helpful materials, weapons, or a paraglider fabric depending on the character",
+							"write": false
 						}
 					]
 				}
@@ -23101,6 +23310,18 @@
 							"write": false
 						}
 					]
+				},
+				{
+					"gameName": "The Legend of Zelda: Tears of the Kingdom",
+					"gameID": [
+						"0100F2C0115B6000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive helpful materials, weapons, or a paraglider fabric depending on the character",
+							"write": false
+						}
+					]
 				}
 			]
 		},
@@ -23402,6 +23623,18 @@
 							"write": true
 						}
 					]
+				},
+				{
+					"gameName": "The Legend of Zelda: Tears of the Kingdom",
+					"gameID": [
+						"0100F2C0115B6000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive helpful materials, weapons, or a paraglider fabric depending on the character",
+							"write": false
+						}
+					]
 				}
 			]
 		},
@@ -23623,6 +23856,18 @@
 							"write": true
 						}
 					]
+				},
+				{
+					"gameName": "The Legend of Zelda: Tears of the Kingdom",
+					"gameID": [
+						"0100F2C0115B6000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive helpful materials, weapons, or a paraglider fabric depending on the character",
+							"write": false
+						}
+					]
 				}
 			]
 		},
@@ -23743,6 +23988,18 @@
 						{
 							"Usage": "Save your Chamber Dungeon to the amiibo to share with friends",
 							"write": true
+						}
+					]
+				},
+				{
+					"gameName": "The Legend of Zelda: Tears of the Kingdom",
+					"gameID": [
+						"0100F2C0115B6000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive helpful materials, weapons, or a paraglider fabric depending on the character",
+							"write": false
 						}
 					]
 				}
@@ -23867,6 +24124,18 @@
 							"write": true
 						}
 					]
+				},
+				{
+					"gameName": "The Legend of Zelda: Tears of the Kingdom",
+					"gameID": [
+						"0100F2C0115B6000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive helpful materials, weapons, or a paraglider fabric depending on the character",
+							"write": false
+						}
+					]
 				}
 			]
 		},
@@ -23989,6 +24258,18 @@
 							"write": true
 						}
 					]
+				},
+				{
+					"gameName": "The Legend of Zelda: Tears of the Kingdom",
+					"gameID": [
+						"0100F2C0115B6000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive helpful materials, weapons, or a paraglider fabric depending on the character",
+							"write": false
+						}
+					]
 				}
 			]
 		},
@@ -24109,6 +24390,18 @@
 						{
 							"Usage": "Save your Chamber Dungeon to the amiibo to share with friends",
 							"write": true
+						}
+					]
+				},
+				{
+					"gameName": "The Legend of Zelda: Tears of the Kingdom",
+					"gameID": [
+						"0100F2C0115B6000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive helpful materials, weapons, or a paraglider fabric depending on the character",
+							"write": false
 						}
 					]
 				}
@@ -24248,6 +24541,18 @@
 							"write": true
 						}
 					]
+				},
+				{
+					"gameName": "The Legend of Zelda: Tears of the Kingdom",
+					"gameID": [
+						"0100F2C0115B6000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive helpful materials, weapons, or a paraglider fabric depending on the character",
+							"write": false
+						}
+					]
 				}
 			]
 		},
@@ -24383,6 +24688,18 @@
 						{
 							"Usage": "Save your Chamber Dungeon to the amiibo to share with friends",
 							"write": true
+						}
+					]
+				},
+				{
+					"gameName": "The Legend of Zelda: Tears of the Kingdom",
+					"gameID": [
+						"0100F2C0115B6000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive helpful materials, weapons, or a paraglider fabric depending on the character",
+							"write": false
 						}
 					]
 				}
@@ -24863,6 +25180,20 @@
 					"amiiboUsage": [
 						{
 							"Usage": "Invite the character to visit your RV campsite or give you an item",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Miitopia",
+					"gameID": [
+						"0004000000178800",
+						"00040000001B4F00",
+						"00040000001B4E00"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Unlock a character-based costume",
 							"write": false
 						}
 					]
@@ -45653,19 +45984,6 @@
 		"0x0266000100680502": {
 			"games3DS": [
 				{
-					"gameName": "Animal Crossing: Happy Home Designer",
-					"gameID": [
-						"000400000014F100",
-						"000400000014F200"
-					],
-					"amiiboUsage": [
-						{
-							"Usage": "Call on amiibo phone to design the character's home on demand / Store house design and furniture for sharing",
-							"write": true
-						}
-					]
-				},
-				{
 					"gameName": "Animal Crossing: New Leaf",
 					"gameID": [
 						"0004000000086400",
@@ -55441,19 +55759,6 @@
 		},
 		"0x03080001014d0502": {
 			"games3DS": [
-				{
-					"gameName": "Animal Crossing: Happy Home Designer",
-					"gameID": [
-						"000400000014F100",
-						"000400000014F200"
-					],
-					"amiiboUsage": [
-						{
-							"Usage": "Call on amiibo phone to design the character's home on demand / Store house design and furniture for sharing",
-							"write": true
-						}
-					]
-				},
 				{
 					"gameName": "Animal Crossing: New Leaf",
 					"gameID": [
@@ -101783,7 +102088,7 @@
 					],
 					"amiiboUsage": [
 						{
-							"Usage": "Unlock a Monado weapon skin for characters using the Swordfighter Class",
+							"Usage": "Unlock a character-specific weapon skin for characters using the Swordfighter Class",
 							"write": false
 						}
 					]
@@ -104066,6 +104371,18 @@
 					"amiiboUsage": [
 						{
 							"Usage": "Unlock boss fight against Shovel Knight",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Cyber Shadow",
+					"gameID": [
+						"01008D100DE46000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Unlock a fairy companion and player color palette matching the character",
 							"write": false
 						}
 					]

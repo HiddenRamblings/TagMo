@@ -8,12 +8,11 @@ import android.net.Uri
 import android.os.Build
 import android.provider.DocumentsContract
 import androidx.annotation.RequiresApi
-import com.hiddenramblings.tagmo.BuildConfig
 import com.hiddenramblings.tagmo.Preferences
 import com.hiddenramblings.tagmo.R
 import com.hiddenramblings.tagmo.TagMo
-import com.hiddenramblings.tagmo.eightbit.io.Debug
-import java.util.*
+import java.util.ArrayDeque
+import java.util.Queue
 
 @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
 class AmiiboDocument(context: Context) {
@@ -27,31 +26,9 @@ class AmiiboDocument(context: Context) {
     }
 
     fun listFiles(uri: Uri, recursiveFiles: Boolean): ArrayList<Uri> {
-        val docId = DocumentsContract.getTreeDocumentId(uri)
-        if (BuildConfig.DEBUG) {
-            val docUri = DocumentsContract.buildDocumentUriUsingTree(uri, docId)
-            val items = ArrayList(listOf(*resources.getStringArray(R.array.mimetype_bin)))
-            items.add(DocumentsContract.Document.MIME_TYPE_DIR)
-            val selectionArgs = items.toTypedArray()
-            contentResolver.query(
-                docUri, arrayOf(
-                    DocumentsContract.Document.COLUMN_DISPLAY_NAME,
-                    DocumentsContract.Document.COLUMN_MIME_TYPE
-                ),
-                DocumentsContract.Document.COLUMN_MIME_TYPE, selectionArgs, null
-            ).use {
-                if (null == it) return@use
-                while (it.moveToNext()) {
-                    val displayName = it.getString(0)
-                    val mimeType = it.getString(1)
-                    Debug.verbose(this.javaClass,
-                        "Primary doc=$displayName, mime=$mimeType"
-                    )
-                }
-            }
+        val queue: Queue<String> = ArrayDeque<String>().apply {
+            add(DocumentsContract.getTreeDocumentId(uri))
         }
-        val queue: Queue<String> = ArrayDeque()
-        queue.add(docId)
         val fileCount = MutableInteger(1)
         while (queue.size > 0) {
             val currentDocId = queue.remove()
@@ -96,13 +73,9 @@ class AmiiboDocument(context: Context) {
         cursor.use {
             while (it.moveToNext()) {
                 fileCount.increment()
-                val displayName = it.getString(0)
                 val mimeType = it.getString(1)
                 val childDocumentId = it.getString(2)
                 if (DocumentsContract.Document.MIME_TYPE_DIR == mimeType) {
-                    Debug.verbose(this.javaClass,
-                        "Child doc=$displayName, parent=$documentId, mime=$mimeType"
-                    )
                     if (recursiveFiles) queue.add(childDocumentId)
                 } else if (binFiles.contains(mimeType)) {
                     files.add(DocumentsContract.buildDocumentUriUsingTree(rootUri, childDocumentId))

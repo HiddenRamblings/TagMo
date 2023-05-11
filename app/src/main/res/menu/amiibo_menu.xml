@@ -24,6 +24,10 @@
         android:title="@string/edit_props"
         app:showAsAction="never"/>
     <item
+        android:id="@+id/mnu_copier"
+        android:title="@string/bin_copier"
+        app:showAsAction="never"/>
+    <item
         android:id="@+id/mnu_share_qr"
         android:title="@string/share_qr"
         app:showAsAction="never"/>

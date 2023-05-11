@@ -93,6 +93,7 @@ import com.hiddenramblings.tagmo.qrcode.QRCodeScanner
 import com.hiddenramblings.tagmo.update.UpdateManager
 import com.hiddenramblings.tagmo.wave9.DimensionActivity
 import com.hiddenramblings.tagmo.widget.Toasty
+import com.shawnlin.numberpicker.NumberPicker
 import eightbitlab.com.blurview.BlurView
 import eightbitlab.com.blurview.RenderEffectBlur
 import eightbitlab.com.blurview.RenderScriptBlur
@@ -1045,6 +1046,31 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
         false
     }
 
+    private fun createDuplicates(amiiboFile: AmiiboFile?, tagData: ByteArray?) {
+        val fileName = TagArray.decipherFilename(settings?.amiiboManager, tagData, true)
+        val view = layoutInflater.inflate(R.layout.dialog_duplicator, null)
+        val dialog = AlertDialog.Builder(this)
+        val copierDialog: Dialog = dialog.setView(view).create()
+        val count = view.findViewById<NumberPicker>(R.id.number_picker)
+        view.findViewById<View>(R.id.button_save).setOnClickListener {
+            val amiiboList = amiiboFile?.withRandomSerials(keyManager, count.value)
+            amiiboList?.indices?.forEach {
+                amiiboList[it]?.let { data ->
+                    TagArray.writeBytesWithName(this,
+                        fileName.replace(".bin", "_$it.bin"),
+                        keyManager.encrypt(data.array)
+                    )
+                }
+            }
+            copierDialog.dismiss()
+            onRootFolderChanged(true)
+        }
+        view.findViewById<View>(R.id.button_cancel).setOnClickListener {
+            copierDialog.dismiss()
+        }
+        copierDialog.show()
+    }
+
     private fun onCreateToolbarMenu(itemView: View?, tagData: ByteArray?, amiiboFile: AmiiboFile?) {
         val toolbar = when (itemView) {
             is Toolbar -> itemView
@@ -1068,10 +1094,15 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
         toolbar.menu.findItem(R.id.mnu_share_qr).isEnabled = available
         toolbar.menu.findItem(R.id.mnu_validate).isEnabled = available
         var cached = false
-        val backup = toolbar.menu.findItem(R.id.mnu_save)
-        backup.isEnabled = available
-        val delete = toolbar.menu.findItem(R.id.mnu_delete)
-        delete.isVisible = null != amiiboFile
+        toolbar.menu.findItem(R.id.mnu_copier).apply {
+            isVisible = null != amiiboFile
+        }
+        toolbar.menu.findItem(R.id.mnu_delete).apply {
+            isVisible = null != amiiboFile
+        }
+        val backup = toolbar.menu.findItem(R.id.mnu_save).apply {
+            isEnabled = available
+        }
         amiiboFile?.let {
             it.docUri?.let { doc ->
                 val relativeDocument = Storage.getRelativeDocument(doc.uri)
@@ -1159,6 +1190,10 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                     )
                     return@setOnMenuItemClickListener true
                 }
+                R.id.mnu_copier -> {
+                    createDuplicates(amiiboFile, tagData)
+                    return@setOnMenuItemClickListener true
+                }
                 R.id.mnu_view_hex -> {
                     startActivity(Intent(this, HexCodeViewer::class.java)
                         .putExtra(NFCIntent.EXTRA_TAG_DATA, tagData)
@@ -1205,6 +1240,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
         if (!toolbar.menu.hasVisibleItems()) toolbar.inflateMenu(R.menu.amiibo_menu)
         toolbar.menu.findItem(R.id.mnu_save).setTitle(R.string.cache)
         toolbar.menu.findItem(R.id.mnu_scan).isVisible = false
+        toolbar.menu.findItem(R.id.mnu_copier).isVisible = false
         toolbar.setOnMenuItemClickListener {
             val args = Bundle()
             val scan = Intent(this, NfcActivity::class.java)
@@ -1318,10 +1354,12 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
         onRefresh(indicator)
     }
 
-    private fun onRefresh(indicator: Boolean) {
+    fun onRefresh(indicator: Boolean) {
         loadAmiiboManager()
         onRootFolderChanged(indicator)
     }
+
+    val isRefreshing : Boolean get() = fakeSnackbar?.isVisible == true
 
     @Throws(ActivityNotFoundException::class)
     private fun onDocumentRequested() {

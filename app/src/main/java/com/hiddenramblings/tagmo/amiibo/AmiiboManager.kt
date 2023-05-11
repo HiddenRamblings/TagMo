@@ -341,20 +341,18 @@ object AmiiboManager {
         context: Context?, keyManager: KeyManager?,
         rootFolder: DocumentFile, recursiveFiles: Boolean
     ): ArrayList<AmiiboFile?> {
-        val amiiboFiles = ArrayList<AmiiboFile?>()
-        val uris = context?.let { AmiiboDocument(it).listFiles(rootFolder.uri, recursiveFiles) }
-        if (uris.isNullOrEmpty()) return amiiboFiles
-        uris.forEach { uri ->
-            try {
-                TagArray.getValidatedDocument(keyManager, uri).also { data ->
-                    data?.let {
-                        amiiboFiles.add(AmiiboFile(
-                            DocumentFile.fromSingleUri(context, uri), Amiibo.dataToId(it), it
+        return arrayListOf<AmiiboFile?>().apply {
+            val uris = context?.let { AmiiboDocument(it).listFiles(rootFolder.uri, recursiveFiles) }
+            if (uris.isNullOrEmpty()) return this
+            uris.forEach { uri ->
+                try {
+                    TagArray.getValidatedDocument(keyManager, uri)?.also { data ->
+                        add(AmiiboFile(
+                            DocumentFile.fromSingleUri(context, uri), Amiibo.dataToId(data), data
                         ))
                     }
-                }
-            } catch (e: Exception) { Debug.info(e) }
+                } catch (e: Exception) { Debug.info(e) }
+            }
         }
-        return amiiboFiles
     }
 }

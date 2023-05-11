@@ -322,9 +322,9 @@ class NfcActivity : AppCompatActivity() {
                                 )
                                 amiiboList?.indices?.forEach { x ->
                                     showMessage(R.string.bank_writing, x + 1, amiiboList.size)
-                                    keyManager.encrypt(amiiboList[x].array).run {
-                                        TagWriter.writeEliteAuto(ntag, this, keyManager, x)
-                                    }
+                                    TagWriter.writeEliteAuto(
+                                        ntag, keyManager.encrypt(amiiboList[x].array), keyManager, x
+                                    )
                                 }
                             } else if (commandIntent.hasExtra(NFCIntent.EXTRA_AMIIBO_FILES)) {
                                 val amiiboList = commandIntent.parcelableArrayList<AmiiboFile>(

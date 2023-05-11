@@ -31,15 +31,21 @@
             android:layout_height="match_parent"
             android:orientation="vertical">
 
+            <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+                android:id="@+id/browser_wrapper"
+                android:layout_width="match_parent"
+                android:layout_height="360dp">
+
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/browser_content"
                 android:layout_width="match_parent"
-                android:layout_height="360dp"
+                android:layout_height="match_parent"
                 android:clipToPadding="false"
                 android:paddingTop="4dp"
                 android:scrollbars="vertical"
                 android:scrollbarSize="0dp"
                 android:scrollbarStyle="outsideOverlay"/>
+            </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
             <LinearLayout
                 android:id="@+id/list_divider"
                 android:background="@drawable/divider_outline"

@@ -465,11 +465,8 @@ class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
         result.data?.let { intent ->
             if (NFCIntent.ACTION_NFC_SCANNED != intent.action
                 && NFCIntent.ACTION_EDIT_COMPLETE != intent.action) return@registerForActivityResult
-            if (intent.hasExtra(NFCIntent.EXTRA_CURRENT_BANK)) {
-                clickedPosition = intent.getIntExtra(
-                    NFCIntent.EXTRA_CURRENT_BANK, clickedPosition
-                )
-            }
+            if (intent.hasExtra(NFCIntent.EXTRA_CURRENT_BANK))
+                clickedPosition = intent.getIntExtra(NFCIntent.EXTRA_CURRENT_BANK, clickedPosition)
             var tagData = if (amiibos.size > clickedPosition)
                 amiibos[clickedPosition]?.data else null
             if (intent.hasExtra(NFCIntent.EXTRA_TAG_DATA)) {

@@ -68,9 +68,6 @@ class SettingsFragment : PreferenceFragmentCompat() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        if (!keyManager.isKeyMissing) onUpdateRequested(false)
-        importKeys = findPreference(getString(R.string.settings_import_keys))
-        updateKeySummary()
         imageNetworkSetting = findPreference(getString(R.string.image_network_settings))
         imageNetworkSetting?.apply {
             onImageNetworkChange(imageNetworkSetting, prefs.imageNetwork())
@@ -80,11 +77,14 @@ class SettingsFragment : PreferenceFragmentCompat() {
                     preference?.let { super@SettingsFragment.onPreferenceTreeClick(it) } ?: false
                 }
         }
-        importKeys?.onPreferenceClickListener =
-            Preference.OnPreferenceClickListener {
+        importKeys = findPreference<Preference>(getString(R.string.settings_import_keys))?.apply {
+            onPreferenceClickListener = Preference.OnPreferenceClickListener {
                 onImportKeysClicked()
                 super@SettingsFragment.onPreferenceTreeClick(it)
             }
+        }
+        updateKeySummary()
+        if (!keyManager.isKeyMissing) onUpdateRequested(false)
         findPreference<CheckBoxPreference>(
             getString(R.string.settings_tag_type_validation)
         )?.apply {
@@ -123,29 +123,27 @@ class SettingsFragment : PreferenceFragmentCompat() {
         }
         val disableFoomiiboPanel = findPreference<CheckBoxPreference>(
             getString(R.string.settings_hide_foomiibo_panel)
-        )
-        if (activity is BrowserActivity) {
-            disableFoomiiboPanel?.isChecked = prefs.foomiiboDisabled()
-            disableFoomiiboPanel?.onPreferenceClickListener =
-                Preference.OnPreferenceClickListener {
-                    val isChecked = disableFoomiiboPanel?.isChecked ?: false
-                    prefs.foomiiboDisabled(isChecked)
+        )?.apply {
+            if (activity is BrowserActivity) {
+                isChecked = prefs.foomiiboDisabled()
+                onPreferenceClickListener = Preference.OnPreferenceClickListener {
+                    prefs.foomiiboDisabled((it as CheckBoxPreference).isChecked)
                     (activity as BrowserActivity).setFoomiiboPanelVisibility()
                     super@SettingsFragment.onPreferenceTreeClick(it)
                 }
+            }
         }
         findPreference<SwitchPreferenceCompat>(
             getString(R.string.settings_enable_power_tag_support)
         )?.apply {
-            onPreferenceClickListener =
-                Preference.OnPreferenceClickListener {
-                    val isEnabled = isChecked
-                    prefs.powerTagEnabled(isEnabled)
-                    if (isEnabled) {
-                        (requireActivity() as BrowserActivity).loadPTagKeyManager()
-                    }
-                    super@SettingsFragment.onPreferenceTreeClick(it)
+            onPreferenceClickListener = Preference.OnPreferenceClickListener {
+                val isEnabled = isChecked
+                prefs.powerTagEnabled(isEnabled)
+                if (isEnabled) {
+                    (requireActivity() as BrowserActivity).loadPTagKeyManager()
                 }
+                super@SettingsFragment.onPreferenceTreeClick(it)
+            }
         }
         findPreference<SwitchPreferenceCompat>(
             getString(R.string.settings_enable_elite_support)
@@ -155,39 +153,34 @@ class SettingsFragment : PreferenceFragmentCompat() {
             if (isElite && prefs.eliteSignature()?.isNotEmpty() == true) {
                 summary = getString(R.string.elite_signature, prefs.eliteSignature())
             }
-            onPreferenceClickListener =
-                Preference.OnPreferenceClickListener {
-                    val isEnabled = isChecked
-                    prefs.eliteEnabled(isChecked)
-                    summary = if (isEnabled && !prefs.eliteSignature().isNullOrEmpty())
-                        getString(R.string.elite_signature, prefs.eliteSignature())
-                    else getString(R.string.elite_details)
-                    (requireActivity() as BrowserActivity).reloadTabCollection = true
-                    super@SettingsFragment.onPreferenceTreeClick(it)
-                }
+            onPreferenceClickListener = Preference.OnPreferenceClickListener {
+                val isEnabled = isChecked
+                prefs.eliteEnabled(isChecked)
+                summary = if (isEnabled && !prefs.eliteSignature().isNullOrEmpty())
+                    getString(R.string.elite_signature, prefs.eliteSignature())
+                else getString(R.string.elite_details)
+                (requireActivity() as BrowserActivity).reloadTabCollection = true
+                super@SettingsFragment.onPreferenceTreeClick(it)
+            }
         }
         findPreference<SwitchPreferenceCompat>(
             getString(R.string.settings_enable_flask_support)
         )?.apply {
             isChecked = prefs.flaskEnabled()
-            onPreferenceClickListener =
-                Preference.OnPreferenceClickListener {
-                    prefs.flaskEnabled(isChecked)
-                    (requireActivity() as BrowserActivity).reloadTabCollection = true
-                    super@SettingsFragment.onPreferenceTreeClick(it)
-                }
+            onPreferenceClickListener = Preference.OnPreferenceClickListener {
+                prefs.flaskEnabled(isChecked)
+                (requireActivity() as BrowserActivity).reloadTabCollection = true
+                super@SettingsFragment.onPreferenceTreeClick(it)
+            }
             isVisible = Version.isJellyBeanMR2
         }
         findPreference<ListPreference>(getString(R.string.setting_database_source))?.apply {
             setValueIndex(prefs.databaseSource())
             summary = entry
-            onPreferenceClickListener =
-                Preference.OnPreferenceClickListener { preference: Preference ->
-                    (preference as ListPreference).setValueIndex(
-                        prefs.databaseSource()
-                    )
-                    super@SettingsFragment.onPreferenceTreeClick(preference)
-                }
+            onPreferenceClickListener = Preference.OnPreferenceClickListener {
+                (it as ListPreference).setValueIndex(prefs.databaseSource())
+                super@SettingsFragment.onPreferenceTreeClick(it)
+            }
             onPreferenceChangeListener =
                 Preference.OnPreferenceChangeListener { preference: Preference, newValue: Any ->
                     val databaseSource = preference as ListPreference
@@ -199,38 +192,34 @@ class SettingsFragment : PreferenceFragmentCompat() {
                 }
         }
         findPreference<Preference>(getString(R.string.settings_import_info_amiiboapi))?.apply {
-            onPreferenceClickListener =
-                Preference.OnPreferenceClickListener {
-                    rebuildAmiiboDatabase()
-                    super@SettingsFragment.onPreferenceTreeClick(it)
-                }
+            onPreferenceClickListener = Preference.OnPreferenceClickListener {
+                rebuildAmiiboDatabase()
+                super@SettingsFragment.onPreferenceTreeClick(it)
+            }
         }
         findPreference<Preference>(getString(R.string.settings_import_info))?.apply {
-            onPreferenceClickListener =
-                Preference.OnPreferenceClickListener {
-                    showFileChooser(
-                        getString(R.string.import_json_details),
-                        RESULT_IMPORT_AMIIBO_DATABASE
-                    )
-                    super@SettingsFragment.onPreferenceTreeClick(it)
-                }
+            onPreferenceClickListener = Preference.OnPreferenceClickListener {
+                showFileChooser(
+                    getString(R.string.import_json_details),
+                    RESULT_IMPORT_AMIIBO_DATABASE
+                )
+                super@SettingsFragment.onPreferenceTreeClick(it)
+            }
         }
         findPreference<Preference>(getString(R.string.settings_reset_info))?.apply {
-            onPreferenceClickListener =
-                Preference.OnPreferenceClickListener {
-                    resetAmiiboDatabase(true)
-                    super@SettingsFragment.onPreferenceTreeClick(it)
-                }
+            onPreferenceClickListener = Preference.OnPreferenceClickListener {
+                resetAmiiboDatabase(true)
+                super@SettingsFragment.onPreferenceTreeClick(it)
+            }
         }
         findPreference<ListPreference>(
             getString(R.string.settings_page_transformer)
         )?.apply {
             setValueIndex(prefs.browserPageTransformer())
-            onPreferenceClickListener =
-                Preference.OnPreferenceClickListener { preference: Preference ->
-                    (preference as ListPreference).setValueIndex(prefs.browserPageTransformer())
-                    super@SettingsFragment.onPreferenceTreeClick(preference)
-                }
+            onPreferenceClickListener = Preference.OnPreferenceClickListener {
+                (it as ListPreference).setValueIndex(prefs.browserPageTransformer())
+                super@SettingsFragment.onPreferenceTreeClick(it)
+            }
             onPreferenceChangeListener =
                 Preference.OnPreferenceChangeListener { preference: Preference, newValue: Any ->
                     val index = (preference as ListPreference).findIndexOfValue(newValue.toString())
@@ -243,22 +232,18 @@ class SettingsFragment : PreferenceFragmentCompat() {
             getString(R.string.settings_software_layer)
         )?.apply {
             isChecked = prefs.softwareLayer()
-            onPreferenceClickListener =
-                Preference.OnPreferenceClickListener {
-                    prefs.softwareLayer(isChecked)
-                    (requireActivity() as BrowserActivity).onApplicationRecreate()
-                    super@SettingsFragment.onPreferenceTreeClick(it)
-                }
+            onPreferenceClickListener = Preference.OnPreferenceClickListener {
+                prefs.softwareLayer(isChecked)
+                (requireActivity() as BrowserActivity).onApplicationRecreate()
+                super@SettingsFragment.onPreferenceTreeClick(it)
+            }
         }
         findPreference<ListPreference>(getString(R.string.settings_tagmo_theme))?.apply {
             setValueIndex(prefs.applicationTheme())
-            onPreferenceClickListener =
-                Preference.OnPreferenceClickListener { preference: Preference ->
-                    (preference as ListPreference).setValueIndex(
-                        prefs.applicationTheme()
-                    )
-                    super@SettingsFragment.onPreferenceTreeClick(preference)
-                }
+            onPreferenceClickListener = Preference.OnPreferenceClickListener {
+                (it as ListPreference).setValueIndex(prefs.applicationTheme())
+                super@SettingsFragment.onPreferenceTreeClick(it)
+            }
             onPreferenceChangeListener =
                 Preference.OnPreferenceChangeListener { preference: Preference, newValue: Any ->
                     val index = (preference as ListPreference).findIndexOfValue(newValue.toString())
@@ -270,11 +255,10 @@ class SettingsFragment : PreferenceFragmentCompat() {
         }
         findPreference<CheckBoxPreference>(getString(R.string.settings_disable_debug))?.apply {
             isChecked = prefs.disableDebug()
-            onPreferenceClickListener =
-                Preference.OnPreferenceClickListener {
-                    prefs.disableDebug(isChecked)
-                    super@SettingsFragment.onPreferenceTreeClick(it)
-                }
+            onPreferenceClickListener = Preference.OnPreferenceClickListener {
+                prefs.disableDebug(isChecked)
+                super@SettingsFragment.onPreferenceTreeClick(it)
+            }
         }
         findPreference<Preference>(getString(R.string.disclaimer_foomiibo))?.apply {
             try {
@@ -306,9 +290,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
         }
     }
 
-    private fun onImportKeysClicked() {
-        showFileChooser(getString(R.string.decryption_keys), RESULT_KEYS)
-    }
+    private fun onImportKeysClicked() { showFileChooser(getString(R.string.decryption_keys), RESULT_KEYS) }
 
     private fun onImageNetworkChange(imageNetworkSetting: ListPreference?, newValue: String?) {
         val index = imageNetworkSetting?.findIndexOfValue(newValue)

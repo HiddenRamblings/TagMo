@@ -123,8 +123,7 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
         }
         browserContent = view.findViewById<RecyclerView>(R.id.browser_content).apply {
             if (prefs.softwareLayer())
-                // setLayerType(View.LAYER_TYPE_SOFTWARE, null)
-                setLayerType(View.LAYER_TYPE_NONE, null)
+                setLayerType(View.LAYER_TYPE_SOFTWARE, null)
             layoutManager = if (settings.amiiboView == BrowserSettings.VIEW.IMAGE.value)
                 GridLayoutManager(activity, activity.columnCount)
             else LinearLayoutManager(activity)
@@ -135,8 +134,7 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
 
         foomiiboContent = view.findViewById<RecyclerView>(R.id.foomiibo_list).apply {
             if (prefs.softwareLayer())
-                // setLayerType(View.LAYER_TYPE_SOFTWARE, null)
-                setLayerType(View.LAYER_TYPE_NONE, null)
+                setLayerType(View.LAYER_TYPE_SOFTWARE, null)
             layoutManager = if (settings.amiiboView == BrowserSettings.VIEW.IMAGE.value)
                 GridLayoutManager(activity, activity.columnCount)
             else LinearLayoutManager(activity)
@@ -146,11 +144,11 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
         }
 
         view.findViewById<View>(R.id.list_divider).isGone = true
-        val browserParams = browserWrapper?.layoutParams
-        if (BuildConfig.WEAR_OS && null != browserParams)
-            browserParams.height = browserParams.height / 3
+        browserWrapper?.layoutParams?.let { layoutParams ->
+            if (BuildConfig.WEAR_OS) layoutParams.height = layoutParams.height / 3
+        }
         view.findViewById<View>(R.id.list_divider).setOnTouchListener { v: View, event: MotionEvent ->
-            browserParams?.let { layoutParams ->
+            browserWrapper?.layoutParams?.let { layoutParams ->
                 val srcHeight = layoutParams.height
                 val y = event.y.toInt()
                 if (layoutParams.height + y >= -0.5f) {
@@ -206,12 +204,12 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
             .getDimension(R.dimen.sliding_bar_margin))
         browserWrapper?.layoutParams?.let {
             val srcHeight = it.height
-                if (it.height > requireView().height - minHeight.toInt()) {
-                    it.height = requireView().height - minHeight.toInt()
-                } else {
-                    val valueY = prefs.foomiiboOffset()
-                    it.height = if (valueY != -1) valueY else it.height
-                }
+            if (it.height > requireView().height - minHeight.toInt()) {
+                it.height = requireView().height - minHeight.toInt()
+            } else {
+                val valueY = prefs.foomiiboOffset()
+                it.height = if (valueY != -1) valueY else it.height
+            }
             if (prefs.foomiiboDisabled()) {
                 divider.isGone = true
                 it.height = requireView().height

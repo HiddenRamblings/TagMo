@@ -499,9 +499,7 @@ class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
                 onBottomSheetChanged(SHEET.MENU)
                 amiibos[clickedPosition] = null
             } else {
-                Handler(Looper.getMainLooper()).postDelayed({
-                    bottomSheet?.state = BottomSheetBehavior.STATE_EXPANDED
-                }, 125)
+                bottomSheet?.state = BottomSheetBehavior.STATE_EXPANDED
             }
         }
     }
@@ -935,7 +933,9 @@ class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
                         onBottomSheetChanged(SHEET.AMIIBO)
                         updateAmiiboView(amiiboTile, null, it, activeBank)
                         updateAmiiboView(amiiboCard, null, it, activeBank)
-                        bottomSheet?.state = BottomSheetBehavior.STATE_EXPANDED
+                        Handler(Looper.getMainLooper()).postDelayed({
+                            bottomSheet?.state = BottomSheetBehavior.STATE_EXPANDED
+                        }, 125)
                     } ?: onBottomSheetChanged(SHEET.MENU)
                     listener = null
                 }

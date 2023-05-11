@@ -451,7 +451,6 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
         flaskContent = rootLayout.findViewById(R.id.flask_content)
         if (prefs.softwareLayer())
             flaskContent?.setLayerType(View.LAYER_TYPE_SOFTWARE, null)
-        // flaskContent!!.setHasFixedSize(true);
         if (settings.amiiboView == BrowserSettings.VIEW.IMAGE.value)
             flaskContent?.layoutManager = GridLayoutManager(activity, activity.columnCount)
         else

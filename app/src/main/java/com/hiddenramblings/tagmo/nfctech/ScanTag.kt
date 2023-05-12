@@ -19,6 +19,8 @@ import com.hiddenramblings.tagmo.nfctech.TagArray.isPowerTag
 import com.hiddenramblings.tagmo.nfctech.TagArray.technology
 import com.hiddenramblings.tagmo.parcelable
 import com.hiddenramblings.tagmo.widget.Toasty
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 class ScanTag {
     private var hasTestedElite = false
@@ -29,7 +31,9 @@ class ScanTag {
         } catch (ignored: Exception) { }
     }
 
-    fun onTagDiscovered(activity: BrowserActivity, intent: Intent) {
+    suspend fun onTagDiscovered(
+        activity: BrowserActivity, intent: Intent
+    ) = withContext(Dispatchers.IO) {
         val prefs = Preferences(activity.applicationContext)
         val tag = intent.parcelable<Tag>(NfcAdapter.EXTRA_TAG)
         val tagTech = tag.technology()
@@ -46,7 +50,7 @@ class ScanTag {
                             if (TagWriter.updateFirmware(ntag))
                                 Toasty(activity).Short(R.string.firmware_update)
                             closeTagSilently(ntag)
-                            return
+                            return@withContext
                         }
                         val bankParams = TagReader.getBankParams(ntag)
                         val banksCount = bankParams?.get(1)?.toInt()?.and(0xFF) ?: -1
@@ -90,36 +94,36 @@ class ScanTag {
                             }
                             closeTagSilently(mifare)
                         }
-                        isEliteLockedCause(activity, error) -> {
-                            activity.runOnUiThread {
-                                getErrorDialog(activity,
-                                    R.string.possible_lock, R.string.prepare_unlock
-                                ).setPositiveButton(R.string.unlock) { dialog: DialogInterface, _: Int ->
-                                    closeTagSilently(mifare)
-                                    dialog.dismiss()
-                                    activity.onNFCActivity.launch(Intent(
-                                        activity, NfcActivity::class.java
-                                    ).setAction(NFCIntent.ACTION_UNLOCK_UNIT))
-                                }.setNegativeButton(R.string.cancel) { dialog: DialogInterface, _: Int ->
-                                    closeTagSilently(mifare)
-                                    dialog.dismiss()
-                                }.show()
-                            }
+                        isEliteLockedCause(activity, error) -> withContext(Dispatchers.Main) {
+                            getErrorDialog(activity,
+                                R.string.possible_lock, R.string.prepare_unlock
+                            ).setPositiveButton(R.string.unlock) { dialog: DialogInterface, _: Int ->
+                                closeTagSilently(mifare)
+                                dialog.dismiss()
+                                activity.onNFCActivity.launch(Intent(
+                                    activity, NfcActivity::class.java
+                                ).setAction(NFCIntent.ACTION_UNLOCK_UNIT))
+                            }.setNegativeButton(R.string.cancel) { dialog: DialogInterface, _: Int ->
+                                closeTagSilently(mifare)
+                                dialog.dismiss()
+                            }.show()
                         }
-                        Debug.hasException(e, NTAG215::class.java.name, "connect") -> {
-                            activity.runOnUiThread {
-                                getErrorDialog(activity,
-                                    R.string.possible_blank, R.string.prepare_blank
-                                ).setPositiveButton(R.string.scan) { dialog: DialogInterface, _: Int ->
-                                    dialog.dismiss()
-                                    activity.onNFCActivity.launch(Intent(
-                                        activity, NfcActivity::class.java
-                                    ).setAction(NFCIntent.ACTION_BLIND_SCAN))
-                                }.setNegativeButton(R.string.cancel) { dialog: DialogInterface, _: Int ->
-                                    dialog.dismiss()
-                                }.show()
-                            }
+                        Debug.hasException(
+                            e, NTAG215::class.java.name, "connect"
+                        ) -> withContext(Dispatchers.Main) {
+                            getErrorDialog(activity,
+                                R.string.possible_blank, R.string.prepare_blank
+                            ).setPositiveButton(R.string.scan) { dialog: DialogInterface, _: Int ->
+                                dialog.dismiss()
+                                activity.onNFCActivity.launch(Intent(
+                                    activity, NfcActivity::class.java
+                                ).setAction(NFCIntent.ACTION_BLIND_SCAN))
+                            }.setNegativeButton(R.string.cancel) { dialog: DialogInterface, _: Int ->
+                                dialog.dismiss()
+                            }.show()
                         }
+
+                        else -> {}
                     }
                 } else {
                     val message = if (Debug.hasException(e, NTAG215::class.java.name, "connect"))

@@ -2727,7 +2727,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
             || NfcAdapter.ACTION_TECH_DISCOVERED == intent.action
             || NfcAdapter.ACTION_TAG_DISCOVERED == intent.action) {
             if (keyManager.isKeyMissing) return
-            Executors.newSingleThreadExecutor().execute {
+            CoroutineScope(Dispatchers.IO).launch {
                 tagScanner.onTagDiscovered(this@BrowserActivity, intent)
             }
         }

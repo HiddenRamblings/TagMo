@@ -25,18 +25,6 @@ class AmiiboDocument(context: Context) {
         contentResolver = context.contentResolver
     }
 
-    fun listFiles(uri: Uri, recursiveFiles: Boolean): ArrayList<Uri> {
-        val queue: Queue<String> = ArrayDeque<String>().apply {
-            add(DocumentsContract.getTreeDocumentId(uri))
-        }
-        val fileCount = MutableInteger(1)
-        while (queue.size > 0) {
-            val currentDocId = queue.remove()
-            listFiles(uri, currentDocId, queue, fileCount, recursiveFiles)
-        }
-        return files
-    }
-
     private fun listFiles(
         rootUri: Uri, documentId: String, queue: Queue<String>,
         fileCount: MutableInteger, recursiveFiles: Boolean
@@ -82,6 +70,18 @@ class AmiiboDocument(context: Context) {
                 }
             }
         }
+    }
+
+    fun listFiles(uri: Uri, recursiveFiles: Boolean): ArrayList<Uri> {
+        val queue: Queue<String> = ArrayDeque<String>().apply {
+            add(DocumentsContract.getTreeDocumentId(uri))
+        }
+        val fileCount = MutableInteger(1)
+        while (queue.size > 0) {
+            val currentDocId = queue.remove()
+            listFiles(uri, currentDocId, queue, fileCount, recursiveFiles)
+        }
+        return files
     }
 
     class MutableInteger(private var value: Int) {

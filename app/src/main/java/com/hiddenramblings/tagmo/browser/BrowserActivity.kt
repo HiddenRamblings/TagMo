@@ -603,7 +603,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
             if (BuildConfig.GOOGLE_PLAY) {
                 onDocumentEnabled()
             } else {
-                if (null != settings?.browserRootDocument && prefs.isDocumentStorage) {
+                if (prefs.isDocumentStorage) {
                     onDocumentEnabled()
                 } else if (Environment.isExternalStorageManager()) {
                     settings?.browserRootDocument = null
@@ -2588,6 +2588,28 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                 || name.lowercase().startsWith("unfixed"))
     }
 
+    @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
+    private suspend fun locateKeyDocumentsRecursive() {
+        val uris = settings?.browserRootDocument?.let {
+            AmiiboDocument(this).listFiles(it, true)
+        }
+        if (uris.isNullOrEmpty()) return
+        uris.forEach { uri ->
+            try {
+                try {
+                    contentResolver.openInputStream(uri)?.use { inputStream ->
+                        try {
+                            keyManager.evaluateKey(inputStream)
+                        } catch (ex: Exception) {
+                            withContext(Dispatchers.Main) { onShowSettingsFragment() }
+                        }
+                        withContext(Dispatchers.Main) { hideFakeSnackbar() }
+                    }
+                } catch (e: Exception) { Debug.warn(e) }
+            } catch (e: Exception) { Debug.info(e) }
+        }
+    }
+
     private suspend fun locateKeyFilesRecursive(rootFolder: File?) {
         withContext(Dispatchers.IO) {
             rootFolder?.listFiles { _: File?, name: String -> keyNameMatcher(name) }.also { files ->
@@ -2621,8 +2643,8 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
             Storage.getDownloadDir(null).listFiles {
                     _: File?, name: String -> keyNameMatcher(name)
             }.also { files ->
-                if (!files.isNullOrEmpty()) {
-                    files.forEach { file ->
+                when {
+                    !files.isNullOrEmpty() -> files.forEach { file ->
                         try {
                             FileInputStream(file).use { inputStream ->
                                 try {
@@ -2634,8 +2656,8 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                             }
                         } catch (e: Exception) { Debug.warn(e) }
                     }
-                } else {
-                    locateKeyFilesRecursive(Storage.getFile(prefs.preferEmulated()))
+                    Version.isLollipop && prefs.isDocumentStorage -> locateKeyDocumentsRecursive()
+                    else -> locateKeyFilesRecursive(Storage.getFile(prefs.preferEmulated()))
                 }
                 if (keyManager.isKeyMissing) {
                     withContext(Dispatchers.Main) {

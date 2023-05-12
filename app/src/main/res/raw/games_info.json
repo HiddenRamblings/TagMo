@@ -20779,9 +20779,409 @@
 			]
 		},
 		"0x0100000004180902": {
-			"games3DS": [],
-			"gamesWiiU": [],
-			"gamesSwitch": []
+			"games3DS": [
+				{
+					"gameName": "Ace Combat Assault Horizon Legacy+",
+					"gameID": [
+						"0004000000064900",
+						"000400000006CC00",
+						"000400000015A300",
+						"000400000015C000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Unlock character-themed aircraft early",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Animal Crossing: New Leaf",
+					"gameID": [
+						"0004000000086400",
+						"0004000000086300",
+						"0004000000198F00",
+						"0004000000198E00"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Invite an amiibo-exclusive Legend of Zelda-themed villager to visit your RV campsite, give you an item, and/or move to your town",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Hyrule Warriors Legends",
+					"gameID": [
+						"000400000017EB00",
+						"000400000017EA00",
+						"0004000000193200",
+						"0004000000193400"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a weapon rated 3 stars or higher",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Kirby: Planet Robobot",
+					"gameID": [
+						"0004000000189600",
+						"0004000000183600",
+						"0004000000189800"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Give Kirby a Copy ability based on the character's abilities and a health item",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Miitopia",
+					"gameID": [
+						"0004000000178800",
+						"00040000001B4F00",
+						"00040000001B4E00"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Unlock a character-based costume",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "One Piece: Super Grand Battle! X",
+					"gameID": [
+						"0004000000144400"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Unlock a character-based costume with special abilities",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Picross 3D Round 2",
+					"gameID": [
+						"0004000000187E00"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Unlock a character-based puzzle",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Style Savvy: Styling Star",
+					"gameID": [
+						"00040000001C2500"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Unlock a Legend of Zelda pattern",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Super Smash Bros. for Nintendo 3DS",
+					"gameID": [
+						"00040000000EE000",
+						"00040000000EDF00"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Battle and train up a computer-controlled Figure Player of the character",
+							"write": true
+						}
+					]
+				},
+				{
+					"gameName": "WarioWare Gold",
+					"gameID": [
+						"00040000001D1C00"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a sketch of the character from Wario which can be exchanged for in-game coins",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Yoshi's Woolly World",
+					"gameID": [
+						"00040000001A4200",
+						"00040000001A4100",
+						"00040000001B6C00",
+						"00040000001B6D00"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Unlock a character-based Yoshi yarn pattern",
+							"write": false
+						}
+					]
+				}
+			],
+			"gamesWiiU": [
+				{
+					"gameName": "Hyrule Warriors",
+					"gameID": [
+						"000500001017D800",
+						"000500001017D900",
+						"000500001017CD00"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Unlock the Spinner weapon",
+							"write": false
+						},
+						{
+							"Usage": "Receive a weapon rated 3 stars or higher",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Mario Kart 8",
+					"gameID": [
+						"000500001010ED00",
+						"000500001010EC00",
+						"000500001010EB00"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Unlock a character-themed Mii racing suit",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Super Mario Maker",
+					"gameID": [
+						"000500001018DD00",
+						"000500001018DC00",
+						"000500001018DB00"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Unlock a character-based Mystery Mushroom costume",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Super Smash Bros. for Wii U",
+					"gameID": [
+						"0005000010145000",
+						"0005000010144F00",
+						"0005000010110E00"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Battle and train up a computer-controlled Figure Player of the character",
+							"write": true
+						}
+					]
+				},
+				{
+					"gameName": "The Legend of Zelda: Breath of the Wild",
+					"gameID": [
+						"00050000101C9500",
+						"00050000101C9400",
+						"00050000101C9300"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive materials and a rare or exclusive item",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "The Legend of Zelda: Twilight Princess HD",
+					"gameID": [
+						"000500001019E600",
+						"000500001019E500",
+						"000500001019C800"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Get a refill of arrows, once a day per amiibo",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Yoshi's Woolly World",
+					"gameID": [
+						"0005000010131F00"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Unlock a character-based Yoshi yarn pattern",
+							"write": false
+						}
+					]
+				}
+			],
+			"gamesSwitch": [
+				{
+					"gameName": "Bayonetta 2",
+					"gameID": [
+						"01007960049A0000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Unlock a costume based on the character (short-hair version)",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Conga Master Party!",
+					"gameID": [
+						"01007EF00399C000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Unlock a special costume",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Hyrule Warriors: Age of Calamity",
+					"gameID": [
+						"01002B00111A2000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive specific crafting materials or a weapon for the character",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Hyrule Warriors: Definitive Edition",
+					"gameID": [
+						"0100AE00096EA000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a weapon rated 3 stars or higher",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Mario Kart 8 Deluxe",
+					"gameID": [
+						"0100152000022000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Unlock a character-themed Mii racing suit",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Miitopia",
+					"gameID": [
+						"01003DA010E8A000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Unlock a character-based costume",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Super Smash Bros. Ultimate",
+					"gameID": [
+						"01006A800016E000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Battle and train up a computer-controlled Figure Player of the character",
+							"write": true
+						}
+					]
+				},
+				{
+					"gameName": "The Elder Scrolls V: Skyrim",
+					"gameID": [
+						"01000A10041EA000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a chest of loot, potentially containing gear inspired by the Legend of Zelda series",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "The Legend of Zelda: Breath of the Wild",
+					"gameID": [
+						"01007EF00011E000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive materials and a rare or exclusive item",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "The Legend of Zelda: Link's Awakening",
+					"gameID": [
+						"01006BB00C6F0000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Unlock one of five amiibo-exclusive Chamber Dungeon chambers",
+							"write": false
+						},
+						{
+							"Usage": "Save your Chamber Dungeon to the amiibo to share with friends",
+							"write": true
+						}
+					]
+				},
+				{
+					"gameName": "The Legend of Zelda: Tears of the Kingdom",
+					"gameID": [
+						"0100F2C0115B6000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive weapons and materials, as well as a special fabric for Link’s paraglider",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "The Legend of Zelda: Tears of the Kingdom",
+					"gameID": [
+						"0100F2C0115B6000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive helpful materials, weapons, or a paraglider fabric depending on the character",
+							"write": false
+						}
+					]
+				}
+			]
 		},
 		"0x0100010000160002": {
 			"games3DS": [
@@ -25206,18 +25606,6 @@
 					"amiiboUsage": [
 						{
 							"Usage": "Unlock a character-themed accessory",
-							"write": false
-						}
-					]
-				},
-				{
-					"gameName": "WarioWare Gold",
-					"gameID": [
-						"00040000001D1C00"
-					],
-					"amiiboUsage": [
-						{
-							"Usage": "Receive a sketch of the character from Wario which can be exchanged for in-game coins",
 							"write": false
 						}
 					]
@@ -45984,6 +46372,19 @@
 		"0x0266000100680502": {
 			"games3DS": [
 				{
+					"gameName": "Animal Crossing: Happy Home Designer",
+					"gameID": [
+						"000400000014F100",
+						"000400000014F200"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Call on amiibo phone to design the character's home on demand / Store house design and furniture for sharing",
+							"write": true
+						}
+					]
+				},
+				{
 					"gameName": "Animal Crossing: New Leaf",
 					"gameID": [
 						"0004000000086400",
@@ -55759,6 +56160,19 @@
 		},
 		"0x03080001014d0502": {
 			"games3DS": [
+				{
+					"gameName": "Animal Crossing: Happy Home Designer",
+					"gameID": [
+						"000400000014F100",
+						"000400000014F200"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Call on amiibo phone to design the character's home on demand / Store house design and furniture for sharing",
+							"write": true
+						}
+					]
+				},
 				{
 					"gameName": "Animal Crossing: New Leaf",
 					"gameID": [

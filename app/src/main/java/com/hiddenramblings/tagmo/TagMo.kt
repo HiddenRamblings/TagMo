@@ -28,7 +28,7 @@ inline fun <reified T : Parcelable> Intent.parcelableArrayList(key: String): Arr
 }
 
 class TagMo : Application() {
-    private val isWatchingANR = !BuildConfig.DEBUG && !BuildConfig.GOOGLE_PLAY
+    private val isWatchingANR = !BuildConfig.GOOGLE_PLAY
     private fun isUncaughtANR(error: Throwable): Boolean {
         return error.cause?.cause is ANRError
     }

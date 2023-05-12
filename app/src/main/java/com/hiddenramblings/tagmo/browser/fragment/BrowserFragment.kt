@@ -177,21 +177,22 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
 
     @SuppressLint("InflateParams")
     fun addFilterItemView(text: String?, tag: String?, listener: OnCloseClickListener?) {
-        if (null == chipList) return
-        var chipContainer = chipList?.findViewWithTag<FrameLayout>(tag)
-        chipContainer?.let { chipList?.removeView(it) }
-        if (!text.isNullOrEmpty()) {
-            chipContainer = layoutInflater.inflate(R.layout.chip_view, null) as FrameLayout
-            chipContainer.tag = tag
-            chipContainer.findViewById<Chip>(R.id.chip).run {
-                setText(text)
-                closable = true
-                onCloseClickListener = listener
+        chipList?.let { flex ->
+            var chipContainer = flex.findViewWithTag<FrameLayout>(tag)
+            chipContainer?.let { flex.removeView(it) }
+            if (!text.isNullOrEmpty()) {
+                chipContainer = layoutInflater.inflate(R.layout.chip_view, null) as FrameLayout
+                chipContainer.tag = tag
+                chipContainer.findViewById<Chip>(R.id.chip).run {
+                    setText(text)
+                    closable = true
+                    onCloseClickListener = listener
+                }
+                flex.addView(chipContainer)
+                flex.isVisible = true
+            } else if (chipList?.childCount == 0) {
+                flex.isGone = true
             }
-            chipList?.addView(chipContainer)
-            chipList?.isVisible = true
-        } else if (chipList?.childCount == 0) {
-            chipList?.isGone = true
         }
     }
 

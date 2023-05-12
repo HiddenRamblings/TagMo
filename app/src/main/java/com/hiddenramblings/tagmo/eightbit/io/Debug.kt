@@ -170,7 +170,7 @@ object Debug {
 
     @JvmStatic
     fun verbose(source: Class<*>, params: String?) {
-        if (BuildConfig.DEBUG && hasDebugging()) params?.let { Log.d(source.simpleName, it) }
+        if (hasDebugging()) params?.let { Log.d(source.simpleName, it) }
     }
 
     @JvmStatic

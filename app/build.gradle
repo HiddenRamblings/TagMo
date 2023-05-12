@@ -137,12 +137,12 @@ dependencies {
 
     implementation 'com.android.billingclient:billing:5.2.0'
 
-    implementation 'com.github.anrwatchdog:anrwatchdog:1.4.0'
     implementation 'com.github.bumptech.glide:glide:4.15.1'
     kapt 'com.github.bumptech.glide:compiler:4.15.1'
     annotationProcessor 'com.github.bumptech.glide:compiler:4.15.1'
 
     implementation 'com.github.8bitdream:AndroidFastScroll:bc9a2b7b6f'
+    implementation 'com.github.8bitDream:ANR-WatchDog:b4b676ca7c'
     implementation 'com.github.8bitDream:NumberPicker:80b06ed3ba'
 
     implementation 'com.google.android.flexbox:flexbox:3.0.0'

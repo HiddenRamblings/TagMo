@@ -331,13 +331,20 @@ class NTAG215 : TagTechnology {
         operator fun get(tag: Tag?): NTAG215? {
             return try {
                 getMifareUltralight(tag)?.also { it.connect() }
-            } catch (ignored: IOException) {
+            } catch (ex: IOException) {
+                Debug.verbose(ex)
                 try {
                     getNfcA(tag)?.also { it.connect() }
-                } catch (ignored: IOException) { null }
+                } catch (e: IOException) {
+                    Debug.verbose(e)
+                    null
+                }
             } ?: try {
                 getNfcA(tag)?.also { it.connect() }
-            } catch (ignored: IOException) { null }
+            } catch (ex: IOException) {
+                Debug.verbose(ex)
+                null
+            }
         }
     }
 }

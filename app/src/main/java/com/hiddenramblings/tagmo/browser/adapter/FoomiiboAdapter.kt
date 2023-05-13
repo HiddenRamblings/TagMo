@@ -151,10 +151,8 @@ class FoomiiboAdapter(
     }
 
     override fun getFilter(): FoomiiboFilter {
-        if (null == filter) {
-            filter = FoomiiboFilter()
-        }
-        return filter!!
+        if (null == filter) filter = FoomiiboFilter()
+        return filter as FoomiiboAdapter.FoomiiboFilter
     }
 
     inner class FoomiiboFilter : Filter() {

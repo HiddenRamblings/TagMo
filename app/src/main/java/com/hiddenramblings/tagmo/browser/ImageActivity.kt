@@ -196,8 +196,7 @@ class ImageActivity : AppCompatActivity() {
                 findViewById<View>(R.id.button_save).setOnClickListener {
                     val saveImageTarget: CustomTarget<Bitmap?> = object : CustomTarget<Bitmap?>() {
                         override fun onResourceReady(
-                            resource: Bitmap,
-                            transition: Transition<in Bitmap?>?
+                            resource: Bitmap, transition: Transition<in Bitmap?>?
                         ) {
                             saveImageToFile(prefs, resource, input.text.toString())
                         }

@@ -2110,22 +2110,31 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
         } ?: deleteAmiiboFile(amiiboFile)
     }
 
+    private val bitmapHeight by lazy { Resources.getSystem().displayMetrics.heightPixels / 3 }
     private val imageTarget: CustomTarget<Bitmap?> = object : CustomTarget<Bitmap?>() {
         override fun onLoadFailed(errorDrawable: Drawable?) {
-            imageAmiibo?.setImageResource(0)
-            imageAmiibo?.isGone = true
+            imageAmiibo?.let {
+                it.setImageResource(0)
+                it.isGone = true
+            }
         }
 
         override fun onLoadCleared(placeholder: Drawable?) {
-            imageAmiibo?.setImageResource(0)
-            imageAmiibo?.isGone = true
+            imageAmiibo?.let {
+                it.setImageResource(0)
+                it.isGone = true
+            }
         }
 
         override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap?>?) {
-            imageAmiibo?.maxHeight = Resources.getSystem().displayMetrics.heightPixels / 3
-            imageAmiibo?.requestLayout()
-            imageAmiibo?.setImageBitmap(resource)
-            imageAmiibo?.isVisible = true
+            imageAmiibo?.let {
+                if (resource.height > bitmapHeight) {
+                    it.maxHeight = bitmapHeight
+                    it.requestLayout()
+                }
+                it.setImageBitmap(resource)
+                it.isVisible = true
+            }
         }
     }
 
@@ -2438,7 +2447,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                 val relativeRoot = Storage.getRelativePath(
                     rootFolder, prefs.preferEmulated()
                 )
-                if (relativeRoot.length > 1) relativeRoot else rootFolder!!.absolutePath
+                relativeRoot.ifEmpty { rootFolder?.absolutePath ?: "" }
             }
             currentFolderView?.gravity = Gravity.CENTER_VERTICAL
             currentFolderView?.text = relativePath

@@ -412,6 +412,7 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
         amiiboCard?.findViewById<View>(R.id.txtError)?.isGone = true
         amiiboCard?.findViewById<View>(R.id.txtPath)?.isGone = true
         toolbar = rootLayout.findViewById(R.id.toolbar)
+        val bitmapHeight = Resources.getSystem().displayMetrics.heightPixels / 4
         amiiboTileTarget = object : CustomTarget<Bitmap?>() {
             val imageAmiibo = amiiboTile?.findViewById<AppCompatImageView>(R.id.imageAmiibo)
             override fun onLoadFailed(errorDrawable: Drawable?) {
@@ -423,28 +424,40 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
             }
 
             override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap?>?) {
-                imageAmiibo?.maxHeight = Resources.getSystem().displayMetrics.heightPixels / 4
-                imageAmiibo?.requestLayout()
-                imageAmiibo?.setImageBitmap(resource)
+                imageAmiibo?.let {
+                    if (resource.height > it.height) {
+                        it.maxHeight = bitmapHeight
+                        it.requestLayout()
+                    }
+                    it.setImageBitmap(resource)
+                }
             }
         }
         amiiboCardTarget = object : CustomTarget<Bitmap?>() {
             val imageAmiibo = amiiboCard?.findViewById<AppCompatImageView>(R.id.imageAmiibo)
             override fun onLoadFailed(errorDrawable: Drawable?) {
-                imageAmiibo?.setImageResource(0)
-                imageAmiibo?.isGone = true
+                imageAmiibo?.let {
+                    it.setImageResource(0)
+                    it.isGone = true
+                }
             }
 
             override fun onLoadCleared(placeholder: Drawable?) {
-                imageAmiibo?.setImageResource(0)
-                imageAmiibo?.isGone = true
+                imageAmiibo?.let {
+                    it.setImageResource(0)
+                    it.isGone = true
+                }
             }
 
             override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap?>?) {
-                imageAmiibo?.maxHeight = Resources.getSystem().displayMetrics.heightPixels / 4
-                imageAmiibo?.requestLayout()
-                imageAmiibo?.setImageBitmap(resource)
-                imageAmiibo?.isVisible = true
+                imageAmiibo?.let {
+                    if (resource.height > it.height) {
+                        it.maxHeight = bitmapHeight
+                        it.requestLayout()
+                    }
+                    it.setImageBitmap(resource)
+                    it.isVisible = true
+                }
             }
         }
         settings = activity.settings ?: BrowserSettings().initialize()
@@ -474,7 +487,7 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
         val amiiboFilesView = rootLayout.findViewById<RecyclerView>(R.id.amiibo_files_list)
         if (prefs.softwareLayer())
             amiiboFilesView.setLayerType(View.LAYER_TYPE_SOFTWARE, null)
-        // amiiboFilesView.setHasFixedSize(true);
+        amiiboFilesView.setHasFixedSize(true)
         val toggle = rootLayout.findViewById<AppCompatImageView>(R.id.toggle)
         bottomSheet = BottomSheetBehavior.from(rootLayout.findViewById(R.id.bottom_sheet)).apply {
             state = BottomSheetBehavior.STATE_COLLAPSED

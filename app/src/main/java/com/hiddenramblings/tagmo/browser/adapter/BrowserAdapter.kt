@@ -174,10 +174,8 @@ class BrowserAdapter(
     fun refresh() { getFilter().filter(settings.query) }
 
     override fun getFilter(): AmiiboFilter {
-        if (null == filter) {
-            filter = AmiiboFilter()
-        }
-        return filter!!
+        if (null == filter) filter = AmiiboFilter()
+        return filter as AmiiboFilter
     }
 
     inner class AmiiboFilter : Filter() {

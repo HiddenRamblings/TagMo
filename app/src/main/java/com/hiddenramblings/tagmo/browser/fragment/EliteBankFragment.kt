@@ -131,11 +131,12 @@ class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
         amiiboFilesView = rootLayout.findViewById(R.id.amiibo_files_list)
         if (prefs.softwareLayer())
             amiiboFilesView?.setLayerType(View.LAYER_TYPE_SOFTWARE, null)
-        // amiiboFilesView!!.setHasFixedSize(true);
+        amiiboFilesView?.setHasFixedSize(true)
         securityOptions = rootLayout.findViewById(R.id.security_options)
         amiiboTile = rootLayout.findViewById(R.id.active_tile_layout)
         amiiboCard = rootLayout.findViewById(R.id.active_card_layout)
         toolbar = rootLayout.findViewById(R.id.toolbar)
+        val bitmapHeight = Resources.getSystem().displayMetrics.heightPixels / 4
         amiiboTileTarget = object : CustomTarget<Bitmap?>() {
             val imageAmiibo = amiiboTile?.findViewById<AppCompatImageView>(R.id.imageAmiibo)
             override fun onLoadFailed(errorDrawable: Drawable?) {
@@ -147,28 +148,40 @@ class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
             }
 
             override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap?>?) {
-                imageAmiibo?.maxHeight = Resources.getSystem().displayMetrics.heightPixels / 4
-                imageAmiibo?.requestLayout()
-                imageAmiibo?.setImageBitmap(resource)
+                imageAmiibo?.let {
+                    if (resource.height > it.height) {
+                        it.maxHeight = bitmapHeight
+                        it.requestLayout()
+                    }
+                    it.setImageBitmap(resource)
+                }
             }
         }
         amiiboCardTarget = object : CustomTarget<Bitmap?>() {
             val imageAmiibo = amiiboCard?.findViewById<AppCompatImageView>(R.id.imageAmiibo)
             override fun onLoadFailed(errorDrawable: Drawable?) {
-                imageAmiibo?.setImageResource(0)
-                imageAmiibo?.isGone = true
+                imageAmiibo?.let {
+                    it.setImageResource(0)
+                    it.isGone = true
+                }
             }
 
             override fun onLoadCleared(placeholder: Drawable?) {
-                imageAmiibo?.setImageResource(0)
-                imageAmiibo?.isGone = true
+                imageAmiibo?.let {
+                    it.setImageResource(0)
+                    it.isGone = true
+                }
             }
 
             override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap?>?) {
-                imageAmiibo?.maxHeight = Resources.getSystem().displayMetrics.heightPixels / 4
-                imageAmiibo?.requestLayout()
-                imageAmiibo?.setImageBitmap(resource)
-                imageAmiibo?.isVisible = true
+                imageAmiibo?.let {
+                    if (resource.height > it.height) {
+                        it.maxHeight = bitmapHeight
+                        it.requestLayout()
+                    }
+                    it.setImageBitmap(resource)
+                    it.isVisible = true
+                }
             }
         }
         bankStats = rootLayout.findViewById(R.id.bank_stats)
@@ -509,8 +522,7 @@ class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
         clickedPosition = result.data!!.getIntExtra(NFCIntent.EXTRA_CURRENT_BANK, clickedPosition)
         val args = Bundle()
         args.putByteArray(NFCIntent.EXTRA_TAG_DATA, tagData)
-        if (amiibos.size > clickedPosition && null != amiibos[clickedPosition])
-            amiibos[clickedPosition]!!.data = tagData
+        if (amiibos.size > clickedPosition) amiibos[clickedPosition]?.let { it.data = tagData }
         when (status) {
             CLICKED.NOTHING -> {}
             CLICKED.WRITE_DATA -> {

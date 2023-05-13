@@ -57,7 +57,7 @@ class TagMo : Application() {
         AppCompatDelegate.setCompatVectorFromResourcesEnabled(true)
         if (BuildConfig.WEAR_OS) appContext.setTheme(R.style.AppTheme)
         if (isWatchingANR) {
-            ANRWatchDog(30000).setANRListener { error: ANRError ->
+            ANRWatchDog(20000).setANRListener { error: ANRError ->
                 val exception = StringWriter()
                 error.printStackTrace(PrintWriter(exception))
                 try {

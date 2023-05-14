@@ -60,9 +60,7 @@
             android:padding="5dp"
             app:srcCompat="@drawable/ic_signal_bar_24dp" />
 
-        <include
-            layout="@layout/number_picker"
-            android:id="@+id/number_picker" />
+        <include layout="@layout/number_picker" />
 
         <TextView
             android:id="@+id/bank_number_details"

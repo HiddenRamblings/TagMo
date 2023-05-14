@@ -18,9 +18,7 @@
         android:text="@string/write_serials"
         android:textSize="16sp"/>
 
-    <include
-        layout="@layout/number_picker"
-        android:id="@+id/number_picker" />
+    <include layout="@layout/number_picker" />
 
     <LinearLayout
         android:layout_width="match_parent"

@@ -107,8 +107,8 @@ class NfcActivity : AppCompatActivity() {
         return picker.value - picker.minValue
     }
 
-    private fun setPosition(picker: NumberPicker?, position: Int) {
-        picker!!.value = position + picker.minValue
+    private fun setPosition(picker: NumberPicker, position: Int) {
+        picker.value = position + picker.minValue
     }
 
     private fun configureInterface() {

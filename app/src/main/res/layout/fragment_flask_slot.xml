@@ -150,9 +150,7 @@
                     android:text="@string/erase_slots" />
             </LinearLayout>
 
-            <include
-                layout="@layout/number_picker"
-                android:id="@+id/number_picker" />
+            <include layout="@layout/number_picker" />
 
             <LinearLayout
                 android:id="@+id/screen_options"

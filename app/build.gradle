@@ -139,7 +139,6 @@ dependencies {
 
     implementation 'com.github.bumptech.glide:glide:4.15.1'
     kapt 'com.github.bumptech.glide:compiler:4.15.1'
-    annotationProcessor 'com.github.bumptech.glide:compiler:4.15.1'
 
     implementation 'com.github.8bitdream:AndroidFastScroll:bc9a2b7b6f'
     implementation 'com.github.8bitDream:ANR-WatchDog:b4b676ca7c'

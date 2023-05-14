@@ -105,7 +105,6 @@ import java.io.IOException
 import java.text.ParseException
 import java.util.*
 
-
 class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
     BrowserAdapter.OnAmiiboClickListener {
     private val prefs: Preferences by lazy { Preferences(applicationContext) }

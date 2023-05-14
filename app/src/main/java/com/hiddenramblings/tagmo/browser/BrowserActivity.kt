@@ -104,7 +104,6 @@ import java.io.FileInputStream
 import java.io.IOException
 import java.text.ParseException
 import java.util.*
-import java.util.concurrent.Executors
 
 
 class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
@@ -1046,7 +1045,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
         false
     }
 
-    private fun createDuplicates(amiiboFile: AmiiboFile?, tagData: ByteArray?) {
+    private fun generateDuplicates(amiiboFile: AmiiboFile?, tagData: ByteArray?) {
         val fileName = TagArray.decipherFilename(settings?.amiiboManager, tagData, true)
         val view = layoutInflater.inflate(R.layout.dialog_duplicator, null)
         val dialog = AlertDialog.Builder(this)
@@ -1191,7 +1190,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                     return@setOnMenuItemClickListener true
                 }
                 R.id.mnu_copier -> {
-                    createDuplicates(amiiboFile, tagData)
+                    generateDuplicates(amiiboFile, tagData)
                     return@setOnMenuItemClickListener true
                 }
                 R.id.mnu_view_hex -> {

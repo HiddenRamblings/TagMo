@@ -47,9 +47,7 @@ open class AmiiboFile : Parcelable {
         else
             @Suppress("DEPRECATION") parcel.readSerializable() as File?
         id = parcel.readLong()
-        data = ByteArray(parcel.readInt()).also {
-            parcel.readByteArray(it)
-        }
+        data = ByteArray(parcel.readInt()).also { parcel.readByteArray(it) }
     }
 
     fun withRandomSerials(keyManager: KeyManager, count: Int) : ArrayList<AmiiboData?> {
@@ -58,11 +56,10 @@ open class AmiiboFile : Parcelable {
         } ?: filePath?.let {
             TagArray.getValidatedFile(keyManager, it)
         }
-        val newData = tagData?.let { AmiiboData(keyManager.decrypt(it)) }
-        return arrayListOf<AmiiboData?>().apply {
-            for (i in 0 until count) {
-                newData?.let {
-                    add(it.apply { uID = Foomiibo().generateRandomUID() })
+        return arrayListOf<AmiiboData?>().also { dataList ->
+            tagData?.let { AmiiboData(keyManager.decrypt(it)) }?.let {
+                for (i in 0 until count) {
+                    dataList.add(it.apply { uID = Foomiibo().generateRandomUID() })
                 }
             }
         }

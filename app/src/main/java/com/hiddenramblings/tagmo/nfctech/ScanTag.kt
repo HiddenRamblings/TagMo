@@ -42,7 +42,7 @@ class ScanTag {
             mifare?.let { ntag ->
                 if (!hasTestedElite) {
                     hasTestedElite = true
-                    if (!isPowerTag(ntag)) isEliteDevice = isElite(ntag)
+                    if (!isPowerTag(ntag) && prefs.eliteEnabled()) isEliteDevice = isElite(ntag)
                 }
                 try {
                     if (isEliteDevice) {

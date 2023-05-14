@@ -115,26 +115,26 @@ class NfcActivity : AppCompatActivity() {
         val commandIntent = this.intent
         val mode = commandIntent.action
         isEliteIntent = commandIntent.hasExtra(NFCIntent.EXTRA_SIGNATURE)
-        if (commandIntent.hasExtra(NFCIntent.EXTRA_CURRENT_BANK)) {
-            setPosition(
+        when {
+            commandIntent.hasExtra(NFCIntent.EXTRA_CURRENT_BANK) -> setPosition(
                 bankPicker, commandIntent.getIntExtra(
                     NFCIntent.EXTRA_CURRENT_BANK, getPosition(bankPicker)
                 )
             )
-        } else if (isEliteIntent) {
-            setPosition(bankPicker, prefs.eliteActiveBank())
-        } else {
-            bankTextView.isGone = true
-            bankPicker.isGone = true
+            isEliteIntent -> setPosition(bankPicker, prefs.eliteActiveBank())
+            else -> {
+                bankTextView.isGone = true
+                bankPicker.isGone = true
+            }
         }
-        if (commandIntent.hasExtra(NFCIntent.EXTRA_BANK_COUNT)) {
+        val hideBankPicker = !isEliteIntent || !commandIntent.hasExtra(NFCIntent.EXTRA_CURRENT_BANK)
+        if (commandIntent.hasExtra(NFCIntent.EXTRA_BANK_COUNT))
             writeCount = commandIntent.getIntExtra(NFCIntent.EXTRA_BANK_COUNT, 200)
-        }
         when (mode) {
             NFCIntent.ACTION_WRITE_TAG_RAW,
             NFCIntent.ACTION_WRITE_TAG_FULL,
             NFCIntent.ACTION_WRITE_TAG_DATA -> {
-                if (!isEliteIntent || !commandIntent.hasExtra(NFCIntent.EXTRA_CURRENT_BANK)) {
+                if (hideBankPicker) {
                     bankPicker.isGone = true
                     bankPicker.isEnabled = false
                     bankTextView.isGone = true
@@ -156,7 +156,7 @@ class NfcActivity : AppCompatActivity() {
             NFCIntent.ACTION_BACKUP_AMIIBO,
             NFCIntent.ACTION_ERASE_BANK,
             NFCIntent.ACTION_ACTIVATE_BANK ->
-                if (!isEliteIntent || !commandIntent.hasExtra(NFCIntent.EXTRA_CURRENT_BANK)) {
+                if (hideBankPicker) {
                     bankPicker.isGone = true
                     bankTextView.isGone = true
                 }
@@ -240,7 +240,7 @@ class NfcActivity : AppCompatActivity() {
                     if (TagArray.isPowerTag(ntag)) {
                         showMessage(R.string.tag_scanning, getString(R.string.power_tag))
                     } else if (prefs.eliteEnabled()) {
-                        isEliteDevice = (TagArray.isElite(ntag)
+                        isEliteDevice = (isEliteIntent || TagArray.isElite(ntag)
                                 || NFCIntent.ACTION_UNLOCK_UNIT == mode
                                 || NFCIntent.ACTION_BLIND_SCAN == mode)
                         if (isEliteDevice)

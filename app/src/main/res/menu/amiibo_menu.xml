@@ -12,13 +12,13 @@
         android:title="@string/write"
         app:showAsAction="always"/>
     <item
-        android:id="@+id/mnu_update"
-        android:title="@string/update"
-        app:showAsAction="always"/>
-    <item
         android:id="@+id/mnu_save"
         android:title="@string/save"
         app:showAsAction="always"/>
+    <item
+        android:id="@+id/mnu_update"
+        android:title="@string/update"
+        app:showAsAction="ifRoom"/>
     <item
         android:id="@+id/mnu_edit"
         android:title="@string/edit_props"

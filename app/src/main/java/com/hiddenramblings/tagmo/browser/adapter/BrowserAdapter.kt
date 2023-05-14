@@ -97,10 +97,7 @@ class BrowserAdapter(
     }
 
     fun hasItem(id: Long) : Boolean {
-        for (amiiboFile in filteredData) {
-            if (id == amiiboFile?.id) return true
-        }
-        return false
+        return filteredData.any { id == it?.id }
     }
 
     init {

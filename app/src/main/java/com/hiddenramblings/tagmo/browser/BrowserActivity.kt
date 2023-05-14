@@ -1134,16 +1134,6 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                     })
                     return@setOnMenuItemClickListener true
                 }
-                R.id.mnu_update -> {
-                    onUpdateTagResult.launch(scan.apply {
-                        action = NFCIntent.ACTION_WRITE_TAG_DATA
-                        putExtra(NFCIntent.EXTRA_IGNORE_TAG_ID, ignoreTagId)
-                        putExtras(Bundle().apply {
-                            putByteArray(NFCIntent.EXTRA_TAG_DATA, tagData)
-                        })
-                    })
-                    return@setOnMenuItemClickListener true
-                }
                 R.id.mnu_save -> {
                     if (cached) {
                         if (tagData != null) {
@@ -1179,6 +1169,16 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                         }
                         backupDialog.show()
                     }
+                    return@setOnMenuItemClickListener true
+                }
+                R.id.mnu_update -> {
+                    onUpdateTagResult.launch(scan.apply {
+                        action = NFCIntent.ACTION_WRITE_TAG_DATA
+                        putExtra(NFCIntent.EXTRA_IGNORE_TAG_ID, ignoreTagId)
+                        putExtras(Bundle().apply {
+                            putByteArray(NFCIntent.EXTRA_TAG_DATA, tagData)
+                        })
+                    })
                     return@setOnMenuItemClickListener true
                 }
                 R.id.mnu_edit -> {
@@ -2082,8 +2082,8 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                     IconifiedSnackbar(this, viewPager).buildSnackbar(
                         getString(R.string.delete_file, relativeFile), Snackbar.LENGTH_SHORT
                     ).show()
-                    onRootFolderChanged(true)
                     dialog.dismiss()
+                    onRootFolderChanged(true)
                 }
                 .setNegativeButton(R.string.cancel) { dialog: DialogInterface, _: Int -> dialog.dismiss() }
                 .show()
@@ -2101,8 +2101,8 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                     IconifiedSnackbar(this, viewPager).buildSnackbar(
                         getString(R.string.delete_file, relativeDocument), Snackbar.LENGTH_SHORT
                     ).show()
-                    onRootFolderChanged(true)
                     dialog.dismiss()
+                    onRootFolderChanged(true)
                 }
                 .setNegativeButton(R.string.cancel) { dialog: DialogInterface, _: Int -> dialog.dismiss() }
                 .show()

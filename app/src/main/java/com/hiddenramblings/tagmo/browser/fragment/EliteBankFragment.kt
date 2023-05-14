@@ -233,9 +233,11 @@ class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
         bankAdapter = EliteBankAdapter(settings, this)
         eliteContent?.adapter = bankAdapter
         settings.addChangeListener(bankAdapter)
-        eliteBankCount.setOnValueChangedListener { _, _, newVal ->
-            writeOpenBanks?.text = getString(R.string.write_banks, newVal)
-            eraseOpenBanks?.text = getString(R.string.erase_banks, newVal)
+        eliteBankCount.setOnValueChangedListener { _, oldVal, newVal ->
+            if (newVal != oldVal) {
+                writeOpenBanks?.text = getString(R.string.write_banks, newVal)
+                eraseOpenBanks?.text = getString(R.string.erase_banks, newVal)
+            }
         }
         if (settings.amiiboView == BrowserSettings.VIEW.IMAGE.value)
             amiiboFilesView?.layoutManager = GridLayoutManager(activity, activity.columnCount)
@@ -951,8 +953,7 @@ class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
             })
             updateEliteAdapter(extras.getStringArrayList(NFCIntent.EXTRA_AMIIBO_LIST))
             bankStats?.text = getString(
-                R.string.bank_stats,
-                getValueForPosition(eliteBankCount, activeBank), bankCount
+                R.string.bank_stats, getValueForPosition(eliteBankCount, activeBank), bankCount
             )
             writeOpenBanks?.text = getString(R.string.write_banks, bankCount)
             eraseOpenBanks?.text = getString(R.string.erase_banks, bankCount)

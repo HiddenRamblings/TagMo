@@ -1330,7 +1330,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
         findViewById<TextView>(R.id.txtUsageLabel).run {
             settings?.gamesManager?.let {
                 isVisible = true
-                CoroutineScope(Dispatchers.Default).launch {
+                CoroutineScope(Dispatchers.IO).launch {
                     val usage: String? = try {
                         val amiiboId = Amiibo.dataToId(tagData)
                         it.getGamesCompatibility(amiiboId)

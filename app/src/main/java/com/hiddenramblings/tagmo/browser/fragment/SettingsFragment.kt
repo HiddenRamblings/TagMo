@@ -588,7 +588,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
     }
 
     private fun parseCommitDate(result: String, isMenuClicked: Boolean) {
-        CoroutineScope(Dispatchers.Default).launch {
+        CoroutineScope(Dispatchers.IO).launch {
             try {
                 val jsonObject = JSONObject(result)
                 val render = jsonObject["commit"] as JSONObject
@@ -615,7 +615,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
     }
 
     private fun parseUpdateJSON(result: String, isMenuClicked: Boolean) {
-        CoroutineScope(Dispatchers.Default).launch {
+        CoroutineScope(Dispatchers.IO).launch {
             try {
                 val jsonObject = JSONObject(result)
                 val lastUpdatedAPI = jsonObject["lastUpdated"] as String

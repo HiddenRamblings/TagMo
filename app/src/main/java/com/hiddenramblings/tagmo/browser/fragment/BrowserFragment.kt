@@ -339,7 +339,7 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
     }
 
     private fun getGameCompatibility(txtUsage: TextView, tagData: ByteArray) {
-        CoroutineScope(Dispatchers.Default).launch {
+        CoroutineScope(Dispatchers.IO).launch {
             val usage: String? = try {
                 val amiiboId = Amiibo.dataToId(tagData)
                 val gamesManager = getGamesManager(requireContext())

@@ -112,6 +112,7 @@
             android:theme="@style/Theme.Overlay.NoActionBar" />
         <activity
             android:name=".amiibo.tagdata.TagDataEditor"
+            android:configChanges="orientation|screenLayout|screenSize|smallestScreenSize"
             android:theme="@style/Theme.Overlay.NoActionBar" />
         <activity
             android:name=".qrcode.QRCodeScanner"

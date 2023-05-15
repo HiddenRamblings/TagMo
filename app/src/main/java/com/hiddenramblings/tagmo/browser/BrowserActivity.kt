@@ -2147,100 +2147,98 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
 
     @JvmOverloads
     fun updateAmiiboView(tagData: ByteArray?, amiiboFile: AmiiboFile? = clickedAmiibo) {
-        CoroutineScope(Dispatchers.Main).launch {
-            amiiboContainer?.let {
-                it.alpha = 0f
-                it.isVisible = true
-                it.animate().alpha(1f).setDuration(150).setListener(null)
-            }
-            onCreateToolbarMenu(toolbar, tagData, amiiboFile)
-            var amiiboId: Long = -1
-            var tagInfo: String? = null
-            var amiiboHexId = ""
-            var amiiboName = ""
-            var amiiboSeries = ""
-            var amiiboType = ""
-            var gameSeries = ""
-            // String character = "";
-            var amiiboImageUrl: String? = null
-            if (tagData?.isNotEmpty() == true) {
-                try {
-                    amiiboId = Amiibo.dataToId(tagData)
-                } catch (e: Exception) { Debug.info(e) }
-            }
-            when (amiiboId) {
-                -1L -> {
-                    tagInfo = getString(R.string.read_error)
-                    amiiboImageUrl = null
-                }
-                0L -> {
-                    tagInfo = getString(R.string.blank_tag)
-                    amiiboImageUrl = null
-                }
-                else -> {
-                    var amiibo: Amiibo? = null
-                    settings?.amiiboManager?.let {
-                        amiibo = it.amiibos[amiiboId]
-                        if (null == amiibo)
-                            amiibo = Amiibo(it, amiiboId, null, null)
-                    }
-                    amiibo?.let {
-                        amiiboHexId = Amiibo.idToHex(it.id)
-                        amiiboImageUrl = it.imageUrl
-                        it.name?.let { name -> amiiboName = name }
-                        it.amiiboSeries?.let { series -> amiiboSeries = series.name }
-                        it.amiiboType?.let { type -> amiiboType = type.name }
-                        it.gameSeries?.let { series -> gameSeries = series.name }
-                    } ?: amiiboId.let {
-                        amiiboHexId = Amiibo.idToHex(it)
-                        tagInfo = "ID: $amiiboHexId"
-                        amiiboImageUrl = Amiibo.getImageUrl(it)
-                    }
-                }
-            }
-            val hasTagInfo = null != tagInfo
-            amiiboInfo?.isGone = hasTagInfo
-            if (hasTagInfo) {
-                setAmiiboInfoText(txtError, tagInfo, false)
-            } else {
-                txtError?.isGone = true
-            }
-            setAmiiboInfoText(txtName, amiiboName, hasTagInfo)
-            setAmiiboInfoText(txtTagId, amiiboHexId, hasTagInfo)
-            setAmiiboInfoText(txtAmiiboSeries, amiiboSeries, hasTagInfo)
-            setAmiiboInfoText(txtAmiiboType, amiiboType, hasTagInfo)
-            setAmiiboInfoText(txtGameSeries, gameSeries, hasTagInfo)
-            // setAmiiboInfoText(txtCharacter, character, hasTagInfo);
+        amiiboContainer?.let {
+            it.alpha = 0f
+            it.isVisible = true
+            it.animate().alpha(1f).setDuration(150).setListener(null)
+        }
+        onCreateToolbarMenu(toolbar, tagData, amiiboFile)
+        var amiiboId: Long = -1
+        var tagInfo: String? = null
+        var amiiboHexId = ""
+        var amiiboName = ""
+        var amiiboSeries = ""
+        var amiiboType = ""
+        var gameSeries = ""
+        // String character = "";
+        var amiiboImageUrl: String? = null
+        if (tagData?.isNotEmpty() == true) {
             try {
-                val txtUsage = findViewById<TextView>(R.id.txtUsage)
-                getGameCompatibility(txtUsage, tagData)
-                txtUsage.isGone = true
-                val label = findViewById<TextView>(R.id.txtUsageLabel)
-                label.setOnClickListener {
-                    label.setText(
-                        if (txtUsage.isVisible)
-                            R.string.game_titles_view
-                        else R.string.game_titles_hide
-                    )
-                    txtUsage.isGone = txtUsage.isVisible
+                amiiboId = Amiibo.dataToId(tagData)
+            } catch (e: Exception) { Debug.info(e) }
+        }
+        when (amiiboId) {
+            -1L -> {
+                tagInfo = getString(R.string.read_error)
+                amiiboImageUrl = null
+            }
+            0L -> {
+                tagInfo = getString(R.string.blank_tag)
+                amiiboImageUrl = null
+            }
+            else -> {
+                var amiibo: Amiibo? = null
+                settings?.amiiboManager?.let {
+                    amiibo = it.amiibos[amiiboId]
+                    if (null == amiibo)
+                        amiibo = Amiibo(it, amiiboId, null, null)
                 }
-            } catch (ex: Exception) { Debug.warn(ex) }
-            if (hasSpoofData(amiiboHexId)) txtTagId?.isEnabled = false
-            imageAmiibo?.let {
-                it.setImageResource(0)
-                it.isGone = true
-                if (!amiiboImageUrl.isNullOrEmpty()) {
-                    GlideApp.with(it).clear(it)
-                    GlideApp.with(it).asBitmap().load(amiiboImageUrl).into(imageTarget)
+                amiibo?.let {
+                    amiiboHexId = Amiibo.idToHex(it.id)
+                    amiiboImageUrl = it.imageUrl
+                    it.name?.let { name -> amiiboName = name }
+                    it.amiiboSeries?.let { series -> amiiboSeries = series.name }
+                    it.amiiboType?.let { type -> amiiboType = type.name }
+                    it.gameSeries?.let { series -> gameSeries = series.name }
+                } ?: amiiboId.let {
+                    amiiboHexId = Amiibo.idToHex(it)
+                    tagInfo = "ID: $amiiboHexId"
+                    amiiboImageUrl = Amiibo.getImageUrl(it)
                 }
-                val amiiboTagId = amiiboId
-                it.setOnClickListener {
-                    startActivity(Intent(this@BrowserActivity, ImageActivity::class.java)
-                        .putExtras(Bundle().apply {
-                            putLong(NFCIntent.EXTRA_AMIIBO_ID, amiiboTagId)
-                        })
-                    )
-                }
+            }
+        }
+        val hasTagInfo = null != tagInfo
+        amiiboInfo?.isGone = hasTagInfo
+        if (hasTagInfo) {
+            setAmiiboInfoText(txtError, tagInfo, false)
+        } else {
+            txtError?.isGone = true
+        }
+        setAmiiboInfoText(txtName, amiiboName, hasTagInfo)
+        setAmiiboInfoText(txtTagId, amiiboHexId, hasTagInfo)
+        setAmiiboInfoText(txtAmiiboSeries, amiiboSeries, hasTagInfo)
+        setAmiiboInfoText(txtAmiiboType, amiiboType, hasTagInfo)
+        setAmiiboInfoText(txtGameSeries, gameSeries, hasTagInfo)
+        // setAmiiboInfoText(txtCharacter, character, hasTagInfo);
+        try {
+            val txtUsage = findViewById<TextView>(R.id.txtUsage)
+            getGameCompatibility(txtUsage, tagData)
+            txtUsage.isGone = true
+            val label = findViewById<TextView>(R.id.txtUsageLabel)
+            label.setOnClickListener {
+                label.setText(
+                    if (txtUsage.isVisible)
+                        R.string.game_titles_view
+                    else R.string.game_titles_hide
+                )
+                txtUsage.isGone = txtUsage.isVisible
+            }
+        } catch (ex: Exception) { Debug.warn(ex) }
+        if (hasSpoofData(amiiboHexId)) txtTagId?.isEnabled = false
+        imageAmiibo?.let {
+            it.setImageResource(0)
+            it.isGone = true
+            if (!amiiboImageUrl.isNullOrEmpty()) {
+                GlideApp.with(it).clear(it)
+                GlideApp.with(it).asBitmap().load(amiiboImageUrl).into(imageTarget)
+            }
+            val amiiboTagId = amiiboId
+            it.setOnClickListener {
+                startActivity(Intent(this@BrowserActivity, ImageActivity::class.java)
+                    .putExtras(Bundle().apply {
+                        putLong(NFCIntent.EXTRA_AMIIBO_ID, amiiboTagId)
+                    })
+                )
             }
         }
     }
@@ -2552,16 +2550,13 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
     }
 
     fun showElitePage(extras: Bundle) {
-        if (!prefs.eliteEnabled()) return
-        CoroutineScope(Dispatchers.Main).launch {
-            if (viewPager.currentItem == 1) {
-                pagerAdapter.eliteBanks.onHardwareLoaded(extras)
-                return@launch
-            }
-            setScrollListener(object: ScrollListener {
+        if (viewPager.currentItem == 1) {
+            pagerAdapter.eliteBanks.onHardwareLoaded(extras)
+        } else {
+            setScrollListener(object : ScrollListener {
                 override fun onScrollComplete() {
                     pagerAdapter.eliteBanks.onHardwareLoaded(extras)
-                    listener = null
+                    setScrollListener(null)
                 }
             })
             viewPager.setCurrentItem(1, true)

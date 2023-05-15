@@ -1,7 +1,6 @@
 package com.hiddenramblings.tagmo.browser
 
 import android.annotation.SuppressLint
-import android.app.Dialog
 import android.content.DialogInterface
 import android.content.Intent
 import android.content.res.Resources
@@ -29,8 +28,6 @@ class DonationManager internal constructor(private val activity: BrowserActivity
     private lateinit var billingClient: BillingClient
     private val iapSkuDetails: ArrayList<ProductDetails> = arrayListOf()
     private val subSkuDetails: ArrayList<ProductDetails> = arrayListOf()
-
-    private val backgroundScope = CoroutineScope(Dispatchers.IO)
 
     private fun getIAP(amount: Int): String {
         return String.format(Locale.ROOT, "subscription_%02d", amount)
@@ -134,14 +131,17 @@ class DonationManager internal constructor(private val activity: BrowserActivity
         }
 
     fun retrieveDonationMenu() {
-        billingClient = BillingClient.newBuilder(activity)
-            .setListener(purchasesUpdatedListener).enablePendingPurchases().build()
-        iapSkuDetails.clear()
-        subSkuDetails.clear()
-        billingClient.startConnection(object : BillingClientStateListener {
-            override fun onBillingServiceDisconnected() {}
-            override fun onBillingSetupFinished(billingResult: BillingResult) {
-                backgroundScope.launch(Dispatchers.IO) {
+        CoroutineScope(Dispatchers.IO).launch(Dispatchers.IO) {
+            billingClient = BillingClient.newBuilder(activity)
+                .setListener(purchasesUpdatedListener).enablePendingPurchases().build()
+            iapSkuDetails.clear()
+            subSkuDetails.clear()
+
+            billingClient.startConnection(object : BillingClientStateListener {
+                override fun onBillingServiceDisconnected() {
+                    billingClient.endConnection()
+                }
+                override fun onBillingSetupFinished(billingResult: BillingResult) {
                     if (billingResult.responseCode == BillingClient.BillingResponseCode.OK) {
                         iapList.add(getIAP(1))
                         iapList.add(getIAP(5))
@@ -157,8 +157,8 @@ class DonationManager internal constructor(private val activity: BrowserActivity
                                 .newBuilder().setProductList(listOf(productList))
                             billingClient.queryProductDetailsAsync(
                                 params.build()
-                            ) { _: BillingResult?, productDetailsList: List<ProductDetails>? ->
-                                iapSkuDetails.addAll(productDetailsList!!)
+                            ) { _: BillingResult?, productDetailsList: List<ProductDetails> ->
+                                iapSkuDetails.addAll(productDetailsList)
                                 billingClient.queryPurchaseHistoryAsync(
                                     QueryPurchaseHistoryParams.newBuilder().setProductType(
                                         BillingClient.ProductType.INAPP
@@ -181,10 +181,8 @@ class DonationManager internal constructor(private val activity: BrowserActivity
                             .newBuilder().setProductList(listOf(productList))
                         billingClient.queryProductDetailsAsync(
                             params.build()
-                        ) { _: BillingResult?, productDetailsList: List<ProductDetails>? ->
-                            subSkuDetails.addAll(
-                                productDetailsList!!
-                            )
+                        ) { _: BillingResult?, productDetailsList: List<ProductDetails> ->
+                            subSkuDetails.addAll(productDetailsList)
                             billingClient.queryPurchaseHistoryAsync(
                                 QueryPurchaseHistoryParams.newBuilder().setProductType(
                                     BillingClient.ProductType.SUBS
@@ -193,8 +191,8 @@ class DonationManager internal constructor(private val activity: BrowserActivity
                         }
                     }
                 }
-            }
-        })
+            })
+        }
     }
 
     private fun getDonationButton(skuDetail: ProductDetails): Button {

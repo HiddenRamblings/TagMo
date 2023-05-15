@@ -59,15 +59,19 @@ class ScanTag {
                         prefs.eliteSignature(signature)
                         prefs.eliteActiveBank(activeBank)
                         prefs.eliteBankCount(banksCount)
-                        activity.showElitePage(Bundle().apply {
-                            val titles = TagReader.readTagTitles(ntag, banksCount)
-                            putString(NFCIntent.EXTRA_SIGNATURE, signature)
-                            putInt(NFCIntent.EXTRA_BANK_COUNT, banksCount)
-                            putInt(NFCIntent.EXTRA_ACTIVE_BANK, activeBank)
-                            putStringArrayList(NFCIntent.EXTRA_AMIIBO_LIST, titles)
-                        })
+                        withContext(Dispatchers.Main) {
+                            activity.showElitePage(Bundle().apply {
+                                val titles = TagReader.readTagTitles(ntag, banksCount)
+                                putString(NFCIntent.EXTRA_SIGNATURE, signature)
+                                putInt(NFCIntent.EXTRA_BANK_COUNT, banksCount)
+                                putInt(NFCIntent.EXTRA_ACTIVE_BANK, activeBank)
+                                putStringArrayList(NFCIntent.EXTRA_AMIIBO_LIST, titles)
+                            })
+                        }
                     } else {
-                        activity.updateAmiiboView(TagReader.readFromTag(ntag))
+                        withContext(Dispatchers.Main) {
+                            activity.updateAmiiboView(TagReader.readFromTag(ntag))
+                        }
                     }
                     hasTestedElite = false
                     isEliteDevice = false

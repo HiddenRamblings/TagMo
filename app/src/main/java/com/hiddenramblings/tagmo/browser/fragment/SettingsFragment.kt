@@ -84,7 +84,6 @@ class SettingsFragment : PreferenceFragmentCompat() {
             }
         }
         updateKeySummary()
-        if (!keyManager.isKeyMissing) onUpdateRequested(false)
         findPreference<CheckBoxPreference>(
             getString(R.string.settings_tag_type_validation)
         )?.apply {
@@ -381,11 +380,13 @@ class SettingsFragment : PreferenceFragmentCompat() {
         keySummary.append("\n")
         keySummary.append(fixedBuilder)
         requireActivity().runOnUiThread { importKeys?.summary = keySummary }
+        if (!keyManager.isKeyMissing) onSyncRequested(false)
     }
 
     private fun rebuildAmiiboDatabase() {
+        if (keyManager.isKeyMissing) return
         resetAmiiboDatabase(false)
-        onUpdateRequested(true)
+        onSyncRequested(true)
     }
 
     private fun updateAmiiboDatabase(data: Uri?) {
@@ -623,9 +624,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
                 val activity = requireActivity() as BrowserActivity
                 if (isMenuClicked) {
                     onDownloadRequested(lastUpdated)
-                } else if (null == activity.settings?.lastUpdatedAPI
-                    || activity.settings?.lastUpdatedAPI != lastUpdated
-                ) {
+                } else if (activity.settings?.lastUpdatedAPI != lastUpdated) {
                     withContext(Dispatchers.Main) {
                         buildSnackbar(
                             activity, R.string.update_amiibo_api, Snackbar.LENGTH_LONG
@@ -636,7 +635,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
         }
     }
 
-    private fun onUpdateRequested(isMenuClicked: Boolean) {
+    fun onSyncRequested(isMenuClicked: Boolean) {
         val activity = requireActivity() as BrowserActivity
         if (prefs.databaseSource() == 0) {
             JSONExecutor(

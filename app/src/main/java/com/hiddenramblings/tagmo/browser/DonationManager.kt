@@ -288,8 +288,8 @@ class DonationManager internal constructor(private val activity: BrowserActivity
 
     @SuppressLint("InflateParams")
     fun onSendDonationClicked() {
-        (activity.layoutInflater.inflate(R.layout.donation_layout, null) as LinearLayout).run {
-            val donateDialog: Dialog = AlertDialog.Builder(
+        with (activity.layoutInflater.inflate(R.layout.donation_layout, null) as LinearLayout) {
+            AlertDialog.Builder(
                 ContextThemeWrapper(activity, R.style.Theme_Overlay_NoActionBar)
             ).apply {
                 findViewById<LinearLayout>(R.id.donation_layout).also { layout ->
@@ -318,48 +318,49 @@ class DonationManager internal constructor(private val activity: BrowserActivity
                         }
                     }
                 }
-            }.setView(this).show()
+            }.setView(this).show().also { donateDialog ->
+                val padding = TypedValue.applyDimension(
+                    TypedValue.COMPLEX_UNIT_DIP, 4f, Resources.getSystem().displayMetrics
+                ).toInt()
+                val params = LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT
+                )
+                params.setMargins(0, padding, 0, padding)
 
-            val padding = TypedValue.applyDimension(
-                TypedValue.COMPLEX_UNIT_DIP, 4f, Resources.getSystem().displayMetrics
-            ).toInt()
-            val params = LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT
-            )
-            params.setMargins(0, padding, 0, padding)
+                if (TagMo.hasSubscription) {
+                    addView(activity.layoutInflater.inflate(R.layout.button_cancel_sub, null).apply {
+                        setOnClickListener {
+                            activity.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(
+                                "https://support.google.com/googleplay/workflow/9827184"
+                            )))
+                            donateDialog.cancel()
+                        }
+                        layoutParams = params
+                    })
+                }
 
-            if (TagMo.hasSubscription) {
-                addView(activity.layoutInflater.inflate(R.layout.button_cancel_sub, null).apply {
-                    setOnClickListener {
-                        activity.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(
-                            "https://support.google.com/googleplay/workflow/9827184"
-                        )))
-                        donateDialog.cancel()
-                    }
-                    layoutParams = params
-                })
+                if (!BuildConfig.GOOGLE_PLAY) {
+                    addView(activity.layoutInflater.inflate(R.layout.button_sponsor, null).apply {
+                        setOnClickListener {
+                            activity.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(
+                                "https://github.com/sponsors/AbandonedCart"
+                            )))
+                            donateDialog.cancel()
+                        }
+                        layoutParams = params
+                    })
+
+                    addView(activity.layoutInflater.inflate(R.layout.button_paypal, null).apply {
+                        setOnClickListener {
+                            activity.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(
+                                "https://www.paypal.com/donate/?hosted_button_id=Q2LFH2SC8RHRN"
+                            )))
+                            donateDialog.cancel()
+                        }
+                    })
+                }
+                donateDialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
             }
-
-            if (!BuildConfig.GOOGLE_PLAY) {
-                addView(activity.layoutInflater.inflate(R.layout.button_sponsor, null).apply {
-                    setOnClickListener {
-                        activity.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(
-                            "https://github.com/sponsors/AbandonedCart"
-                        )))
-                        donateDialog.cancel()
-                    }
-                })
-
-                addView(activity.layoutInflater.inflate(R.layout.button_paypal, null).apply {
-                    setOnClickListener {
-                        activity.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(
-                            "https://www.paypal.com/donate/?hosted_button_id=Q2LFH2SC8RHRN"
-                        )))
-                        donateDialog.cancel()
-                    }
-                })
-            }
-            donateDialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
         }
     }
 }

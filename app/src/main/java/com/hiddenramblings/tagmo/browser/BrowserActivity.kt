@@ -1383,9 +1383,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
 
     private fun onStorageEnabled() {
         if (BuildConfig.WEAR_OS) {
-            if (keyManager.isKeyMissing)
-                onShowSettingsFragment()
-            else onRefresh(true)
+            if (keyManager.isKeyMissing) onShowSettingsFragment() else onRefresh(true)
         } else {
             if (prefs.isDocumentStorage) {
                 switchStorageRoot?.isVisible = true
@@ -1414,9 +1412,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                 } else {
                     switchStorageType?.isGone = true
                 }
-                if (keyManager.isKeyMissing)
-                    onShowSettingsFragment()
-                else onRefresh(true)
+                if (keyManager.isKeyMissing) onShowSettingsFragment() else onRefresh(true)
             } else {
                 val internal = prefs.preferEmulated()
                 val storage = Storage.getFile(internal)

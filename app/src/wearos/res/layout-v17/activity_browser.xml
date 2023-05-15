@@ -202,12 +202,6 @@
                                 android:layout_height="wrap_content"
                                 android:visibility="gone" />
 
-                            <androidx.appcompat.widget.AppCompatButton
-                                android:id="@+id/switch_storage_type"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:visibility="gone"/>
-
                             <TextView
                                 android:id="@+id/stats_character"
                                 android:layout_width="match_parent"

@@ -189,7 +189,6 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
         currentFolderView = findViewById(R.id.current_folder)
         if (!BuildConfig.WEAR_OS) {
             switchStorageRoot = findViewById(R.id.switch_storage_root)
-            switchStorageType = findViewById(R.id.switch_storage_type)
         }
         amiiboContainer = findViewById(R.id.amiiboContainer)
         toolbar = findViewById(R.id.toolbar)
@@ -598,19 +597,10 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
 
     private fun requestStoragePermission() {
         if (Version.isRedVelvet) {
-            if (BuildConfig.GOOGLE_PLAY) {
+            if (prefs.isDocumentStorage)
                 onDocumentEnabled()
-            } else {
-                if (prefs.isDocumentStorage) {
-                    onDocumentEnabled()
-                } else if (Environment.isExternalStorageManager()) {
-                    settings?.browserRootDocument = null
-                    settings?.notifyChanges()
-                    onStorageEnabled()
-                } else {
-                    requestScopedStorage()
-                }
-            }
+            else
+                onDocumentRequested()
         } else if (Version.isMarshmallow) {
             onRequestStorage.launch(PERMISSIONS_STORAGE)
         } else {
@@ -1386,62 +1376,37 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
             if (keyManager.isKeyMissing) onShowSettingsFragment() else onRefresh(true)
         } else {
             if (prefs.isDocumentStorage) {
-                switchStorageRoot?.isVisible = true
-                switchStorageRoot?.setText(R.string.document_storage_root)
-                switchStorageRoot?.setOnClickListener {
-                    try {
-                        onDocumentRequested()
-                    } catch (anf: ActivityNotFoundException) {
-                        Toasty(this).Long(R.string.storage_unavailable)
-                    }
-                    bottomSheetBehavior?.setState(BottomSheetBehavior.STATE_COLLAPSED)
-                }
-                if (Version.isRedVelvet && !BuildConfig.GOOGLE_PLAY) {
-                    switchStorageType?.isVisible = true
-                    switchStorageType?.setText(R.string.grant_file_permission)
-                    switchStorageType?.setOnClickListener {
-                        bottomSheetBehavior?.state = BottomSheetBehavior.STATE_COLLAPSED
-                        if (Environment.isExternalStorageManager()) {
-                            settings?.browserRootDocument = null
-                            settings?.notifyChanges()
-                            onStorageEnabled()
-                        } else {
-                            requestScopedStorage()
-                        }
-                    }
-                } else {
-                    switchStorageType?.isGone = true
-                }
-                if (keyManager.isKeyMissing) onShowSettingsFragment() else onRefresh(true)
-            } else {
-                val internal = prefs.preferEmulated()
-                val storage = Storage.getFile(internal)
-                if (storage?.exists() == true && Storage.hasPhysicalStorage()) {
-                    switchStorageRoot?.isVisible = true
-                    switchStorageRoot?.setText(if (internal) R.string.emulated_storage_root else R.string.physical_storage_root)
-                    switchStorageRoot?.setOnClickListener {
-                        val external = !prefs.preferEmulated()
-                        switchStorageRoot?.setText(if (external) R.string.emulated_storage_root else R.string.physical_storage_root)
-                        settings?.browserRootFolder = Storage.getFile(external)
-                        settings?.notifyChanges()
-                        prefs.preferEmulated(external)
-                    }
-                } else {
-                    switchStorageRoot?.isGone = true
-                }
-                if (Version.isRedVelvet) {
-                    switchStorageType?.isVisible = true
-                    switchStorageType?.setText(R.string.force_document_storage)
-                    switchStorageType?.setOnClickListener {
-                        bottomSheetBehavior?.state = BottomSheetBehavior.STATE_COLLAPSED
+                switchStorageRoot?.let {
+                    it.isVisible = true
+                    it.setText(R.string.document_storage_root)
+                    it.setOnClickListener {
                         try {
                             onDocumentRequested()
                         } catch (anf: ActivityNotFoundException) {
                             Toasty(this).Long(R.string.storage_unavailable)
                         }
+                        bottomSheetBehavior?.setState(BottomSheetBehavior.STATE_COLLAPSED)
                     }
+}
+                if (keyManager.isKeyMissing) onShowSettingsFragment() else onRefresh(true)
+            } else {
+                val internal = prefs.preferEmulated()
+                val storage = Storage.getFile(internal)
+                if (storage?.exists() == true && Storage.hasPhysicalStorage()) {
+                    switchStorageRoot?.let { btn ->
+                        btn.isVisible = true
+                        btn.setText(if (internal) R.string.emulated_storage_root else R.string.physical_storage_root)
+                        btn.setOnClickListener {
+                            val external = !prefs.preferEmulated()
+                            btn.setText(if (external) R.string.emulated_storage_root else R.string.physical_storage_root)
+                            settings?.browserRootFolder = Storage.getFile(external)
+                            settings?.notifyChanges()
+                            prefs.preferEmulated(external)
+                        }
+                    }
+
                 } else {
-                    switchStorageType?.isGone = true
+                    switchStorageRoot?.isGone = true
                 }
                 if (keyManager.isKeyMissing) {
                     hideFakeSnackbar()
@@ -1460,60 +1425,84 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                 onRefresh(true)
             }
             R.id.sort_id -> {
-                settings?.sort = SORT.ID.value
-                settings?.notifyChanges()
+                settings?.let {
+                    it.sort = SORT.ID.value
+                    it.notifyChanges()
+                }
             }
             R.id.sort_name -> {
-                settings?.sort = SORT.NAME.value
-                settings?.notifyChanges()
+                settings?.let {
+                    it.sort = SORT.NAME.value
+                    it.notifyChanges()
+                }
             }
             R.id.sort_character -> {
-                settings?.sort = SORT.CHARACTER.value
-                settings?.notifyChanges()
+                settings?.let {
+                    it.sort = SORT.CHARACTER.value
+                    it.notifyChanges()
+                }
             }
             R.id.sort_game_series -> {
-                settings?.sort = SORT.GAME_SERIES.value
-                settings?.notifyChanges()
+                settings?.let {
+                    it.sort = SORT.GAME_SERIES.value
+                    it.notifyChanges()
+                }
             }
             R.id.sort_amiibo_series -> {
-                settings?.sort = SORT.AMIIBO_SERIES.value
-                settings?.notifyChanges()
+                settings?.let {
+                    it.sort = SORT.AMIIBO_SERIES.value
+                    it.notifyChanges()
+                }
             }
             R.id.sort_amiibo_type -> {
-                settings?.sort = SORT.AMIIBO_TYPE.value
-                settings?.notifyChanges()
+                settings?.let {
+                    it.sort = SORT.AMIIBO_TYPE.value
+                    it.notifyChanges()
+                }
             }
             R.id.sort_file_path -> {
-                settings?.sort = SORT.FILE_PATH.value
-                settings?.notifyChanges()
+                settings?.let {
+                    it.sort = SORT.FILE_PATH.value
+                    it.notifyChanges()
+                }
             }
             R.id.view_simple -> {
                 amiibosView?.layoutManager = LinearLayoutManager(this)
                 foomiiboView?.layoutManager = LinearLayoutManager(this)
-                settings?.amiiboView = VIEW.SIMPLE.value
-                settings?.notifyChanges()
+                settings?.let {
+                    it.amiiboView = VIEW.SIMPLE.value
+                    it.notifyChanges()
+                }
             }
             R.id.view_compact -> {
                 amiibosView?.layoutManager = LinearLayoutManager(this)
                 foomiiboView?.layoutManager = LinearLayoutManager(this)
-                settings?.amiiboView = VIEW.COMPACT.value
-                settings?.notifyChanges()
+                settings?.let {
+                    it.amiiboView = VIEW.COMPACT.value
+                    it.notifyChanges()
+                }
             }
             R.id.view_large -> {
                 amiibosView?.layoutManager = LinearLayoutManager(this)
                 foomiiboView?.layoutManager = LinearLayoutManager(this)
-                settings?.amiiboView = VIEW.LARGE.value
-                settings?.notifyChanges()
+                settings?.let {
+                    it.amiiboView = VIEW.LARGE.value
+                    it.notifyChanges()
+                }
             }
             R.id.view_image -> {
                 amiibosView?.layoutManager = GridLayoutManager(this, columnCount)
                 foomiiboView?.layoutManager = GridLayoutManager(this, columnCount)
-                settings?.amiiboView = VIEW.IMAGE.value
-                settings?.notifyChanges()
+                settings?.let {
+                    it.amiiboView = VIEW.IMAGE.value
+                    it.notifyChanges()
+                }
             }
             R.id.recursive -> {
-                settings?.isRecursiveEnabled = !settings!!.isRecursiveEnabled
-                settings?.notifyChanges()
+                settings?.let {
+                    it.isRecursiveEnabled = !it.isRecursiveEnabled
+                    it.notifyChanges()
+                }
             }
             R.id.mnu_joy_con -> {
                 if (Version.isJellyBeanMR2) onShowJoyConFragment()
@@ -2556,7 +2545,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
             setScrollListener(object : ScrollListener {
                 override fun onScrollComplete() {
                     pagerAdapter.eliteBanks.onHardwareLoaded(extras)
-                    setScrollListener(null)
+                    removeScrollListener()
                 }
             })
             viewPager.setCurrentItem(1, true)
@@ -2572,7 +2561,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
             setScrollListener(object: ScrollListener {
                 override fun onScrollComplete() {
                     pagerAdapter.website.loadWebsite(address)
-                    listener = null
+                    removeScrollListener()
                 }
             })
             viewPager.setCurrentItem(pagerAdapter.itemCount - 1, true)
@@ -2680,34 +2669,6 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
         if (isStorageEnabled) onStorageEnabled() else onDocumentEnabled()
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.R)
-    var onRequestScopedStorage = registerForActivityResult(
-        ActivityResultContracts.StartActivityForResult()
-    ) {
-        if (Environment.isExternalStorageManager()) {
-            settings?.browserRootDocument = null
-            settings?.notifyChanges()
-            onStorageEnabled()
-        } else {
-            onDocumentEnabled()
-        }
-    }
-
-    @RequiresApi(api = Build.VERSION_CODES.R)
-    fun requestScopedStorage() {
-        try {
-            val intent = Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION)
-            try {
-                intent.data = Uri.parse(String.format("package:%s", packageName))
-            } catch (e: Exception) {
-                intent.action = Settings.ACTION_MANAGE_ALL_FILES_ACCESS_PERMISSION
-            }
-            onRequestScopedStorage.launch(intent)
-        } catch (anf: ActivityNotFoundException) {
-            onDocumentEnabled()
-        }
-    }
-
     @RequiresApi(api = Build.VERSION_CODES.O)
     val onRequestInstall = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
@@ -2790,6 +2751,10 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
 
     private fun setScrollListener(listener: ScrollListener?) {
         this.listener = listener
+    }
+
+    private fun removeScrollListener() {
+        this.listener = null
     }
 
     interface ScrollListener {

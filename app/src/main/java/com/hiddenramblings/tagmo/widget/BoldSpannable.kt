@@ -4,13 +4,12 @@ import android.graphics.Typeface
 import android.text.Spannable
 import android.text.SpannableStringBuilder
 import android.text.style.StyleSpan
-import java.util.*
 
 class BoldSpannable {
     fun indexOf(text: String, query: String?): SpannableStringBuilder {
         val str = SpannableStringBuilder(text)
         if (query.isNullOrEmpty()) return str
-        val lower = text.lowercase(Locale.getDefault())
+        val lower = text.lowercase()
         var j = 0
         while (j < lower.length) {
             val i = lower.indexOf(query, j)

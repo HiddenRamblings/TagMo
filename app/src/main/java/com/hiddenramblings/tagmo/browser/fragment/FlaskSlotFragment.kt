@@ -21,6 +21,7 @@ import androidx.appcompat.widget.*
 import androidx.cardview.widget.CardView
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.view.isGone
+import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
@@ -176,12 +177,14 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
                                     it.setFlaskAmiibo(flaskAmiibos)
                                     withContext(Dispatchers.Main) {
                                         dismissSnackbarNotice(true)
-                                        flaskContent?.adapter = it
-                                        if (currentCount > 0) {
-                                            activeAmiibo
-                                            it.notifyItemRangeInserted(0, currentCount)
-                                        } else {
-                                            amiiboTile?.visibility = View.INVISIBLE
+                                    }
+                                    flaskContent?.adapter = it
+                                    if (currentCount > 0) {
+                                        activeAmiibo
+                                        it.notifyItemRangeInserted(0, currentCount)
+                                    } else {
+                                        withContext(Dispatchers.Main) {
+                                            amiiboTile?.isInvisible = true
                                             flaskButtonState
                                         }
                                     }
@@ -349,12 +352,14 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
                                     it.setFlaskAmiibo(flaskAmiibos)
                                     withContext(Dispatchers.Main) {
                                         dismissSnackbarNotice(true)
-                                        flaskContent?.adapter = it
-                                        if (currentCount > 0) {
-                                            it.notifyItemRangeInserted(0, currentCount)
-                                            onPuckActiveChanged(active)
-                                        } else {
-                                            amiiboTile?.visibility = View.INVISIBLE
+                                    }
+                                    flaskContent?.adapter = it
+                                    if (currentCount > 0) {
+                                        it.notifyItemRangeInserted(0, currentCount)
+                                        onPuckActiveChanged(active)
+                                    } else {
+                                        withContext(Dispatchers.Main) {
+                                            amiiboTile?.isInvisible = true
                                             flaskButtonState
                                         }
                                     }
@@ -643,21 +648,18 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
                     switchMenuOptions?.isGone = true
                     slotOptionsMenu?.isGone = true
                     writeSlotsLayout?.isGone = true
-                    flaskContent?.requestLayout()
                 }
                 SHEET.AMIIBO -> {
                     amiiboCard?.isVisible = true
                     switchMenuOptions?.isVisible = true
                     slotOptionsMenu?.isGone = true
                     writeSlotsLayout?.isGone = true
-                    flaskContent?.requestLayout()
                 }
                 SHEET.MENU -> {
                     amiiboCard?.isGone = true
                     switchMenuOptions?.isVisible = true
                     slotOptionsMenu?.isVisible = true
                     writeSlotsLayout?.isGone = true
-                    flaskContent?.requestLayout()
                 }
                 SHEET.WRITE -> {
                     bottomSheet?.isFitToContents = false
@@ -665,7 +667,6 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
                     switchMenuOptions?.isGone = true
                     slotOptionsMenu?.isGone = true
                     writeSlotsLayout?.isVisible = true
-                    flaskContent?.requestLayout()
                 }
             }
         }
@@ -733,24 +734,24 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
             if (amiiboView === amiiboTile) amiiboView.isVisible = true
             if (null == active) {
                 txtName.setText(R.string.no_tag_loaded)
-                txtTagId!!.visibility = View.INVISIBLE
-                txtAmiiboSeries.visibility = View.INVISIBLE
-                txtAmiiboType.visibility = View.INVISIBLE
-                txtGameSeries.visibility = View.INVISIBLE
-                if (amiiboView === amiiboCard) txtUsageLabel.visibility = View.INVISIBLE
+                txtTagId?.isInvisible = true
+                txtAmiiboSeries.isInvisible = true
+                txtAmiiboType.isInvisible = true
+                txtGameSeries.isInvisible = true
+                if (amiiboView === amiiboCard) txtUsageLabel.isInvisible = true
             } else if (active is FlaskTag) {
                 txtName.setText(R.string.blank_tag)
-                txtTagId!!.visibility = View.INVISIBLE
-                txtAmiiboSeries.visibility = View.INVISIBLE
-                txtAmiiboType.visibility = View.INVISIBLE
-                txtGameSeries.visibility = View.INVISIBLE
-                if (amiiboView === amiiboCard) txtUsageLabel.visibility = View.INVISIBLE
+                txtTagId?.isInvisible = true
+                txtAmiiboSeries.isInvisible = true
+                txtAmiiboType.isInvisible = true
+                txtGameSeries.isInvisible = true
+                if (amiiboView === amiiboCard) txtUsageLabel.isInvisible = true
             } else {
-                txtTagId!!.visibility = View.VISIBLE
-                txtAmiiboSeries.visibility = View.VISIBLE
-                txtAmiiboType.visibility = View.VISIBLE
-                txtGameSeries.visibility = View.VISIBLE
-                if (amiiboView === amiiboCard) txtUsageLabel.visibility = View.VISIBLE
+                txtTagId?.isInvisible = false
+                txtAmiiboSeries.isInvisible = false
+                txtAmiiboType.isInvisible = false
+                txtGameSeries.isInvisible = false
+                if (amiiboView === amiiboCard) txtUsageLabel.isInvisible = false
                 amiiboHexId = Amiibo.idToHex(active.id)
                 amiiboName = active.name
                 amiiboImageUrl = active.imageUrl
@@ -768,7 +769,7 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
             imageAmiibo?.let {
                 if (amiiboView === amiiboCard && null == amiiboImageUrl) {
                     it.setImageResource(0)
-                    it.visibility = View.INVISIBLE
+                    it.isInvisible = true
                 } else if (amiiboView !== amiiboTile || null != amiiboImageUrl) {
                     if (amiiboView === amiiboCard) {
                         it.setImageResource(0)

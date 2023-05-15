@@ -7,8 +7,6 @@ import android.os.Parcelable
 import android.text.Spanned
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.text.HtmlCompat
-import com.github.anrwatchdog.ANRError
-import com.github.anrwatchdog.ANRWatchDog
 import com.hiddenramblings.tagmo.eightbit.content.ScaledContext
 import com.hiddenramblings.tagmo.eightbit.io.Debug
 import com.hiddenramblings.tagmo.eightbit.os.Version
@@ -28,10 +26,6 @@ inline fun <reified T : Parcelable> Intent.parcelableArrayList(key: String): Arr
 }
 
 class TagMo : Application() {
-    private val isWatchingANR = !BuildConfig.GOOGLE_PLAY
-    private fun isUncaughtANR(error: Throwable): Boolean {
-        return error.cause?.cause is ANRError
-    }
 
     fun setThemePreference() {
         when (Preferences(applicationContext).applicationTheme()) {
@@ -56,17 +50,7 @@ class TagMo : Application() {
         super.onCreate()
         AppCompatDelegate.setCompatVectorFromResourcesEnabled(true)
         if (BuildConfig.WEAR_OS) appContext.setTheme(R.style.AppTheme)
-        if (isWatchingANR) {
-            ANRWatchDog(20000).setANRListener { error: ANRError ->
-                val exception = StringWriter()
-                error.printStackTrace(PrintWriter(exception))
-                try {
-                    Debug.processException(this, exception.toString())
-                } catch (ignored: Exception) { }
-            }.start()
-        }
         Thread.setDefaultUncaughtExceptionHandler { _: Thread?, error: Throwable ->
-            if (isWatchingANR && isUncaughtANR(error)) return@setDefaultUncaughtExceptionHandler
             val exception = StringWriter()
             error.printStackTrace(PrintWriter(exception))
             try {

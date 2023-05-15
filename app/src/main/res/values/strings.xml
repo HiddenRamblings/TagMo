@@ -279,8 +279,6 @@
     <string name="document_storage_root">Update Document Storage</string>
     <string name="emulated_storage_root">Browse Emulated Storage</string>
     <string name="physical_storage_root">Browse Physical Storage</string>
-    <string name="grant_file_permission">Enable "All Files" Manager</string>
-    <string name="force_document_storage">Enable Document Storage</string>
     <string name="refresh_browser">Refresh Browser</string>
 
     <string name="hint_filename">Set Binary File Name</string>

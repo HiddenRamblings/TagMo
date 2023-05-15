@@ -31,14 +31,12 @@ android {
     productFlavors {
         github {
             dimension "source"
-            manifestPlaceholders.storagePermission = "android.permission.MANAGE_EXTERNAL_STORAGE"
             manifestPlaceholders.installPermission = "android.permission.REQUEST_INSTALL_PACKAGES"
             buildConfigField "boolean", "GOOGLE_PLAY", "false"
         }
         google {
             dimension "source"
             isDefault true
-            manifestPlaceholders.storagePermission = "com.hiddenramblings.tagmo.BROWSER"
             manifestPlaceholders.installPermission = "com.hiddenramblings.tagmo.UPDATING"
             buildConfigField "boolean", "GOOGLE_PLAY", "true"
         }
@@ -141,7 +139,6 @@ dependencies {
     kapt 'com.github.bumptech.glide:compiler:4.15.1'
 
     implementation 'com.github.8bitdream:AndroidFastScroll:bc9a2b7b6f'
-    implementation 'com.github.8bitDream:ANR-WatchDog:b4b676ca7c'
     implementation 'com.github.8bitDream:NumberPicker:80b06ed3ba'
 
     implementation 'com.google.android.flexbox:flexbox:3.0.0'

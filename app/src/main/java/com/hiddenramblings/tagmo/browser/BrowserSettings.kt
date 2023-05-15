@@ -93,15 +93,18 @@ open class BrowserSettings : Parcelable {
 
     constructor(
         amiiboFiles: ArrayList<AmiiboFile>, folders: ArrayList<File>,
-        browserFolder: File?, query: String?, sort: Int, filterCharacter: String?,
-        filterGameSeries: String?, filterAmiiboSeries: String?, filterAmiiboType: String?,
-        filterGameTitles: String?, browserAmiiboView: Int, browserPageTransformer: Int,
+        browserFolder: File?, browserDocument: Uri?,
+        query: String?, sort: Int, filterCharacter: String?,
+        filterGameSeries: String?, filterAmiiboSeries: String?,
+        filterAmiiboType: String?, filterGameTitles: String?,
+        browserAmiiboView: Int, browserPageTransformer: Int,
         imageNetworkSettings: String?, recursiveFolders: Boolean,
         lastUpdatedAPI: String?, lastUpdatedGit: Long
     ) : super() {
         this.amiiboFiles.addAll(amiiboFiles)
         this.folders.addAll(folders)
         this.browserRootFolder = browserFolder
+        this.browserRootDocument = browserDocument
         this.query = query
         this.sort = sort
         this.filterCharacter = filterCharacter

@@ -355,7 +355,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
             unfixedSpan = ForegroundColorSpan(Color.RED)
         }
         val unfixedBuilder = SpannableStringBuilder(unfixedText)
-        if (unfixedBuilder.isNotEmpty()) {
+        if (unfixedText.isNotEmpty()) {
             unfixedBuilder.setSpan(
                 unfixedSpan, 0, unfixedText.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
             )
@@ -370,7 +370,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
             fixedSpan = ForegroundColorSpan(Color.RED)
         }
         val fixedBuilder = SpannableStringBuilder(fixedText)
-        if (fixedBuilder.isNotEmpty()) {
+        if (fixedText.isNotEmpty()) {
             fixedBuilder.setSpan(
                 fixedSpan, 0, fixedText.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
             )

@@ -55,7 +55,7 @@ class GlideTagModule : AppGlideModule() {
         builder.setLogLevel(Log.ERROR)
         builder.setDefaultRequestOptions(onlyRetrieveFromCache(
             context.applicationContext,
-            RequestOptions().diskCacheStrategy(DiskCacheStrategy.RESOURCE)
+            RequestOptions().diskCacheStrategy(DiskCacheStrategy.ALL)
         ))
     }
 

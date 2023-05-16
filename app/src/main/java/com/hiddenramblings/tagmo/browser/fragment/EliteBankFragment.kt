@@ -57,6 +57,7 @@ import com.hiddenramblings.tagmo.nfctech.NfcActivity
 import com.hiddenramblings.tagmo.nfctech.TagArray
 import com.hiddenramblings.tagmo.widget.Toasty
 import com.shawnlin.numberpicker.NumberPicker
+import com.shawnlin.numberpicker.NumberPicker.OnScrollListener.SCROLL_STATE_IDLE
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -228,11 +229,8 @@ class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
         bankAdapter = EliteBankAdapter(settings, this)
         eliteContent?.adapter = bankAdapter
         settings.addChangeListener(bankAdapter)
-        eliteBankCount.setOnValueChangedListener { _, oldVal, newVal ->
-            if (newVal != oldVal) {
-                writeOpenBanks?.text = getString(R.string.write_banks, newVal)
-                eraseOpenBanks?.text = getString(R.string.erase_banks, newVal)
-            }
+        eliteBankCount.setOnValueChangedListener { _, _, newVal ->
+            updateNumberedText(newVal)
         }
         if (settings.amiiboView == BrowserSettings.VIEW.IMAGE.value)
             amiiboFilesView?.layoutManager = GridLayoutManager(activity, activity.columnCount)
@@ -339,6 +337,11 @@ class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
                 }.show()
         }
         onBottomSheetChanged(SHEET.LOCKED)
+    }
+
+    private fun updateNumberedText(number: Int) {
+        writeOpenBanks?.text = getString(R.string.write_banks, number)
+        eraseOpenBanks?.text = getString(R.string.erase_banks, number)
     }
 
     private fun updateEliteAdapter(amiiboList: ArrayList<String>?) {
@@ -948,8 +951,7 @@ class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
             bankStats?.text = getString(
                 R.string.bank_stats, getValueForPosition(eliteBankCount, activeBank), bankCount
             )
-            writeOpenBanks?.text = getString(R.string.write_banks, bankCount)
-            eraseOpenBanks?.text = getString(R.string.erase_banks, bankCount)
+            updateNumberedText(bankCount)
         } catch (ignored: Exception) {
             if (amiibos.isEmpty()) onBottomSheetChanged(SHEET.LOCKED)
         }

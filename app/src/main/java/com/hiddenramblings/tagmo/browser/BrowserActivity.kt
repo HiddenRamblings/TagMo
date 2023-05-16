@@ -2477,9 +2477,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
     }
 
     private fun hideActionButton() {
-        with (nfcFab.layoutParams as CoordinatorLayout.LayoutParams) {
-            (behavior as? FloatingActionButton.Behavior)?.isAutoHideEnabled = false
-        }
+        (nfcFab.behavior as? FloatingActionButton.Behavior)?.isAutoHideEnabled = false
         nfcFab.hide()
     }
 
@@ -2490,9 +2488,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
 
     private fun showActionButton() {
         nfcFab.show()
-        with (nfcFab.layoutParams as CoordinatorLayout.LayoutParams) {
-            (behavior as? FloatingActionButton.Behavior)?.isAutoHideEnabled = true
-        }
+        (nfcFab.behavior as? FloatingActionButton.Behavior)?.isAutoHideEnabled = true
     }
 
     private fun showBrowserInterface() {

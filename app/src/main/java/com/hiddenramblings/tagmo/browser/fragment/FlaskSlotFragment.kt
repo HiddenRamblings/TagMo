@@ -150,8 +150,11 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
                         }
 
                         override fun onFlaskStatusChanged(jsonObject: JSONObject?) {
-                            if (processDialog?.isShowing == true)
-                                processDialog?.dismiss()
+                            CoroutineScope(Dispatchers.Main).launch {
+                                processDialog?.let {
+                                    if (it.isShowing) it.dismiss()
+                                }
+                            }
                             deviceAmiibo
                         }
 
@@ -256,7 +259,9 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
 
                         override fun onFlaskProcessFinish() {
                             CoroutineScope(Dispatchers.Main).launch {
-                                if (processDialog?.isShowing == true) processDialog?.dismiss()
+                                processDialog?.let {
+                                    if (it.isShowing) it.dismiss()
+                                }
                             }
                         }
 
@@ -370,7 +375,9 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
                         override fun onPuckFilesDownload(tagData: ByteArray) {}
                         override fun onPuckProcessFinish() {
                             CoroutineScope(Dispatchers.Main).launch {
-                                if (processDialog?.isShowing == true) processDialog?.dismiss()
+                                processDialog?.let {
+                                    if (it.isShowing) it.dismiss()
+                                }
                             }
                         }
 

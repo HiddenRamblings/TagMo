@@ -94,7 +94,7 @@ class NfcActivity : AppCompatActivity() {
         txtError = findViewById(R.id.txtError)
         imgNfcBar = findViewById(R.id.imgNfcBar)
         imgNfcCircle = findViewById(R.id.imgNfcCircle)
-        bankPicker = findViewById(R.id.number_picker)
+        bankPicker = findViewById(R.id.number_picker_nfc)
         bankTextView = findViewById(R.id.bank_number_details)
 
         configureInterface()

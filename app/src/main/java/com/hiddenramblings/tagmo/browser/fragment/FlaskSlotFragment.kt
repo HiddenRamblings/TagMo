@@ -430,10 +430,8 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
 
             override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap?>?) {
                 imageAmiibo?.let {
-                    if (resource.height > it.height) {
-                        it.maxHeight = bitmapHeight
-                        it.requestLayout()
-                    }
+                    it.maxHeight = bitmapHeight
+                    it.requestLayout()
                     it.setImageBitmap(resource)
                 }
             }
@@ -456,10 +454,8 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
 
             override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap?>?) {
                 imageAmiibo?.let {
-                    if (resource.height > it.height) {
-                        it.maxHeight = bitmapHeight
-                        it.requestLayout()
-                    }
+                    it.maxHeight = bitmapHeight
+                    it.requestLayout()
                     it.setImageBitmap(resource)
                     it.isVisible = true
                 }
@@ -478,7 +474,7 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
         slotOptionsMenu = rootLayout.findViewById(R.id.slot_options_menu)
         val writeFile = rootLayout.findViewById<AppCompatButton>(R.id.write_slot_file)
         createBlank = rootLayout.findViewById(R.id.create_blank)
-        flaskSlotCount = rootLayout.findViewById(R.id.number_picker)
+        flaskSlotCount = rootLayout.findViewById(R.id.number_picker_slot)
         flaskSlotCount.maxValue = maxSlotCount
         screenOptions = rootLayout.findViewById(R.id.screen_options)
         writeSlots = rootLayout.findViewById(R.id.write_slot_count)
@@ -486,7 +482,7 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
         writeSerials = rootLayout.findViewById(R.id.write_serial_fill)
         eraseSlots = rootLayout.findViewById(R.id.erase_slot_count)
         eraseSlots?.text = getString(R.string.erase_slots, 0)
-        writeSlotsLayout = rootLayout.findViewById(R.id.write_list_layout)
+        writeSlotsLayout = rootLayout.findViewById(R.id.write_list_slots)
         if (prefs.softwareLayer())
             writeSlotsLayout?.setLayerType(View.LAYER_TYPE_SOFTWARE, null)
         val amiiboFilesView = rootLayout.findViewById<RecyclerView>(R.id.amiibo_files_list)
@@ -494,7 +490,7 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
             amiiboFilesView.setLayerType(View.LAYER_TYPE_SOFTWARE, null)
         amiiboFilesView.setHasFixedSize(true)
         val toggle = rootLayout.findViewById<AppCompatImageView>(R.id.toggle)
-        bottomSheet = BottomSheetBehavior.from(rootLayout.findViewById(R.id.bottom_sheet)).apply {
+        bottomSheet = BottomSheetBehavior.from(rootLayout.findViewById(R.id.bottom_sheet_slot)).apply {
             state = BottomSheetBehavior.STATE_COLLAPSED
             addBottomSheetCallback(object : BottomSheetCallback() {
                 override fun onStateChanged(bottomSheet: View, newState: Int) {
@@ -508,13 +504,13 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
                 }
 
                 override fun onSlide(view: View, slideOffset: Float) {
-                    val mainLayout = rootLayout.findViewById<ViewGroup>(R.id.flask_content)
-                    if (mainLayout.bottom >= view.top) {
-                        val bottomHeight: Int = (view.measuredHeight - bottomSheet!!.peekHeight)
-                        mainLayout.setPadding(
-                            0, 0, 0,
-                            if (slideOffset > 0) (bottomHeight * slideOffset).toInt() else 0
-                        )
+                    flaskContent?.let {
+                        if (it.bottom >= view.top) {
+                            val bottomHeight: Int = (view.measuredHeight - peekHeight)
+                            it.setPadding(0, 0, 0, if (slideOffset > 0)
+                                    (bottomHeight * slideOffset).toInt() else 0
+                            )
+                        }
                     }
                 }
             })
@@ -1085,7 +1081,8 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
 
     private fun setBottomSheetHidden(hidden: Boolean) {
         bottomSheet?.isHideable = hidden
-        if (hidden) bottomSheet?.state = BottomSheetBehavior.STATE_HIDDEN
+        if (hidden)
+            bottomSheet?.state = BottomSheetBehavior.STATE_HIDDEN
     }
 
     private fun dismissSnackbarNotice(finite: Boolean = false) {

@@ -29,7 +29,7 @@
     </LinearLayout>
 
     <LinearLayout
-        android:id="@+id/bottom_sheet"
+        android:id="@+id/bottom_sheet_bank"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="?attr/colorPrimaryDark"
@@ -164,7 +164,24 @@
                     android:text="@string/erase_banks" />
             </LinearLayout>
 
-            <include layout="@layout/number_picker"/>
+            <com.shawnlin.numberpicker.NumberPicker
+                android:id="@+id/number_picker_bank"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="8dp"
+                android:layout_marginRight="8dp"
+                android:background="@drawable/picker_border_elite"
+                app:np_min="1"
+                app:np_max="200"
+                app:np_value="1"
+                app:np_selectedTextColor="@android:color/white"
+                app:np_textColor="@android:color/white"
+                app:np_dividerThickness="4dp"
+                app:np_dividerColor="@color/backgroundWhite"
+                app:np_dividerDistance="120dp"
+                app:np_fadingEdgeEnabled="true"
+                app:np_wrapSelectorWheel="true"
+                app:np_orientation="horizontal"/>
 
             <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/edit_bank_count"
@@ -184,8 +201,32 @@
             android:textOff="@string/view_device_options"
             android:textOn="@string/view_amiibo_details"/>
 
-        <include
-            layout="@layout/write_list_layout"
-            android:id="@+id/write_list_layout" />
+        <LinearLayout
+            android:id="@+id/write_list_banks"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="-4dp"
+            android:layout_marginBottom="16dp"
+            android:orientation="vertical"
+            android:visibility="gone" >
+
+            <androidx.appcompat.widget.SearchView
+                android:id="@+id/amiibo_search"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/button_height_min"
+                android:layout_marginRight="2dp"
+                android:layout_marginEnd="2dp"
+                android:lineSpacingExtra="0dp"
+                android:lineSpacingMultiplier="0" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/amiibo_files_list"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:clipToPadding="false"
+                android:paddingBottom="@dimen/recyclerview_padding"
+                android:background="?attr/colorPrimaryDark"
+                android:scrollbars="vertical" />
+        </LinearLayout>
     </LinearLayout>
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

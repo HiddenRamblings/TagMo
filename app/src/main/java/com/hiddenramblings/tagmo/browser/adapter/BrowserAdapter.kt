@@ -159,11 +159,10 @@ class BrowserAdapter(
     override fun onBindViewHolder(holder: AmiiboViewHolder, position: Int) {
         holder.itemView.setOnClickListener { handleClickEvent(holder) }
         holder.imageAmiibo?.setOnClickListener {
-            if (settings.amiiboView == VIEW.IMAGE.value) {
+            if (settings.amiiboView == VIEW.IMAGE.value)
                 handleClickEvent(holder)
-            } else {
+            else
                 holder.listener?.onAmiiboImageClicked(holder.amiiboFile)
-            }
         }
         holder.bind(getItem(holder.bindingAdapterPosition))
     }

@@ -1037,7 +1037,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
         val view = layoutInflater.inflate(R.layout.dialog_duplicator, null)
         val dialog = AlertDialog.Builder(this)
         val copierDialog: Dialog = dialog.setView(view).create()
-        val count = view.findViewById<NumberPicker>(R.id.number_picker)
+        val count = view.findViewById<NumberPicker>(R.id.number_picker_bin)
         view.findViewById<View>(R.id.button_save).setOnClickListener {
             val amiiboList = amiiboFile?.withRandomSerials(keyManager, count.value)
             amiiboList?.indices?.forEach {
@@ -2109,10 +2109,8 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
 
         override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap?>?) {
             imageAmiibo?.let {
-                if (resource.height > bitmapHeight) {
-                    it.maxHeight = bitmapHeight
-                    it.requestLayout()
-                }
+                it.maxHeight = bitmapHeight
+                it.requestLayout()
                 it.setImageBitmap(resource)
                 it.isVisible = true
             }

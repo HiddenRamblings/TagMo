@@ -125,7 +125,7 @@ class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
         eliteContent?.setHasFixedSize(true)
         switchMenuOptions = rootLayout.findViewById(R.id.switch_menu_btn)
         bankOptionsMenu = rootLayout.findViewById(R.id.bank_options_menu)
-        writeBankLayout = rootLayout.findViewById(R.id.write_list_layout)
+        writeBankLayout = rootLayout.findViewById(R.id.write_list_banks)
         if (prefs.softwareLayer())
             writeBankLayout?.setLayerType(View.LAYER_TYPE_SOFTWARE, null)
         amiiboFilesView = rootLayout.findViewById(R.id.amiibo_files_list)
@@ -149,10 +149,8 @@ class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
 
             override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap?>?) {
                 imageAmiibo?.let {
-                    if (resource.height > it.height) {
-                        it.maxHeight = bitmapHeight
-                        it.requestLayout()
-                    }
+                    it.maxHeight = bitmapHeight
+                    it.requestLayout()
                     it.setImageBitmap(resource)
                 }
             }
@@ -175,24 +173,23 @@ class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
 
             override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap?>?) {
                 imageAmiibo?.let {
-                    if (resource.height > it.height) {
-                        it.maxHeight = bitmapHeight
-                        it.requestLayout()
-                    }
+                    it.maxHeight = bitmapHeight
+                    it.requestLayout()
                     it.setImageBitmap(resource)
                     it.isVisible = true
                 }
             }
         }
         bankStats = rootLayout.findViewById(R.id.bank_stats)
-        eliteBankCount = rootLayout.findViewById(R.id.number_picker)
+        eliteBankCount = rootLayout.findViewById(R.id.number_picker_bank)
         writeOpenBanks = rootLayout.findViewById(R.id.write_open_banks)
         writeSerials = rootLayout.findViewById(R.id.write_serial_fill)
         eraseOpenBanks = rootLayout.findViewById(R.id.erase_open_banks)
         settings = activity.settings ?: BrowserSettings().initialize()
         val toggle = rootLayout.findViewById<AppCompatImageView>(R.id.toggle)
-        bottomSheet = BottomSheetBehavior.from(rootLayout.findViewById(R.id.bottom_sheet)).apply {
+        bottomSheet = BottomSheetBehavior.from(rootLayout.findViewById(R.id.bottom_sheet_bank)).apply {
             state = BottomSheetBehavior.STATE_COLLAPSED
+            val mainLayout = rootLayout.findViewById<ViewGroup>(R.id.main_layout)
             addBottomSheetCallback(object : BottomSheetCallback() {
                 override fun onStateChanged(view: View, newState: Int) {
                     if (newState == BottomSheetBehavior.STATE_COLLAPSED) {
@@ -201,19 +198,17 @@ class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
                         toggle.setImageResource(R.drawable.ic_expand_less_24dp)
                     } else if (newState == BottomSheetBehavior.STATE_EXPANDED) {
                         toggle.setImageResource(R.drawable.ic_expand_more_24dp)
+                        eliteContent?.smoothScrollToPosition(clickedPosition)
                     }
                 }
 
                 override fun onSlide(view: View, slideOffset: Float) {
-                    val mainLayout = rootLayout.findViewById<ViewGroup>(R.id.main_layout)
                     if (mainLayout.bottom >= view.top) {
-                        val bottomHeight: Int = (view.measuredHeight - bottomSheet!!.peekHeight)
-                        mainLayout.setPadding(
-                            0, 0, 0,
-                            if (slideOffset > 0) (bottomHeight * slideOffset).toInt() else 0
+                        val bottomHeight: Int = (view.measuredHeight - peekHeight)
+                        mainLayout.setPadding(0, 0, 0, if (slideOffset > 0)
+                                (bottomHeight * slideOffset).toInt() else 0
                         )
                     }
-                    if (slideOffset > 0) eliteContent!!.smoothScrollToPosition(clickedPosition)
                 }
             })
         }.also { bottomSheet ->

@@ -20,7 +20,6 @@ import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.nfc.NfcAdapter
 import android.os.*
-import android.provider.Settings
 import android.text.method.LinkMovementMethod
 import android.util.DisplayMetrics
 import android.view.*
@@ -125,7 +124,6 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
     private var prefsDrawer: DrawerLayout? = null
     private var animationArray: ArrayList<ValueAnimator>? = null
     private var switchStorageRoot: AppCompatButton? = null
-    private var switchStorageType: AppCompatButton? = null
     private var joyConDialog: Dialog? = null
     private var fakeSnackbar: AnimatedLinearLayout? = null
     private var fakeSnackbarText: TextView? = null

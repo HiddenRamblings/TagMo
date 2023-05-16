@@ -279,8 +279,6 @@
     <string name="document_storage_root">更新文件儲存空間</string>
     <string name="emulated_storage_root">瀏覽模擬儲存空間</string>
     <string name="physical_storage_root">瀏覽實體儲存空間</string>
-    <string name="grant_file_permission">啟用 "所有檔案" 管理器</string>
-    <string name="force_document_storage">啟用文件儲存空間</string>
     <string name="refresh_browser">重新整理瀏覽器</string>
 
     <string name="hint_filename">設定二進位檔案名稱</string>

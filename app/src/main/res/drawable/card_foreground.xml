@@ -3,6 +3,7 @@
     <item android:state_enabled="false">
         <shape>
             <solid android:color="#18000000" />
+            <corners android:radius="@dimen/card_radius"/>
         </shape>
     </item>
     <item>

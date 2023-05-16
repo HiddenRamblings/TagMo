@@ -215,8 +215,6 @@
     <string name="document_storage_root">Mettre à jour le stockage &#171;Document&#187;</string>
     <string name="emulated_storage_root">Parcourir stockage &#171;Emulated&#187;</string>
     <string name="physical_storage_root">Parcourir stockage &#171;Physical&#187;</string>
-    <string name="grant_file_permission">Autoriser permission &#171;Fichiers multimédias&#187;</string>
-    <string name="force_document_storage">Activer le stockage &#171;Document&#187;</string>
     <string name="refresh_browser">Actualiser le Navigateur</string>
 
     <string name="prepare_unlock">Une fois que le N2 sera scanné, il ne devra pas être retiré du capteur NFC jusqu’à la fin de l’opération.</string>

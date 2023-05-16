@@ -46,14 +46,11 @@ object Storage : Environment() {
             val reg = "(?i).*vold.*(vfat|ntfs|exfat|fat32|ext3|ext4|fuse|sdfat).*rw.*".toRegex()
             val s = StringBuilder()
             try {
-                val process = ProcessBuilder().command("mount")
-                    .redirectErrorStream(true).start()
+                val process = ProcessBuilder().command("mount").redirectErrorStream(true).start()
                 process.waitFor()
                 val inStream = process.inputStream
                 val buffer = ByteArray(1024)
-                while (inStream.read(buffer) != -1) {
-                    s.append(String(buffer))
-                }
+                while (inStream.read(buffer) != -1) s.append(String(buffer))
                 inStream.close()
                 val lines = s.toString().split("\n").toTypedArray()
                 for (line in lines) {
@@ -61,9 +58,8 @@ object Storage : Environment() {
                     if (line.contains("asec")) continue
                     if (line.matches(reg)) {
                         for (part in line.split(" ".toRegex()).toTypedArray()) {
-                            if (part.startsWith(File.separator) && !part.contains("vold")) out.add(
-                                part
-                            )
+                            if (part.startsWith(File.separator) && !part.contains("vold"))
+                                out.add(part)
                         }
                     }
                 }
@@ -122,8 +118,7 @@ object Storage : Environment() {
             null
         }
         val physical: File? = try {
-            if (storage.size > 1 && null != storage[1] && storage[1]!!.canRead()
-                && !isExternalStorageEmulated(storage[1]!!))
+            if (storage.size > 1 && storage[1].let { it.canRead() && !isExternalStorageEmulated(it) })
                 getRootPath(storage[1])
             else null
         } catch (e: IllegalArgumentException) {

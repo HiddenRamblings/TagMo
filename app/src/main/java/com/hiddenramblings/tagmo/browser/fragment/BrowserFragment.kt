@@ -6,11 +6,15 @@ import android.content.Intent
 import android.content.res.Configuration
 import android.content.res.Resources
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.util.TypedValue
+import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ArrayAdapter
 import android.widget.FrameLayout
 import android.widget.LinearLayout
 import android.widget.TextView
@@ -18,6 +22,7 @@ import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.AppCompatImageView
 import androidx.appcompat.widget.Toolbar
 import androidx.core.view.isGone
 import androidx.core.view.isVisible
@@ -27,9 +32,12 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.google.android.flexbox.FlexboxLayout
+import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.snackbar.Snackbar
 import com.hiddenramblings.tagmo.*
 import com.hiddenramblings.tagmo.amiibo.Amiibo
+import com.hiddenramblings.tagmo.amiibo.AmiiboManager
+import com.hiddenramblings.tagmo.amiibo.Character
 import com.hiddenramblings.tagmo.amiibo.KeyManager
 import com.hiddenramblings.tagmo.amiibo.games.GamesManager.Companion.getGamesManager
 import com.hiddenramblings.tagmo.browser.BrowserActivity
@@ -37,10 +45,12 @@ import com.hiddenramblings.tagmo.browser.BrowserSettings
 import com.hiddenramblings.tagmo.browser.BrowserSettings.BrowserSettingsListener
 import com.hiddenramblings.tagmo.browser.ImageActivity
 import com.hiddenramblings.tagmo.browser.adapter.BrowserAdapter
+import com.hiddenramblings.tagmo.browser.adapter.FoldersAdapter
 import com.hiddenramblings.tagmo.browser.adapter.FoomiiboAdapter
 import com.hiddenramblings.tagmo.browser.adapter.FoomiiboAdapter.OnFoomiiboClickListener
 import com.hiddenramblings.tagmo.eightbit.io.Debug
 import com.hiddenramblings.tagmo.eightbit.material.IconifiedSnackbar
+import com.hiddenramblings.tagmo.eightbit.os.Storage
 import com.hiddenramblings.tagmo.nfctech.Foomiibo
 import com.hiddenramblings.tagmo.nfctech.TagArray
 import com.hiddenramblings.tagmo.widget.ProgressAlert
@@ -68,7 +78,12 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
     private lateinit var directory: File
     private val foomiibo = Foomiibo()
     private lateinit var settings: BrowserSettings
+    var bottomSheet: BottomSheetBehavior<View>? = null
+        private set
+    private var currentFolderView: TextView? = null
     private val resultData: ArrayList<ByteArray> = arrayListOf()
+
+    private val statsHandler = Handler(Looper.getMainLooper())
 
     val onUpdateTagResult = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
@@ -128,7 +143,7 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
                 GridLayoutManager(activity, activity.columnCount)
             else LinearLayoutManager(activity)
             adapter = BrowserAdapter(settings, activity)
-            settings.addChangeListener(adapter as BrowserSettingsListener?)
+            settings.addChangeListener(adapter as? BrowserSettingsListener)
             FastScrollerBuilder(this).build().setPadding(0, (-2).toPx,0,0)
         }
 
@@ -139,9 +154,48 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
                 GridLayoutManager(activity, activity.columnCount)
             else LinearLayoutManager(activity)
             adapter = FoomiiboAdapter(settings, this@BrowserFragment)
-            settings.addChangeListener(adapter as BrowserSettingsListener?)
+            settings.addChangeListener(adapter as? BrowserSettingsListener)
             FastScrollerBuilder(this).build()
         }
+
+        currentFolderView = view.findViewById(R.id.current_folder)
+        val foldersView = view.findViewById<RecyclerView>(R.id.folders_list)
+        foldersView.layoutManager = LinearLayoutManager(requireContext())
+        foldersView.adapter = FoldersAdapter(settings)
+        settings.addChangeListener(foldersView.adapter as? BrowserSettingsListener)
+
+        val toggle = view.findViewById<AppCompatImageView>(R.id.toggle)
+        bottomSheet = BottomSheetBehavior.from(view.findViewById(R.id.bottom_sheet)).apply {
+            state = BottomSheetBehavior.STATE_COLLAPSED
+            addBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback() {
+                override fun onStateChanged(bottomSheet: View, newState: Int) {
+                    if (newState == BottomSheetBehavior.STATE_COLLAPSED) {
+                        toggle.setImageResource(R.drawable.ic_expand_less_white_24dp)
+                    } else if (newState == BottomSheetBehavior.STATE_EXPANDED) {
+                        setFolderText(settings)
+                        toggle.setImageResource(R.drawable.ic_expand_more_white_24dp)
+                    }
+                }
+
+                override fun onSlide(bottomSheet: View, slideOffset: Float) {}
+            })
+        }.also { bottomSheet ->
+            toggle.setOnClickListener {
+                if (bottomSheet.state == BottomSheetBehavior.STATE_COLLAPSED) {
+                    bottomSheet.setState(BottomSheetBehavior.STATE_EXPANDED)
+                } else {
+                    bottomSheet.setState(BottomSheetBehavior.STATE_COLLAPSED)
+                }
+            }
+        }
+
+        val foomiiboOptions = view.findViewById<LinearLayout>(R.id.foomiibo_options)
+            foomiiboOptions.findViewById<View>(R.id.clear_foomiibo_set).setOnClickListener {
+                clearFoomiiboSet(activity)
+            }
+            foomiiboOptions.findViewById<View>(R.id.build_foomiibo_set).setOnClickListener {
+                buildFoomiiboSet(activity)
+            }
 
         view.findViewById<View>(R.id.list_divider).isGone = true
         browserWrapper?.layoutParams?.let { layoutParams ->
@@ -158,7 +212,7 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
                         if (layoutParams.height + y < 0f) {
                             layoutParams.height = 0
                         } else {
-                            val peekHeight = activity.bottomSheetBehavior?.peekHeight ?: 0
+                            val peekHeight = bottomSheet?.peekHeight ?: 0
                             val minHeight = peekHeight + v.height + requireContext().resources
                                 .getDimension(R.dimen.sliding_bar_margin)
                             if (layoutParams.height > view.height - minHeight.toInt())
@@ -196,11 +250,167 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
         }
     }
 
+    val managerStats: Unit
+        get() {
+            val characterStats = requireView().findViewById<TextView>(R.id.stats_character)
+            val amiiboTypeStats = requireView().findViewById<TextView>(R.id.stats_amiibo_type)
+            val amiiboTitleStats = requireView().findViewById<TextView>(R.id.stats_amiibo_titles)
+            val amiiboManager = settings.amiiboManager
+            val hasAmiibo = null != amiiboManager
+            val foomiiboStats = requireView().findViewById<TextView>(R.id.divider_text)
+            foomiiboStats.text = getString(
+                    R.string.number_foomiibo, if (hasAmiibo) amiiboManager!!.amiibos.size else 0
+                )
+            characterStats.text = getString(
+                R.string.number_character,
+                if (hasAmiibo) amiiboManager!!.characters.size else 0
+            )
+            amiiboTypeStats.text = getString(
+                R.string.number_type,
+                if (hasAmiibo) amiiboManager!!.amiiboTypes.size else 0
+            )
+            if (hasAmiibo) {
+                characterStats.setOnClickListener {
+                    val items: java.util.ArrayList<Character> = arrayListOf()
+                    amiiboManager?.characters?.values?.forEach {
+                        if (!items.contains(it)) items.add(it)
+                    }
+                    items.sort()
+                    AlertDialog.Builder(requireContext())
+                        .setTitle(R.string.pref_amiibo_characters)
+                        .setAdapter(object : ArrayAdapter<Character>(
+                            requireContext(), android.R.layout.simple_list_item_2,
+                            android.R.id.text1, items
+                        ) {
+                            override fun getView(
+                                position: Int, convertView: View?, parent: ViewGroup
+                            ): View {
+                                val view = super.getView(position, convertView, parent)
+                                val text1 = view.findViewById<TextView>(android.R.id.text1)
+                                val text2 = view.findViewById<TextView>(android.R.id.text2)
+                                val character = getItem(position)
+                                text1.text = character!!.name
+                                val gameSeries = character.gameSeries
+                                text2.text = gameSeries?.name ?: ""
+                                return view
+                            }
+                        }, null)
+                        .setPositiveButton(R.string.close, null)
+                        .show()
+                }
+                amiiboTypeStats.setOnClickListener {
+                    val amiiboTypes = java.util.ArrayList(
+                        amiiboManager!!.amiiboTypes.values
+                    )
+                    amiiboTypes.sort()
+                    val items: java.util.ArrayList<String> = arrayListOf()
+                    amiiboTypes.forEach {
+                        if (!items.contains(it.name)) items.add(it.name)
+                    }
+                    android.app.AlertDialog.Builder(requireContext())
+                        .setTitle(R.string.pref_amiibo_types)
+                        .setAdapter(
+                            ArrayAdapter(
+                                requireContext(), android.R.layout.simple_list_item_1, items
+                        ), null)
+                        .setPositiveButton(R.string.close, null)
+                        .show()
+                }
+            }
+            val gamesManager = settings.gamesManager
+            val hasGames = null != amiiboManager
+            amiiboTitleStats.text = getString(
+                R.string.number_titles, if (hasGames) gamesManager?.gameTitles?.size else 0
+            )
+            if (hasGames) {
+                amiiboTitleStats.setOnClickListener {
+                    val items: java.util.ArrayList<String> = arrayListOf()
+                    gamesManager?.gameTitles?.forEach {
+                        if (!items.contains(it.name)) items.add(it.name)
+                    }
+                    items.sort()
+                    AlertDialog.Builder(requireContext())
+                        .setTitle(R.string.pref_amiibo_titles)
+                        .setAdapter(
+                            ArrayAdapter(
+                                requireContext(), android.R.layout.simple_list_item_1, items
+                        ), null)
+                        .setPositiveButton(R.string.close, null)
+                        .show()
+                }
+            }
+        }
+
+    private fun getAdapterStats(amiiboManager: AmiiboManager): IntArray {
+        if (browserContent?.adapter is BrowserAdapter) {
+            val adapter = browserContent?.adapter as BrowserAdapter
+            val count = amiiboManager.amiibos.values.count { adapter.hasItem(it.id) }
+            return intArrayOf(adapter.itemCount, count)
+        }
+        return intArrayOf(0, 0)
+    }
+
+    fun setAmiiboStats() {
+        statsHandler.removeCallbacksAndMessages(null)
+        val activity = requireActivity() as BrowserActivity
+        CoroutineScope(Dispatchers.Main).launch {
+            currentFolderView?.run {
+                val size = settings.amiiboFiles.size
+                if (size <= 0) return@run
+                gravity = Gravity.CENTER
+                settings.amiiboManager?.let {
+                    var count = 0
+                    if (!settings.query.isNullOrEmpty()) {
+                        val stats = getAdapterStats(it)
+                        text = getString(
+                            R.string.amiibo_collected,
+                            stats[0], stats[1], activity.getQueryCount(settings.query)
+                        )
+                    } else if (!settings.isFilterEmpty) {
+                        val stats = getAdapterStats(it)
+                        text = getString(
+                            R.string.amiibo_collected,
+                            stats[0], stats[1], activity.filteredCount
+                        )
+                    } else {
+                        it.amiibos.values.forEach { amiibo ->
+                            settings.amiiboFiles.forEach { amiiboFile ->
+                                if (amiibo.id == amiiboFile?.id) count += 1
+                            }
+                        }
+                        text = getString(
+                            R.string.amiibo_collected,
+                            size, count, it.amiibos.size
+                        )
+                    }
+                } ?: size.let {
+                    text = getString(R.string.files_displayed, it)
+                }
+            }
+        }
+    }
+
+    fun setFolderText(textSettings: BrowserSettings?) {
+        textSettings?.also {
+            val relativePath: String = if (prefs.isDocumentStorage) {
+                Storage.getRelativeDocument(it.browserRootDocument)
+            } else {
+                val rootFolder = it.browserRootFolder
+                val relativeRoot = Storage.getRelativePath(
+                    rootFolder, prefs.preferEmulated()
+                )
+                relativeRoot.ifEmpty { rootFolder?.absolutePath ?: "" }
+            }
+            currentFolderView?.gravity = Gravity.CENTER_VERTICAL
+            currentFolderView?.text = relativePath
+            statsHandler.postDelayed({ setAmiiboStats() }, 3000)
+        } ?: setAmiiboStats()
+    }
+
     fun setFoomiiboVisibility() {
         if (null == view) return
-        val activity = requireActivity() as BrowserActivity
         val divider = requireView().findViewById<View>(R.id.list_divider)
-        val peekHeight = activity.bottomSheetBehavior?.peekHeight ?: 0
+        val peekHeight = bottomSheet?.peekHeight ?: 0
         val minHeight = (peekHeight + divider.height + requireContext().resources
             .getDimension(R.dimen.sliding_bar_margin))
         browserWrapper?.layoutParams?.let {
@@ -273,7 +483,7 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
         } catch (e: Exception) { Toasty(requireContext()).Short(R.string.delete_virtual) }
     }
 
-    fun clearFoomiiboSet(activity: AppCompatActivity) {
+    private fun clearFoomiiboSet(activity: AppCompatActivity) {
         val dialog = ProgressAlert.show(activity, "")
         CoroutineScope(Dispatchers.IO).launch(Dispatchers.IO) {
             deleteDir(dialog, directory)
@@ -312,7 +522,7 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
         } catch (e: Exception) { Debug.warn(e) }
     }
 
-    fun buildFoomiiboSet(activity: AppCompatActivity) {
+    private fun buildFoomiiboSet(activity: AppCompatActivity) {
         try {
             settings.amiiboManager?.let { amiiboManager ->
                 val dialog = ProgressAlert.show(activity, "")

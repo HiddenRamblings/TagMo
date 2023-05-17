@@ -240,7 +240,7 @@
     <string name="pref_page_transformer">Page Transformation</string>
     <string name="page_transformer_details">Configure the transition animation when navigating pages</string>
     <string name="pref_software_layer">Force Software Layer</string>
-    <string name="software_layer_details">Rendering lists with GPU may cause bugs on Chinese firmware</string>
+    <string name="software_layer_details">Rendering with GPU may cause lag in overlapping ScrollViews</string>
     <string name="pref_tagmo_theme">TagMo System Theme</string>
     <string name="tagmo_theme_details">Change local theme independent of system theme settings</string>
     <string name="pref_disable_debug">Disable Debug Logger</string>

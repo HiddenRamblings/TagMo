@@ -229,7 +229,7 @@ class Preferences(context: Context) {
 
     private val softwareLayer = "settings_software_layer"
     fun softwareLayer(): Boolean {
-        return getBoolean(softwareLayer, Debug.isOxygenOS)
+        return getBoolean(softwareLayer, true)
     }
 
     fun softwareLayer(value: Boolean) {

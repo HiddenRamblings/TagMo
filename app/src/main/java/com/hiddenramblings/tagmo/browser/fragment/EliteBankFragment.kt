@@ -39,6 +39,7 @@ import com.hiddenramblings.tagmo.GlideApp
 import com.hiddenramblings.tagmo.NFCIntent
 import com.hiddenramblings.tagmo.Preferences
 import com.hiddenramblings.tagmo.R
+import com.hiddenramblings.tagmo.TagMo
 import com.hiddenramblings.tagmo.amiibo.Amiibo
 import com.hiddenramblings.tagmo.amiibo.AmiiboFile
 import com.hiddenramblings.tagmo.amiibo.AmiiboManager.getAmiiboManager
@@ -57,7 +58,6 @@ import com.hiddenramblings.tagmo.nfctech.NfcActivity
 import com.hiddenramblings.tagmo.nfctech.TagArray
 import com.hiddenramblings.tagmo.widget.Toasty
 import com.shawnlin.numberpicker.NumberPicker
-import com.shawnlin.numberpicker.NumberPicker.OnScrollListener.SCROLL_STATE_IDLE
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -67,10 +67,9 @@ import java.io.IOException
 import java.text.ParseException
 
 class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
-    private val prefs: Preferences by lazy { Preferences(requireContext().applicationContext) }
-    private val keyManager: KeyManager by lazy { KeyManager(requireContext()) }
+    private val prefs: Preferences by lazy { Preferences(TagMo.appContext) }
+    private val keyManager: KeyManager by lazy { KeyManager(TagMo.appContext) }
 
-    private lateinit var rootLayout: CoordinatorLayout
     var eliteContent: RecyclerView? = null
         private set
     private var bankOptionsMenu: LinearLayout? = null
@@ -118,99 +117,160 @@ class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        rootLayout = view as CoordinatorLayout
+
         val activity = requireActivity() as BrowserActivity
-        eliteContent = rootLayout.findViewById(R.id.elite_content)
-        if (prefs.softwareLayer())
-            eliteContent?.setLayerType(View.LAYER_TYPE_SOFTWARE, null)
-        eliteContent?.setHasFixedSize(true)
-        switchMenuOptions = rootLayout.findViewById(R.id.switch_menu_btn)
-        bankOptionsMenu = rootLayout.findViewById(R.id.bank_options_menu)
-        writeBankLayout = rootLayout.findViewById(R.id.write_list_banks)
-        if (prefs.softwareLayer())
-            writeBankLayout?.setLayerType(View.LAYER_TYPE_SOFTWARE, null)
-        amiiboFilesView = rootLayout.findViewById(R.id.amiibo_files_list)
-        if (prefs.softwareLayer())
-            amiiboFilesView?.setLayerType(View.LAYER_TYPE_SOFTWARE, null)
-        amiiboFilesView?.setHasFixedSize(true)
-        securityOptions = rootLayout.findViewById(R.id.security_options)
-        amiiboTile = rootLayout.findViewById(R.id.active_tile_layout)
-        amiiboCard = rootLayout.findViewById(R.id.active_card_layout)
-        toolbar = rootLayout.findViewById(R.id.toolbar)
-        val bitmapHeight = Resources.getSystem().displayMetrics.heightPixels / 4
-        amiiboTileTarget = object : CustomTarget<Bitmap?>() {
-            val imageAmiibo = amiiboTile?.findViewById<AppCompatImageView>(R.id.imageAmiibo)
-            override fun onLoadFailed(errorDrawable: Drawable?) {
-                imageAmiibo?.setImageResource(R.drawable.ic_no_image_60)
-            }
 
-            override fun onLoadCleared(placeholder: Drawable?) {
-                imageAmiibo?.setImageResource(R.drawable.ic_no_image_60)
-            }
-
-            override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap?>?) {
-                imageAmiibo?.let {
-                    it.maxHeight = bitmapHeight
-                    it.requestLayout()
-                    it.setImageBitmap(resource)
-                }
-            }
-        }
-        amiiboCardTarget = object : CustomTarget<Bitmap?>() {
-            val imageAmiibo = amiiboCard?.findViewById<AppCompatImageView>(R.id.imageAmiibo)
-            override fun onLoadFailed(errorDrawable: Drawable?) {
-                imageAmiibo?.let {
-                    it.setImageResource(0)
-                    it.isGone = true
-                }
-            }
-
-            override fun onLoadCleared(placeholder: Drawable?) {
-                imageAmiibo?.let {
-                    it.setImageResource(0)
-                    it.isGone = true
-                }
-            }
-
-            override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap?>?) {
-                imageAmiibo?.let {
-                    it.maxHeight = bitmapHeight
-                    it.requestLayout()
-                    it.setImageBitmap(resource)
-                    it.isVisible = true
-                }
-            }
-        }
-        bankStats = rootLayout.findViewById(R.id.bank_stats)
-        eliteBankCount = rootLayout.findViewById(R.id.number_picker_bank)
-        writeOpenBanks = rootLayout.findViewById(R.id.write_open_banks)
-        writeSerials = rootLayout.findViewById(R.id.write_serial_fill)
-        eraseOpenBanks = rootLayout.findViewById(R.id.erase_open_banks)
         settings = activity.settings ?: BrowserSettings().initialize()
-        val toggle = rootLayout.findViewById<AppCompatImageView>(R.id.toggle)
-        bottomSheet = BottomSheetBehavior.from(rootLayout.findViewById(R.id.bottom_sheet_bank)).apply {
+
+        eliteContent = view.findViewById<RecyclerView>(R.id.elite_content).apply {
+            if (prefs.softwareLayer()) setLayerType(View.LAYER_TYPE_SOFTWARE, null)
+            // setHasFixedSize(true)
+            layoutManager = if (settings.amiiboView == BrowserSettings.VIEW.IMAGE.value)
+                GridLayoutManager(activity, activity.columnCount)
+            else
+                LinearLayoutManager(activity)
+            bankAdapter = EliteBankAdapter(settings, this@EliteBankFragment).also {
+                settings.addChangeListener(it)
+                adapter = it
+            }
+        }
+
+        switchMenuOptions = view.findViewById(R.id.switch_menu_btn)
+        bankOptionsMenu = view.findViewById(R.id.bank_options_menu)
+
+        writeBankLayout = view.findViewById<LinearLayout>(R.id.write_list_banks).apply {
+            if (prefs.softwareLayer()) setLayerType(View.LAYER_TYPE_SOFTWARE, null)
+        }
+
+        amiiboFilesView = view.findViewById<RecyclerView>(R.id.amiibo_files_list).apply {
+            if (prefs.softwareLayer()) setLayerType(View.LAYER_TYPE_SOFTWARE, null)
+            setHasFixedSize(true)
+            layoutManager = if (settings.amiiboView == BrowserSettings.VIEW.IMAGE.value)
+                GridLayoutManager(activity, activity.columnCount)
+            else
+                LinearLayoutManager(activity)
+            writeTagAdapter = WriteTagAdapter(settings).also { adapter = it }
+        }
+
+        securityOptions = view.findViewById(R.id.security_options)
+        val bitmapHeight = Resources.getSystem().displayMetrics.heightPixels / 4
+        amiiboTile = view.findViewById<CardView>(R.id.active_tile_layout).apply {
+            with (findViewById<AppCompatImageView>(R.id.imageAmiibo)) {
+                amiiboTileTarget = object : CustomTarget<Bitmap?>() {
+                    override fun onLoadFailed(errorDrawable: Drawable?) {
+                        setImageResource(R.drawable.ic_no_image_60)
+                    }
+
+                    override fun onLoadCleared(placeholder: Drawable?) {
+                        setImageResource(R.drawable.ic_no_image_60)
+                    }
+
+                    override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap?>?) {
+                        maxHeight = bitmapHeight
+                        requestLayout()
+                        setImageBitmap(resource)
+                    }
+                }
+            }
+        }
+        amiiboCard = view.findViewById<CardView>(R.id.active_card_layout).apply {
+            with (findViewById<AppCompatImageView>(R.id.imageAmiibo)) {
+                amiiboCardTarget = object : CustomTarget<Bitmap?>() {
+                    override fun onLoadFailed(errorDrawable: Drawable?) {
+                        setImageResource(0)
+                        isGone = true
+                    }
+
+                    override fun onLoadCleared(placeholder: Drawable?) {
+                        setImageResource(0)
+                        isGone = true
+                    }
+
+                    override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap?>?) {
+                        maxHeight = bitmapHeight
+                        requestLayout()
+                        setImageBitmap(resource)
+                        isVisible = true
+                    }
+                }
+            }
+        }
+        toolbar = view.findViewById(R.id.toolbar)
+
+        bankStats = view.findViewById(R.id.bank_stats)
+
+        writeOpenBanks = view.findViewById<AppCompatButton>(R.id.write_open_banks).apply {
+            setOnClickListener {
+                settings.addChangeListener(writeTagAdapter)
+                onBottomSheetChanged(SHEET.WRITE)
+                searchView?.setQuery(settings.query, true)
+                searchView?.clearFocus()
+                eliteBankCount.value.let { count ->
+                    writeTagAdapter?.setListener(object : WriteTagAdapter.OnAmiiboClickListener {
+                        override fun onAmiiboClicked(amiiboFile: AmiiboFile?) {}
+                        override fun onAmiiboImageClicked(amiiboFile: AmiiboFile?) {}
+                        override fun onAmiiboListClicked(amiiboList: ArrayList<AmiiboFile?>?) {
+                            if (!amiiboList.isNullOrEmpty()) writeAmiiboFileCollection(amiiboList)
+                        }
+                        override fun onAmiiboDataClicked(clonesList: ArrayList<AmiiboData?>?) {
+                            if (!clonesList.isNullOrEmpty()) writeAmiiboCollection(clonesList)
+                        }
+                    }, count, writeSerials?.isChecked ?: false)
+                }
+                bottomSheet?.setState(BottomSheetBehavior.STATE_EXPANDED)
+            }
+        }
+
+        writeSerials = view.findViewById(R.id.write_serial_fill)
+
+        eraseOpenBanks = view.findViewById<AppCompatButton>(R.id.erase_open_banks).apply {
+            setOnClickListener {
+                AlertDialog.Builder(requireContext())
+                    .setMessage(R.string.elite_erase_confirm)
+                    .setPositiveButton(R.string.proceed) { _: DialogInterface?, _: Int ->
+                        onOpenBanksActivity.launch(Intent(
+                            requireActivity(), NfcActivity::class.java
+                        ).apply {
+                            putExtra(NFCIntent.EXTRA_SIGNATURE, prefs.eliteSignature())
+                            action = NFCIntent.ACTION_ERASE_ALL_TAGS
+                            putExtra(NFCIntent.EXTRA_BANK_COUNT, eliteBankCount.value)
+                        })
+                    }
+                    .setNegativeButton(R.string.cancel) { dialog: DialogInterface, _: Int -> dialog.dismiss() }
+                    .show()
+            }
+        }
+
+        eliteBankCount = view.findViewById<NumberPicker>(R.id.number_picker_bank).apply {
+            if (prefs.softwareLayer()) setLayerType(View.LAYER_TYPE_SOFTWARE, null)
+            setOnValueChangedListener { _, _, newVal ->
+                updateNumberedText(newVal)
+            }
+        }
+
+        val toggle = view.findViewById<AppCompatImageView>(R.id.toggle)
+        bottomSheet = BottomSheetBehavior.from(view.findViewById(R.id.bottom_sheet_bank)).apply {
             state = BottomSheetBehavior.STATE_COLLAPSED
-            val mainLayout = rootLayout.findViewById<ViewGroup>(R.id.main_layout)
+            val mainLayout = view.findViewById<ViewGroup>(R.id.main_layout)
+            var slideHeight = 0F
             addBottomSheetCallback(object : BottomSheetCallback() {
                 override fun onStateChanged(view: View, newState: Int) {
                     if (newState == BottomSheetBehavior.STATE_COLLAPSED) {
                         if (writeBankLayout?.visibility == View.VISIBLE)
                             onBottomSheetChanged(SHEET.MENU)
                         toggle.setImageResource(R.drawable.ic_expand_less_24dp)
+                        mainLayout.setPadding(0, 0, 0, 0)
                     } else if (newState == BottomSheetBehavior.STATE_EXPANDED) {
                         toggle.setImageResource(R.drawable.ic_expand_more_24dp)
                         eliteContent?.smoothScrollToPosition(clickedPosition)
-                    }
-                }
-
-                override fun onSlide(view: View, slideOffset: Float) {
-                    if (mainLayout.bottom >= view.top) {
                         val bottomHeight: Int = (view.measuredHeight - peekHeight)
-                        mainLayout.setPadding(0, 0, 0, if (slideOffset > 0)
-                                (bottomHeight * slideOffset).toInt() else 0
+                        mainLayout.setPadding(0, 0, 0, if (slideHeight > 0)
+                            (bottomHeight * slideHeight).toInt() else 0
                         )
                     }
                 }
+
+                override fun onSlide(view: View, slideOffset: Float) { slideHeight = slideOffset }
             })
         }.also { bottomSheet ->
             toggle.setOnClickListener {
@@ -223,21 +283,7 @@ class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
         }
         toggle.setImageResource(R.drawable.ic_expand_more_24dp)
         toolbar?.inflateMenu(R.menu.bank_menu)
-        if (settings.amiiboView == BrowserSettings.VIEW.IMAGE.value)
-            eliteContent?.layoutManager = GridLayoutManager(activity, activity.columnCount)
-        else eliteContent?.layoutManager = LinearLayoutManager(activity)
-        bankAdapter = EliteBankAdapter(settings, this)
-        eliteContent?.adapter = bankAdapter
-        settings.addChangeListener(bankAdapter)
-        eliteBankCount.setOnValueChangedListener { _, _, newVal ->
-            updateNumberedText(newVal)
-        }
-        if (settings.amiiboView == BrowserSettings.VIEW.IMAGE.value)
-            amiiboFilesView?.layoutManager = GridLayoutManager(activity, activity.columnCount)
-        else
-            amiiboFilesView?.layoutManager = LinearLayoutManager(activity)
-        writeTagAdapter = WriteTagAdapter(settings)
-        amiiboFilesView?.adapter = writeTagAdapter
+
         switchMenuOptions?.setOnClickListener {
             if (bankOptionsMenu?.isShown == true) {
                 onBottomSheetChanged(SHEET.AMIIBO)
@@ -246,7 +292,7 @@ class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
             }
             bottomSheet?.setState(BottomSheetBehavior.STATE_EXPANDED)
         }
-        searchView = rootLayout.findViewById<SearchView>(R.id.amiibo_search).apply {
+        searchView = view.findViewById<SearchView>(R.id.amiibo_search).apply {
             with (activity.getSystemService(Context.SEARCH_SERVICE) as SearchManager) {
                 setSearchableInfo(getSearchableInfo(activity.componentName))
             }
@@ -266,41 +312,8 @@ class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
                 }
             })
         }
-        writeOpenBanks?.setOnClickListener {
-            settings.addChangeListener(writeTagAdapter)
-            onBottomSheetChanged(SHEET.WRITE)
-            searchView?.setQuery(settings.query, true)
-            searchView?.clearFocus()
-            eliteBankCount.value.let { count ->
-                writeTagAdapter?.setListener(object : WriteTagAdapter.OnAmiiboClickListener {
-                    override fun onAmiiboClicked(amiiboFile: AmiiboFile?) {}
-                    override fun onAmiiboImageClicked(amiiboFile: AmiiboFile?) {}
-                    override fun onAmiiboListClicked(amiiboList: ArrayList<AmiiboFile?>?) {
-                        if (!amiiboList.isNullOrEmpty()) writeAmiiboFileCollection(amiiboList)
-                    }
-                    override fun onAmiiboDataClicked(clonesList: ArrayList<AmiiboData?>?) {
-                        if (!clonesList.isNullOrEmpty()) writeAmiiboCollection(clonesList)
-                    }
-                }, count, writeSerials?.isChecked ?: false)
-            }
-            bottomSheet?.setState(BottomSheetBehavior.STATE_EXPANDED)
-        }
-        eraseOpenBanks?.setOnClickListener {
-            AlertDialog.Builder(requireContext())
-                .setMessage(R.string.elite_erase_confirm)
-                .setPositiveButton(R.string.proceed) { _: DialogInterface?, _: Int ->
-                    onOpenBanksActivity.launch(Intent(
-                        requireActivity(), NfcActivity::class.java
-                    ).apply {
-                        putExtra(NFCIntent.EXTRA_SIGNATURE, prefs.eliteSignature())
-                        action = NFCIntent.ACTION_ERASE_ALL_TAGS
-                        putExtra(NFCIntent.EXTRA_BANK_COUNT, eliteBankCount.value)
-                    })
-                }
-                .setNegativeButton(R.string.cancel) { dialog: DialogInterface, _: Int -> dialog.dismiss() }
-                .show()
-        }
-        rootLayout.findViewById<View>(R.id.edit_bank_count).setOnClickListener {
+
+        view.findViewById<View>(R.id.edit_bank_count).setOnClickListener {
             if (prefs.eliteActiveBank() >= eliteBankCount.value) {
                 Toasty(activity).Short(R.string.fail_active_oob)
                 onBottomSheetChanged(SHEET.MENU)
@@ -655,7 +668,7 @@ class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
     }
 
     private fun getAmiiboToolbar(tagData: ByteArray?, current_bank: Int) {
-        toolbar!!.setOnMenuItemClickListener { item: MenuItem ->
+        toolbar?.setOnMenuItemClickListener { item: MenuItem ->
             val notice = Toasty(requireActivity())
             val scan = Intent(requireContext(), NfcActivity::class.java)
                 .putExtra(NFCIntent.EXTRA_SIGNATURE, prefs.eliteSignature())
@@ -746,8 +759,8 @@ class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
         current_bank: Int
     ) {
         if (null == amiiboView) return
-        val amiiboInfo = rootLayout.findViewById<View>(R.id.amiiboInfo)
-        val txtError = rootLayout.findViewById<TextView>(R.id.txtError)
+        val amiiboInfo = requireView().findViewById<View>(R.id.amiiboInfo)
+        val txtError = requireView().findViewById<TextView>(R.id.txtError)
         val txtName = amiiboView.findViewById<TextView>(R.id.txtName)
         val txtBank = amiiboView.findViewById<TextView>(R.id.txtBank)
         val txtTagId = amiiboView.findViewById<TextView>(R.id.txtTagId)
@@ -930,7 +943,7 @@ class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
             val activeBank = extras.getInt(
                 NFCIntent.EXTRA_ACTIVE_BANK, prefs.eliteActiveBank()
             )
-            rootLayout.findViewById<TextView>(R.id.hardware_info).text = getString(
+            requireView().findViewById<TextView>(R.id.hardware_info).text = getString(
                 R.string.elite_signature, extras.getString(NFCIntent.EXTRA_SIGNATURE)
             )
             eliteBankCount.value = bankCount

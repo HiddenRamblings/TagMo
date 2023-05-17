@@ -50,18 +50,6 @@ object Debug {
         }
     }
 
-    val isOxygenOS: Boolean by lazy {
-        try {
-            @SuppressLint("PrivateApi")
-            val c = Class.forName("android.os.SystemProperties")
-            val get = c.getMethod("get", String::class.java)
-            val name = get.invoke(c, "ro.vendor.oplus.market.name") as String
-            name.isNotEmpty()
-        } catch (e: Exception) {
-            manufacturer == "OnePlus"
-        }
-    }
-
     private fun hasDebugging(): Boolean {
         return !mPrefs.disableDebug()
     }

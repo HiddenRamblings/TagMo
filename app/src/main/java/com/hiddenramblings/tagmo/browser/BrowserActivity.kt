@@ -510,12 +510,6 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
         }
     }
 
-    private val isBrowserAvailable : Boolean get() {
-        val isAttached = pagerAdapter.browser.isAdded
-        if (!isAttached) Toasty(this).Short(R.string.activity_unavailable)
-        return isAttached
-    }
-
     fun onApplicationRecreate() {
         this.recreate()
 //        val intent = intent

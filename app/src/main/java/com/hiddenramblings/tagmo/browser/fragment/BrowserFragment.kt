@@ -66,11 +66,11 @@ private val Number.toPx get() = TypedValue.applyDimension(
 ).toInt()
 
 class BrowserFragment : Fragment(), OnFoomiiboClickListener {
-    private val prefs: Preferences by lazy { Preferences(requireContext().applicationContext) }
-    private val keyManager: KeyManager by lazy { KeyManager(requireContext()) }
+    private val prefs: Preferences by lazy { Preferences(TagMo.appContext) }
+    private val keyManager: KeyManager by lazy { KeyManager(TagMo.appContext) }
 
     private var chipList: FlexboxLayout? = null
-    var browserWrapper: SwipeRefreshLayout? = null
+    private var browserWrapper: SwipeRefreshLayout? = null
     var browserContent: RecyclerView? = null
         private set
     var foomiiboContent: RecyclerView? = null
@@ -137,8 +137,7 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
             }
         }
         browserContent = view.findViewById<RecyclerView>(R.id.browser_content).apply {
-            if (prefs.softwareLayer())
-                setLayerType(View.LAYER_TYPE_SOFTWARE, null)
+            if (prefs.softwareLayer()) setLayerType(View.LAYER_TYPE_SOFTWARE, null)
             layoutManager = if (settings.amiiboView == BrowserSettings.VIEW.IMAGE.value)
                 GridLayoutManager(activity, activity.columnCount)
             else LinearLayoutManager(activity)
@@ -148,8 +147,7 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
         }
 
         foomiiboContent = view.findViewById<RecyclerView>(R.id.foomiibo_list).apply {
-            if (prefs.softwareLayer())
-                setLayerType(View.LAYER_TYPE_SOFTWARE, null)
+            if (prefs.softwareLayer()) setLayerType(View.LAYER_TYPE_SOFTWARE, null)
             layoutManager = if (settings.amiiboView == BrowserSettings.VIEW.IMAGE.value)
                 GridLayoutManager(activity, activity.columnCount)
             else LinearLayoutManager(activity)
@@ -190,12 +188,12 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
         }
 
         val foomiiboOptions = view.findViewById<LinearLayout>(R.id.foomiibo_options)
-            foomiiboOptions.findViewById<View>(R.id.clear_foomiibo_set).setOnClickListener {
-                clearFoomiiboSet(activity)
-            }
-            foomiiboOptions.findViewById<View>(R.id.build_foomiibo_set).setOnClickListener {
-                buildFoomiiboSet(activity)
-            }
+        foomiiboOptions.findViewById<View>(R.id.clear_foomiibo_set).setOnClickListener {
+            clearFoomiiboSet(activity)
+        }
+        foomiiboOptions.findViewById<View>(R.id.build_foomiibo_set).setOnClickListener {
+            buildFoomiiboSet(activity)
+        }
 
         view.findViewById<View>(R.id.list_divider).isGone = true
         browserWrapper?.layoutParams?.let { layoutParams ->
@@ -352,6 +350,7 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
 
     fun setAmiiboStats() {
         statsHandler.removeCallbacksAndMessages(null)
+        if (!isAdded || null == activity) return
         val activity = requireActivity() as BrowserActivity
         CoroutineScope(Dispatchers.Main).launch {
             currentFolderView?.run {
@@ -403,7 +402,8 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
             }
             currentFolderView?.gravity = Gravity.CENTER_VERTICAL
             currentFolderView?.text = relativePath
-            statsHandler.postDelayed({ setAmiiboStats() }, 3000)
+            statsHandler.postDelayed({
+                setAmiiboStats() }, 3000)
         } ?: setAmiiboStats()
     }
 

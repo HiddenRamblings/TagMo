@@ -56,8 +56,8 @@ import java.io.InputStreamReader
 import java.text.ParseException
 
 class SettingsFragment : PreferenceFragmentCompat() {
-    private val prefs: Preferences by lazy { Preferences(requireContext().applicationContext) }
-    private val keyManager: KeyManager by lazy { KeyManager(requireContext()) }
+    private val prefs: Preferences by lazy { Preferences(TagMo.appContext) }
+    private val keyManager: KeyManager by lazy { KeyManager(TagMo.appContext) }
 
     private var importKeys: Preference? = null
     var imageNetworkSetting: ListPreference? = null

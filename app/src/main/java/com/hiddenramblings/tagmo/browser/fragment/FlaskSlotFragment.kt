@@ -19,7 +19,6 @@ import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.*
 import androidx.cardview.widget.CardView
-import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.view.isGone
 import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
@@ -39,6 +38,7 @@ import com.hiddenramblings.tagmo.amiibo.AmiiboManager
 import com.hiddenramblings.tagmo.amiibo.AmiiboManager.getAmiiboManager
 import com.hiddenramblings.tagmo.amiibo.AmiiboManager.hasSpoofData
 import com.hiddenramblings.tagmo.amiibo.FlaskTag
+import com.hiddenramblings.tagmo.amiibo.KeyManager
 import com.hiddenramblings.tagmo.amiibo.tagdata.AmiiboData
 import com.hiddenramblings.tagmo.bluetooth.BluetoothHandler
 import com.hiddenramblings.tagmo.bluetooth.BluetoothHandler.BluetoothListener
@@ -68,11 +68,10 @@ import java.text.ParseException
 
 @SuppressLint("NewApi")
 open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListener, BluetoothListener {
-    private val prefs: Preferences by lazy { Preferences(requireContext().applicationContext) }
+    private val prefs: Preferences by lazy { Preferences(TagMo.appContext) }
 
     private var bluetoothHandler: BluetoothHandler? = null
     private var isFragmentVisible = false
-    private lateinit var rootLayout: CoordinatorLayout
     private var amiiboTile: CardView? = null
     private var amiiboCard: CardView? = null
     private var toolbar: Toolbar? = null
@@ -132,11 +131,11 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
                             isServiceDiscovered = true
                             onBottomSheetChanged(SHEET.MENU)
                             maxSlotCount = 85
-                            rootLayout.post {
+                            requireView().post {
                                 flaskSlotCount.maxValue = maxSlotCount
                                 screenOptions?.isVisible = true
                                 createBlank?.isVisible = true
-                                rootLayout.findViewById<TextView>(
+                                requireView().findViewById<TextView>(
                                     R.id.hardware_info
                                 ).text = deviceProfile
                             }
@@ -300,11 +299,11 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
                             isServiceDiscovered = true
                             onBottomSheetChanged(SHEET.MENU)
                             maxSlotCount = 32
-                            rootLayout.post {
+                            requireView().post {
                                 flaskSlotCount.maxValue = maxSlotCount
                                 screenOptions?.isGone = true
                                 createBlank?.isGone = true
-                                rootLayout.findViewById<TextView>(
+                                requireView().findViewById<TextView>(
                                     R.id.hardware_info
                                 ).text = deviceProfile
                                 flaskSlotCount.maxValue = maxSlotCount
@@ -417,141 +416,77 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR2) return
-        rootLayout = view as CoordinatorLayout
+        
         val activity = requireActivity() as BrowserActivity
-        amiiboTile = rootLayout.findViewById(R.id.active_tile_layout)
-        amiiboCard = rootLayout.findViewById(R.id.active_card_layout)
-        amiiboCard?.findViewById<View>(R.id.txtError)?.isGone = true
-        amiiboCard?.findViewById<View>(R.id.txtPath)?.isGone = true
-        toolbar = rootLayout.findViewById(R.id.toolbar)
+
         val bitmapHeight = Resources.getSystem().displayMetrics.heightPixels / 4
-        amiiboTileTarget = object : CustomTarget<Bitmap?>() {
-            val imageAmiibo = amiiboTile?.findViewById<AppCompatImageView>(R.id.imageAmiibo)
-            override fun onLoadFailed(errorDrawable: Drawable?) {
-                imageAmiibo?.setImageResource(R.drawable.ic_no_image_60)
-            }
+        amiiboTile = view.findViewById<CardView>(R.id.active_tile_layout).apply {
+            with (findViewById<AppCompatImageView>(R.id.imageAmiibo)) {
+                amiiboTileTarget = object : CustomTarget<Bitmap?>() {
+                    override fun onLoadFailed(errorDrawable: Drawable?) {
+                        setImageResource(R.drawable.ic_no_image_60)
+                    }
 
-            override fun onLoadCleared(placeholder: Drawable?) {
-                imageAmiibo?.setImageResource(R.drawable.ic_no_image_60)
-            }
+                    override fun onLoadCleared(placeholder: Drawable?) {
+                        setImageResource(R.drawable.ic_no_image_60)
+                    }
 
-            override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap?>?) {
-                imageAmiibo?.let {
-                    it.maxHeight = bitmapHeight
-                    it.requestLayout()
-                    it.setImageBitmap(resource)
+                    override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap?>?) {
+                        maxHeight = bitmapHeight
+                        requestLayout()
+                        setImageBitmap(resource)
+                    }
                 }
             }
         }
-        amiiboCardTarget = object : CustomTarget<Bitmap?>() {
-            val imageAmiibo = amiiboCard?.findViewById<AppCompatImageView>(R.id.imageAmiibo)
-            override fun onLoadFailed(errorDrawable: Drawable?) {
-                imageAmiibo?.let {
-                    it.setImageResource(0)
-                    it.isGone = true
-                }
-            }
+        amiiboCard = view.findViewById<CardView>(R.id.active_card_layout).apply {
+            findViewById<View>(R.id.txtError)?.isGone = true
+            findViewById<View>(R.id.txtPath)?.isGone = true
+            with (findViewById<AppCompatImageView>(R.id.imageAmiibo)) {
+                amiiboCardTarget = object : CustomTarget<Bitmap?>() {
+                    override fun onLoadFailed(errorDrawable: Drawable?) {
+                        setImageResource(0)
+                        isGone = true
+                    }
 
-            override fun onLoadCleared(placeholder: Drawable?) {
-                imageAmiibo?.let {
-                    it.setImageResource(0)
-                    it.isGone = true
-                }
-            }
+                    override fun onLoadCleared(placeholder: Drawable?) {
+                        setImageResource(0)
+                        isGone = true
+                    }
 
-            override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap?>?) {
-                imageAmiibo?.let {
-                    it.maxHeight = bitmapHeight
-                    it.requestLayout()
-                    it.setImageBitmap(resource)
-                    it.isVisible = true
+                    override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap?>?) {
+                        maxHeight = bitmapHeight
+                        requestLayout()
+                        setImageBitmap(resource)
+                        isVisible = true
+                    }
                 }
             }
         }
+        
+        toolbar = view.findViewById(R.id.toolbar)
+
         settings = activity.settings ?: BrowserSettings().initialize()
-        flaskContent = rootLayout.findViewById(R.id.flask_content)
-        if (prefs.softwareLayer())
-            flaskContent?.setLayerType(View.LAYER_TYPE_SOFTWARE, null)
-        if (settings.amiiboView == BrowserSettings.VIEW.IMAGE.value)
-            flaskContent?.layoutManager = GridLayoutManager(activity, activity.columnCount)
-        else
-            flaskContent?.layoutManager = LinearLayoutManager(activity)
-        flaskStats = rootLayout.findViewById(R.id.flask_stats)
-        switchMenuOptions = rootLayout.findViewById(R.id.switch_menu_btn)
-        slotOptionsMenu = rootLayout.findViewById(R.id.slot_options_menu)
-        val writeFile = rootLayout.findViewById<AppCompatButton>(R.id.write_slot_file)
-        createBlank = rootLayout.findViewById(R.id.create_blank)
-        flaskSlotCount = rootLayout.findViewById(R.id.number_picker_slot)
-        flaskSlotCount.maxValue = maxSlotCount
-        screenOptions = rootLayout.findViewById(R.id.screen_options)
-        writeSlots = rootLayout.findViewById(R.id.write_slot_count)
-        writeSlots?.text = getString(R.string.write_slots, 1)
-        writeSerials = rootLayout.findViewById(R.id.write_serial_fill)
-        eraseSlots = rootLayout.findViewById(R.id.erase_slot_count)
-        eraseSlots?.text = getString(R.string.erase_slots, 0)
-        writeSlotsLayout = rootLayout.findViewById(R.id.write_list_slots)
-        if (prefs.softwareLayer())
-            writeSlotsLayout?.setLayerType(View.LAYER_TYPE_SOFTWARE, null)
-        val amiiboFilesView = rootLayout.findViewById<RecyclerView>(R.id.amiibo_files_list)
-        if (prefs.softwareLayer())
-            amiiboFilesView.setLayerType(View.LAYER_TYPE_SOFTWARE, null)
-        amiiboFilesView.setHasFixedSize(true)
-        val toggle = rootLayout.findViewById<AppCompatImageView>(R.id.toggle)
-        bottomSheet = BottomSheetBehavior.from(rootLayout.findViewById(R.id.bottom_sheet_slot)).apply {
-            state = BottomSheetBehavior.STATE_COLLAPSED
-            addBottomSheetCallback(object : BottomSheetCallback() {
-                override fun onStateChanged(bottomSheet: View, newState: Int) {
-                    if (newState == BottomSheetBehavior.STATE_COLLAPSED) {
-                        if (writeSlotsLayout?.visibility == View.VISIBLE)
-                            onBottomSheetChanged(SHEET.MENU)
-                        toggle.setImageResource(R.drawable.ic_expand_less_24dp)
-                    } else if (newState == BottomSheetBehavior.STATE_EXPANDED) {
-                        toggle.setImageResource(R.drawable.ic_expand_more_24dp)
-                    }
-                }
 
-                override fun onSlide(view: View, slideOffset: Float) {
-                    flaskContent?.let {
-                        if (it.bottom >= view.top) {
-                            val bottomHeight: Int = (view.measuredHeight - peekHeight)
-                            it.setPadding(0, 0, 0, if (slideOffset > 0)
-                                    (bottomHeight * slideOffset).toInt() else 0
-                            )
-                        }
-                    }
-                }
-            })
-        }.also { bottomSheet ->
-            setBottomSheetHidden(false)
-            toggle.setOnClickListener {
-                if (bottomSheet.state == BottomSheetBehavior.STATE_COLLAPSED) {
-                    bottomSheet.setState(BottomSheetBehavior.STATE_EXPANDED)
-                } else {
-                    bottomSheet.setState(BottomSheetBehavior.STATE_COLLAPSED)
-                }
-            }
+        flaskContent = view.findViewById<RecyclerView>(R.id.flask_content).apply {
+            if (prefs.softwareLayer()) setLayerType(View.LAYER_TYPE_SOFTWARE, null)
+            layoutManager = if (settings.amiiboView == BrowserSettings.VIEW.IMAGE.value)
+                GridLayoutManager(activity, activity.columnCount)
+            else
+                LinearLayoutManager(activity)
         }
-        toggle.setImageResource(R.drawable.ic_expand_more_24dp)
-        toolbar?.inflateMenu(R.menu.flask_menu)
-        if (settings.amiiboView == BrowserSettings.VIEW.IMAGE.value)
-            amiiboFilesView.layoutManager = GridLayoutManager(activity, activity.columnCount)
-        else amiiboFilesView.layoutManager = LinearLayoutManager(activity)
-        writeTagAdapter = WriteTagAdapter(settings)
-        amiiboFilesView.adapter = writeTagAdapter
-        view.findViewById<View>(R.id.switch_devices).setOnClickListener {
-            bottomSheet?.state = BottomSheetBehavior.STATE_COLLAPSED
-            disconnectService()
-            if (isBluetoothEnabled) selectBluetoothDevice()
+
+        flaskStats = view.findViewById(R.id.flask_stats)
+        switchMenuOptions = view.findViewById(R.id.switch_menu_btn)
+        slotOptionsMenu = view.findViewById(R.id.slot_options_menu)
+
+        createBlank = view.findViewById<AppCompatButton>(R.id.create_blank).apply {
+            setOnClickListener { serviceFlask?.createBlankTag() }
         }
-        switchMenuOptions?.setOnClickListener {
-            if (slotOptionsMenu?.isShown == true) {
-                onBottomSheetChanged(SHEET.AMIIBO)
-            } else {
-                onBottomSheetChanged(SHEET.MENU)
-            }
-            bottomSheet?.setState(BottomSheetBehavior.STATE_EXPANDED)
-        }
-        val searchView = rootLayout.findViewById<SearchView>(R.id.amiibo_search)
+
+        screenOptions = view.findViewById(R.id.screen_options)
+
+        val searchView = view.findViewById<SearchView>(R.id.amiibo_search)
         if (BuildConfig.WEAR_OS) {
             searchView.isGone = true
         } else {
@@ -578,65 +513,150 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
                 }
             })
         }
-        writeFile.setOnClickListener {
-            settings.addChangeListener(writeTagAdapter)
-            onBottomSheetChanged(SHEET.WRITE)
-            searchView.setQuery(settings.query, true)
-            searchView.clearFocus()
-            writeTagAdapter?.setListener(object : WriteTagAdapter.OnAmiiboClickListener {
-                override fun onAmiiboClicked(amiiboFile: AmiiboFile?) {
-                    onBottomSheetChanged(SHEET.AMIIBO)
-                    showProcessingNotice(true)
-                    uploadAmiiboFile(amiiboFile)
-                    settings.removeChangeListener(writeTagAdapter)
-                }
 
-                override fun onAmiiboImageClicked(amiiboFile: AmiiboFile?) {
-                    handleImageClicked(amiiboFile)
-                }
-
-                override fun onAmiiboListClicked(amiiboList: ArrayList<AmiiboFile?>?) {}
-                override fun onAmiiboDataClicked(clonesList: ArrayList<AmiiboData?>?) {}
-            })
-            bottomSheet?.setState(BottomSheetBehavior.STATE_EXPANDED)
-        }
-        flaskSlotCount.setOnValueChangedListener { _, _, newVal ->
-            if (maxSlotCount - currentCount > 0)
-                writeSlots?.text = getString(R.string.write_slots, newVal)
-        }
-        writeSlots?.setOnClickListener {
-            settings.addChangeListener(writeTagAdapter)
-            onBottomSheetChanged(SHEET.WRITE)
-            searchView.setQuery(settings.query, true)
-            searchView.clearFocus()
-            flaskSlotCount.value.let { count ->
+        view.findViewById<AppCompatButton>(R.id.write_slot_file).apply {
+            setOnClickListener {
+                settings.addChangeListener(writeTagAdapter)
+                onBottomSheetChanged(SHEET.WRITE)
+                searchView.setQuery(settings.query, true)
+                searchView.clearFocus()
                 writeTagAdapter?.setListener(object : WriteTagAdapter.OnAmiiboClickListener {
-                    override fun onAmiiboClicked(amiiboFile: AmiiboFile?) {}
-                    override fun onAmiiboImageClicked(amiiboFile: AmiiboFile?) {}
-                    override fun onAmiiboListClicked(amiiboList: ArrayList<AmiiboFile?>?) {
-                        if (!amiiboList.isNullOrEmpty()) writeAmiiboFileCollection(amiiboList)
+                    override fun onAmiiboClicked(amiiboFile: AmiiboFile?) {
+                        onBottomSheetChanged(SHEET.AMIIBO)
+                        showProcessingNotice(true)
+                        uploadAmiiboFile(amiiboFile)
+                        settings.removeChangeListener(writeTagAdapter)
                     }
-                    override fun onAmiiboDataClicked(clonesList: ArrayList<AmiiboData?>?) {
-                        if (!clonesList.isNullOrEmpty()) writeAmiiboDataCollection(clonesList)
+
+                    override fun onAmiiboImageClicked(amiiboFile: AmiiboFile?) {
+                        handleImageClicked(amiiboFile)
                     }
-                }, count, writeSerials?.isChecked ?: false)
+
+                    override fun onAmiiboListClicked(amiiboList: ArrayList<AmiiboFile?>?) {}
+                    override fun onAmiiboDataClicked(clonesList: ArrayList<AmiiboData?>?) {}
+                })
+                bottomSheet?.setState(BottomSheetBehavior.STATE_EXPANDED)
+            }
+        }
+
+        writeSlots = view.findViewById<AppCompatButton>(R.id.write_slot_count).apply {
+            text = getString(R.string.write_slots, 1)
+            setOnClickListener {
+                settings.addChangeListener(writeTagAdapter)
+                onBottomSheetChanged(SHEET.WRITE)
+                searchView.setQuery(settings.query, true)
+                searchView.clearFocus()
+                flaskSlotCount.value.let { count ->
+                    writeTagAdapter?.setListener(object : WriteTagAdapter.OnAmiiboClickListener {
+                        override fun onAmiiboClicked(amiiboFile: AmiiboFile?) {}
+                        override fun onAmiiboImageClicked(amiiboFile: AmiiboFile?) {}
+                        override fun onAmiiboListClicked(amiiboList: ArrayList<AmiiboFile?>?) {
+                            if (!amiiboList.isNullOrEmpty()) writeAmiiboFileCollection(amiiboList)
+                        }
+                        override fun onAmiiboDataClicked(clonesList: ArrayList<AmiiboData?>?) {
+                            if (!clonesList.isNullOrEmpty()) writeAmiiboDataCollection(clonesList)
+                        }
+                    }, count, writeSerials?.isChecked ?: false)
+                }
+                bottomSheet?.setState(BottomSheetBehavior.STATE_EXPANDED)
+            }
+        }
+
+        writeSerials = view.findViewById(R.id.write_serial_fill)
+
+        eraseSlots = view.findViewById<AppCompatButton>(R.id.erase_slot_count).apply {
+            text = getString(R.string.erase_slots, 0)
+            setOnClickListener {
+                AlertDialog.Builder(requireContext())
+                    .setMessage(R.string.gatt_erase_confirm)
+                    .setPositiveButton(R.string.proceed) { _: DialogInterface?, _: Int ->
+                        showProcessingNotice(false)
+                        serviceFlask?.clearStorage(currentCount)
+                    }
+                    .setNegativeButton(R.string.cancel) { dialog: DialogInterface, _: Int ->
+                        dialog.dismiss()
+                    }
+                    .show()
+            }
+        }
+
+        flaskSlotCount = view.findViewById<NumberPicker>(R.id.number_picker_slot).apply {
+            if (prefs.softwareLayer()) setLayerType(View.LAYER_TYPE_SOFTWARE, null)
+            maxValue = maxSlotCount
+            setOnValueChangedListener { _, _, newVal ->
+                if (maxSlotCount - currentCount > 0)
+                    writeSlots?.text = getString(R.string.write_slots, newVal)
+            }
+        }
+
+        writeSlotsLayout = view.findViewById<LinearLayout>(R.id.write_list_slots).apply {
+            if (prefs.softwareLayer()) setLayerType(View.LAYER_TYPE_SOFTWARE, null)
+        }
+
+        view.findViewById<RecyclerView>(R.id.amiibo_files_list).apply {
+            if (prefs.softwareLayer()) setLayerType(View.LAYER_TYPE_SOFTWARE, null)
+            setHasFixedSize(true)
+            layoutManager = if (settings.amiiboView == BrowserSettings.VIEW.IMAGE.value)
+                GridLayoutManager(activity, activity.columnCount)
+            else LinearLayoutManager(activity)
+            writeTagAdapter = WriteTagAdapter(settings).also { adapter = it }
+        }
+
+        val toggle = view.findViewById<AppCompatImageView>(R.id.toggle)
+        bottomSheet = BottomSheetBehavior.from(view.findViewById(R.id.bottom_sheet_slot)).apply {
+            state = BottomSheetBehavior.STATE_COLLAPSED
+            var slideHeight = 0F
+            addBottomSheetCallback(object : BottomSheetCallback() {
+                override fun onStateChanged(bottomSheet: View, newState: Int) {
+                    if (newState == BottomSheetBehavior.STATE_COLLAPSED) {
+                        if (writeSlotsLayout?.visibility == View.VISIBLE)
+                            onBottomSheetChanged(SHEET.MENU)
+                        toggle.setImageResource(R.drawable.ic_expand_less_24dp)
+                        flaskContent?.setPadding(0, 0, 0, 0)
+                    } else if (newState == BottomSheetBehavior.STATE_EXPANDED) {
+                        toggle.setImageResource(R.drawable.ic_expand_more_24dp)
+                        flaskContent?.let {
+                            val bottomHeight: Int = (view.measuredHeight - peekHeight)
+                            it.setPadding(0, 0, 0, if (slideHeight > 0)
+                                (bottomHeight * slideHeight).toInt() else 0
+                            )
+                        }
+
+                    }
+                }
+
+                override fun onSlide(view: View, slideOffset: Float) { slideHeight = slideOffset }
+            })
+        }.also { bottomSheet ->
+            setBottomSheetHidden(false)
+            toggle.setOnClickListener {
+                if (bottomSheet.state == BottomSheetBehavior.STATE_COLLAPSED) {
+                    bottomSheet.setState(BottomSheetBehavior.STATE_EXPANDED)
+                } else {
+                    bottomSheet.setState(BottomSheetBehavior.STATE_COLLAPSED)
+                }
+            }
+        }
+        toggle.setImageResource(R.drawable.ic_expand_more_24dp)
+        toolbar?.inflateMenu(R.menu.flask_menu)
+
+        view.findViewById<View>(R.id.switch_devices).setOnClickListener {
+            bottomSheet?.state = BottomSheetBehavior.STATE_COLLAPSED
+            disconnectService()
+            if (isBluetoothEnabled) selectBluetoothDevice()
+        }
+        switchMenuOptions?.setOnClickListener {
+            if (slotOptionsMenu?.isShown == true) {
+                onBottomSheetChanged(SHEET.AMIIBO)
+            } else {
+                onBottomSheetChanged(SHEET.MENU)
             }
             bottomSheet?.setState(BottomSheetBehavior.STATE_EXPANDED)
         }
-        eraseSlots?.setOnClickListener {
-            AlertDialog.Builder(requireContext())
-                .setMessage(R.string.gatt_erase_confirm)
-                .setPositiveButton(R.string.proceed) { _: DialogInterface?, _: Int ->
-                    showProcessingNotice(false)
-                    serviceFlask?.clearStorage(currentCount)
-                }
-                .setNegativeButton(R.string.cancel) { dialog: DialogInterface, _: Int -> dialog.dismiss() }
-                .show()
-        }
-        createBlank?.setOnClickListener { serviceFlask!!.createBlankTag() }
-        rootLayout.findViewById<View>(R.id.screen_layered)
+
+        view.findViewById<View>(R.id.screen_layered)
             .setOnClickListener { serviceFlask?.setFlaskFace(false) }
-        rootLayout.findViewById<View>(R.id.screen_stacked)
+        view.findViewById<View>(R.id.screen_stacked)
             .setOnClickListener { serviceFlask?.setFlaskFace(true) }
         flaskButtonState
     }

@@ -84,7 +84,7 @@
             android:id="@+id/bank_number_details"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_above="@+id/number_picker"
+            android:layout_above="@+id/number_picker_nfc"
             android:layout_marginBottom="6dp"
             android:layout_centerHorizontal="true"
             android:gravity="center"

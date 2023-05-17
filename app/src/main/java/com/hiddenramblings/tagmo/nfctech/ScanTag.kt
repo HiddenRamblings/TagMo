@@ -31,9 +31,7 @@ class ScanTag {
         } catch (ignored: Exception) { }
     }
 
-    suspend fun onTagDiscovered(
-        activity: BrowserActivity, intent: Intent
-    ) = withContext(Dispatchers.IO) {
+    suspend fun onTagDiscovered(activity: BrowserActivity, intent: Intent) = withContext(Dispatchers.IO) {
         val prefs = Preferences(activity.applicationContext)
         val tag = intent.parcelable<Tag>(NfcAdapter.EXTRA_TAG)
         val tagTech = tag.technology()
@@ -80,7 +78,10 @@ class ScanTag {
                 } finally {
                     closeTagSilently(ntag)
                 }
-            } ?: throw Exception(activity.getString(R.string.error_tag_protocol, tagTech))
+            } ?: if (prefs.eliteEnabled())
+                fixEliteDialog(activity)
+            else
+                throw Exception(activity.getString(R.string.error_tag_protocol, tagTech))
         } catch (e: Exception) {
             Debug.warn(e)
             Debug.getExceptionCause(e)?.let { error ->
@@ -88,45 +89,28 @@ class ScanTag {
                     when {
                         e is TagLostException -> {
                             if (isEliteDevice) {
-                                activity.onNFCActivity.launch(Intent(
-                                    activity, NfcActivity::class.java
-                                ).setAction(NFCIntent.ACTION_BLIND_SCAN))
+                                activity.onNFCActivity.launch(Intent(activity, NfcActivity::class.java).setAction(NFCIntent.ACTION_BLIND_SCAN))
                             } else {
-                                IconifiedSnackbar(activity, activity.viewPager).buildSnackbar(
-                                    R.string.speed_scan, Snackbar.LENGTH_SHORT
-                                ).show()
+                                IconifiedSnackbar(activity, activity.viewPager)
+                                    .buildSnackbar(R.string.speed_scan, Snackbar.LENGTH_SHORT).show()
                             }
                             closeTagSilently(mifare)
                         }
                         isEliteLockedCause(activity, error) -> withContext(Dispatchers.Main) {
-                            getErrorDialog(activity,
-                                R.string.possible_lock, R.string.prepare_unlock
-                            ).setPositiveButton(R.string.unlock) { dialog: DialogInterface, _: Int ->
-                                closeTagSilently(mifare)
-                                dialog.dismiss()
-                                activity.onNFCActivity.launch(Intent(
-                                    activity, NfcActivity::class.java
-                                ).setAction(NFCIntent.ACTION_UNLOCK_UNIT))
-                            }.setNegativeButton(R.string.cancel) { dialog: DialogInterface, _: Int ->
-                                closeTagSilently(mifare)
-                                dialog.dismiss()
-                            }.show()
+                            getErrorDialog(activity, R.string.possible_lock, R.string.prepare_unlock)
+                                .setPositiveButton(R.string.unlock) { dialog: DialogInterface, _: Int ->
+                                    closeTagSilently(mifare)
+                                    dialog.dismiss()
+                                    activity.onNFCActivity.launch(Intent(
+                                        activity, NfcActivity::class.java
+                                    ).setAction(NFCIntent.ACTION_UNLOCK_UNIT))
+                                }.setNegativeButton(R.string.cancel) { dialog: DialogInterface, _: Int ->
+                                    closeTagSilently(mifare)
+                                    dialog.dismiss()
+                                }.show()
                         }
-                        Debug.hasException(
-                            e, NTAG215::class.java.name, "connect"
-                        ) -> withContext(Dispatchers.Main) {
-                            getErrorDialog(activity,
-                                R.string.possible_blank, R.string.prepare_blank
-                            ).setPositiveButton(R.string.scan) { dialog: DialogInterface, _: Int ->
-                                dialog.dismiss()
-                                activity.onNFCActivity.launch(Intent(
-                                    activity, NfcActivity::class.java
-                                ).setAction(NFCIntent.ACTION_BLIND_SCAN))
-                            }.setNegativeButton(R.string.cancel) { dialog: DialogInterface, _: Int ->
-                                dialog.dismiss()
-                            }.show()
-                        }
-
+                        Debug.hasException(e, NTAG215::class.java.name, "connect") ->
+                            fixEliteDialog(activity)
                         else -> {}
                     }
                 } else {
@@ -145,6 +129,18 @@ class ScanTag {
         return activity.getString(R.string.nfc_null_array) == error ||
                 activity.getString(R.string.nfc_read_result) == error ||
                 activity.getString(R.string.invalid_read_result) == error
+    }
+
+    private suspend fun fixEliteDialog(activity: BrowserActivity) = withContext(Dispatchers.Main) {
+        getErrorDialog(activity, R.string.possible_blank, R.string.prepare_blank)
+            .setPositiveButton(R.string.scan) { dialog: DialogInterface, _: Int ->
+                dialog.dismiss()
+                activity.onNFCActivity.launch(Intent(
+                    activity, NfcActivity::class.java
+                ).setAction(NFCIntent.ACTION_BLIND_SCAN))
+            }.setNegativeButton(R.string.cancel) { dialog: DialogInterface, _: Int ->
+                dialog.dismiss()
+            }.show()
     }
 
     private fun getErrorDialog(

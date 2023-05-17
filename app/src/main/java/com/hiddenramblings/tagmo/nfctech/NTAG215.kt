@@ -12,6 +12,7 @@ import android.nfc.tech.TagTechnology
 import com.hiddenramblings.tagmo.R
 import com.hiddenramblings.tagmo.TagMo
 import com.hiddenramblings.tagmo.eightbit.io.Debug
+import com.hiddenramblings.tagmo.nfctech.NTAG215.Companion.equals
 import java.io.IOException
 
 class NTAG215 : TagTechnology {
@@ -311,39 +312,43 @@ class NTAG215 : TagTechnology {
         }
 
         private fun getMifareUltralight(tag: Tag?): NTAG215? {
-            return MifareUltralight.get(tag)?.let { NTAG215(it) }
+            return MifareUltralight.get(tag)?.let {
+                NTAG215(it)
+            }
         }
 
         private fun getNfcA(tag: Tag?): NTAG215? {
             return NfcA.get(tag)?.let {
                 if (it.sak equals 0x00 && it.tag.id[0].toInt() == NXP_MANUFACTURER_ID)
                     NTAG215(it)
-                else null
+                else
+                    null
             }
         }
 
         @Throws(IOException::class)
         fun getBlind(tag: Tag?): NTAG215 {
-            return NfcA.get(tag)?.let { nfcA -> NTAG215(nfcA).also { it.connect() } }
+            return NfcA.get(tag)?.let { NTAG215(it).also { mifare -> mifare.connect()} }
                 ?: throw IOException(TagMo.appContext.getString(R.string.error_tag_unavailable))
         }
 
         operator fun get(tag: Tag?): NTAG215? {
-            return try {
-                getMifareUltralight(tag)?.also { it.connect() }
-            } catch (ex: IOException) {
-                Debug.verbose(ex)
+            return getMifareUltralight(tag)?.let {
                 try {
-                    getNfcA(tag)?.also { it.connect() }
-                } catch (e: IOException) {
-                    Debug.verbose(e)
+                    it.connect()
+                    it
+                } catch (ex: IOException) {
+                    Debug.verbose(ex)
                     null
                 }
-            } ?: try {
-                getNfcA(tag)?.also { it.connect() }
-            } catch (ex: IOException) {
-                Debug.verbose(ex)
-                null
+            } ?: getNfcA(tag)?.let {
+                try {
+                    it.connect()
+                    it
+                } catch (ex: IOException) {
+                    Debug.verbose(ex)
+                    null
+                }
             }
         }
     }

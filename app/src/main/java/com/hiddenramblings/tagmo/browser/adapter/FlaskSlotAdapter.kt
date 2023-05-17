@@ -104,6 +104,7 @@ class FlaskSlotAdapter(
         val txtAmiiboType: TextView?
         val txtGameSeries: TextView?
         val txtPath: TextView?
+        val txtUsage: TextView?
         var imageAmiibo: AppCompatImageView? = null
         var amiibo: Amiibo? = null
 
@@ -129,11 +130,14 @@ class FlaskSlotAdapter(
             txtAmiiboType = itemView.findViewById(R.id.txtAmiiboType)
             txtGameSeries = itemView.findViewById(R.id.txtGameSeries)
             txtPath = itemView.findViewById(R.id.txtPath)
+            txtUsage = itemView.findViewById(R.id.txtUsage)
             imageAmiibo = itemView.findViewById(R.id.imageAmiibo)
         }
 
         fun bind(item: Amiibo?) {
             amiibo = item
+            txtPath?.isGone = true
+            txtUsage?.isGone = true
             var amiiboHexId = ""
             var amiiboSeries = ""
             var amiiboType = ""
@@ -143,7 +147,6 @@ class FlaskSlotAdapter(
                 null -> {
                     setAmiiboInfoText(txtName, TagMo.appContext.getString(R.string.empty_tag))
                     txtError?.isGone = true
-                    txtPath?.isGone = true
                     txtTagId?.isGone = true
                     txtAmiiboSeries?.isGone = true
                     txtAmiiboType?.isGone = true
@@ -154,8 +157,8 @@ class FlaskSlotAdapter(
                     setAmiiboInfoText(txtName, TagMo.appContext.getString(R.string.blank_tag))
                 }
                 else -> {
-                    setAmiiboInfoText(txtName, amiibo!!.name)
-                    amiiboImageUrl = amiibo!!.imageUrl
+                    setAmiiboInfoText(txtName, amiibo?.name)
+                    amiiboImageUrl = amiibo?.imageUrl
                 }
             }
             imageAmiibo?.let {
@@ -168,7 +171,6 @@ class FlaskSlotAdapter(
             }
             if (settings.amiiboView != VIEW.IMAGE.value) {
                 txtError?.isGone = true
-                txtPath?.isGone = true
                 if (amiibo is FlaskTag) {
                     txtTagId?.isGone = true
                     txtAmiiboSeries?.isGone = true

@@ -67,7 +67,6 @@
     <string name="deny">拒絕</string>
     <string name="start">開始</string>
     <string name="delete">刪除</string>
-    <string name="erase">抹除</string>
     <string name="activate">已啟用</string>
     <string name="download">下載</string>
     <string name="parent">上一層</string>
@@ -78,7 +77,6 @@
     <string name="sync">同步</string>
     <string name="enable">啟用</string>
     <string name="replace">替代</string>
-    <string name="update">更新</string>
 
     <string name="error_caps">錯誤</string>
 

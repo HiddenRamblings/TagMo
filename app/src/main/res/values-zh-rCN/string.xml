@@ -59,7 +59,6 @@
     <string name="cancel">取消</string>
     <string name="start">开始</string>
     <string name="delete">删除</string>
-    <string name="erase">擦除</string>
     <string name="activate">激活</string>
     <string name="parent">上层目录</string>
     <string name="unknown">未知</string>
@@ -69,7 +68,6 @@
     <string name="sync">同步</string>
     <string name="enable">启用</string>
     <string name="replace">替换</string>
-    <string name="update">更新</string>
 
     <string name="error_caps">出错</string>
 

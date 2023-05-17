@@ -60,7 +60,6 @@
     <string name="accept">Akceptuj</string>
     <string name="start">Start</string>
     <string name="delete">Usuń</string>
-    <string name="erase">Wymaż</string>
     <string name="activate">Aktywuj</string>
     <string name="parent">Nadrzędny_a</string>
     <string name="unknown">Nieznany_a</string>
@@ -70,7 +69,6 @@
     <string name="sync">Synchronizuj</string>
     <string name="enable">Włącz</string>
     <string name="replace">Zamień</string>
-    <string name="update">Aktualizuj</string>
 
     <string name="error_caps">BŁĄD</string>
 

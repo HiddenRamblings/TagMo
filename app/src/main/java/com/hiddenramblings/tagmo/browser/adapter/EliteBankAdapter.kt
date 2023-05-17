@@ -101,6 +101,7 @@ class EliteBankAdapter(
 
         // public final TextView txtCharacter;
         val txtPath: TextView?
+        val txtUsage: TextView?
         var imageAmiibo: AppCompatImageView? = null
         var amiiboItem: EliteTag? = null
         private val boldSpannable = BoldSpannable()
@@ -128,12 +129,15 @@ class EliteBankAdapter(
             txtGameSeries = itemView.findViewById(R.id.txtGameSeries)
             // this.txtCharacter = itemView.findViewById(R.id.txtCharacter);
             txtPath = itemView.findViewById(R.id.txtPath)
+            txtUsage = itemView.findViewById(R.id.txtUsage)
             imageAmiibo = itemView.findViewById(R.id.imageAmiibo)
         }
 
         @SuppressLint("SetTextI18n")
         fun bind(amiibo: EliteTag?) {
             amiiboItem = amiibo
+            txtPath?.isGone = true
+            txtUsage?.isGone = true
             var amiiboHexId: String? = ""
             var amiiboName = ""
             var amiiboSeries = ""

@@ -16,7 +16,7 @@
         app:showAsAction="always"/>
     <item
         android:id="@+id/mnu_erase_bank"
-        android:title="@string/erase"
+        android:title="@string/erase_bank"
         app:showAsAction="ifRoom"/>
     <item
         android:id="@+id/mnu_edit"

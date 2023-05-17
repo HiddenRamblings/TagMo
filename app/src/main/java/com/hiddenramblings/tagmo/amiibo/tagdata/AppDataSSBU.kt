@@ -256,7 +256,7 @@ class AppDataSSBU(appData: ByteArray?) : AppData(appData!!) { // 0xE2 - 0D // 0x
                 order(ByteOrder.LITTLE_ENDIAN)
                 putInt(t xor 0xFFFFFFFF.toInt() shr 0)
             }.array()
-            crc32.indices.forEach { appData.put(GAME_CRC32_OFFSET + it, crc32[it]) }
+            crc32.forEachIndexed { x, byte -> appData.put(GAME_CRC32_OFFSET + x, byte) }
         }
 
     companion object {

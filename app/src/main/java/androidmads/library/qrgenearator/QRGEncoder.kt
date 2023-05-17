@@ -155,9 +155,8 @@ class QRGEncoder(data: String?, bundle: Bundle?, type: Int, private var dimensio
                 }
                 val uniquePhones: MutableCollection<String> = HashSet(keysPhone.size)
                 run {
-                    keysPhone.forEach {
-                        val phone = trim(bundle.getString(it))
-                        if (phone != null) uniquePhones.add(phone)
+                    keysPhone.forEach { number ->
+                        trim(bundle.getString(number))?.let { uniquePhones.add(it) }
                     }
                 }
                 uniquePhones.forEach {

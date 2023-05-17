@@ -531,8 +531,7 @@ class FlaskGattService : Service() {
         val chunks = GattArray.stringToPortions(value, maxTransmissionUnit)
         val commandQueue = commandCallbacks.size + chunks.size
         flaskHandler.postDelayed({
-            for (i in chunks.indices) {
-                val chunk = chunks[i]
+            chunks.forEachIndexed { i, chunk ->
                 flaskHandler.postDelayed({
                     try {
                         mCharacteristicTX!!.writeType =
@@ -558,8 +557,7 @@ class FlaskGattService : Service() {
         val chunks = GattArray.byteToPortions(value, maxTransmissionUnit)
         val commandQueue = commandCallbacks.size + chunks.size
         flaskHandler.postDelayed({
-            for (i in chunks.indices) {
-                val chunk = chunks[i]
+            chunks.forEachIndexed { i, chunk ->
                 flaskHandler.postDelayed({
                     try {
                         mCharacteristicTX!!.writeType =

@@ -42,7 +42,7 @@ open class SaveDataSplatoon(appData: ByteArray?) : AppData(appData!!) {
     val saveData
         get() = run {
             val appDataBytes = if (Random().nextBoolean()) saveDataBytes else saveDataBytes2
-            appDataBytes.indices.forEach { appData.put(GAME_DATA_OFFSET + it, appDataBytes[it]) }
+            appDataBytes.forEachIndexed { x, byte -> appData.put(GAME_DATA_OFFSET + x, byte) }
         }
 
     companion object {

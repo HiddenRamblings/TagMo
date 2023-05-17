@@ -74,9 +74,8 @@ class HexAdapter(tagData: ByteArray) : RecyclerView.Adapter<HexAdapter.ViewHolde
     @SuppressLint("WrongConstant")
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val row = getItem(position)
-        for (i in holder.textView.indices) {
+        holder.textView.forEachIndexed { i, view ->
             val hexItem = row[i]
-            val view = holder.textView[i]
             if (hexItem == null) {
                 view!!.setTextColor(Color.TRANSPARENT)
                 view.setBackgroundColor(Color.TRANSPARENT)

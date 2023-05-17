@@ -120,7 +120,7 @@ open class AmiiboData : Parcelable {
 //                crc16 = crc16 shl 0x1 xor if (crc16 and 0x8000 != 0) 0x1021 else 0
 //            }
             val crcHex = TagArray.hexToByteArray(String.format("%04X", crc16 and 0xFFFF))
-            crcHex.indices.forEach { tagData.put(0xFE + it, crcHex[it]) }
+            crcHex.forEachIndexed { x, byte ->  tagData.put(0xFE + x, byte) }
         }
 
     @get:Throws(UnsupportedEncodingException::class)
@@ -355,10 +355,9 @@ open class AmiiboData : Parcelable {
         @Suppress("SameParameterValue")
         private fun getBitSet(bb: ByteBuffer, offset: Int, length: Int): BitSet {
             val bitSet = BitSet(length * 8)
-            val bytes = getBytes(bb, offset, length)
-            for (i in bytes.indices) {
+            getBytes(bb, offset, length).forEachIndexed { i, byte ->
                 for (j in 0..7) {
-                    bitSet[i * 8 + j] = bytes[i].toInt() shr j and 1 == 1
+                    bitSet[i * 8 + j] = byte.toInt() shr j and 1 == 1
                 }
             }
             return bitSet
@@ -367,12 +366,11 @@ open class AmiiboData : Parcelable {
         @Suppress("SameParameterValue")
         private fun putBitSet(bb: ByteBuffer, offset: Int, length: Int, bitSet: BitSet) {
             val bytes = ByteArray(length)
-            for (i in bytes.indices) {
+            bytes.indices.forEach {
                 for (j in 0..7) {
-                    val set = bitSet[i * 8 + j]
-                    bytes[i] =
-                        (if (set) bytes[i].toInt() or (1 shl j)
-                        else bytes[i].toInt() and (1 shl j).inv()).toByte()
+                    val set = bitSet[it * 8 + j]
+                    bytes[it] = (if (set) bytes[it].toInt() or (1 shl j)
+                    else bytes[it].toInt() and (1 shl j).inv()).toByte()
                 }
             }
             putBytes(bb, offset, bytes)

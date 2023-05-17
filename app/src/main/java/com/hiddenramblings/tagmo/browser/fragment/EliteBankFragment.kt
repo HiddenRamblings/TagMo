@@ -388,19 +388,19 @@ class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
             if (null == amiiboManager) return@launch
             if (amiibos.isEmpty()) {
                 bankAdapter?.setAmiibos(amiibos)
-                amiiboList?.indices?.forEach {
-                    amiibos.add(EliteTag(amiiboManager.amiibos[TagArray.hexToLong(amiiboList[it])]))
-                    bankAdapter?.notifyItemInserted(it)
+                amiiboList?.forEachIndexed { i, amiibo ->
+                    amiibos.add(EliteTag(amiiboManager.amiibos[TagArray.hexToLong(amiibo)]))
+                    bankAdapter?.notifyItemInserted(i)
                 }
             } else {
-                amiiboList?.indices?.forEach {
-                    val amiiboId = TagArray.hexToLong(amiiboList[it])
-                    if (it >= amiibos.size) {
-                        amiibos.add(EliteTag(amiiboManager.amiibos[TagArray.hexToLong(amiiboList[it])]))
-                        bankAdapter?.notifyItemInserted(it)
-                    } else if (null == amiibos[it] || it != amiibos[it]?.index || amiiboId != amiibos[it]?.id) {
-                        amiibos[it] = EliteTag(amiiboManager.amiibos[amiiboId])
-                        bankAdapter?.notifyItemChanged(it)
+                amiiboList?.forEachIndexed { i, amiibo ->
+                    val amiiboId = TagArray.hexToLong(amiibo)
+                    if (i >= amiibos.size) {
+                        amiibos.add(EliteTag(amiiboManager.amiibos[TagArray.hexToLong(amiibo)]))
+                        bankAdapter?.notifyItemInserted(i)
+                    } else if (null == amiibos[i] || i != amiibos[i]?.index || amiiboId != amiibos[i]?.id) {
+                        amiibos[i] = EliteTag(amiiboManager.amiibos[amiiboId])
+                        bankAdapter?.notifyItemChanged(i)
                     }
                 }
                 if (null != amiiboList && amiibos.size > amiiboList.size) {
@@ -909,8 +909,8 @@ class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
 
     private fun writeAmiiboFileCollection(amiiboList: ArrayList<AmiiboFile?>) {
         val bytesList: ArrayList<AmiiboData?> = arrayListOf()
-        amiiboList.indices.forEach {
-            amiiboList[it]?.let { amiiboFile ->
+        amiiboList.forEach {
+            it?.let { amiiboFile ->
                 if (prefs.isDocumentStorage) {
                     try {
                         val data = amiiboFile.data ?: amiiboFile.docUri?.let { doc ->

@@ -981,11 +981,11 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
         val count = view.findViewById<NumberPicker>(R.id.number_picker_bin)
         view.findViewById<View>(R.id.button_save).setOnClickListener {
             val amiiboList = amiiboFile?.withRandomSerials(keyManager, count.value)
-            amiiboList?.indices?.forEach {
-                amiiboList[it]?.let { data ->
+            amiiboList?.forEachIndexed { index, amiiboFile ->
+                amiiboFile?.let {
                     TagArray.writeBytesWithName(this,
-                        fileName.replace(".bin", "_$it.bin"),
-                        keyManager.encrypt(data.array)
+                        fileName.replace(".bin", "_$index.bin"),
+                        keyManager.encrypt(it.array)
                     )
                 }
             }

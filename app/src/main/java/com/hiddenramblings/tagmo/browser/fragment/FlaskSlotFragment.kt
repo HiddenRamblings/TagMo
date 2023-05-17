@@ -1029,10 +1029,10 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
             .setMessage(R.string.gatt_write_confirm)
             .setPositiveButton(R.string.proceed) { dialog: DialogInterface, _: Int ->
                 showProcessingNotice(true)
-                bytesList.indices.forEach {
+                bytesList.forEachIndexed { i, byte ->
                     fragmentHandler.postDelayed({
-                        uploadAmiiboData(bytesList[it], it == bytesList.size - 1)
-                    }, 30L * it)
+                        uploadAmiiboData(byte, i == bytesList.size - 1)
+                    }, 30L * i)
                 }
                 onBottomSheetChanged(SHEET.MENU)
                 dialog.dismiss()
@@ -1049,10 +1049,10 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
             .setMessage(R.string.gatt_write_confirm)
             .setPositiveButton(R.string.proceed) { dialog: DialogInterface, _: Int ->
                 showProcessingNotice(true)
-                amiiboList.indices.forEach {
+                amiiboList.forEachIndexed { i, file ->
                     fragmentHandler.postDelayed({
-                        uploadAmiiboFile(amiiboList[it], it == amiiboList.size - 1)
-                    }, 30L * it)
+                        uploadAmiiboFile(file, i == amiiboList.size - 1)
+                    }, 30L * i)
                 }
                 onBottomSheetChanged(SHEET.MENU)
                 settings.removeChangeListener(writeTagAdapter)

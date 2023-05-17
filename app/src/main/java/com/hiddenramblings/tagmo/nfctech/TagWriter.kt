@@ -234,8 +234,9 @@ object TagWriter {
         if (null == uuid) return null
         val key = ByteArray(4)
         val uuidIntArray = IntArray(uuid.size)
-        for (i in uuid.indices)
-            uuidIntArray[i] = 0xFF and uuid[i].toInt()
+        uuid.forEachIndexed { i, byte ->
+            uuidIntArray[i] = 0xFF and byte.toInt()
+        }
         if (uuid.size == 7) {
             key[0] = (0xFF and (0xAA xor (uuidIntArray[1] xor uuidIntArray[3]))).toByte()
             key[1] = (0xFF and (0x55 xor (uuidIntArray[2] xor uuidIntArray[4]))).toByte()

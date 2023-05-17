@@ -151,9 +151,7 @@ object TagArray {
         try {
             result = hex.toLong(16)
         } catch (nf: NumberFormatException) {
-            for (i in hex.indices) {
-                result = (result shl 4) + Character.digit(hex[i], 16).toLong()
-            }
+            hex.forEach { result = (result shl 4) + Character.digit(it, 16).toLong() }
         }
         return result
     }

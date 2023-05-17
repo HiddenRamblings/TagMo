@@ -331,19 +331,19 @@ class NfcActivity : AppCompatActivity() {
                                 val amiiboList = commandIntent.parcelableArrayList<AmiiboData>(
                                     NFCIntent.EXTRA_AMIIBO_BYTES
                                 )
-                                amiiboList?.indices?.forEach { x ->
+                                amiiboList?.forEachIndexed { x, amiiboData ->
                                     showMessage(R.string.bank_writing, x + 1, amiiboList.size)
                                     TagWriter.writeEliteAuto(
-                                        ntag, keyManager.encrypt(amiiboList[x].array), keyManager, x
+                                        ntag, keyManager.encrypt(amiiboData.array), keyManager, x
                                     )
                                 }
                             } else if (commandIntent.hasExtra(NFCIntent.EXTRA_AMIIBO_FILES)) {
                                 val amiiboList = commandIntent.parcelableArrayList<AmiiboFile>(
                                     NFCIntent.EXTRA_AMIIBO_FILES
                                 )
-                                amiiboList?.indices?.forEach { x ->
+                                amiiboList?.forEachIndexed { x, amiiboFile ->
                                     showMessage(R.string.bank_writing, x + 1, amiiboList.size)
-                                    val tagData = amiiboList[x].data
+                                    val tagData = amiiboFile.data
                                     if (null != tagData)
                                         TagWriter.writeEliteAuto(ntag, tagData, keyManager, x)
                                     else
@@ -355,10 +355,10 @@ class NfcActivity : AppCompatActivity() {
                                 val amiiboList = commandIntent.parcelableArrayList<EliteTag>(
                                     NFCIntent.EXTRA_AMIIBO_LIST
                                 )
-                                amiiboList?.indices?.forEach { x ->
+                                amiiboList?.forEachIndexed { x, eliteTag ->
                                     showMessage(R.string.bank_writing, x + 1, amiiboList.size)
-                                    var tagData = TagArray.getValidatedData(keyManager, amiiboList[x].data)
-                                    if (null == tagData) tagData = foomiibo.generateData(amiiboList[x].id)
+                                    var tagData = TagArray.getValidatedData(keyManager, eliteTag.data)
+                                    if (null == tagData) tagData = foomiibo.generateData(eliteTag.id)
                                     TagWriter.writeEliteAuto(ntag, tagData, keyManager, x)
                                 }
                             }

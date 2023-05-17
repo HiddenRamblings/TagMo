@@ -56,12 +56,11 @@ open class AmiiboFile : Parcelable {
         } ?: filePath?.let {
             TagArray.getValidatedFile(keyManager, it)
         }
-        return arrayListOf<AmiiboData?>().also { dataList ->
-            tagData?.let { AmiiboData(keyManager.decrypt(it)) }?.let {
-                for (i in 0 until count) {
-                    dataList.add(it.apply { uID = Foomiibo().generateRandomUID() })
-                }
-            }
+        val amiiboData = AmiiboData(keyManager.decrypt(tagData))
+        return ArrayList<AmiiboData?>(count).apply {
+            fill(amiiboData)
+        }.also {
+            it.map { data -> data?.uID = Foomiibo().generateRandomUID() }
         }
     }
 

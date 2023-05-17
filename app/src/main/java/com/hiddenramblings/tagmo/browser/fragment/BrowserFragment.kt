@@ -75,7 +75,6 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
         private set
     var foomiiboContent: RecyclerView? = null
         private set
-    private lateinit var directory: File
     private val foomiibo = Foomiibo()
     private lateinit var settings: BrowserSettings
     var bottomSheet: BottomSheetBehavior<View>? = null
@@ -125,8 +124,6 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
         super.onViewCreated(view, savedInstanceState)
         val activity = requireActivity() as BrowserActivity
         settings = activity.settings ?: BrowserSettings().initialize()
-        directory = File(activity.filesDir, "Foomiibo")
-        directory.mkdirs()
         chipList = view.findViewById(R.id.chip_list)
         chipList?.isGone = true
 
@@ -250,6 +247,7 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
 
     val managerStats: Unit
         get() {
+            if (null == view) return
             val characterStats = requireView().findViewById<TextView>(R.id.stats_character)
             val amiiboTypeStats = requireView().findViewById<TextView>(R.id.stats_amiibo_type)
             val amiiboTitleStats = requireView().findViewById<TextView>(R.id.stats_amiibo_titles)
@@ -437,7 +435,7 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
     }
 
     private suspend fun deleteDir(dialog: ProgressAlert?, dir: File?) {
-        if (!directory.exists()) return
+        if (!Foomiibo.directory.exists()) return
         withContext(Dispatchers.IO) {
             dir?.listFiles().also { files ->
                 if (!files.isNullOrEmpty()) {
@@ -461,7 +459,9 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
         try {
             val amiibo = settings.amiiboManager?.amiibos?.get(Amiibo.dataToId(tagData))
                 ?: throw Exception()
-            val directory = amiibo.amiiboSeries?.let { File(directory, it.name) } ?: directory
+            val directory = amiibo.amiiboSeries?.let {
+                File(Foomiibo.directory, it.name)
+            } ?: Foomiibo.directory
             val amiiboFile = File(
                 directory, TagArray.decipherFilename(amiibo, tagData, false)
             )
@@ -486,7 +486,7 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
     private fun clearFoomiiboSet(activity: AppCompatActivity) {
         val dialog = ProgressAlert.show(activity, "")
         CoroutineScope(Dispatchers.IO).launch(Dispatchers.IO) {
-            deleteDir(dialog, directory)
+            deleteDir(dialog, Foomiibo.directory)
             withContext(Dispatchers.Main) {
                 dialog.dismiss()
                 if (activity is BrowserActivity) activity.onRootFolderChanged(false)
@@ -497,7 +497,7 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
     private fun buildFoomiiboFile(amiibo: Amiibo) {
         try {
             val tagData = foomiibo.getSignedData(Amiibo.idToHex(amiibo.id))
-            val directory = File(directory, amiibo.amiiboSeries!!.name)
+            val directory = File(Foomiibo.directory, amiibo.amiiboSeries!!.name)
             directory.mkdirs()
             TagArray.writeBytesToFile(
                 directory, TagArray.decipherFilename(amiibo, tagData, false), tagData
@@ -508,7 +508,9 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
     fun buildFoomiiboFile(tagData: ByteArray) {
         try {
             val amiibo = settings.amiiboManager?.amiibos?.get(Amiibo.dataToId(tagData)) ?: return
-            val directory = amiibo.amiiboSeries?.let { File(directory, it.name) } ?: directory
+            val directory = amiibo.amiiboSeries?.let {
+                File(Foomiibo.directory, it.name)
+            } ?: Foomiibo.directory
             directory.mkdirs()
             val foomiiboData = foomiibo.getSignedData(tagData)
             TagArray.writeBytesToFile(
@@ -527,8 +529,8 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
             settings.amiiboManager?.let { amiiboManager ->
                 val dialog = ProgressAlert.show(activity, "")
                 CoroutineScope(Dispatchers.IO).launch(Dispatchers.IO) {
-                    deleteDir(null, directory)
-                    directory.mkdirs()
+                    deleteDir(null, Foomiibo.directory)
+                    Foomiibo.directory.mkdirs()
                     amiiboManager.amiibos.values.forEach { amiibo ->
                         buildFoomiiboFile(amiibo)
                         withContext(Dispatchers.Main) {

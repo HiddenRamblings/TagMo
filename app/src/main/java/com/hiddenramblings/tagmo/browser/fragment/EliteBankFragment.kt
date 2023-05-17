@@ -174,6 +174,8 @@ class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
             }
         }
         amiiboCard = view.findViewById<CardView>(R.id.active_card_layout).apply {
+            findViewById<View>(R.id.txtError)?.isGone = true
+            findViewById<View>(R.id.txtPath)?.isGone = true
             with (findViewById<AppCompatImageView>(R.id.imageAmiibo)) {
                 amiiboCardTarget = object : CustomTarget<Bitmap?>() {
                     override fun onLoadFailed(errorDrawable: Drawable?) {
@@ -644,9 +646,7 @@ class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
                         getString(R.string.wrote_file, name)
                     )
                     activity.loadAmiiboBackground()
-                } ?: Toasty(requireContext()).Long(
-                    getString(R.string.fail_save_file)
-                )
+                } ?: Toasty(requireContext()).Long(getString(R.string.fail_save_file))
             } catch (e: Exception) { Toasty(requireActivity()).Short(e.message) }
             backupDialog.dismiss()
         }
@@ -753,10 +753,7 @@ class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
     }
 
     private fun updateAmiiboView(
-        amiiboView: View?,
-        tagData: ByteArray?,
-        amiiboId: Long,
-        current_bank: Int
+        amiiboView: View?, tagData: ByteArray?, amiiboId: Long, current_bank: Int
     ) {
         if (null == amiiboView) return
         val amiiboInfo = requireView().findViewById<View>(R.id.amiiboInfo)

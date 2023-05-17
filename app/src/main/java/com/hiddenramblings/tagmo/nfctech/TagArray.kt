@@ -286,9 +286,10 @@ object TagArray {
         amiiboManager: AmiiboManager?, tagData: ByteArray?, verified: Boolean
     ): String {
         try {
-            val amiiboId = Amiibo.dataToId(tagData)
             amiiboManager?.let {
-                return decipherFilename(it.amiibos[amiiboId]!!, tagData, verified)
+                return it.amiibos[Amiibo.dataToId(tagData)]?.let { amiibo ->
+                    decipherFilename(amiibo, tagData, verified)
+                } ?: ""
             }
         } catch (ex: Exception) {
             Debug.warn(ex)
@@ -340,9 +341,7 @@ object TagArray {
     @Throws(IOException::class)
     fun writeBytesToFile(directory: File?, name: String, tagData: ByteArray?): String {
         val binFile = File(directory, name)
-        FileOutputStream(binFile).use {
-            it.write(tagData)
-        }
+        FileOutputStream(binFile).use { it.write(tagData) }
         try {
             MediaScannerConnection.scanFile(
                 TagMo.appContext, arrayOf(binFile.absolutePath), null, null

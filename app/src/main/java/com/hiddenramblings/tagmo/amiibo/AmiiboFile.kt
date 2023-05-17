@@ -51,16 +51,17 @@ open class AmiiboFile : Parcelable {
     }
 
     fun withRandomSerials(keyManager: KeyManager, count: Int) : ArrayList<AmiiboData?> {
-        val tagData = data ?: docUri?.let {
+        val tagData = keyManager.decrypt(data ?: docUri?.let {
             TagArray.getValidatedDocument(keyManager, it)
         } ?: filePath?.let {
             TagArray.getValidatedFile(keyManager, it)
-        }
-        val amiiboData = AmiiboData(keyManager.decrypt(tagData))
-        return ArrayList<AmiiboData?>(count).apply {
-            fill(amiiboData)
-        }.also {
-            it.map { data -> data?.uID = Foomiibo().generateRandomUID() }
+        })
+        return arrayListOf<AmiiboData?>().also { dataList ->
+            for (i in 0 until count) {
+                dataList.add(AmiiboData(tagData).apply {
+                    uID = Foomiibo().generateRandomUID()
+                })
+            }
         }
     }
 

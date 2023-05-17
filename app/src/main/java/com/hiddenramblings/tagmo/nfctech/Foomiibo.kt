@@ -9,6 +9,7 @@ package com.hiddenramblings.tagmo.nfctech
 import com.hiddenramblings.tagmo.R
 import com.hiddenramblings.tagmo.TagMo
 import com.hiddenramblings.tagmo.eightbit.io.Debug
+import java.io.File
 import java.text.DecimalFormat
 import java.util.*
 
@@ -112,5 +113,6 @@ class Foomiibo {
             }
             return null
         }
+        val directory: File by lazy { File(TagMo.appContext.filesDir, "Foomiibo") }
     }
 }

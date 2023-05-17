@@ -82,6 +82,7 @@ import com.hiddenramblings.tagmo.eightbit.os.Version
 import com.hiddenramblings.tagmo.eightbit.view.AnimatedLinearLayout
 import com.hiddenramblings.tagmo.eightbit.viewpager.*
 import com.hiddenramblings.tagmo.hexcode.HexCodeViewer
+import com.hiddenramblings.tagmo.nfctech.Foomiibo
 import com.hiddenramblings.tagmo.nfctech.NfcActivity
 import com.hiddenramblings.tagmo.nfctech.ScanTag
 import com.hiddenramblings.tagmo.nfctech.TagArray
@@ -172,6 +173,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
             supportActionBar?.setHomeAsUpIndicator(R.drawable.ic_menu_24)
         }
         setContentView(R.layout.activity_browser)
+        Foomiibo.directory.mkdirs()
         fakeSnackbar = findViewById(R.id.fake_snackbar)
         fakeSnackbarText = findViewById(R.id.snackbar_text)
         fakeSnackbarItem = findViewById(R.id.snackbar_item)
@@ -973,7 +975,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
         false
     }
 
-    private fun generateDuplicates(amiiboFile: AmiiboFile?, tagData: ByteArray?) {
+    private fun generateDuplicates(amiiboFile: AmiiboFile?, tagData: ByteArray?, cached: Boolean) {
         val fileName = TagArray.decipherFilename(settings?.amiiboManager, tagData, true)
         val view = layoutInflater.inflate(R.layout.dialog_duplicator, null)
         val dialog = AlertDialog.Builder(this)
@@ -983,10 +985,14 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
             val amiiboList = amiiboFile?.withRandomSerials(keyManager, count.value)
             amiiboList?.forEachIndexed { index, amiiboFile ->
                 amiiboFile?.let {
-                    TagArray.writeBytesWithName(this,
-                        fileName.replace(".bin", "_$index.bin"),
-                        keyManager.encrypt(it.array)
-                    )
+                    val name = fileName.replace(".bin", "_$index.bin")
+                    if (cached) {
+                        val directory = File(Foomiibo.directory, "Duplicates")
+                        directory.mkdirs()
+                        TagArray.writeBytesToFile(directory, name, keyManager.encrypt(it.array))
+                    } else {
+                        TagArray.writeBytesWithName(this, name, keyManager.encrypt(it.array))
+                    }
                 }
             }
             copierDialog.dismiss()
@@ -1118,7 +1124,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                     return@setOnMenuItemClickListener true
                 }
                 R.id.mnu_copier -> {
-                    generateDuplicates(amiiboFile, tagData)
+                    generateDuplicates(amiiboFile, tagData, cached)
                     return@setOnMenuItemClickListener true
                 }
                 R.id.mnu_view_hex -> {

@@ -69,6 +69,7 @@ import java.text.ParseException
 @SuppressLint("NewApi")
 open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListener, BluetoothListener {
     private val prefs: Preferences by lazy { Preferences(TagMo.appContext) }
+    private val keyManager: KeyManager by lazy { KeyManager(TagMo.appContext) }
 
     private var bluetoothHandler: BluetoothHandler? = null
     private var isFragmentVisible = false
@@ -533,7 +534,7 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
                     }
 
                     override fun onAmiiboListClicked(amiiboList: ArrayList<AmiiboFile?>?) {}
-                    override fun onAmiiboDataClicked(clonesList: ArrayList<AmiiboData?>?) {}
+                    override fun onAmiiboDataClicked(amiiboFile: AmiiboFile?, count: Int) {}
                 })
                 bottomSheet?.setState(BottomSheetBehavior.STATE_EXPANDED)
             }
@@ -553,8 +554,10 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
                         override fun onAmiiboListClicked(amiiboList: ArrayList<AmiiboFile?>?) {
                             if (!amiiboList.isNullOrEmpty()) writeAmiiboFileCollection(amiiboList)
                         }
-                        override fun onAmiiboDataClicked(clonesList: ArrayList<AmiiboData?>?) {
-                            if (!clonesList.isNullOrEmpty()) writeAmiiboDataCollection(clonesList)
+                        override fun onAmiiboDataClicked(amiiboFile: AmiiboFile?, count: Int) {
+                            amiiboFile?.let {
+                                writeAmiiboCollection(it.withRandomSerials(keyManager, count))
+                            }
                         }
                     }, count, writeSerials?.isChecked ?: false)
                 }
@@ -1023,7 +1026,7 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
         }
     }
 
-    private fun writeAmiiboDataCollection(bytesList: ArrayList<AmiiboData?>) {
+    private fun writeAmiiboCollection(bytesList: ArrayList<AmiiboData?>) {
         settings.removeChangeListener(writeTagAdapter)
         AlertDialog.Builder(requireContext())
             .setMessage(R.string.gatt_write_confirm)

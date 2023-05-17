@@ -139,12 +139,7 @@ class WriteTagAdapter(private val settings: BrowserSettings?) :
     private fun handleClickEvent(holder: AmiiboViewHolder, position: Int) {
         if (listSize > 1) {
             if (isFillEnabled) {
-                filteredData[position]?.let { amiiboFile ->
-                    val clonesList = amiiboFile.withRandomSerials(
-                        KeyManager(holder.itemView.context), listSize
-                    )
-                    listener?.onAmiiboDataClicked(clonesList)
-                }
+                listener?.onAmiiboDataClicked(filteredData[position], listSize)
             } else {
                 if (amiiboList.contains(holder.amiiboFile)) {
                     amiiboList.remove(filteredData[position])
@@ -424,7 +419,7 @@ class WriteTagAdapter(private val settings: BrowserSettings?) :
         fun onAmiiboClicked(amiiboFile: AmiiboFile?)
         fun onAmiiboImageClicked(amiiboFile: AmiiboFile?)
         fun onAmiiboListClicked(amiiboList: ArrayList<AmiiboFile?>?)
-        fun onAmiiboDataClicked(clonesList: ArrayList<AmiiboData?>?)
+        fun onAmiiboDataClicked(amiiboFile: AmiiboFile?, count: Int)
     }
 
     companion object {

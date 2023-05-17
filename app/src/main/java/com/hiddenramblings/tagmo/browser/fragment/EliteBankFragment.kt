@@ -22,9 +22,13 @@ import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.widget.*
+import androidx.appcompat.widget.AppCompatButton
+import androidx.appcompat.widget.AppCompatImageView
+import androidx.appcompat.widget.AppCompatToggleButton
+import androidx.appcompat.widget.SearchView
+import androidx.appcompat.widget.SwitchCompat
+import androidx.appcompat.widget.Toolbar
 import androidx.cardview.widget.CardView
-import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.view.isGone
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
@@ -214,8 +218,10 @@ class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
                         override fun onAmiiboListClicked(amiiboList: ArrayList<AmiiboFile?>?) {
                             if (!amiiboList.isNullOrEmpty()) writeAmiiboFileCollection(amiiboList)
                         }
-                        override fun onAmiiboDataClicked(clonesList: ArrayList<AmiiboData?>?) {
-                            if (!clonesList.isNullOrEmpty()) writeAmiiboCollection(clonesList)
+                        override fun onAmiiboDataClicked(amiiboFile: AmiiboFile?, count: Int) {
+                            amiiboFile?.let {
+                                writeAmiiboCollection(it.withRandomSerials(keyManager, count))
+                            }
                         }
                     }, count, writeSerials?.isChecked ?: false)
                 }
@@ -624,7 +630,7 @@ class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
             }
 
             override fun onAmiiboListClicked(amiiboList: ArrayList<AmiiboFile?>?) {}
-            override fun onAmiiboDataClicked(clonesList: ArrayList<AmiiboData?>?) {}
+            override fun onAmiiboDataClicked(amiiboFile: AmiiboFile?, count: Int) {}
         })
         bottomSheet?.state = BottomSheetBehavior.STATE_EXPANDED
     }

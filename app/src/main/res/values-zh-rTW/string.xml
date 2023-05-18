@@ -206,7 +206,7 @@
 
     <string name="menu_qr_code">QR Code 工具箱</string>
     <string name="menu_dimensions">樂高次元</string>
-    <string name="menu_joy_con">Joy-Con 測試</string>
+    <string name="menu_joystick">Joystick 測試</string>
 
     <string name="prefs_configuration">配置</string>
     <string name="pref_import_keys">匯入crypto金鑰</string>

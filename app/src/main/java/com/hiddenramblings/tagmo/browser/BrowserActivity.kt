@@ -525,7 +525,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                 onReturnableIntent.launch(Intent(this, DimensionActivity::class.java))
         }
 
-        findViewById<CardView>(R.id.menu_joy_con).apply {
+        findViewById<CardView>(R.id.menu_joystick).apply {
             setOnClickListener {
                 closePrefsDrawer()
                 if (Version.isJellyBeanMR2) {

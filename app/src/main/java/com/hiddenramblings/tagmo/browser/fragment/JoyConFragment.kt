@@ -32,7 +32,7 @@ class JoyConFragment : DialogFragment(), BluetoothListener {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return inflater.inflate(R.layout.fragment_joy_con, container, false)
+        return inflater.inflate(R.layout.fragment_joystick, container, false)
     }
 
     @SuppressLint("MissingPermission")

@@ -52,7 +52,6 @@
     <string name="mimetype_zip" translatable="false">application/zip</string>
 
     <string name="amiibo" translatable="false">amiibo</string>
-    <string name="joy_con" translatable="false">Joy-Con</string>
 
     <string name="amiibo_api" translatable="false">AmiiboAPI</string>
     <string name="amiibo_api_url" translatable="false">AmiiboAPI.com</string>

@@ -241,7 +241,7 @@
                 </androidx.cardview.widget.CardView>
 
                 <androidx.cardview.widget.CardView
-                    android:id="@+id/menu_joy_con"
+                    android:id="@+id/menu_joystick"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_margin="8dp"
@@ -250,28 +250,28 @@
                     app:cardCornerRadius="@dimen/card_radius">
 
                     <LinearLayout
-                        android:id="@+id/wrapper_joy_con"
+                        android:id="@+id/wrapper_joystick"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="horizontal">
 
                         <androidx.appcompat.widget.AppCompatImageView
                             android:contentDescription="@string/imageview_amiibo"
-                            android:id="@+id/image_joy_con"
+                            android:id="@+id/image_joystick"
                             android:layout_width="wrap_content"
                             android:layout_height="64dp"
                             android:layout_weight="1"
-                            app:srcCompat="@drawable/ic_joy_cons_24dp"
+                            app:srcCompat="@drawable/ic_joystick_24dp"
                             android:foreground="@drawable/card_foreground"
                             tools:ignore="UnusedAttribute" />
 
                         <TextView
-                            android:id="@+id/text_joy_con"
+                            android:id="@+id/text_joystick"
                             android:layout_width="0dp"
                             android:layout_height="match_parent"
                             android:layout_weight="3"
                             android:gravity="center"
-                            android:text="@string/menu_joy_con"
+                            android:text="@string/menu_joystick"
                             android:textColor="@color/tag_text"
                             android:textSize="18sp"/>
                     </LinearLayout>

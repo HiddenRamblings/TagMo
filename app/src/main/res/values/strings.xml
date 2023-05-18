@@ -210,7 +210,7 @@
     <string name="menu_flask">Bluetooth Browser</string>
     <string name="menu_qr_code">QR Code Toolkit</string>
     <string name="menu_dimensions">Dimensions 213</string>
-    <string name="menu_joy_con">Joy-Con Testing</string>
+    <string name="menu_joystick">Joystick Testing</string>
     <string name="menu_guides">Instructions</string>
     <string name="menu_settings">TagMo Settings</string>
 

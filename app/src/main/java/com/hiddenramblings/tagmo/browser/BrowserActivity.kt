@@ -36,6 +36,7 @@ import androidx.appcompat.widget.*
 import androidx.appcompat.widget.PopupMenu
 import androidx.appcompat.widget.SearchView
 import androidx.appcompat.widget.Toolbar
+import androidx.cardview.widget.CardView
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.content.ContextCompat
 import androidx.core.view.GravityCompat
@@ -235,6 +236,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                     BrowserAdapter.resetVisible()
                     FoomiiboAdapter.resetVisible()
                 }
+                val hasEliteEnabled = prefs.eliteEnabled()
                 val hasFlaskEnabled = prefs.flaskEnabled()
                 if (BuildConfig.WEAR_OS) {
                     when (position) {
@@ -250,8 +252,17 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                                 browserSheet = bottomSheet
                             }
                         }
-                        1 -> {
-                            if (hasFlaskEnabled) {
+                        2 -> {
+                            if (!hasEliteEnabled && hasFlaskEnabled) {
+                                pagerAdapter.flaskSlots.run {
+                                    delayedBluetoothEnable()
+                                    amiibosView = flaskContent
+                                    browserSheet = bottomSheet
+                                }
+                            }
+                        }
+                        3 -> {
+                            if (hasEliteEnabled && hasFlaskEnabled) {
                                 pagerAdapter.flaskSlots.run {
                                     delayedBluetoothEnable()
                                     amiibosView = flaskContent
@@ -262,7 +273,6 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                         else -> {}
                     }
                 } else {
-                    val hasEliteEnabled = prefs.eliteEnabled()
                     when (position) {
                         0 -> {
                             showActionButton()
@@ -277,7 +287,8 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                                 browserSheet = bottomSheet
                             }
                         }
-                        1 -> if (hasEliteEnabled) {
+                        1 -> setTitle(R.string.guides)
+                        2 -> if (hasEliteEnabled) {
                             setTitle(R.string.elite_n2)
                             pagerAdapter.eliteBanks.run {
                                 amiibosView = eliteContent
@@ -290,10 +301,8 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                                 amiibosView = flaskContent
                                 browserSheet = bottomSheet
                             }
-                        } else {
-                            setTitle(R.string.guides)
                         }
-                        2 -> {
+                        3 -> {
                             if (hasEliteEnabled && hasFlaskEnabled) {
                                 setTitle(R.string.flask_title)
                                 pagerAdapter.flaskSlots.run {
@@ -301,12 +310,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                                     amiibosView = flaskContent
                                     browserSheet = bottomSheet
                                 }
-                            } else {
-                                setTitle(R.string.guides)
                             }
-                        }
-                        3 -> {
-                            setTitle(R.string.guides)
                         }
                         else -> {}
                     }
@@ -359,30 +363,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
         buildText.movementMethod = LinkMovementMethod.getInstance()
         buildText.text = TagMo.getVersionLabel(false)
 
-        findViewById<View>(R.id.wrapper_amiibo).setOnClickListener {
-            closePrefsDrawer()
-            if (viewPager.currentItem != 0) viewPager.setCurrentItem(0, true)
-        }
-
-        findViewById<View>(R.id.wrapper_elite).setOnClickListener {
-            closePrefsDrawer()
-            if (viewPager.currentItem != 1) viewPager.setCurrentItem(1, true)
-        }
-
-        findViewById<View>(R.id.wrapper_flask).setOnClickListener {
-            closePrefsDrawer()
-            if (viewPager.currentItem != 2) viewPager.setCurrentItem(2, true)
-        }
-
-        findViewById<View>(R.id.wrapper_guides).setOnClickListener {
-            closePrefsDrawer()
-            if (viewPager.currentItem != 3) viewPager.setCurrentItem(3, true)
-        }
-
-        settingsPage = findViewById(R.id.preferences)
-        findViewById<View>(R.id.wrapper_settings).setOnClickListener {
-            settingsPage?.let { it.isVisible = it.isGone }
-        }
+        onCreateMainMenuLayout()
 
         if (BuildConfig.WEAR_OS) {
             onCreateWearOptionsMenu()
@@ -475,7 +456,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
 
         if (!prefs.guidesPrompted()) {
             prefs.guidesPrompted(true)
-            viewPager.setCurrentItem(pagerAdapter.itemCount - 1, false)
+            viewPager.setCurrentItem(1, false)
         }
     }
 
@@ -508,18 +489,71 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
 //        startActivity(intent)
     }
 
+    private fun onCreateMainMenuLayout() {
+        findViewById<CardView>(R.id.menu_amiibo).setOnClickListener {
+            closePrefsDrawer()
+            if (viewPager.currentItem != 0) viewPager.setCurrentItem(0, true)
+        }
+
+        findViewById<CardView>(R.id.menu_elite).apply {
+            setOnClickListener {
+                closePrefsDrawer()
+                if (viewPager.currentItem != 1) viewPager.setCurrentItem(2, true)
+            }
+            isVisible = prefs.eliteEnabled()
+        }
+
+
+        findViewById<CardView>(R.id.menu_flask).apply {
+            setOnClickListener {
+                closePrefsDrawer()
+                if (viewPager.currentItem != 2) viewPager.setCurrentItem(3, true)
+            }
+            isVisible = prefs.flaskEnabled()
+        }
+
+        findViewById<CardView>(R.id.menu_qr_code).setOnClickListener {
+            closePrefsDrawer()
+            onQRCodeScanner.launch(Intent(this, QRCodeScanner::class.java))
+        }
+
+        findViewById<CardView>(R.id.menu_lego).setOnClickListener {
+            closePrefsDrawer()
+            if (BuildConfig.WEAR_OS)
+                Toasty(this).Short(R.string.feature_unavailable)
+            else
+                onReturnableIntent.launch(Intent(this, DimensionActivity::class.java))
+        }
+
+        findViewById<CardView>(R.id.menu_joy_con).apply {
+            setOnClickListener {
+                closePrefsDrawer()
+                if (Version.isJellyBeanMR2) {
+                    if (joyConDialog?.isShowing == true) return@setOnClickListener
+                    val fragmentJoyCon = newInstance()
+                    fragmentJoyCon.show(supportFragmentManager, "dialog")
+                    joyConDialog = fragmentJoyCon.dialog
+                }
+            }
+            isVisible = Version.isJellyBeanMR2
+        }
+
+        findViewById<CardView>(R.id.menu_guides).setOnClickListener {
+            closePrefsDrawer()
+            if (viewPager.currentItem != 3) viewPager.setCurrentItem(1, true)
+        }
+
+        settingsPage = findViewById(R.id.preferences)
+        findViewById<CardView>(R.id.menu_settings).setOnClickListener {
+            settingsPage?.let { it.isVisible = it.isGone }
+        }
+    }
+
     @SuppressLint("NotifyDataSetChanged")
     fun onTabCollectionChanged() {
         if (viewPager.currentItem != 0) viewPager.setCurrentItem(0, false)
         if (Version.isTiramisu) onApplicationRecreate() else pagerAdapter.notifyDataSetChanged()
-    }
-
-    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
-    private fun onShowJoyConFragment() {
-        if (joyConDialog?.isShowing == true) return
-        val fragmentJoyCon = newInstance()
-        fragmentJoyCon.show(supportFragmentManager, "dialog")
-        joyConDialog = fragmentJoyCon.dialog
+        onCreateMainMenuLayout()
     }
 
     private fun requestStoragePermission() {
@@ -622,8 +656,6 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
         popup.menu.findItem(R.id.mnu_scan).isEnabled = false
         popup.menu.findItem(R.id.mnu_backup).isEnabled = false
         popup.menu.findItem(R.id.mnu_validate).isEnabled = false
-        popup.menu.findItem(R.id.mnu_lego).isEnabled = false
-        popup.menu.findItem(R.id.mnu_qr_code).isEnabled = false
         popup.show()
         val popupHandler: Handler = object : Handler(Looper.getMainLooper()) {
             override fun handleMessage(msg: Message) {
@@ -632,11 +664,9 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
         }
         popupHandler.postDelayed({
             val baseDelay = 75
-            popupHandler.sendEmptyMessageDelayed(R.id.mnu_qr_code, baseDelay.toLong())
-            popupHandler.sendEmptyMessageDelayed(R.id.mnu_lego, (75 + baseDelay).toLong())
-            popupHandler.sendEmptyMessageDelayed(R.id.mnu_validate, (175 + baseDelay).toLong())
-            popupHandler.sendEmptyMessageDelayed(R.id.mnu_backup, (275 + baseDelay).toLong())
-            popupHandler.sendEmptyMessageDelayed(R.id.mnu_scan, (375 + baseDelay).toLong())
+            popupHandler.sendEmptyMessageDelayed(R.id.mnu_validate, (baseDelay).toLong())
+            popupHandler.sendEmptyMessageDelayed(R.id.mnu_backup, (75 + baseDelay).toLong())
+            popupHandler.sendEmptyMessageDelayed(R.id.mnu_scan, (175 + baseDelay).toLong())
         }, 275)
         popup.setOnMenuItemClickListener { item: MenuItem ->
             when (item.itemId) {
@@ -670,20 +700,6 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                         Intent(this, NfcActivity::class.java)
                             .setAction(NFCIntent.ACTION_SCAN_TAG)
                     )
-                    return@setOnMenuItemClickListener true
-                }
-                R.id.mnu_lego -> {
-                    if (BuildConfig.WEAR_OS) {
-                        Toasty(this).Short(R.string.feature_unavailable)
-                        return@setOnMenuItemClickListener true
-                    }
-                    onReturnableIntent.launch(
-                        Intent(this, DimensionActivity::class.java)
-                    )
-                    return@setOnMenuItemClickListener true
-                }
-                R.id.mnu_qr_code -> {
-                    onQRCodeScanner.launch(Intent(this, QRCodeScanner::class.java))
                     return@setOnMenuItemClickListener true
                 }
                 else -> false
@@ -1434,9 +1450,6 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                     it.notifyChanges()
                 }
             }
-            R.id.mnu_joy_con -> {
-                if (Version.isJellyBeanMR2) onShowJoyConFragment()
-            }
             R.id.send_donation -> {
                 showDonationPanel()
             }
@@ -1483,7 +1496,6 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
             menuViewLarge = toolbar.menu.findItem(R.id.view_large)
             menuViewImage = toolbar.menu.findItem(R.id.view_image)
             menuRecursiveFiles = toolbar.menu.findItem(R.id.recursive)
-            toolbar.menu.findItem(R.id.mnu_joy_con).isVisible = Version.isJellyBeanMR2
         }
         onSortChanged()
         onViewChanged()
@@ -1520,7 +1532,6 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
         menuViewLarge = menu.findItem(R.id.view_large)
         menuViewImage = menu.findItem(R.id.view_image)
         menuRecursiveFiles = menu.findItem(R.id.recursive)
-        menu.findItem(R.id.mnu_joy_con).isVisible = Version.isJellyBeanMR2
         if (null == settings) return false
         onSortChanged()
         onViewChanged()
@@ -2292,7 +2303,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
     }
 
     fun showElitePage(extras: Bundle) {
-        if (viewPager.currentItem == 1) {
+        if (viewPager.currentItem == 2) {
             pagerAdapter.eliteBanks.onHardwareLoaded(extras)
         } else {
             setScrollListener(object : ScrollListener {
@@ -2301,7 +2312,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                     removeScrollListener()
                 }
             })
-            viewPager.setCurrentItem(1, true)
+            viewPager.setCurrentItem(2, true)
         }
     }
 
@@ -2317,7 +2328,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                     removeScrollListener()
                 }
             })
-            viewPager.setCurrentItem(pagerAdapter.itemCount - 1, true)
+            viewPager.setCurrentItem(1, true)
         }
     }
 

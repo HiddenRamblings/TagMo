@@ -14,18 +14,16 @@ class NavPagerAdapter(fa: FragmentActivity?) : FragmentStateAdapter(fa!!) {
     var hasEliteEnabled = mPrefs.eliteEnabled()
     var hasFlaskEnabled = mPrefs.flaskEnabled()
     val browser = BrowserFragment()
+    val website = WebsiteFragment()
     val eliteBanks = EliteBankFragment()
     val flaskSlots = FlaskSlotFragment()
-    val website = WebsiteFragment()
     @SuppressLint("NewApi")
     override fun createFragment(position: Int): Fragment {
         return when (position) {
-            1 -> if (!BuildConfig.WEAR_OS && hasEliteEnabled) eliteBanks
-            else if (hasFlaskEnabled) flaskSlots
-            else website
-            2 -> if (!BuildConfig.WEAR_OS && hasEliteEnabled && hasFlaskEnabled) flaskSlots
-            else website
-            3 -> website
+            0 -> browser
+            1 -> website
+            2 -> if (hasEliteEnabled) eliteBanks else if (hasFlaskEnabled) flaskSlots else website
+            3 -> if (hasEliteEnabled && hasFlaskEnabled) flaskSlots else website
             else -> browser
         }
     }

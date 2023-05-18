@@ -157,7 +157,7 @@ class UpdateManager internal constructor(activity: BrowserActivity) {
                             )
                             putExtra(Intent.EXTRA_NOT_UNKNOWN_SOURCE, true)
                             putExtra(Intent.EXTRA_INSTALLER_PACKAGE_NAME, applicationInfo.packageName)
-                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                            if (Version.isNougat) {
                                 addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
                                 addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
                             }
@@ -250,6 +250,9 @@ class UpdateManager internal constructor(activity: BrowserActivity) {
     }
 
     companion object {
-        private const val TAGMO_GIT_API = "https://api.github.com/repos/HiddenRamblings/TagMo/releases/tags/master"
+        private val TAGMO_GIT_API = if (BuildConfig.WEAR_OS)
+            "https://api.github.com/repos/HiddenRamblings/TagMo/releases/tags/wearos"
+        else
+            "https://api.github.com/repos/HiddenRamblings/TagMo/releases/tags/master"
     }
 }

@@ -114,13 +114,13 @@
             android:theme="@style/Theme.Overlay.NoActionBar" />
         <activity
             android:name=".qrcode.QRCodeScanner"
-            android:label="@string/qr_code_scanner"
+            android:label="@string/menu_qr_code"
             android:configChanges="orientation|screenLayout|screenSize|smallestScreenSize"
             android:launchMode="singleTop">
         </activity>
         <activity
             android:name=".wave9.DimensionActivity"
-            android:label="@string/lego_dimensions"
+            android:label="@string/menu_dimensions"
             android:permission="android.permission.BIND_NFC_SERVICE"
             android:configChanges="orientation|screenLayout|screenSize|smallestScreenSize"
             android:launchMode="singleTop" />

@@ -53,7 +53,7 @@ jobs:
 
     - uses: actions/upload-artifact@v3
       with:
-        name: TagMo-${{ env.GIT_HASH }}
+        name: TagMo-WearOS-${{ env.GIT_HASH }}
         path: |
           ${{steps.sign_wear.outputs.signedReleaseFile}}
 
@@ -61,8 +61,8 @@ jobs:
       if: github.event_name != 'pull_request'
       with:
         repo_token: "${{ secrets.GITHUB_TOKEN }}"
-        automatic_release_tag: ${{ env.GIT_BRANCH }}
-        prerelease: true
-        title: TagMo-${{ env.GIT_HASH }}
+        automatic_release_tag: wearos
+        prerelease: ${{ env.GIT_BRANCH != 'master' }}
+        title: TagMo-WearOS-${{ env.GIT_HASH }}
         files: |
           ${{steps.sign_wear.outputs.signedReleaseFile}}

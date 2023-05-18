@@ -61,8 +61,8 @@
                     android:layout_height="24dp"
                     android:scaleType="fitCenter"
                     android:layout_gravity="center"
-                    android:layout_marginEnd="4dp"
                     android:layout_marginRight="4dp"
+                    android:layout_marginEnd="4dp"
                     android:contentDescription="@string/imageview_folder"
                     app:srcCompat="@mipmap/ic_foomiibo" />
 
@@ -124,8 +124,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:layout_marginEnd="4dp"
                 android:layout_marginRight="4dp"
+                android:layout_marginEnd="4dp"
                 android:contentDescription="@string/imageview_folder"
                 app:srcCompat="@drawable/ic_folder_open_white_24dp" />
 

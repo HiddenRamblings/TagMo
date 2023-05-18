@@ -8,10 +8,10 @@
     android:layout_gravity="center">
 
     <ProgressBar
-        android:layout_marginEnd="5dp"
         android:layout_width="45dp"
         android:layout_height="45dp"
-        android:layout_marginRight="5dp" />
+        android:layout_marginRight="5dp"
+        android:layout_marginEnd="5dp" />
     <TextView
         android:id="@+id/process_text"
         android:layout_width="wrap_content"

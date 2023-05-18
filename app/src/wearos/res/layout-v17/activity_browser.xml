@@ -53,8 +53,8 @@
                         android:id="@+id/snackbar_icon"
                         android:layout_width="36dp"
                         android:layout_height="36dp"
-                        android:layout_marginEnd="4dp"
                         android:layout_marginRight="4dp"
+                        android:layout_marginEnd="4dp"
                         android:contentDescription="@string/imageview_icon"
                         app:srcCompat="@drawable/ic_stat_notice_24dp" />
 
@@ -62,9 +62,10 @@
                         android:id="@+id/snackbar_item"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_alignParentRight="true"
                         android:layout_alignParentEnd="true"
-                        android:layout_marginStart="4dp"
                         android:layout_marginLeft="4dp"
+                        android:layout_marginStart="4dp"
                         android:visibility="invisible" />
 
                     <TextView
@@ -112,8 +113,8 @@
                     android:id="@+id/nfc_fab"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_alignParentEnd="true"
                     android:layout_alignParentRight="true"
+                    android:layout_alignParentEnd="true"
                     android:layout_alignParentBottom="true"
                     android:layout_marginHorizontal="@dimen/fab_button_margin"
                     android:layout_marginBottom="@dimen/fab_button_margin"

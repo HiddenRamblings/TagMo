@@ -11,16 +11,6 @@ import com.hiddenramblings.tagmo.eightbit.os.Version
 class Preferences(context: Context) {
 
     private val prefs: SharedPreferences
-    val isDocumentStorage: Boolean by lazy {
-        Version.isLollipop && browserRootDocument()?.let {
-            try {
-                DocumentFile.fromTreeUri(context, Uri.parse(it))
-                true
-            } catch (iae: IllegalArgumentException) {
-                false
-            }
-        } ?: false
-    }
 
     private fun getBoolean(pref: String, defValue: Boolean): Boolean {
         return prefs.getBoolean(pref, defValue)
@@ -353,6 +343,16 @@ class Preferences(context: Context) {
     fun lastUpdatedGit(value: Long) {
         putLong(lastUpdatedGit, value)
     }
+
+    val isDocumentStorage : Boolean
+        get() = Version.isLollipop && browserRootDocument()?.let {
+            try {
+                DocumentFile.fromTreeUri(TagMo.appContext, Uri.parse(it))
+                true
+            } catch (iae: IllegalArgumentException) {
+                false
+            }
+        } ?: false
 
     init {
         prefs = PreferenceManager.getDefaultSharedPreferences(context)

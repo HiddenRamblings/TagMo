@@ -20,6 +20,7 @@ import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.nfc.NfcAdapter
 import android.os.*
+import android.provider.Settings
 import android.text.method.LinkMovementMethod
 import android.util.DisplayMetrics
 import android.view.*
@@ -119,7 +120,6 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
     private var prefsDrawer: DrawerLayout? = null
     private var settingsPage: CoordinatorLayout? = null
     private var animationArray: ArrayList<ValueAnimator>? = null
-    private var switchStorageRoot: AppCompatButton? = null
     private var joyConDialog: Dialog? = null
     private var fakeSnackbar: AnimatedLinearLayout? = null
     private var fakeSnackbarText: TextView? = null
@@ -173,15 +173,12 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
             supportActionBar?.setHomeAsUpIndicator(R.drawable.ic_menu_24)
         }
         setContentView(R.layout.activity_browser)
-        Foomiibo.directory.mkdirs()
+
         fakeSnackbar = findViewById(R.id.fake_snackbar)
         fakeSnackbarText = findViewById(R.id.snackbar_text)
         fakeSnackbarItem = findViewById(R.id.snackbar_item)
         viewPager = findViewById(R.id.amiibo_pager)
         nfcFab = findViewById(R.id.nfc_fab)
-        if (!BuildConfig.WEAR_OS) {
-            switchStorageRoot = findViewById(R.id.switch_storage_root)
-        }
         amiiboContainer = findViewById(R.id.amiiboContainer)
         toolbar = findViewById(R.id.toolbar)
         amiiboInfo = findViewById(R.id.amiiboInfo)
@@ -197,7 +194,11 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
             requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
             requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
         }
+
+        Foomiibo.directory.mkdirs()
         if (null == settings) settings = BrowserSettings().initialize()
+        settings?.addChangeListener(this)
+
         if (!BuildConfig.WEAR_OS) {
             updateManager = UpdateManager(this)
             settings?.lastUpdatedGit = System.currentTimeMillis()
@@ -207,7 +208,6 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                 }
             })
         }
-        settings?.addChangeListener(this)
         val intent = intent
         intent?.let {
             if (componentName == FilterComponent) {
@@ -558,10 +558,17 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
 
     private fun requestStoragePermission() {
         if (Version.isRedVelvet) {
-            if (prefs.isDocumentStorage)
+            if (BuildConfig.GOOGLE_PLAY) {
                 onDocumentEnabled()
-            else
-                onDocumentRequested()
+            } else {
+                if (prefs.isDocumentStorage) {
+                    onDocumentEnabled()
+                } else if (Environment.isExternalStorageManager()) {
+                    onStorageEnabled()
+                } else {
+                    requestScopedStorage()
+                }
+            }
         } else if (Version.isMarshmallow) {
             onRequestStorage.launch(PERMISSIONS_STORAGE)
         } else {
@@ -1297,7 +1304,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
     val isRefreshing : Boolean get() = fakeSnackbar?.isVisible == true
 
     @Throws(ActivityNotFoundException::class)
-    private fun onDocumentRequested() {
+    fun onDocumentRequested() {
         if (Version.isLollipop) {
             onDocumentTree.launch(Intent(Intent.ACTION_OPEN_DOCUMENT_TREE)
                 .putExtra("android.content.extra.SHOW_ADVANCED", true)
@@ -1318,50 +1325,13 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
         }
     }
 
-    private fun onStorageEnabled() {
-        if (BuildConfig.WEAR_OS) {
-            if (keyManager.isKeyMissing) onShowSettingsFragment() else onRefresh(true)
+    fun onStorageEnabled() {
+        if (keyManager.isKeyMissing) {
+            hideFakeSnackbar()
+            showFakeSnackbar(getString(R.string.locating_keys))
+            locateKeyFiles()
         } else {
-            if (prefs.isDocumentStorage) {
-                switchStorageRoot?.let {
-                    it.isVisible = true
-                    it.setText(R.string.document_storage_root)
-                    it.setOnClickListener {
-                        try {
-                            onDocumentRequested()
-                        } catch (anf: ActivityNotFoundException) {
-                            Toasty(this).Long(R.string.storage_unavailable)
-                        }
-                    }
-}
-                if (keyManager.isKeyMissing) onShowSettingsFragment() else onRefresh(true)
-            } else {
-                val internal = prefs.preferEmulated()
-                val storage = Storage.getFile(internal)
-                if (storage?.exists() == true && Storage.hasPhysicalStorage()) {
-                    switchStorageRoot?.let { btn ->
-                        btn.isVisible = true
-                        btn.setText(if (internal) R.string.emulated_storage_root else R.string.physical_storage_root)
-                        btn.setOnClickListener {
-                            val external = !prefs.preferEmulated()
-                            btn.setText(if (external) R.string.emulated_storage_root else R.string.physical_storage_root)
-                            settings?.browserRootFolder = Storage.getFile(external)
-                            settings?.notifyChanges()
-                            prefs.preferEmulated(external)
-                        }
-                    }
-
-                } else {
-                    switchStorageRoot?.isGone = true
-                }
-                if (keyManager.isKeyMissing) {
-                    hideFakeSnackbar()
-                    showFakeSnackbar(getString(R.string.locating_keys))
-                    locateKeyFiles()
-                } else {
-                    onRefresh(true)
-                }
-            }
+            onRefresh(true)
         }
     }
 
@@ -1790,7 +1760,10 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
 
         // List all existing files inside picked directory
         if (null != pickedDir) {
-            settings?.browserRootDocument = treeUri
+            settings?.let {
+                it.browserRootDocument = treeUri
+                it.notifyChanges()
+            }
             onStorageEnabled()
         }
     }
@@ -2340,11 +2313,17 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
     }
 
     @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
-    private suspend fun locateKeyDocumentsRecursive() {
+    private suspend fun locateKeyDocumentsRecursive() = withContext(Dispatchers.IO) {
         val uris = settings?.browserRootDocument?.let {
-            AmiiboDocument(this).listFiles(it, true)
+            AmiiboDocument(this@BrowserActivity).listFiles(it, true)
         }
-        if (uris.isNullOrEmpty()) return
+        if (uris.isNullOrEmpty()) {
+            withContext(Dispatchers.Main) {
+                hideFakeSnackbar()
+                onShowSettingsFragment()
+            }
+            return@withContext
+        }
         uris.forEach { uri ->
             try {
                 try {
@@ -2407,14 +2386,8 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                             }
                         } catch (e: Exception) { Debug.warn(e) }
                     }
-                    Version.isLollipop && prefs.isDocumentStorage -> locateKeyDocumentsRecursive()
+                    prefs.isDocumentStorage -> locateKeyDocumentsRecursive()
                     else -> locateKeyFilesRecursive(Storage.getFile(prefs.preferEmulated()))
-                }
-                if (keyManager.isKeyMissing) {
-                    withContext(Dispatchers.Main) {
-                        hideFakeSnackbar()
-                        onShowSettingsFragment()
-                    }
                 }
             }
         }
@@ -2431,6 +2404,36 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
             }
         }
         if (isStorageEnabled) onStorageEnabled() else onDocumentEnabled()
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.R)
+    var onRequestScopedStorage = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) {
+        if (Environment.isExternalStorageManager()) {
+            settings?.let {
+                it.browserRootDocument = null
+                it.notifyChanges()
+            }
+            onStorageEnabled()
+        } else {
+            onDocumentEnabled()
+        }
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.R)
+    fun requestScopedStorage() {
+        try {
+            val intent = Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION)
+            try {
+                intent.data = Uri.parse(String.format("package:%s", packageName))
+            } catch (e: Exception) {
+                intent.action = Settings.ACTION_MANAGE_ALL_FILES_ACCESS_PERMISSION
+            }
+            onRequestScopedStorage.launch(intent)
+        } catch (anf: ActivityNotFoundException) {
+            onDocumentEnabled()
+        }
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)

@@ -1,11 +1,13 @@
 package com.hiddenramblings.tagmo.browser.fragment
 
 import android.annotation.SuppressLint
+import android.content.ActivityNotFoundException
 import android.content.DialogInterface
 import android.content.Intent
 import android.content.res.Configuration
 import android.content.res.Resources
 import android.os.Bundle
+import android.os.Environment
 import android.os.Handler
 import android.os.Looper
 import android.util.TypedValue
@@ -22,6 +24,7 @@ import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.AppCompatButton
 import androidx.appcompat.widget.AppCompatImageView
 import androidx.appcompat.widget.Toolbar
 import androidx.core.view.isGone
@@ -51,6 +54,7 @@ import com.hiddenramblings.tagmo.browser.adapter.FoomiiboAdapter.OnFoomiiboClick
 import com.hiddenramblings.tagmo.eightbit.io.Debug
 import com.hiddenramblings.tagmo.eightbit.material.IconifiedSnackbar
 import com.hiddenramblings.tagmo.eightbit.os.Storage
+import com.hiddenramblings.tagmo.eightbit.os.Version
 import com.hiddenramblings.tagmo.nfctech.Foomiibo
 import com.hiddenramblings.tagmo.nfctech.TagArray
 import com.hiddenramblings.tagmo.widget.ProgressAlert
@@ -168,6 +172,7 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
                         toggle.setImageResource(R.drawable.ic_expand_less_white_24dp)
                     } else if (newState == BottomSheetBehavior.STATE_EXPANDED) {
                         setFolderText(settings)
+                        setStorageButtons()
                         toggle.setImageResource(R.drawable.ic_expand_more_white_24dp)
                     }
                 }
@@ -429,6 +434,89 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
         }
     }
 
+    fun setStorageButtons() {
+        if (BuildConfig.WEAR_OS) return
+        if (activity !is BrowserActivity) return
+        val activity = requireActivity() as BrowserActivity
+        val switchStorageRoot = requireView().findViewById<AppCompatButton>(R.id.switch_storage_root)
+        val switchStorageType = requireView().findViewById<AppCompatButton>(R.id.switch_storage_type)
+        if (prefs.isDocumentStorage) {
+            switchStorageRoot?.let { button ->
+                button.isVisible = true
+                button.setText(R.string.document_storage_root)
+                button.setOnClickListener {
+                    bottomSheet?.setState(BottomSheetBehavior.STATE_COLLAPSED)
+                    try {
+                        activity.onDocumentRequested()
+                    } catch (anf: ActivityNotFoundException) {
+                        Toasty(activity).Long(R.string.storage_unavailable)
+                    }
+                }
+            }
+            switchStorageType?.let { button ->
+                if (Version.isRedVelvet && !BuildConfig.GOOGLE_PLAY) {
+                    button.isVisible = true
+                    button.setText(R.string.grant_file_permission)
+                    button.setOnClickListener {
+                        bottomSheet?.state = BottomSheetBehavior.STATE_COLLAPSED
+                        if (Environment.isExternalStorageManager()) {
+                            settings.browserRootDocument = null
+                            settings.notifyChanges()
+                            activity.onStorageEnabled()
+                        } else {
+                            activity.requestScopedStorage()
+                        }
+                    }
+                } else {
+                    button.isGone = true
+                }
+            }
+        } else {
+            val internal = prefs.preferEmulated()
+            val storage = Storage.getFile(internal)
+            if (storage?.exists() == true && Storage.hasPhysicalStorage()) {
+                switchStorageRoot?.let { button ->
+                    button.isVisible = true
+                    button.setText(if (internal)
+                        R.string.emulated_storage_root
+                    else
+                        R.string.physical_storage_root
+                    )
+                    button.setOnClickListener {
+                        val external = !prefs.preferEmulated()
+                        button.setText(if (external)
+                            R.string.emulated_storage_root
+                            else
+                                R.string.physical_storage_root
+                        )
+                        settings.browserRootFolder = Storage.getFile(external)
+                        settings.notifyChanges()
+                        prefs.preferEmulated(external)
+                    }
+                }
+
+            } else {
+                switchStorageRoot?.isGone = true
+            }
+            switchStorageType?.let { button ->
+                if (Version.isRedVelvet) {
+                    button.isVisible = true
+                    button.setText(R.string.force_document_storage)
+                    button.setOnClickListener {
+                        bottomSheet?.state = BottomSheetBehavior.STATE_COLLAPSED
+                        try {
+                            activity.onDocumentRequested()
+                        } catch (anf: ActivityNotFoundException) {
+                            Toasty(activity).Long(R.string.storage_unavailable)
+                        }
+                    }
+                } else {
+                    button.isGone = true
+                }
+            }
+        }
+    }
+
     override fun onResume() {
         super.onResume()
         browserWrapper?.postDelayed({ setFoomiiboVisibility() }, TagMo.uiDelay.toLong())
@@ -567,6 +655,9 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
     }
 
     override fun onFoomiiboClicked(itemView: View?, amiibo: Amiibo?) {
+        if (activity !is BrowserActivity) return
+        val activity = requireActivity() as BrowserActivity
+
         var tagData = byteArrayOf()
         run breaking@{
             resultData.forEach { data ->
@@ -583,7 +674,7 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
         try {
             tagData = TagArray.getValidatedData(keyManager, tagData)!!
         } catch (ignored: Exception) { }
-        val activity = requireActivity() as BrowserActivity
+
         val menuOptions = itemView?.findViewById<LinearLayout>(R.id.menu_options)
         menuOptions?.let {
             val toolbar = it.findViewById<Toolbar>(R.id.toolbar)

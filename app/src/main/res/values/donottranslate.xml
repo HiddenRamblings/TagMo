@@ -11,6 +11,7 @@
     <string name="hex_ff" translatable="false">FF</string>
     <string name="hex_ffff" translatable="false">FFFF</string>
 
+    <string name="settings_menu_return" translatable="false">menu_return</string>
     <string name="settings_import_keys" translatable="false">import_keys</string>
     <string name="settings_tag_type_validation" translatable="false">enable_tag_type_validation</string>
     <string name="settings_automatic_scan" translatable="false">enable_automatic_scan</string>

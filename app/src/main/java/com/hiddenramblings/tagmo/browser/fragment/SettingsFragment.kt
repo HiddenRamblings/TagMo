@@ -84,6 +84,13 @@ class SettingsFragment : PreferenceFragmentCompat() {
             }
         }
         updateKeySummary()
+        findPreference<Preference>(getString(R.string.settings_menu_return))?.apply {
+            onPreferenceClickListener = Preference.OnPreferenceClickListener {
+                if (activity is BrowserActivity)
+                    (activity as BrowserActivity).restoreMenuLayout()
+                super@SettingsFragment.onPreferenceTreeClick(it)
+            }
+        }
         findPreference<CheckBoxPreference>(
             getString(R.string.settings_tag_type_validation)
         )?.apply {
@@ -120,9 +127,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
                     super@SettingsFragment.onPreferenceTreeClick(it)
                 }
         }
-        val disableFoomiiboPanel = findPreference<CheckBoxPreference>(
-            getString(R.string.settings_hide_foomiibo_panel)
-        )?.apply {
+        findPreference<CheckBoxPreference>(getString(R.string.settings_hide_foomiibo_panel))?.apply {
             if (activity is BrowserActivity) {
                 isChecked = prefs.foomiiboDisabled()
                 onPreferenceClickListener = Preference.OnPreferenceClickListener {

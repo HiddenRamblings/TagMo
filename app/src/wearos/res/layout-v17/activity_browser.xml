@@ -81,17 +81,6 @@
                 </RelativeLayout>
             </com.hiddenramblings.tagmo.eightbit.view.AnimatedLinearLayout>
 
-            <com.google.android.material.tabs.TabLayout
-                android:id="@+id/navigation_tabs"
-                android:layout_width="match_parent"
-                android:layout_height="24dp"
-                app:tabMaxWidth="0dp"
-                app:tabGravity="fill"
-                app:tabMode="fixed"
-                app:tabTextColor="@color/tabText"
-                app:tabTextAppearance="@style/WearTabText"
-                android:background="?attr/colorPrimaryDark" />
-
             <androidx.coordinatorlayout.widget.CoordinatorLayout
                 xmlns:tools="http://schemas.android.com/tools"
                 android:id="@+id/coordinator"
@@ -140,5 +129,11 @@
                     tools:ignore="RelativeOverlap" />
             </androidx.coordinatorlayout.widget.CoordinatorLayout>
         </LinearLayout>
+
+        <androidx.wear.widget.drawer.WearableNavigationDrawerView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+            <include layout="@layout/fragment_settings" />
+        </androidx.wear.widget.drawer.WearableNavigationDrawerView>
     </androidx.wear.widget.BoxInsetLayout>
 </androidx.wear.widget.drawer.WearableDrawerLayout>

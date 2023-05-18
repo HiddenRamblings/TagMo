@@ -55,8 +55,6 @@ import com.bumptech.glide.request.transition.Transition
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
-import com.google.android.material.tabs.TabLayout
-import com.google.android.material.tabs.TabLayoutMediator
 import com.hiddenramblings.tagmo.*
 import com.hiddenramblings.tagmo.NFCIntent.FilterComponent
 import com.hiddenramblings.tagmo.amiibo.*
@@ -118,6 +116,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
     private var browserSheet: BottomSheetBehavior<View>? = null
     var reloadTabCollection = false
     private var prefsDrawer: DrawerLayout? = null
+    private var settingsPage: CoordinatorLayout? = null
     private var animationArray: ArrayList<ValueAnimator>? = null
     private var switchStorageRoot: AppCompatButton? = null
     private var joyConDialog: Dialog? = null
@@ -223,7 +222,6 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
         viewPager.adapter = pagerAdapter
         setPageTransformer()
         setViewPagerSensitivity(viewPager, 4)
-        if (BuildConfig.WEAR_OS) fragmentSettings = pagerAdapter.settings
         amiibosView = pagerAdapter.browser.browserContent
         foomiiboView = pagerAdapter.browser.foomiiboContent
         browserSheet = pagerAdapter.browser.bottomSheet
@@ -328,41 +326,6 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
             }
         })
 
-        TabLayoutMediator(findViewById(R.id.navigation_tabs), viewPager, true,
-            Version.isJellyBeanMR2
-        ) { tab: TabLayout.Tab, position: Int ->
-            val hasFlaskEnabled = prefs.flaskEnabled()
-            if (BuildConfig.WEAR_OS) {
-                when (position) {
-                    1 -> if (hasFlaskEnabled) {
-                        tab.setText(R.string.flask_title)
-                    } else {
-                        tab.setText(R.string.settings)
-                    }
-                    2 -> tab.setText(R.string.settings)
-                    3 -> tab.setText(R.string.guides)
-                    else -> tab.setText(R.string.browser)
-                }
-            } else {
-                val hasEliteEnabled = prefs.eliteEnabled()
-                when (position) {
-                    1 -> if (hasEliteEnabled) {
-                        tab.setText(R.string.elite_n2)
-                    } else if (hasFlaskEnabled) {
-                        tab.setText(R.string.flask_title)
-                    } else {
-                        tab.setText(R.string.guides)
-                    }
-                    2 -> if (hasEliteEnabled && hasFlaskEnabled) {
-                        tab.setText(R.string.flask_title)
-                    } else {
-                        tab.setText(R.string.guides)
-                    }
-                    3 -> tab.setText(R.string.guides)
-                    else -> tab.setText(R.string.browser)
-                }
-            }
-        }.attach()
         val coordinator = findViewById<CoordinatorLayout>(R.id.coordinator)
         if (Version.isJellyBeanMR && amiiboContainer is BlurView) {
             (amiiboContainer as BlurView).setupWith(coordinator,
@@ -394,13 +357,39 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
             } catch (ignored: PackageManager.NameNotFoundException) { }
         }
 
+        onLoadSettingsFragment()
+        val buildText = findViewById<TextView>(R.id.build_text)
+        buildText.movementMethod = LinkMovementMethod.getInstance()
+        buildText.text = TagMo.getVersionLabel(false)
+
+        findViewById<View>(R.id.wrapper_amiibo).setOnClickListener {
+            closePrefsDrawer()
+            if (viewPager.currentItem != 0) viewPager.setCurrentItem(0, true)
+        }
+
+        findViewById<View>(R.id.wrapper_elite).setOnClickListener {
+            closePrefsDrawer()
+            if (viewPager.currentItem != 1) viewPager.setCurrentItem(1, true)
+        }
+
+        findViewById<View>(R.id.wrapper_flask).setOnClickListener {
+            closePrefsDrawer()
+            if (viewPager.currentItem != 2) viewPager.setCurrentItem(2, true)
+        }
+
+        findViewById<View>(R.id.wrapper_guides).setOnClickListener {
+            closePrefsDrawer()
+            if (viewPager.currentItem != 3) viewPager.setCurrentItem(3, true)
+        }
+
+        settingsPage = findViewById(R.id.preferences)
+        findViewById<View>(R.id.wrapper_settings).setOnClickListener {
+            settingsPage?.let { it.isVisible = it.isGone }
+        }
+
         if (BuildConfig.WEAR_OS) {
             onCreateWearOptionsMenu()
         } else {
-            onLoadSettingsFragment()
-            val buildText = findViewById<TextView>(R.id.build_text)
-            buildText.movementMethod = LinkMovementMethod.getInstance()
-            buildText.text = TagMo.getVersionLabel(false)
             prefsDrawer = findViewById(R.id.drawer_layout)
             val settingsBanner = findViewById<TextView>(R.id.donation_banner)
             prefsDrawer?.addDrawerListener(object : SimpleDrawerListener() {
@@ -2273,11 +2262,18 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
         donationManager.onSendDonationClicked()
     }
 
-    fun closePrefsDrawer(): Boolean {
-        if (prefsDrawer?.isDrawerOpen(GravityCompat.START) == true) {
-            prefsDrawer?.closeDrawer(GravityCompat.START)
-            return true
-        }
+    fun restoreMenuLayout() {
+        settingsPage?.isGone = true
+    }
+      fun closePrefsDrawer(): Boolean {
+          prefsDrawer?.let {
+              if (it.isDrawerOpen(GravityCompat.START)) {
+                  it.closeDrawer(GravityCompat.START)
+                  restoreMenuLayout()
+                  return true
+              }
+          }
+
         return false
     }
 
@@ -2291,11 +2287,10 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
 
     private fun onShowSettingsFragment() {
         if (BuildConfig.WEAR_OS) {
-            viewPager.post {
-                viewPager.setCurrentItem(if (prefs.flaskEnabled()) 2 else 1, false)
-            }
+            settingsPage?.isVisible = true
         } else {
             prefsDrawer?.openDrawer(GravityCompat.START)
+            settingsPage?.isVisible = true
         }
     }
 

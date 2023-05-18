@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.preference.PreferenceScreen
     xmlns:android="http://schemas.android.com/apk/res/android">
+    <androidx.preference.Preference
+        android:key="@string/settings_menu_return"
+        android:title="@string/pref_menu_return" />
     <androidx.preference.PreferenceCategory
         android:title="@string/prefs_configuration">
         <androidx.preference.Preference

@@ -205,8 +205,16 @@
 
     <string name="settings">Settings</string>
     <string name="guides">Guides</string>
+    <string name="about">About</string>
     <string name="donate">Donate</string>
 
+    <string name="menu_amiibo">amiibo Browser</string>
+    <string name="menu_elite">N2 Elite Browser</string>
+    <string name="menu_flask">Bluup Browser</string>
+    <string name="menu_guides">Instructions</string>
+    <string name="menu_settings">TagMo Settings</string>
+
+    <string name="pref_menu_return">Return to main menu</string>
     <string name="prefs_configuration">Configuration</string>
     <string name="pref_import_keys">Import crypto keys</string>
     <string name="image_loading_details">Image data access</string>

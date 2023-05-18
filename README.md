@@ -8,6 +8,9 @@
   <a href="https://github.com/HiddenRamblings/TagMo/actions/workflows/android.yml" target="_blank">
     <img src="https://github.com/HiddenRamblings/TagMo/actions/workflows/android.yml/badge.svg">
   </a>
+  <a href="https://github.com/HiddenRamblings/TagMo/actions/workflows/wearos.yml" target="_blank">
+    <img src="https://github.com/HiddenRamblings/TagMo/actions/workflows/wearos.yml/badge.svg">
+  </a>
   <br /><br />
   To contribute, please address PRs to the <a href="https://github.com/HiddenRamblings/TagMo/tree/conversion">conversion</a> branch. Thank you.
 </p>

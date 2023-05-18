@@ -1,4 +1,4 @@
-name: Android Wear
+name: WearOS CI
 
 on:
   push:
@@ -53,7 +53,7 @@ jobs:
 
     - uses: actions/upload-artifact@v3
       with:
-        name: TagMo-WearOS-${{ env.GIT_HASH }}
+        name: TagMo-${{ env.GIT_HASH }}-WearOS
         path: |
           ${{steps.sign_wear.outputs.signedReleaseFile}}
 
@@ -63,6 +63,6 @@ jobs:
         repo_token: "${{ secrets.GITHUB_TOKEN }}"
         automatic_release_tag: wearos
         prerelease: ${{ env.GIT_BRANCH != 'master' }}
-        title: TagMo-WearOS-${{ env.GIT_HASH }}
+        title: TagMo-${{ env.GIT_HASH }}-WearOS
         files: |
           ${{steps.sign_wear.outputs.signedReleaseFile}}

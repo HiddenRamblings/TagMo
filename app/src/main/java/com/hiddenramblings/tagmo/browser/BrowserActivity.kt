@@ -230,6 +230,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
             @SuppressLint("NewApi")
             override fun onPageSelected(position: Int) {
                 super.onPageSelected(position)
+                hideActionButton()
                 if (position != 0) {
                     BrowserAdapter.resetVisible()
                     FoomiiboAdapter.resetVisible()
@@ -237,18 +238,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                 val hasFlaskEnabled = prefs.flaskEnabled()
                 if (BuildConfig.WEAR_OS) {
                     when (position) {
-                        1 -> if (hasFlaskEnabled) {
-                            showActionButton()
-                            pagerAdapter.flaskSlots.run {
-                                delayedBluetoothEnable()
-                                amiibosView = flaskContent
-                                browserSheet = bottomSheet
-                            }
-                        } else {
-                            hideActionButton()
-                        }
-                        2, 3 -> hideActionButton()
-                        else -> {
+                        0 -> {
                             showActionButton()
                             pagerAdapter.browser.run {
                                 amiibosView = browserContent
@@ -260,46 +250,21 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                                 browserSheet = bottomSheet
                             }
                         }
+                        1 -> {
+                            if (hasFlaskEnabled) {
+                                pagerAdapter.flaskSlots.run {
+                                    delayedBluetoothEnable()
+                                    amiibosView = flaskContent
+                                    browserSheet = bottomSheet
+                                }
+                            }
+                        }
+                        else -> {}
                     }
                 } else {
                     val hasEliteEnabled = prefs.eliteEnabled()
                     when (position) {
-                        1 -> if (hasEliteEnabled) {
-                            showActionButton()
-                            setTitle(R.string.elite_n2)
-                            pagerAdapter.eliteBanks.run {
-                                amiibosView = eliteContent
-                                browserSheet = bottomSheet
-                            }
-                        } else if (hasFlaskEnabled) {
-                            showActionButton()
-                            setTitle(R.string.flask_title)
-                            pagerAdapter.flaskSlots.run {
-                                delayedBluetoothEnable()
-                                amiibosView = flaskContent
-                                browserSheet = bottomSheet
-                            }
-                        } else {
-                            hideActionButton()
-                            setTitle(R.string.guides)
-                        }
-                        2 -> if (hasEliteEnabled && hasFlaskEnabled) {
-                            showActionButton()
-                            setTitle(R.string.flask_title)
-                            pagerAdapter.flaskSlots.run {
-                                delayedBluetoothEnable()
-                                amiibosView = flaskContent
-                                browserSheet = bottomSheet
-}
-                        } else {
-                            hideActionButton()
-                            setTitle(R.string.guides)
-                        }
-                        3 -> {
-                            hideActionButton()
-                            setTitle(R.string.guides)
-                        }
-                        else -> {
+                        0 -> {
                             showActionButton()
                             setTitle(R.string.tagmo)
                             pagerAdapter.browser.run {
@@ -312,6 +277,38 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                                 browserSheet = bottomSheet
                             }
                         }
+                        1 -> if (hasEliteEnabled) {
+                            setTitle(R.string.elite_n2)
+                            pagerAdapter.eliteBanks.run {
+                                amiibosView = eliteContent
+                                browserSheet = bottomSheet
+                            }
+                        } else if (hasFlaskEnabled) {
+                            setTitle(R.string.flask_title)
+                            pagerAdapter.flaskSlots.run {
+                                delayedBluetoothEnable()
+                                amiibosView = flaskContent
+                                browserSheet = bottomSheet
+                            }
+                        } else {
+                            setTitle(R.string.guides)
+                        }
+                        2 -> {
+                            if (hasEliteEnabled && hasFlaskEnabled) {
+                                setTitle(R.string.flask_title)
+                                pagerAdapter.flaskSlots.run {
+                                    delayedBluetoothEnable()
+                                    amiibosView = flaskContent
+                                    browserSheet = bottomSheet
+                                }
+                            } else {
+                                setTitle(R.string.guides)
+                            }
+                        }
+                        3 -> {
+                            setTitle(R.string.guides)
+                        }
+                        else -> {}
                     }
                 }
                 amiibosView?.layoutManager = if (settings?.amiiboView == VIEW.IMAGE.value)

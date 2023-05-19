@@ -61,7 +61,7 @@ jobs:
         path: |
           ${{steps.sign_main.outputs.signedReleaseFile}}
 
-    - uses: marvinpinto/action-automatic-releases@v1.2.1
+    - uses: dciborow/action-github-releases@v1.0.1
       if: github.event_name != 'pull_request'
       with:
         repo_token: "${{ secrets.GITHUB_TOKEN }}"

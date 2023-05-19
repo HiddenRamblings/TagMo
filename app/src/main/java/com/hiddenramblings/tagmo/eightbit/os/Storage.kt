@@ -179,7 +179,8 @@ object Storage : Environment() {
     fun getFileUri(file: File): Uri {
         return if (Version.isNougat)
             FileProvider.getUriForFile(appContext, PROVIDER, file)
-        else file.toUri()
+        else
+            file.toUri()
     }
 
     fun getRelativePath(file: File?, internal: Boolean): String {

@@ -1013,7 +1013,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
         copierDialog.show()
     }
 
-    private fun onCreateToolbarMenu(itemView: View?, tagData: ByteArray?, amiiboFile: AmiiboFile?) {
+    private fun onCreateToolbarMenu(itemView: View?, position: Int, tagData: ByteArray?, amiiboFile: AmiiboFile?) {
         val toolbar = when (itemView) {
             is Toolbar -> itemView
             else -> itemView?.findViewById<View>(R.id.menu_options)
@@ -1163,7 +1163,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                     return@setOnMenuItemClickListener true
                 }
                 R.id.mnu_delete -> {
-                    deleteAmiiboDocument(amiiboFile)
+                    deleteAmiiboDocument(amiiboFile, position)
                     return@setOnMenuItemClickListener true
                 }
                 R.id.mnu_ignore_tag_id -> {
@@ -1566,13 +1566,13 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
         return onMenuItemClicked(item)
     }
 
-    override fun onAmiiboClicked(itemView: View, amiiboFile: AmiiboFile?) {
+    override fun onAmiiboClicked(itemView: View, position: Int, amiiboFile: AmiiboFile?) {
         if (null == amiiboFile?.docUri && null == amiiboFile?.filePath) return
         try {
             val tagData = TagArray.getValidatedData(keyManager, amiiboFile)
             if (settings?.amiiboView != VIEW.IMAGE.value) {
                 val menuOptions = itemView.findViewById<LinearLayout>(R.id.menu_options)
-                if (menuOptions.isGone) onCreateToolbarMenu(itemView, tagData, amiiboFile)
+                if (menuOptions.isGone) onCreateToolbarMenu(itemView, position, tagData, amiiboFile)
                 menuOptions.isGone = menuOptions.isVisible
                 val txtUsage = itemView.findViewById<TextView>(R.id.txtUsage)
                 if (txtUsage.isGone) getGameCompatibility(txtUsage, tagData)
@@ -1583,13 +1583,13 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
         } catch (e: Exception) { Debug.warn(e) }
     }
 
-    override fun onAmiiboRebind(itemView: View, amiiboFile: AmiiboFile?) {
+    override fun onAmiiboRebind(itemView: View, position: Int, amiiboFile: AmiiboFile?) {
         if (amiiboFile?.filePath == null) return
         try {
             val tagData = amiiboFile.data
                 ?: TagArray.getValidatedFile(keyManager, amiiboFile.filePath)
             if (settings?.amiiboView != VIEW.IMAGE.value) {
-                onCreateToolbarMenu(itemView, tagData, amiiboFile)
+                onCreateToolbarMenu(itemView, position, tagData, amiiboFile)
                 getGameCompatibility(itemView.findViewById(R.id.txtUsage), tagData)
             } else {
                 updateAmiiboView(tagData, amiiboFile)
@@ -1991,7 +1991,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
         } ?: Toasty(this).Short(R.string.delete_missing)
     }
 
-    private fun deleteAmiiboDocument(amiiboFile: AmiiboFile?) {
+    private fun deleteAmiiboDocument(amiiboFile: AmiiboFile?, position: Int) {
         amiiboFile?.docUri?.let {
             val relativeDocument = Storage.getRelativeDocument(it.uri)
             AlertDialog.Builder(this)
@@ -2003,7 +2003,10 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                         getString(R.string.delete_file, relativeDocument), Snackbar.LENGTH_SHORT
                     ).show()
                     dialog.dismiss()
-                    onRootFolderChanged(true)
+                    if (null != amiibosView?.adapter && position >= 0)
+                        amiibosView?.adapter?.notifyItemRemoved(position)
+                    else
+                        onRootFolderChanged(true)
                 }
                 .setNegativeButton(R.string.cancel) { dialog: DialogInterface, _: Int -> dialog.dismiss() }
                 .show()
@@ -2056,7 +2059,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
             it.isVisible = true
             it.animate().alpha(1f).setDuration(150).setListener(null)
         }
-        onCreateToolbarMenu(toolbar, tagData, amiiboFile)
+        onCreateToolbarMenu(toolbar, -1, tagData, amiiboFile)
         var amiiboId: Long = -1
         var tagInfo: String? = null
         var amiiboHexId = ""
@@ -2211,9 +2214,10 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                 if (it.isVisible) {
                     val animate = TranslateAnimation(
                         0f, 0f, 0f, (-it.height).toFloat()
-                    )
-                    animate.duration = 150
-                    animate.fillAfter = false
+                    ).apply {
+                        duration = 150
+                        fillAfter = false
+                    }
                     it.setAnimationListener(object :
                         AnimatedLinearLayout.AnimationListener {
                         override fun onAnimationStart(layout: AnimatedLinearLayout?) {}

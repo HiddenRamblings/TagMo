@@ -353,9 +353,9 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
 
     fun setAmiiboStats() {
         statsHandler.removeCallbacksAndMessages(null)
-        if (!isAdded || null == activity) return
-        val activity = requireActivity() as BrowserActivity
         CoroutineScope(Dispatchers.Main).launch {
+            if (!isAdded || null == activity) return@launch
+            val activity = requireActivity() as BrowserActivity
             currentFolderView?.run {
                 val size = settings.amiiboFiles.size
                 if (size <= 0) return@run

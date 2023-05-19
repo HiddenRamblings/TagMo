@@ -366,7 +366,7 @@ class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
     }
 
     private fun updateEliteAdapter(amiiboList: ArrayList<String>?) {
-        CoroutineScope(Dispatchers.IO).launch(Dispatchers.IO) {
+        CoroutineScope(Dispatchers.IO).launch {
             var amiiboManager = settings.amiiboManager
             if (null == amiiboManager) {
                 try {
@@ -398,17 +398,23 @@ class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
                 bankAdapter?.setAmiibos(amiibos)
                 amiiboList?.forEachIndexed { i, amiibo ->
                     amiibos.add(EliteTag(amiiboManager.amiibos[TagArray.hexToLong(amiibo)]))
-                    bankAdapter?.notifyItemInserted(i)
+                    eliteContent?.post {
+                        bankAdapter?.notifyItemInserted(i)
+                    }
                 }
             } else {
                 amiiboList?.forEachIndexed { i, amiibo ->
                     val amiiboId = TagArray.hexToLong(amiibo)
                     if (i >= amiibos.size) {
                         amiibos.add(EliteTag(amiiboManager.amiibos[TagArray.hexToLong(amiibo)]))
-                        bankAdapter?.notifyItemInserted(i)
+                        eliteContent?.post {
+                            bankAdapter?.notifyItemInserted(i)
+                        }
                     } else if (null == amiibos[i] || i != amiibos[i]?.index || amiiboId != amiibos[i]?.id) {
                         amiibos[i] = EliteTag(amiiboManager.amiibos[amiiboId])
-                        bankAdapter?.notifyItemChanged(i)
+                        eliteContent?.post {
+                            bankAdapter?.notifyItemChanged(i)
+                        }
                     }
                 }
                 if (null != amiiboList && amiibos.size > amiiboList.size) {
@@ -419,8 +425,12 @@ class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
                         shortList.add(amiibos[x])
                     }
                     amiibos = shortList
-                    bankAdapter?.notifyItemRangeChanged(0, size)
-                    bankAdapter?.notifyItemRangeRemoved(size, count - size)
+                    eliteContent?.post {
+                        bankAdapter?.let {
+                            it.notifyItemRangeChanged(0, size)
+                            it.notifyItemRangeRemoved(size, count - size)
+                        }
+                    }
                 }
             }
             withContext(Dispatchers.Main) {
@@ -476,8 +486,10 @@ class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
             NFCIntent.EXTRA_ACTIVE_BANK, prefs.eliteActiveBank()
         ) ?: prefs.eliteActiveBank()
         bankAdapter?.let {
-            it.notifyItemChanged(prefs.eliteActiveBank())
-            it.notifyItemChanged(activeBank)
+            eliteContent?.post {
+                it.notifyItemChanged(prefs.eliteActiveBank())
+                it.notifyItemChanged(activeBank)
+            }
         }
         prefs.eliteActiveBank(activeBank)
         amiibos[activeBank]?.let {
@@ -567,7 +579,9 @@ class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
         }
         status = CLICKED.NOTHING
         updateAmiiboView(amiiboCard, tagData, -1, clickedPosition)
-        bankAdapter?.notifyItemChanged(clickedPosition)
+        eliteContent?.post {
+            bankAdapter?.notifyItemChanged(clickedPosition)
+        }
     }
 
     private fun scanAmiiboBank(current_bank: Int) {

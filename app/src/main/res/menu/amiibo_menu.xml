@@ -17,7 +17,7 @@
         app:showAsAction="always"/>
     <item
         android:id="@+id/mnu_update"
-        android:title="@string/update_tag"
+        android:title="@string/update"
         app:showAsAction="ifRoom"/>
     <item
         android:id="@+id/mnu_edit"

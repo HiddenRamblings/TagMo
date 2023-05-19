@@ -32,9 +32,9 @@ class AmiiboDocument(context: Context) {
         val binFiles = listOf(*resources.getStringArray(R.array.mimetype_bin))
         val childrenUri = DocumentsContract.buildChildDocumentsUriUsingTree(rootUri, documentId)
         val cursor: Cursor = try {
-            val items = ArrayList(binFiles)
-            items.add(DocumentsContract.Document.MIME_TYPE_DIR)
-            val selectionArgs = items.toTypedArray()
+            val selectionArgs = ArrayList(binFiles).apply{
+                add(DocumentsContract.Document.MIME_TYPE_DIR)
+            }.toTypedArray()
             contentResolver.query(
                 childrenUri, arrayOf(
                     DocumentsContract.Document.COLUMN_DISPLAY_NAME,

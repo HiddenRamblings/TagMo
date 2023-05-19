@@ -203,7 +203,7 @@ class UpdateManager internal constructor(activity: BrowserActivity) {
             val jsonObject = JSONTokener(result).nextValue() as JSONObject
             val lastCommit = (jsonObject["name"] as String).substring(
                 browserActivity.getString(R.string.tagmo).length + 1
-            )
+            ).also { if (it.length > 7) it.substring(0, 7) }
             val assets = jsonObject["assets"] as JSONArray
             val asset = assets[0] as JSONObject
             isUpdateAvailable = BuildConfig.COMMIT != lastCommit

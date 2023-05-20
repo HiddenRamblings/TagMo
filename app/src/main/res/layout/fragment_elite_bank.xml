@@ -136,7 +136,7 @@
                 android:layout_gravity="center"
                 android:layout_marginHorizontal="2dp"
                 android:defaultValue="false"
-                android:text="@string/write_serials"
+                android:text="@string/clone_serials"
                 app:switchPadding="4dp" />
 
             <LinearLayout

@@ -519,8 +519,8 @@ class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
                     removeRefreshListener()
                 }
             })
-            if (intent.hasExtra(NFCIntent.EXTRA_AMIIBO_LIST)) {
-                updateEliteAdapter(intent.getStringArrayListExtra(NFCIntent.EXTRA_AMIIBO_LIST))
+            if (intent.hasExtra(NFCIntent.EXTRA_AMIIBO_CLONES)) {
+                updateEliteAdapter(intent.getStringArrayListExtra(NFCIntent.EXTRA_AMIIBO_CLONES))
             }
             updateAmiiboView(amiiboCard, tagData, -1, clickedPosition)
             if (status == CLICKED.ERASE_BANK) {
@@ -878,7 +878,7 @@ class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
                     removeRefreshListener()
                 }
             })
-            updateEliteAdapter(intent.getStringArrayListExtra(NFCIntent.EXTRA_AMIIBO_LIST))
+            updateEliteAdapter(intent.getStringArrayListExtra(NFCIntent.EXTRA_AMIIBO_CLONES))
 
             bankStats?.text = getString(R.string.bank_stats, getValueForPosition(
                 eliteBankCount, prefs.eliteActiveBank()
@@ -914,21 +914,11 @@ class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
         val bytesList: ArrayList<AmiiboData?> = arrayListOf()
         amiiboList.forEach {
             it?.let { amiiboFile ->
-                if (prefs.isDocumentStorage) {
-                    try {
-                        val data = amiiboFile.data ?: amiiboFile.docUri?.let { doc ->
-                            TagArray.getValidatedDocument(keyManager, doc)
-                        }
-                        data?.let { bytesList.add(AmiiboData(data)) }
-                    } catch (e: Exception) { Debug.warn(e) }
-                } else {
-                    try {
-                        val data = amiiboFile.data ?: amiiboFile.filePath?.let { file ->
-                            TagArray.getValidatedFile(keyManager, file)
-                        }
-                        data?.let { bytesList.add(AmiiboData(data)) }
-                    } catch (e: Exception) { Debug.warn(e) }
-                }
+                amiiboFile.data ?: amiiboFile.docUri?.let { doc ->
+                    TagArray.getValidatedDocument(keyManager, doc)
+                } ?: amiiboFile.filePath?.let { file ->
+                    TagArray.getValidatedFile(keyManager, file)
+                }?.let { bytesList.add(AmiiboData(it)) }
             }
         }
         writeAmiiboCollection(bytesList)
@@ -963,7 +953,7 @@ class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
                     removeRefreshListener()
                 }
             })
-            updateEliteAdapter(extras.getStringArrayList(NFCIntent.EXTRA_AMIIBO_LIST))
+            updateEliteAdapter(extras.getStringArrayList(NFCIntent.EXTRA_AMIIBO_CLONES))
             bankStats?.text = getString(
                 R.string.bank_stats, getValueForPosition(eliteBankCount, activeBank), bankCount
             )

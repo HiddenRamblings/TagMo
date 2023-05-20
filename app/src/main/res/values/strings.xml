@@ -329,7 +329,7 @@
     <string name="connect_puck">Connect Puck.js</string>
     <string name="switch_devices">Connect a Bluetooth device</string>
 
-    <string name="write_serials">Duplicate with random serial</string>
+    <string name="clone_serials">Clone with random serial</string>
 
     <string name="data_write">Wrote main data</string>
     <string name="password_write">Wrote password</string>

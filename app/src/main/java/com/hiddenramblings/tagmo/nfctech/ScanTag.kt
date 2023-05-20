@@ -63,7 +63,7 @@ class ScanTag {
                                 putString(NFCIntent.EXTRA_SIGNATURE, signature)
                                 putInt(NFCIntent.EXTRA_BANK_COUNT, banksCount)
                                 putInt(NFCIntent.EXTRA_ACTIVE_BANK, activeBank)
-                                putStringArrayList(NFCIntent.EXTRA_AMIIBO_LIST, titles)
+                                putStringArrayList(NFCIntent.EXTRA_AMIIBO_CLONES, titles)
                             })
                         }
                     } else {

@@ -320,8 +320,6 @@
     <string name="connect_puck">連接 Puck.js</string>
     <string name="switch_devices">連接其他裝置</string>
     
-    <string name="write_serials">Duplicate with random serial</string>
-    
     <string name="data_write">寫入主要數據</string>
     <string name="password_write">寫入密碼</string>
     <string name="lock_write">寫入鎖定資訊</string>

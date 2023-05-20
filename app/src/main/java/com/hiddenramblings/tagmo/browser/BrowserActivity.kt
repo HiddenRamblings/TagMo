@@ -982,7 +982,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
         false
     }
 
-    private fun generateDuplicates(amiiboFile: AmiiboFile?, tagData: ByteArray?, count: Int) {
+    private fun cloneWithRandomSerial(amiiboFile: AmiiboFile?, tagData: ByteArray?, count: Int) {
         val cached = amiiboFile?.let {
             it.docUri?.let { doc ->
                 Storage.getRelativeDocument(doc.uri).startsWith("/Foomiibo/")
@@ -1023,13 +1023,13 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
         }
     }
 
-    private fun showDuplicatesDialog(amiiboFile: AmiiboFile?, tagData: ByteArray?) {
+    private fun showDuplicatorDialog(amiiboFile: AmiiboFile?, tagData: ByteArray?) {
         val view = layoutInflater.inflate(R.layout.dialog_duplicator, null)
         val dialog = AlertDialog.Builder(this)
         val copierDialog: Dialog = dialog.setView(view).create()
         val count = view.findViewById<NumberPicker>(R.id.number_picker_bin)
         view.findViewById<View>(R.id.button_save).setOnClickListener {
-            generateDuplicates(amiiboFile, tagData, count.value)
+            cloneWithRandomSerial(amiiboFile, tagData, count.value)
             copierDialog.dismiss()
         }
         view.findViewById<View>(R.id.button_cancel).setOnClickListener {
@@ -1156,7 +1156,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                     return@setOnMenuItemClickListener true
                 }
                 R.id.mnu_copier -> {
-                    showDuplicatesDialog(amiiboFile, tagData)
+                    showDuplicatorDialog(amiiboFile, tagData)
                     return@setOnMenuItemClickListener true
                 }
                 R.id.mnu_view_hex -> {

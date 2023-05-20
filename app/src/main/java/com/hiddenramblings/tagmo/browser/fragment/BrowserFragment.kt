@@ -575,7 +575,7 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
 
     private fun clearFoomiiboSet(activity: AppCompatActivity) {
         val dialog = ProgressAlert.show(activity, "")
-        CoroutineScope(Dispatchers.IO).launch(Dispatchers.IO) {
+        CoroutineScope(Dispatchers.IO).launch {
             deleteDir(dialog, Foomiibo.directory)
             withContext(Dispatchers.Main) {
                 dialog.dismiss()
@@ -618,7 +618,7 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
         try {
             settings.amiiboManager?.let { amiiboManager ->
                 val dialog = ProgressAlert.show(activity, "")
-                CoroutineScope(Dispatchers.IO).launch(Dispatchers.IO) {
+                CoroutineScope(Dispatchers.IO).launch {
                     deleteDir(null, Foomiibo.directory)
                     Foomiibo.directory.mkdirs()
                     amiiboManager.amiibos.values.forEach { amiibo ->

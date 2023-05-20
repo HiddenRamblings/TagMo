@@ -294,7 +294,7 @@ object Debug {
     @JvmStatic
     @Throws(IOException::class)
     fun processLogcat(context: Context) {
-        CoroutineScope(Dispatchers.IO).launch(Dispatchers.IO) {
+        CoroutineScope(Dispatchers.IO).launch {
             val separator = if (System.getProperty("line.separator") != null)
                 Objects.requireNonNull(System.getProperty("line.separator")) else "\n"
             val log = getDeviceProfile(context)

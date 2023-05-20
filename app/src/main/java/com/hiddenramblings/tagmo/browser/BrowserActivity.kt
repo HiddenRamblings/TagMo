@@ -1634,7 +1634,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
 
     fun loadPTagKeyManager() {
         if (prefs.powerTagEnabled()) {
-            CoroutineScope(Dispatchers.IO).launch(Dispatchers.IO) {
+            CoroutineScope(Dispatchers.IO).launch {
                 try {
                     powerTagManager
                 } catch (e: Exception) {
@@ -1648,7 +1648,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
     }
 
     private fun loadAmiiboManager() {
-        CoroutineScope(Dispatchers.IO).launch(Dispatchers.IO) {
+        CoroutineScope(Dispatchers.IO).launch {
             var amiiboManager: AmiiboManager?
             try {
                 amiiboManager = getAmiiboManager(applicationContext)
@@ -1706,7 +1706,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
     }
 
     private fun loadFolders(rootFolder: File?) {
-        CoroutineScope(Dispatchers.IO).launch(Dispatchers.IO) {
+        CoroutineScope(Dispatchers.IO).launch {
             val folders = listFolders(rootFolder)
             folders.sortWith(compareBy(String.CASE_INSENSITIVE_ORDER) { it?.path ?: "" })
             withContext(Dispatchers.Main) {
@@ -1724,7 +1724,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
     }
 
     private fun loadAmiiboFiles(rootFolder: File?, recursiveFiles: Boolean) {
-        CoroutineScope(Dispatchers.IO).launch(Dispatchers.IO) {
+        CoroutineScope(Dispatchers.IO).launch {
             val amiiboFiles = listAmiiboFiles(keyManager, rootFolder, recursiveFiles)
             val download = Storage.getDownloadDir("TagMo")
             if (isDirectoryHidden(rootFolder, download, recursiveFiles))
@@ -1741,7 +1741,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
 
     @SuppressLint("NewApi")
     private fun loadAmiiboDocuments(rootFolder: DocumentFile?, recursiveFiles: Boolean) {
-        CoroutineScope(Dispatchers.IO).launch(Dispatchers.IO) {
+        CoroutineScope(Dispatchers.IO).launch {
             val amiiboFiles = try {
                 rootFolder?.let {
                     listAmiiboDocuments(this@BrowserActivity, keyManager, it, recursiveFiles)
@@ -2400,7 +2400,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
     }
 
     private fun locateKeyFiles() {
-        CoroutineScope(Dispatchers.IO).launch(Dispatchers.IO) {
+        CoroutineScope(Dispatchers.IO).launch {
             Storage.getDownloadDir(null).listFiles {
                     _: File?, name: String -> keyNameMatcher(name)
             }.also { files ->

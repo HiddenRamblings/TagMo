@@ -301,7 +301,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
     }
 
     private fun validateKeys(data: Uri?) {
-        CoroutineScope(Dispatchers.IO).launch(Dispatchers.IO) {
+        CoroutineScope(Dispatchers.IO).launch {
             try {
                 data?.let {
                     requireContext().contentResolver.openInputStream(it)?.use { strm ->
@@ -385,7 +385,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
 
     private fun updateAmiiboDatabase(data: Uri?) {
         resetAmiiboDatabase(false)
-        CoroutineScope(Dispatchers.IO).launch(Dispatchers.IO) {
+        CoroutineScope(Dispatchers.IO).launch {
             val amiiboManager: AmiiboManager? = try {
                 parse(requireContext(), data)
             } catch (e: JSONException) {
@@ -435,7 +435,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
     }
 
     private fun resetAmiiboDatabase(notify: Boolean) {
-        CoroutineScope(Dispatchers.IO).launch(Dispatchers.IO) {
+        CoroutineScope(Dispatchers.IO).launch {
             requireContext().deleteFile(AmiiboManager.AMIIBO_DATABASE_FILE)
             val activity = requireActivity() as BrowserActivity
             if (notify) {
@@ -463,7 +463,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
         val syncMessage = buildSnackbar(
             activity, R.string.sync_amiibo_process, Snackbar.LENGTH_INDEFINITE
         )
-        CoroutineScope(Dispatchers.IO).launch(Dispatchers.IO) {
+        CoroutineScope(Dispatchers.IO).launch {
             withContext(Dispatchers.Main) {
                 syncMessage.show()
             }

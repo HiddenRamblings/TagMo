@@ -109,7 +109,7 @@ class ImageActivity : AppCompatActivity() {
             )
         }
 
-        CoroutineScope(Dispatchers.IO).launch(Dispatchers.IO) {
+        CoroutineScope(Dispatchers.IO).launch {
                 var amiiboManager: AmiiboManager? = null
                 try {
                     amiiboManager = AmiiboManager.getAmiiboManager(applicationContext)

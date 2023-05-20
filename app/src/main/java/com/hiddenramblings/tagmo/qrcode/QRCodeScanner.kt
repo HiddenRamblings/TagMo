@@ -118,7 +118,7 @@ class QRCodeScanner : AppCompatActivity() {
         txtMiiLabel = findViewById(R.id.txtMiiLabel)
         txtMiiValue = findViewById(R.id.txtMiiValue)
 
-        CoroutineScope(Dispatchers.IO).launch(Dispatchers.IO) {
+        CoroutineScope(Dispatchers.IO).launch {
             var amiiboManager: AmiiboManager? = null
             try {
                 amiiboManager = AmiiboManager.getAmiiboManager(applicationContext)
@@ -222,7 +222,7 @@ class QRCodeScanner : AppCompatActivity() {
     }
 
     private fun processBarcode(barcode: Barcode) {
-        CoroutineScope(Dispatchers.IO).launch(Dispatchers.IO) {
+        CoroutineScope(Dispatchers.IO).launch {
             withContext(Dispatchers.Main) {
                 qrTypeSpinner.setSelection(barcode.valueType)
                 txtRawValue.setText(barcode.rawValue, TextView.BufferType.EDITABLE)
@@ -272,7 +272,7 @@ class QRCodeScanner : AppCompatActivity() {
             }
             captureUri = null
             if (null != photoUri) {
-                CoroutineScope(Dispatchers.IO).launch(Dispatchers.IO) {
+                CoroutineScope(Dispatchers.IO).launch {
                     var rotation = 0
                     val bitmap: Bitmap? = if (Version.isPie) {
                         val source: ImageDecoder.Source = ImageDecoder.createSource(

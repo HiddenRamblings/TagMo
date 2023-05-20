@@ -366,7 +366,7 @@ class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
     }
 
     private fun updateEliteAdapter(amiiboList: ArrayList<String>?) {
-        CoroutineScope(Dispatchers.IO).launch(Dispatchers.IO) {
+        CoroutineScope(Dispatchers.IO).launch {
             var amiiboManager = settings.amiiboManager
             if (null == amiiboManager) {
                 try {
@@ -398,8 +398,8 @@ class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
                 bankAdapter?.setAmiibos(amiibos)
                 amiiboList?.forEachIndexed { i, amiibo ->
                     amiibos.add(EliteTag(amiiboManager.amiibos[TagArray.hexToLong(amiibo)]))
-                    bankAdapter?.notifyItemInserted(i)
                 }
+                bankAdapter?.notifyItemRangeInserted(0, amiibos.size)
             } else {
                 amiiboList?.forEachIndexed { i, amiibo ->
                     val amiiboId = TagArray.hexToLong(amiibo)

@@ -198,7 +198,7 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
                         }
 
                         override fun onFlaskRangeRetrieved(jsonArray: JSONArray) {
-                            CoroutineScope(Dispatchers.IO).launch(Dispatchers.IO) {
+                            CoroutineScope(Dispatchers.IO).launch {
                                 val flaskAmiibos: ArrayList<Amiibo?> = arrayListOf()
                                 for (i in 0 until jsonArray.length()) {
                                     try {
@@ -222,7 +222,7 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
 
                         override fun onFlaskActiveChanged(jsonObject: JSONObject?) {
                             if (null == jsonObject) return
-                            CoroutineScope(Dispatchers.IO).launch(Dispatchers.IO) {
+                            CoroutineScope(Dispatchers.IO).launch {
                                 try {
                                     val name = jsonObject.getString("name")
                                     if ("undefined" == name) {
@@ -318,7 +318,7 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
                         }
 
                         override fun onPuckActiveChanged(slot: Int) {
-                            CoroutineScope(Dispatchers.IO).launch(Dispatchers.IO) {
+                            CoroutineScope(Dispatchers.IO).launch {
                                 flaskAdapter?.run {
                                     val amiibo = getItem(slot)
                                     getActiveAmiibo(amiibo, amiiboTile)
@@ -338,7 +338,7 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
                         override fun onPuckListRetrieved(
                             slotData: ArrayList<ByteArray?>, active: Int
                         ) {
-                            CoroutineScope(Dispatchers.IO).launch(Dispatchers.IO) {
+                            CoroutineScope(Dispatchers.IO).launch {
                                 currentCount = slotData.size
                                 val flaskAmiibos: ArrayList<Amiibo?> = arrayListOf()
                                 for (i in 0 until currentCount) {

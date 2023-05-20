@@ -44,12 +44,6 @@
             android:key="@string/settings_enable_elite_support"
             android:summary="@string/elite_details"
             android:title="@string/enable_elite" />
-
-        <androidx.preference.SwitchPreferenceCompat
-            android:defaultValue="true"
-            android:key="@string/settings_enable_flask_support"
-            android:summary="@string/elite_details"
-            android:title="@string/enable_flask" />
     </androidx.preference.PreferenceCategory>
 
     <androidx.preference.PreferenceCategory

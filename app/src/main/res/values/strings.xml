@@ -234,7 +234,6 @@
     <string name="lock_elite_warning">Lock N2 Elite Hardware?</string>
     <string name="unlock_elite_warning">Unlock N2 Elite Hardware</string>
     <string name="elite_signature">N2 Elite ID: %1$s</string>
-    <string name="enable_flask">Bluup Flask support</string>
     <string name="amiibo_info">amiibo Database</string>
     <string name="pref_database_source">Preferred AmiiboAPI Database</string>
     <string name="sync_amiibo_info">Sync database with AmiiboAPI</string>

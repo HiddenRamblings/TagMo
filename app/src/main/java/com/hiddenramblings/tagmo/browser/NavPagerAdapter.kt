@@ -4,15 +4,14 @@ import android.annotation.SuppressLint
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.viewpager2.adapter.FragmentStateAdapter
-import com.hiddenramblings.tagmo.BuildConfig
 import com.hiddenramblings.tagmo.Preferences
 import com.hiddenramblings.tagmo.TagMo
 import com.hiddenramblings.tagmo.browser.fragment.*
+import com.hiddenramblings.tagmo.eightbit.os.Version
 
 class NavPagerAdapter(fa: FragmentActivity?) : FragmentStateAdapter(fa!!) {
-    var mPrefs = Preferences(TagMo.appContext)
+    private var mPrefs = Preferences(TagMo.appContext)
     var hasEliteEnabled = mPrefs.eliteEnabled()
-    var hasFlaskEnabled = mPrefs.flaskEnabled()
     val browser = BrowserFragment()
     val website = WebsiteFragment()
     val eliteBanks = EliteBankFragment()
@@ -22,8 +21,8 @@ class NavPagerAdapter(fa: FragmentActivity?) : FragmentStateAdapter(fa!!) {
         return when (position) {
             0 -> browser
             1 -> website
-            2 -> if (hasEliteEnabled) eliteBanks else if (hasFlaskEnabled) flaskSlots else website
-            3 -> if (hasEliteEnabled && hasFlaskEnabled) flaskSlots else website
+            2 -> if (hasEliteEnabled) eliteBanks else flaskSlots
+            3 -> flaskSlots
             else -> browser
         }
     }
@@ -31,7 +30,7 @@ class NavPagerAdapter(fa: FragmentActivity?) : FragmentStateAdapter(fa!!) {
     override fun getItemCount(): Int {
         var viewCount = 2
         if (hasEliteEnabled) viewCount += 1
-        if (hasFlaskEnabled) viewCount += 1
+        if (Version.isJellyBeanMR2) viewCount += 1
         return viewCount
     }
 }

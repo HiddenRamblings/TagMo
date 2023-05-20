@@ -199,15 +199,6 @@ class Preferences(context: Context) {
         putString(eliteSignature, value)
     }
 
-    private val flaskEnabled = "enable_flask_support"
-    fun flaskEnabled(): Boolean {
-        return getBoolean(flaskEnabled, false)
-    }
-
-    fun flaskEnabled(value: Boolean) {
-        putBoolean(flaskEnabled, value)
-    }
-
     private val browserPageTransformer = "browserPageTransformer"
     fun browserPageTransformer(): Int {
         return getInt(browserPageTransformer, 0 /*CardFlipTransformer*/)

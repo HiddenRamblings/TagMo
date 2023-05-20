@@ -167,17 +167,6 @@ class SettingsFragment : PreferenceFragmentCompat() {
                 super@SettingsFragment.onPreferenceTreeClick(it)
             }
         }
-        findPreference<SwitchPreferenceCompat>(
-            getString(R.string.settings_enable_flask_support)
-        )?.apply {
-            isChecked = prefs.flaskEnabled()
-            onPreferenceClickListener = Preference.OnPreferenceClickListener {
-                prefs.flaskEnabled(isChecked)
-                (requireActivity() as BrowserActivity).reloadTabCollection = true
-                super@SettingsFragment.onPreferenceTreeClick(it)
-            }
-            isVisible = Version.isJellyBeanMR2
-        }
         findPreference<ListPreference>(getString(R.string.setting_database_source))?.apply {
             setValueIndex(prefs.databaseSource())
             summary = entry

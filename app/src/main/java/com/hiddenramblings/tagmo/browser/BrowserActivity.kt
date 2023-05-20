@@ -237,7 +237,6 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                     FoomiiboAdapter.resetVisible()
                 }
                 val hasEliteEnabled = prefs.eliteEnabled()
-                val hasFlaskEnabled = prefs.flaskEnabled()
                 if (BuildConfig.WEAR_OS) {
                     when (position) {
                         0 -> {
@@ -253,7 +252,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                             }
                         }
                         2 -> {
-                            if (!hasEliteEnabled && hasFlaskEnabled) {
+                            if (!hasEliteEnabled) {
                                 pagerAdapter.flaskSlots.run {
                                     delayedBluetoothEnable()
                                     amiibosView = flaskContent
@@ -262,12 +261,10 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                             }
                         }
                         3 -> {
-                            if (hasEliteEnabled && hasFlaskEnabled) {
-                                pagerAdapter.flaskSlots.run {
-                                    delayedBluetoothEnable()
-                                    amiibosView = flaskContent
-                                    browserSheet = bottomSheet
-                                }
+                            pagerAdapter.flaskSlots.run {
+                                delayedBluetoothEnable()
+                                amiibosView = flaskContent
+                                browserSheet = bottomSheet
                             }
                         }
                         else -> {}
@@ -294,7 +291,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                                 amiibosView = eliteContent
                                 browserSheet = bottomSheet
                             }
-                        } else if (hasFlaskEnabled) {
+                        } else {
                             setTitle(R.string.flask_title)
                             pagerAdapter.flaskSlots.run {
                                 delayedBluetoothEnable()
@@ -303,13 +300,11 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                             }
                         }
                         3 -> {
-                            if (hasEliteEnabled && hasFlaskEnabled) {
-                                setTitle(R.string.flask_title)
-                                pagerAdapter.flaskSlots.run {
-                                    delayedBluetoothEnable()
-                                    amiibosView = flaskContent
-                                    browserSheet = bottomSheet
-                                }
+                            setTitle(R.string.flask_title)
+                            pagerAdapter.flaskSlots.run {
+                                delayedBluetoothEnable()
+                                amiibosView = flaskContent
+                                browserSheet = bottomSheet
                             }
                         }
                         else -> {}
@@ -514,7 +509,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                 }
 
             }
-            isVisible = prefs.flaskEnabled()
+            isVisible = Version.isJellyBeanMR2
         }
 
         findViewById<CardView>(R.id.menu_qr_code).setOnClickListener {

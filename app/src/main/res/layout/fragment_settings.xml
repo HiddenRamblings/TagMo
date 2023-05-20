@@ -67,16 +67,18 @@
                     <LinearLayout
                         android:id="@+id/wrapper_amiibo"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
+                        android:layout_height="64dp"
                         android:orientation="horizontal">
 
                         <androidx.appcompat.widget.AppCompatImageView
                             android:contentDescription="@string/imageview_amiibo"
                             android:id="@+id/image_amiibo"
-                            android:layout_width="wrap_content"
-                            android:layout_height="64dp"
+                            android:layout_width="60dp"
+                            android:layout_height="60dp"
+                            android:scaleType="fitCenter"
                             android:layout_weight="1"
-                            app:srcCompat="@drawable/ic_stat_notice_24dp"
+                            android:layout_gravity="center_vertical"
+                            app:srcCompat="@drawable/ic_stat_notice_24dp_scaled"
                             android:foreground="@drawable/card_foreground"
                             tools:ignore="UnusedAttribute" />
 
@@ -104,15 +106,17 @@
                     <LinearLayout
                         android:id="@+id/wrapper_elite"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
+                        android:layout_height="64dp"
                         android:orientation="horizontal">
 
                         <androidx.appcompat.widget.AppCompatImageView
                             android:contentDescription="@string/imageview_amiibo"
                             android:id="@+id/image_elite"
-                            android:layout_width="wrap_content"
-                            android:layout_height="64dp"
+                            android:layout_width="60dp"
+                            android:layout_height="60dp"
+                            android:scaleType="fitCenter"
                             android:layout_weight="1"
+                            android:layout_gravity="center_vertical"
                             app:srcCompat="@drawable/ic_nfc_icon_24dp"
                             android:foreground="@drawable/card_foreground"
                             tools:ignore="UnusedAttribute" />
@@ -141,15 +145,17 @@
                     <LinearLayout
                         android:id="@+id/wrapper_flask"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
+                        android:layout_height="64dp"
                         android:orientation="horizontal">
 
                         <androidx.appcompat.widget.AppCompatImageView
                             android:contentDescription="@string/imageview_amiibo"
                             android:id="@+id/image_flask"
-                            android:layout_width="wrap_content"
-                            android:layout_height="64dp"
+                            android:layout_width="60dp"
+                            android:layout_height="60dp"
+                            android:scaleType="fitCenter"
                             android:layout_weight="1"
+                            android:layout_gravity="center_vertical"
                             app:srcCompat="@drawable/ic_bluup_flask_24dp"
                             android:foreground="@drawable/card_foreground"
                             tools:ignore="UnusedAttribute" />
@@ -178,15 +184,17 @@
                     <LinearLayout
                         android:id="@+id/wrapper_qr_code"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
+                        android:layout_height="64dp"
                         android:orientation="horizontal">
 
                         <androidx.appcompat.widget.AppCompatImageView
                             android:contentDescription="@string/imageview_amiibo"
                             android:id="@+id/image_qr_code"
-                            android:layout_width="wrap_content"
-                            android:layout_height="64dp"
+                            android:layout_width="60dp"
+                            android:layout_height="60dp"
+                            android:scaleType="fitCenter"
                             android:layout_weight="1"
+                            android:layout_gravity="center_vertical"
                             app:srcCompat="@drawable/ic_qr_code_2_24"
                             android:foreground="@drawable/card_foreground"
                             tools:ignore="UnusedAttribute" />
@@ -215,15 +223,17 @@
                     <LinearLayout
                         android:id="@+id/wrapper_lego"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
+                        android:layout_height="64dp"
                         android:orientation="horizontal">
 
                         <androidx.appcompat.widget.AppCompatImageView
                             android:contentDescription="@string/imageview_amiibo"
                             android:id="@+id/image_lego"
-                            android:layout_width="wrap_content"
-                            android:layout_height="64dp"
+                            android:layout_width="60dp"
+                            android:layout_height="60dp"
+                            android:scaleType="fitCenter"
                             android:layout_weight="1"
+                            android:layout_gravity="center_vertical"
                             app:srcCompat="@drawable/ic_lego_face_24dp"
                             android:foreground="@drawable/card_foreground"
                             tools:ignore="UnusedAttribute" />
@@ -252,15 +262,17 @@
                     <LinearLayout
                         android:id="@+id/wrapper_joystick"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
+                        android:layout_height="64dp"
                         android:orientation="horizontal">
 
                         <androidx.appcompat.widget.AppCompatImageView
                             android:contentDescription="@string/imageview_amiibo"
                             android:id="@+id/image_joystick"
-                            android:layout_width="wrap_content"
-                            android:layout_height="64dp"
+                            android:layout_width="60dp"
+                            android:layout_height="60dp"
+                            android:scaleType="fitCenter"
                             android:layout_weight="1"
+                            android:layout_gravity="center_vertical"
                             app:srcCompat="@drawable/ic_joystick_24dp"
                             android:foreground="@drawable/card_foreground"
                             tools:ignore="UnusedAttribute" />
@@ -289,15 +301,17 @@
                     <LinearLayout
                         android:id="@+id/wrapper_guides"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
+                        android:layout_height="64dp"
                         android:orientation="horizontal">
 
                         <androidx.appcompat.widget.AppCompatImageView
                             android:contentDescription="@string/imageview_amiibo"
                             android:id="@+id/image_guides"
-                            android:layout_width="wrap_content"
-                            android:layout_height="64dp"
+                            android:layout_width="60dp"
+                            android:layout_height="60dp"
+                            android:scaleType="fitCenter"
                             android:layout_weight="1"
+                            android:layout_gravity="center_vertical"
                             app:srcCompat="@drawable/ic_help_outline_24dp"
                             android:foreground="@drawable/card_foreground"
                             tools:ignore="UnusedAttribute" />
@@ -326,15 +340,17 @@
                     <LinearLayout
                         android:id="@+id/wrapper_settings"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
+                        android:layout_height="64dp"
                         android:orientation="horizontal">
 
                         <androidx.appcompat.widget.AppCompatImageView
                             android:contentDescription="@string/imageview_amiibo"
                             android:id="@+id/image_settings"
-                            android:layout_width="wrap_content"
-                            android:layout_height="64dp"
+                            android:layout_width="60dp"
+                            android:layout_height="60dp"
+                            android:scaleType="fitCenter"
                             android:layout_weight="1"
+                            android:layout_gravity="center_vertical"
                             app:srcCompat="@drawable/ic_warning_amber_24"
                             android:foreground="@drawable/card_foreground"
                             tools:ignore="UnusedAttribute" />

@@ -206,7 +206,7 @@
     <string name="about">About</string>
     <string name="donate">Donate</string>
 
-    <string name="menu_amiibo">amiibo Browser</string>
+    <string name="menu_amiibo">Backup Browser</string>
     <string name="menu_elite">N2 Elite Browser</string>
     <string name="menu_flask">Bluetooth Browser</string>
     <string name="menu_qr_code">QR Code Toolkit</string>

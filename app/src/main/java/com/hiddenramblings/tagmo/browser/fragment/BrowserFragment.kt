@@ -126,8 +126,10 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
     @SuppressLint("ClickableViewAccessibility")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
         val activity = requireActivity() as BrowserActivity
         settings = activity.settings ?: BrowserSettings().initialize()
+
         chipList = view.findViewById(R.id.chip_list)
         chipList?.isGone = true
 

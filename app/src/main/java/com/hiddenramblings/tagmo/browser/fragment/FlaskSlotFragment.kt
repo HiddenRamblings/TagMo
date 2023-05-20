@@ -181,7 +181,9 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
                                     withContext(Dispatchers.Main) {
                                         dismissSnackbarNotice(true)
                                     }
-                                    flaskContent?.adapter = it
+                                    flaskContent?.post {
+                                        flaskContent?.adapter = it
+                                    }
                                     if (currentCount > 0) {
                                         activeAmiibo
                                         it.notifyItemRangeInserted(0, currentCount)
@@ -212,12 +214,8 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
                                 }
                                 flaskAdapter?.run {
                                     addFlaskAmiibo(flaskAmiibos)
-                                    withContext(Dispatchers.Main) {
-                                        notifyItemRangeInserted(
-                                            currentCount, flaskAmiibos.size
-                                        )
-                                        currentCount = itemCount
-                                    }
+                                    notifyItemRangeInserted(currentCount, flaskAmiibos.size)
+                                    currentCount = itemCount
                                 }
                             }
                         }
@@ -358,7 +356,9 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
                                     withContext(Dispatchers.Main) {
                                         dismissSnackbarNotice(true)
                                     }
-                                    flaskContent?.adapter = it
+                                    flaskContent?.post {
+                                        flaskContent?.adapter = it
+                                    }
                                     if (currentCount > 0) {
                                         it.notifyItemRangeInserted(0, currentCount)
                                         onPuckActiveChanged(active)

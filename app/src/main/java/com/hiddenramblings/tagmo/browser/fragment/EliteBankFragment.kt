@@ -366,7 +366,7 @@ class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
     }
 
     private fun updateEliteAdapter(amiiboList: ArrayList<String>?) {
-        CoroutineScope(Dispatchers.IO).launch {
+        CoroutineScope(Dispatchers.IO).launch(Dispatchers.IO) {
             var amiiboManager = settings.amiiboManager
             if (null == amiiboManager) {
                 try {
@@ -398,23 +398,17 @@ class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
                 bankAdapter?.setAmiibos(amiibos)
                 amiiboList?.forEachIndexed { i, amiibo ->
                     amiibos.add(EliteTag(amiiboManager.amiibos[TagArray.hexToLong(amiibo)]))
-                    eliteContent?.post {
-                        bankAdapter?.notifyItemInserted(i)
-                    }
+                    bankAdapter?.notifyItemInserted(i)
                 }
             } else {
                 amiiboList?.forEachIndexed { i, amiibo ->
                     val amiiboId = TagArray.hexToLong(amiibo)
                     if (i >= amiibos.size) {
                         amiibos.add(EliteTag(amiiboManager.amiibos[TagArray.hexToLong(amiibo)]))
-                        eliteContent?.post {
-                            bankAdapter?.notifyItemInserted(i)
-                        }
+                        bankAdapter?.notifyItemInserted(i)
                     } else if (null == amiibos[i] || i != amiibos[i]?.index || amiiboId != amiibos[i]?.id) {
                         amiibos[i] = EliteTag(amiiboManager.amiibos[amiiboId])
-                        eliteContent?.post {
-                            bankAdapter?.notifyItemChanged(i)
-                        }
+                        bankAdapter?.notifyItemChanged(i)
                     }
                 }
                 if (null != amiiboList && amiibos.size > amiiboList.size) {
@@ -425,12 +419,8 @@ class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
                         shortList.add(amiibos[x])
                     }
                     amiibos = shortList
-                    eliteContent?.post {
-                        bankAdapter?.let {
-                            it.notifyItemRangeChanged(0, size)
-                            it.notifyItemRangeRemoved(size, count - size)
-                        }
-                    }
+                    bankAdapter?.notifyItemRangeChanged(0, size)
+                    bankAdapter?.notifyItemRangeRemoved(size, count - size)
                 }
             }
             withContext(Dispatchers.Main) {
@@ -486,10 +476,8 @@ class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
             NFCIntent.EXTRA_ACTIVE_BANK, prefs.eliteActiveBank()
         ) ?: prefs.eliteActiveBank()
         bankAdapter?.let {
-            eliteContent?.post {
-                it.notifyItemChanged(prefs.eliteActiveBank())
-                it.notifyItemChanged(activeBank)
-            }
+            it.notifyItemChanged(prefs.eliteActiveBank())
+            it.notifyItemChanged(activeBank)
         }
         prefs.eliteActiveBank(activeBank)
         amiibos[activeBank]?.let {
@@ -579,9 +567,7 @@ class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
         }
         status = CLICKED.NOTHING
         updateAmiiboView(amiiboCard, tagData, -1, clickedPosition)
-        eliteContent?.post {
-            bankAdapter?.notifyItemChanged(clickedPosition)
-        }
+        bankAdapter?.notifyItemChanged(clickedPosition)
     }
 
     private fun scanAmiiboBank(current_bank: Int) {
@@ -907,6 +893,7 @@ class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
         AlertDialog.Builder(requireContext())
             .setMessage(R.string.elite_write_confirm)
             .setPositiveButton(R.string.proceed) { dialog: DialogInterface, _: Int ->
+                onBottomSheetChanged(SHEET.MENU)
                 onOpenBanksActivity.launch(Intent(requireContext(), NfcActivity::class.java).apply {
                     addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
                     putExtra(NFCIntent.EXTRA_SIGNATURE, prefs.eliteSignature())
@@ -914,7 +901,6 @@ class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
                     putExtra(NFCIntent.EXTRA_BANK_COUNT, eliteBankCount.value)
                     putExtra(NFCIntent.EXTRA_AMIIBO_BYTES, bytesList)
                 })
-                onBottomSheetChanged(SHEET.MENU)
                 dialog.dismiss()
             }
             .setNegativeButton(R.string.cancel) { dialog: DialogInterface, _: Int ->

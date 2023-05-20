@@ -11,7 +11,7 @@ android {
         applicationId 'com.hiddenramblings.tagmo'
         minSdkVersion 16
         targetSdkVersion 33
-        versionName "3.8.3"
+        versionName "3.8.4"
         versionCode = versionName.replace(".","").toInteger() * 10
 
         vectorDrawables {
@@ -141,7 +141,6 @@ dependencies {
     kapt 'com.github.bumptech.glide:compiler:4.15.1'
 
     implementation 'com.github.8bitdream:AndroidFastScroll:4cb96477d5'
-    implementation 'com.github.8bitDream:NumberPicker:59250ee06f'
 
     implementation 'com.google.android.flexbox:flexbox:3.0.0'
     // Required for Lollipop Amiibo API download compatibility

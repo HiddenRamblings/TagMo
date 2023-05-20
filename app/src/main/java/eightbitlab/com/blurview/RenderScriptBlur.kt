@@ -1,9 +1,9 @@
-@file:Suppress("DEPRECATION")
-
 package eightbitlab.com.blurview
 
 import android.content.Context
-import android.graphics.*
+import android.graphics.Bitmap
+import android.graphics.Canvas
+import android.graphics.Paint
 import android.os.Build
 import android.renderscript.Allocation
 import android.renderscript.Element
@@ -13,14 +13,15 @@ import androidx.annotation.RequiresApi
 
 /**
  * Blur using RenderScript, processed on GPU when device drivers support it.
+ * Requires API 17+
+ *
  */
-class RenderScriptBlur
-@Deprecated("""RenderScript is deprecated and hardware acceleration is not guaranteed.""")
+@Deprecated(
+    """because RenderScript is deprecated and its hardware acceleration is not guaranteed.
+  RenderEffectBlur is the best alternative at the moment."""
+)
 @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
-/**
- * @param context Context to create the [RenderScript]
- */
-constructor(context: Context?) : BlurAlgorithm {
+class RenderScriptBlur constructor(context: Context) : BlurAlgorithm {
     private val paint = Paint(Paint.FILTER_BITMAP_FLAG)
     private val renderScript: RenderScript
     private val blurScript: ScriptIntrinsicBlur
@@ -28,13 +29,16 @@ constructor(context: Context?) : BlurAlgorithm {
     private var lastBitmapWidth = -1
     private var lastBitmapHeight = -1
 
+    /**
+     * @param context Context to create the [RenderScript]
+     */
     init {
         renderScript = RenderScript.create(context)
         blurScript = ScriptIntrinsicBlur.create(renderScript, Element.U8_4(renderScript))
     }
 
-    private fun canReuseAllocation(bitmap: Bitmap?): Boolean {
-        return bitmap!!.height == lastBitmapHeight && bitmap.width == lastBitmapWidth
+    private fun canReuseAllocation(bitmap: Bitmap): Boolean {
+        return bitmap.height == lastBitmapHeight && bitmap.width == lastBitmapWidth
     }
 
     /**
@@ -46,17 +50,17 @@ constructor(context: Context?) : BlurAlgorithm {
     override fun blur(bitmap: Bitmap?, blurRadius: Float): Bitmap? {
         //Allocation will use the same backing array of pixels as bitmap if created with USAGE_SHARED flag
         val inAllocation = Allocation.createFromBitmap(renderScript, bitmap)
-        if (!canReuseAllocation(bitmap)) {
+        if (!canReuseAllocation(bitmap!!)) {
             outAllocation?.destroy()
             outAllocation = Allocation.createTyped(renderScript, inAllocation.type)
-            lastBitmapWidth = bitmap!!.width
+            lastBitmapWidth = bitmap.width
             lastBitmapHeight = bitmap.height
         }
         blurScript.setRadius(blurRadius)
         blurScript.setInput(inAllocation)
         //do not use inAllocation in forEach. it will cause visual artifacts on blurred Bitmap
         blurScript.forEach(outAllocation)
-        outAllocation?.copyTo(bitmap)
+        outAllocation!!.copyTo(bitmap)
         inAllocation.destroy()
         return bitmap
     }

@@ -177,7 +177,7 @@ class WebsiteFragment : Fragment() {
                     )
                 } else {
                     val zipInStream = zipFile.getInputStream(finalEntry)
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    if (Version.isOreo) {
                         Files.copy(zipInStream, Paths.get(outputDir.absolutePath, finalEntry.name))
                     } else {
                         val fileOut = FileOutputStream(

@@ -252,7 +252,9 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                             }
                         }
                         2 -> {
-                            if (!hasEliteEnabled) {
+                            if (hasEliteEnabled) {
+                                showActionButton()
+                            } else {
                                 pagerAdapter.flaskSlots.run {
                                     delayedBluetoothEnable()
                                     amiibosView = flaskContent
@@ -286,6 +288,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                         }
                         1 -> setTitle(R.string.guides)
                         2 -> if (hasEliteEnabled) {
+                            showActionButton()
                             setTitle(R.string.elite_n2)
                             pagerAdapter.eliteBanks.run {
                                 amiibosView = eliteContent
@@ -324,13 +327,8 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
 
         val coordinator = findViewById<CoordinatorLayout>(R.id.coordinator)
         if (Version.isJellyBeanMR && amiiboContainer is BlurView) {
-            (amiiboContainer as BlurView).setupWith(coordinator,
-                if (Version.isSnowCone)
-                    RenderEffectBlur()
-                else
-                    @Suppress("deprecation")
-                    RenderScriptBlur(this)
-            ).setFrameClearDrawable(window.decorView.background)
+            (amiiboContainer as BlurView).setupWith(coordinator)
+                .setFrameClearDrawable(window.decorView.background)
                 .setBlurRadius(2f).setBlurAutoUpdate(true)
         }
 

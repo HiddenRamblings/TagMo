@@ -1,6 +1,11 @@
 package eightbitlab.com.blurview
 
-import android.graphics.*
+import android.content.Context
+import android.graphics.Bitmap
+import android.graphics.Canvas
+import android.graphics.RenderEffect
+import android.graphics.RenderNode
+import android.graphics.Shader
 import android.os.Build
 import androidx.annotation.RequiresApi
 
@@ -16,7 +21,11 @@ class RenderEffectBlur : BlurAlgorithm {
     private val node = RenderNode("BlurViewNode")
     private var height = 0
     private var width = 0
+    private var lastBlurRadius = 1f
+    var fallbackAlgorithm: BlurAlgorithm? = null
+    private var context: Context? = null
     override fun blur(bitmap: Bitmap?, blurRadius: Float): Bitmap {
+        lastBlurRadius = blurRadius
         if (bitmap!!.height != height || bitmap.width != width) {
             height = bitmap.height
             width = bitmap.width
@@ -38,6 +47,7 @@ class RenderEffectBlur : BlurAlgorithm {
 
     override fun destroy() {
         node.discardDisplayList()
+        fallbackAlgorithm?.destroy()
     }
 
     override fun canModifyBitmap(): Boolean {
@@ -52,6 +62,18 @@ class RenderEffectBlur : BlurAlgorithm {
     }
 
     override fun render(canvas: Canvas, bitmap: Bitmap) {
-        canvas.drawRenderNode(node)
+        if (canvas.isHardwareAccelerated) {
+            canvas.drawRenderNode(node)
+        } else {
+            if (fallbackAlgorithm == null) {
+                fallbackAlgorithm = RenderScriptBlur(context!!)
+            }
+            fallbackAlgorithm!!.blur(bitmap, lastBlurRadius)
+            fallbackAlgorithm!!.render(canvas, bitmap)
+        }
+    }
+
+    fun setContext(context: Context) {
+        this.context = context
     }
 }

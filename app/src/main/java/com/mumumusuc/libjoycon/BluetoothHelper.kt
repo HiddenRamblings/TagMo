@@ -184,8 +184,7 @@ class BluetoothHelper(private val mAdapter: BluetoothAdapter) : BluetoothProfile
 
     fun pair(dev: BluetoothDevice) {
         checkOrThrow()
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT
-            && dev.bondState == BluetoothDevice.BOND_NONE) {
+        if (Version.isKitKat && dev.bondState == BluetoothDevice.BOND_NONE) {
             dev.createBond()
         }
     }

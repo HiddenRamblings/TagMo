@@ -12,42 +12,51 @@ import androidx.annotation.ColorInt
  * Blur Controller that handles all blur logic for the attached View.
  * It honors View size changes, View animation and Visibility changes.
  *
+ *
  * The basic idea is to draw the view hierarchy on a bitmap, excluding the attached View,
  * then blur and draw it on the system Canvas.
  *
- * It uses ViewTreeObserver.OnPreDrawListener to detect when blur should be updated.
- */
-
-/**
- * @param blurView  View which will draw it's blurred underlying content
- * @param rootView  Root View where blurView's underlying content starts drawing.
- * Can be Activity's root content layout (android.R.id.content)
- * @param blurAlgorithm sets the blur algorithm
+ *
+ * It uses [ViewTreeObserver.OnPreDrawListener] to detect when
+ * blur should be updated.
+ *
+ *
  */
 internal class PreDrawBlurController(
-    val blurView: BlurView, private val rootView: ViewGroup,
+    val blurView: BlurView,
+    private val rootView: ViewGroup,
     @param:ColorInt private var overlayColor: Int,
     private val blurAlgorithm: BlurAlgorithm
-) : BlurController {
-    private var blurRadius: Float = BlurController.DEFAULT_BLUR_RADIUS
+) :
+    BlurController {
+    private var blurRadius = BlurController.DEFAULT_BLUR_RADIUS
     private var internalCanvas: BlurViewCanvas? = null
     private var internalBitmap: Bitmap? = null
     private val rootLocation = IntArray(2)
     private val blurViewLocation = IntArray(2)
-    private val drawListener = ViewTreeObserver.OnPreDrawListener {
-
-        // Not invalidating a View here, just updating the Bitmap.
-        // This relies on the HW accelerated bitmap drawing behavior in Android
-        // If the bitmap was drawn on HW accelerated canvas, it holds a reference to it and on next
-        // drawing pass the updated content of the bitmap will be rendered on the screen
-        updateBlur()
-        true
-    }
+    private val drawListener =
+        ViewTreeObserver.OnPreDrawListener { // Not invalidating a View here, just updating the Bitmap.
+            // This relies on the HW accelerated bitmap drawing behavior in Android
+            // If the bitmap was drawn on HW accelerated canvas, it holds a reference to it and on next
+            // drawing pass the updated content of the bitmap will be rendered on the screen
+            updateBlur()
+            true
+        }
     private var blurEnabled = true
     private var initialized = false
     private var frameClearDrawable: Drawable? = null
 
+    /**
+     * @param blurView  View which will draw it's blurred underlying content
+     * @param rootView  Root View where blurView's underlying content starts drawing.
+     * Can be Activity's root content layout (android.R.id.content)
+     * @param algorithm sets the blur algorithm
+     */
     init {
+        if (blurAlgorithm is RenderEffectBlur) {
+            // noinspection NewApi
+            blurAlgorithm.setContext(blurView.context)
+        }
         val measuredWidth = blurView.measuredWidth
         val measuredHeight = blurView.measuredHeight
         init(measuredWidth, measuredHeight)
@@ -67,8 +76,9 @@ internal class PreDrawBlurController(
             bitmapSize.width,
             bitmapSize.height,
             blurAlgorithm.supportedBitmapConfig
-        )
-        internalCanvas = BlurViewCanvas(internalBitmap!!)
+        ).also {
+            internalCanvas = BlurViewCanvas(it)
+        }
         initialized = true
         // Usually it's not needed, because `onPreDraw` updates the blur anyway.
         // But it handles cases when the PreDraw listener is attached to a different Window, for example
@@ -77,7 +87,7 @@ internal class PreDrawBlurController(
         updateBlur()
     }
 
-    private fun updateBlur() {
+    fun updateBlur() {
         if (!blurEnabled || !initialized) {
             return
         }

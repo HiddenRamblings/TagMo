@@ -203,7 +203,7 @@ class QRCodeScanner : AppCompatActivity() {
         val cipher = Cipher.getInstance("AES/CCM/NoPadding")
         cipher.init(
             Cipher.DECRYPT_MODE, secretKeySpec,
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
+            if (Version.isKitKat)
                 GCMParameterSpec(nonce.size + empty.size, nonce.plus(empty))
             else IvParameterSpec(nonce.plus(empty))
         )

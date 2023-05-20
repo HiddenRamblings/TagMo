@@ -55,10 +55,12 @@ class WebsiteFragment : Fragment() {
 
             override fun onProviderInstallException() {
                 Toasty(requireContext()).Long(R.string.fail_ssl_update)
+                configureWebView(mWebView)
             }
 
             override fun onProviderInstallFailed() {
                 Toasty(requireContext()).Long(R.string.fail_ssl_update)
+                configureWebView(mWebView)
             }
         })
     }

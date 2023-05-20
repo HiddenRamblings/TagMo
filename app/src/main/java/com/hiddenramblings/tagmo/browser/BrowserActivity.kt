@@ -498,7 +498,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
         findViewById<CardView>(R.id.menu_elite).apply {
             setOnClickListener {
                 closePrefsDrawer()
-                if (viewPager.currentItem != 1) viewPager.setCurrentItem(2, true)
+                if (viewPager.currentItem != 2) viewPager.setCurrentItem(2, true)
             }
             isVisible = prefs.eliteEnabled()
         }
@@ -507,7 +507,12 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
         findViewById<CardView>(R.id.menu_flask).apply {
             setOnClickListener {
                 closePrefsDrawer()
-                if (viewPager.currentItem != 2) viewPager.setCurrentItem(3, true)
+                if (!prefs.eliteEnabled()) {
+                    if (viewPager.currentItem != 2) viewPager.setCurrentItem(2, true)
+                } else {
+                    if (viewPager.currentItem != 3) viewPager.setCurrentItem(3, true)
+                }
+
             }
             isVisible = prefs.flaskEnabled()
         }

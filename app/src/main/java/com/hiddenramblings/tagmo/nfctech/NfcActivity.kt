@@ -472,8 +472,8 @@ class NfcActivity : AppCompatActivity() {
                     throw ex
                 } finally {
                     closeTagSilently(ntag)
+                    finish()
                 }
-                finish()
             } ?: if (prefs.eliteEnabled()) {
                 fixEliteDialog(commandIntent)
             } else {

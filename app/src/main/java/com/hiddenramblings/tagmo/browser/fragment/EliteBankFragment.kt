@@ -519,8 +519,8 @@ class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
                     removeRefreshListener()
                 }
             })
-            if (intent.hasExtra(NFCIntent.EXTRA_AMIIBO_CLONES)) {
-                updateEliteAdapter(intent.getStringArrayListExtra(NFCIntent.EXTRA_AMIIBO_CLONES))
+            if (intent.hasExtra(NFCIntent.EXTRA_AMIIBO_LIST)) {
+                updateEliteAdapter(intent.getStringArrayListExtra(NFCIntent.EXTRA_AMIIBO_LIST))
             }
             updateAmiiboView(amiiboCard, tagData, -1, clickedPosition)
             if (status == CLICKED.ERASE_BANK) {
@@ -878,7 +878,7 @@ class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
                     removeRefreshListener()
                 }
             })
-            updateEliteAdapter(intent.getStringArrayListExtra(NFCIntent.EXTRA_AMIIBO_CLONES))
+            updateEliteAdapter(intent.getStringArrayListExtra(NFCIntent.EXTRA_AMIIBO_LIST))
 
             bankStats?.text = getString(R.string.bank_stats, getValueForPosition(
                 eliteBankCount, prefs.eliteActiveBank()
@@ -914,11 +914,11 @@ class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
         val bytesList: ArrayList<AmiiboData?> = arrayListOf()
         amiiboList.forEach {
             it?.let { amiiboFile ->
-                amiiboFile.data ?: amiiboFile.docUri?.let { doc ->
-                    TagArray.getValidatedDocument(keyManager, doc)
-                } ?: amiiboFile.filePath?.let { file ->
+                amiiboFile.data  ?: amiiboFile.filePath?.let { file ->
                     TagArray.getValidatedFile(keyManager, file)
-                }?.let { bytesList.add(AmiiboData(it)) }
+                } ?: amiiboFile.docUri?.let { doc ->
+                    TagArray.getValidatedDocument(keyManager, doc)
+                }?.let { data -> bytesList.add(AmiiboData(data)) }
             }
         }
         writeAmiiboCollection(bytesList)
@@ -953,7 +953,7 @@ class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
                     removeRefreshListener()
                 }
             })
-            updateEliteAdapter(extras.getStringArrayList(NFCIntent.EXTRA_AMIIBO_CLONES))
+            updateEliteAdapter(extras.getStringArrayList(NFCIntent.EXTRA_AMIIBO_LIST))
             bankStats?.text = getString(
                 R.string.bank_stats, getValueForPosition(eliteBankCount, activeBank), bankCount
             )

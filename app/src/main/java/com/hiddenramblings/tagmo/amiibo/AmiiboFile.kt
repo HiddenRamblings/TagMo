@@ -58,8 +58,8 @@ open class AmiiboFile : Parcelable {
         })
         return arrayListOf<AmiiboData?>().also { dataList ->
             for (i in 0 until count) {
-                dataList.add(AmiiboData(tagData).apply {
-                    uID = Foomiibo().generateRandomUID()
+                dataList.add(AmiiboData(tagData).also {
+                    it.uID = Foomiibo().generateRandomUID()
                 })
             }
         }

@@ -1,6 +1,5 @@
 package com.hiddenramblings.tagmo.amiibo.tagdata
 
-import android.content.Context
 import com.hiddenramblings.tagmo.R
 import com.hiddenramblings.tagmo.TagMo
 

@@ -93,8 +93,6 @@ import com.hiddenramblings.tagmo.wave9.DimensionActivity
 import com.hiddenramblings.tagmo.widget.Toasty
 import com.shawnlin.numberpicker.NumberPicker
 import eightbitlab.com.blurview.BlurView
-import eightbitlab.com.blurview.RenderEffectBlur
-import eightbitlab.com.blurview.RenderScriptBlur
 import kotlinx.coroutines.*
 import org.json.JSONException
 import java.io.File
@@ -1294,17 +1292,11 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
         findViewById<TextView>(R.id.txtUsageLabel).run {
             settings?.gamesManager?.let {
                 isVisible = true
-                CoroutineScope(Dispatchers.IO).launch {
-                    val usage: String? = try {
-                        val amiiboId = Amiibo.dataToId(tagData)
-                        it.getGamesCompatibility(amiiboId)
-                    } catch (ex: Exception) {
-                        Debug.warn(ex)
-                        null
-                    }
-                    withContext(Dispatchers.Main) {
-                        txtUsage.text = usage
-                    }
+                try {
+                    val amiiboId = Amiibo.dataToId(tagData)
+                    txtUsage.text = it.getGamesCompatibility(amiiboId)
+                } catch (ex: Exception) {
+                    Debug.warn(ex)
                 }
             } ?: {
                 isGone = true
@@ -1576,7 +1568,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                 setQuery(query, true)
                 clearFocus()
             }
-}
+        }
         return super.onCreateOptionsMenu(menu)
     }
 
@@ -1632,63 +1624,49 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
 
     fun loadPTagKeyManager() {
         if (prefs.powerTagEnabled()) {
-            CoroutineScope(Dispatchers.IO).launch {
-                try {
-                    powerTagManager
-                } catch (e: Exception) {
-                    Debug.warn(e)
-                    withContext(Dispatchers.Main) {
-                        Toasty(this@BrowserActivity).Short(R.string.fail_powertag_keys)
-                    }
-                }
+            try {
+                powerTagManager
+            } catch (e: Exception) {
+                Debug.warn(e)
+                Toasty(this@BrowserActivity).Short(R.string.fail_powertag_keys)
             }
         }
     }
 
     private fun loadAmiiboManager() {
-        CoroutineScope(Dispatchers.IO).launch {
-            var amiiboManager: AmiiboManager?
-            try {
-                amiiboManager = getAmiiboManager(applicationContext)
-            } catch (e: IOException) {
-                Debug.warn(e)
-                amiiboManager = null
-                withContext(Dispatchers.Main) {
-                    Toasty(this@BrowserActivity).Short(R.string.amiibo_info_parse_error)
-                }
-            } catch (e: JSONException) {
-                Debug.warn(e)
-                amiiboManager = null
-                withContext(Dispatchers.Main) {
-                    Toasty(this@BrowserActivity).Short(R.string.amiibo_info_parse_error)
-                }
-            } catch (e: ParseException) {
-                Debug.warn(e)
-                amiiboManager = null
-                withContext(Dispatchers.Main) {
-                    Toasty(this@BrowserActivity).Short(R.string.amiibo_info_parse_error)
-                }
-            }
-            val gamesManager: GamesManager? = try {
-                getGamesManager(this@BrowserActivity)
-            } catch (e: IOException) {
-                Debug.warn(e)
-                null
-            } catch (e: JSONException) {
-                Debug.warn(e)
-                null
-            } catch (e: ParseException) {
-                Debug.warn(e)
-                null
-            }
-            withContext(Dispatchers.Main) {
-                settings?.let {
-                    it.amiiboManager = amiiboManager
-                    it.gamesManager = gamesManager
-                    it.notifyChanges()
-                    pagerAdapter.browser.managerStats
-                }
-            }
+        var amiiboManager: AmiiboManager?
+        try {
+            amiiboManager = getAmiiboManager(applicationContext)
+        } catch (e: IOException) {
+            Debug.warn(e)
+            amiiboManager = null
+            Toasty(this@BrowserActivity).Short(R.string.amiibo_info_parse_error)
+        } catch (e: JSONException) {
+            Debug.warn(e)
+            amiiboManager = null
+            Toasty(this@BrowserActivity).Short(R.string.amiibo_info_parse_error)
+        } catch (e: ParseException) {
+            Debug.warn(e)
+            amiiboManager = null
+            Toasty(this@BrowserActivity).Short(R.string.amiibo_info_parse_error)
+        }
+        val gamesManager: GamesManager? = try {
+            getGamesManager(this@BrowserActivity)
+        } catch (e: IOException) {
+            Debug.warn(e)
+            null
+        } catch (e: JSONException) {
+            Debug.warn(e)
+            null
+        } catch (e: ParseException) {
+            Debug.warn(e)
+            null
+        }
+        settings?.let {
+            it.amiiboManager = amiiboManager
+            it.gamesManager = gamesManager
+            it.notifyChanges()
+            pagerAdapter.browser.managerStats
         }
     }
 
@@ -1779,7 +1757,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
         if (Version.isKitKat)
             contentResolver.takePersistableUriPermission(treeUri!!,
                 Intent.FLAG_GRANT_READ_URI_PERMISSION
-                    or Intent.FLAG_GRANT_WRITE_URI_PERMISSION
+                        or Intent.FLAG_GRANT_WRITE_URI_PERMISSION
             )
         val pickedDir = DocumentFile.fromTreeUri(this, treeUri!!)
 
@@ -2275,14 +2253,14 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
     fun restoreMenuLayout() {
         settingsPage?.isGone = true
     }
-      fun closePrefsDrawer(): Boolean {
-          prefsDrawer?.let {
-              if (it.isDrawerOpen(GravityCompat.START)) {
-                  it.closeDrawer(GravityCompat.START)
-                  restoreMenuLayout()
-                  return true
-              }
-          }
+    fun closePrefsDrawer(): Boolean {
+        prefsDrawer?.let {
+            if (it.isDrawerOpen(GravityCompat.START)) {
+                it.closeDrawer(GravityCompat.START)
+                restoreMenuLayout()
+                return true
+            }
+        }
 
         return false
     }
@@ -2513,7 +2491,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                         } else if (viewPager.currentItem != 0) {
                             if (viewPager.currentItem == pagerAdapter.itemCount - 1
                                 && pagerAdapter.website.hasGoneBack()) return
-                                else viewPager.setCurrentItem(0, true)
+                            else viewPager.setCurrentItem(0, true)
                         } else {
                             finishAffinity()
                         }

@@ -55,10 +55,6 @@ import com.hiddenramblings.tagmo.eightbit.os.Version
 import com.hiddenramblings.tagmo.nfctech.TagArray
 import com.hiddenramblings.tagmo.widget.Toasty
 import com.shawnlin.numberpicker.NumberPicker
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
@@ -150,102 +146,87 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
                         }
 
                         override fun onFlaskStatusChanged(jsonObject: JSONObject?) {
-                            CoroutineScope(Dispatchers.Main).launch {
-                                processDialog?.let {
-                                    if (it.isShowing) it.dismiss()
-                                }
+                            processDialog?.let {
+                                if (it.isShowing) it.dismiss()
                             }
                             deviceAmiibo
                         }
 
                         override fun onFlaskListRetrieved(jsonArray: JSONArray) {
-                            CoroutineScope(Dispatchers.IO).launch(Dispatchers.IO) {
-                                currentCount = jsonArray.length()
-                                val flaskAmiibos: ArrayList<Amiibo?> = arrayListOf()
-                                for (i in 0 until currentCount) {
-                                    try {
-                                        val amiibo = getAmiiboFromTail(
-                                            jsonArray.getString(i).split("|")
-                                        )
-                                        flaskAmiibos.add(amiibo)
-                                    } catch (ex: JSONException) {
-                                        Debug.warn(ex)
-                                    } catch (ex: NullPointerException) {
-                                        Debug.warn(ex)
-                                    }
-                                }
-                                flaskAdapter = FlaskSlotAdapter(
-                                    settings, this@FlaskSlotFragment
-                                ).also {
-                                    it.setFlaskAmiibo(flaskAmiibos)
-                                    withContext(Dispatchers.Main) {
-                                        dismissSnackbarNotice(true)
-                                    }
-                                    flaskContent?.post {
-                                        flaskContent?.adapter = it
-                                    }
-                                    if (currentCount > 0) {
-                                        activeAmiibo
-                                        it.notifyItemRangeInserted(0, currentCount)
-                                    } else {
-                                        withContext(Dispatchers.Main) {
-                                            amiiboTile?.isInvisible = true
-                                            flaskButtonState
-                                        }
-                                    }
-                                }
-                            }
-                        }
-
-                        override fun onFlaskRangeRetrieved(jsonArray: JSONArray) {
-                            CoroutineScope(Dispatchers.IO).launch {
-                                val flaskAmiibos: ArrayList<Amiibo?> = arrayListOf()
-                                for (i in 0 until jsonArray.length()) {
-                                    try {
-                                        val amiibo = getAmiiboFromTail(
-                                            jsonArray.getString(i).split("|")
-                                        )
-                                        flaskAmiibos.add(amiibo)
-                                    } catch (ex: JSONException) {
-                                        Debug.warn(ex)
-                                    } catch (ex: NullPointerException) {
-                                        Debug.warn(ex)
-                                    }
-                                }
-                                flaskAdapter?.run {
-                                    addFlaskAmiibo(flaskAmiibos)
-                                    notifyItemRangeInserted(currentCount, flaskAmiibos.size)
-                                    currentCount = itemCount
-                                }
-                            }
-                        }
-
-                        override fun onFlaskActiveChanged(jsonObject: JSONObject?) {
-                            if (null == jsonObject) return
-                            CoroutineScope(Dispatchers.IO).launch {
+                            currentCount = jsonArray.length()
+                            val flaskAmiibos: ArrayList<Amiibo?> = arrayListOf()
+                            for (i in 0 until currentCount) {
                                 try {
-                                    val name = jsonObject.getString("name")
-                                    if ("undefined" == name) {
-                                        resetActiveSlot()
-                                        return@launch
-                                    }
-                                    val amiibo = getAmiiboFromTail(name.split("|"))
-                                    val index = jsonObject.getString("index")
-                                    getActiveAmiibo(amiibo, amiiboTile)
-                                    if (bottomSheet?.state ==
-                                        BottomSheetBehavior.STATE_COLLAPSED
-                                    ) getActiveAmiibo(amiibo, amiiboCard)
-                                    prefs.flaskActiveSlot(index.toInt())
-                                    withContext(Dispatchers.Main) {
-                                        flaskStats?.text =
-                                            getString(R.string.flask_count, index, currentCount)
-                                    }
-                                    flaskButtonState
+                                    val amiibo = getAmiiboFromTail(
+                                        jsonArray.getString(i).split("|")
+                                    )
+                                    flaskAmiibos.add(amiibo)
                                 } catch (ex: JSONException) {
                                     Debug.warn(ex)
                                 } catch (ex: NullPointerException) {
                                     Debug.warn(ex)
                                 }
+                            }
+                            flaskAdapter = FlaskSlotAdapter(
+                                settings, this@FlaskSlotFragment
+                            ).also {
+                                it.setFlaskAmiibo(flaskAmiibos)
+                                dismissSnackbarNotice(true)
+                                flaskContent?.adapter = it
+                                settings.addChangeListener(it)
+                                if (currentCount > 0) {
+                                    activeAmiibo
+                                    it.notifyItemRangeInserted(0, currentCount)
+                                } else {
+                                    amiiboTile?.isInvisible = true
+                                    flaskButtonState
+                                }
+                            }
+                        }
+
+                        override fun onFlaskRangeRetrieved(jsonArray: JSONArray) {
+                            val flaskAmiibos: ArrayList<Amiibo?> = arrayListOf()
+                            for (i in 0 until jsonArray.length()) {
+                                try {
+                                    val amiibo = getAmiiboFromTail(
+                                        jsonArray.getString(i).split("|")
+                                    )
+                                    flaskAmiibos.add(amiibo)
+                                } catch (ex: JSONException) {
+                                    Debug.warn(ex)
+                                } catch (ex: NullPointerException) {
+                                    Debug.warn(ex)
+                                }
+                            }
+                            flaskAdapter?.run {
+                                addFlaskAmiibo(flaskAmiibos)
+                                notifyItemRangeInserted(currentCount, flaskAmiibos.size)
+                                currentCount = itemCount
+                            }
+                        }
+
+                        override fun onFlaskActiveChanged(jsonObject: JSONObject?) {
+                            if (null == jsonObject) return
+                            try {
+                                val name = jsonObject.getString("name")
+                                if ("undefined" == name) {
+                                    resetActiveSlot()
+                                    return
+                                }
+                                val amiibo = getAmiiboFromTail(name.split("|"))
+                                val index = jsonObject.getString("index")
+                                getActiveAmiibo(amiibo, amiiboTile)
+                                if (bottomSheet?.state ==
+                                    BottomSheetBehavior.STATE_COLLAPSED
+                                ) getActiveAmiibo(amiibo, amiiboCard)
+                                prefs.flaskActiveSlot(index.toInt())
+                                flaskStats?.text =
+                                    getString(R.string.flask_count, index, currentCount)
+                                flaskButtonState
+                            } catch (ex: JSONException) {
+                                Debug.warn(ex)
+                            } catch (ex: NullPointerException) {
+                                Debug.warn(ex)
                             }
                         }
 
@@ -256,10 +237,8 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
                         }
 
                         override fun onFlaskProcessFinish() {
-                            CoroutineScope(Dispatchers.Main).launch {
-                                processDialog?.let {
-                                    if (it.isShowing) it.dismiss()
-                                }
+                            processDialog?.let {
+                                if (it.isShowing) it.dismiss()
                             }
                         }
 
@@ -267,9 +246,7 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
                             fragmentHandler.postDelayed(
                                 { showDisconnectNotice() }, TagMo.uiDelay.toLong()
                             )
-                            CoroutineScope(Dispatchers.Main).launch {
-                                bottomSheet?.setState(BottomSheetBehavior.STATE_COLLAPSED)
-                            }
+                            bottomSheet?.state = BottomSheetBehavior.STATE_COLLAPSED
                             stopGattService()
                         }
                     })
@@ -318,66 +295,52 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
                         }
 
                         override fun onPuckActiveChanged(slot: Int) {
-                            CoroutineScope(Dispatchers.IO).launch {
-                                flaskAdapter?.run {
-                                    val amiibo = getItem(slot)
-                                    getActiveAmiibo(amiibo, amiiboTile)
-                                    if (bottomSheet?.state == BottomSheetBehavior.STATE_COLLAPSED)
-                                        getActiveAmiibo(amiibo, amiiboCard)
-                                    prefs.flaskActiveSlot(slot)
-                                    flaskButtonState
-                                    withContext(Dispatchers.Main) {
-                                        flaskStats?.text = getString(
-                                            R.string.flask_count, slot.toString(), currentCount
-                                        )
-                                    }
-                                }
+                            flaskAdapter?.run {
+                                val amiibo = getItem(slot)
+                                getActiveAmiibo(amiibo, amiiboTile)
+                                if (bottomSheet?.state == BottomSheetBehavior.STATE_COLLAPSED)
+                                    getActiveAmiibo(amiibo, amiiboCard)
+                                prefs.flaskActiveSlot(slot)
+                                flaskButtonState
+                                flaskStats?.text = getString(
+                                    R.string.flask_count, slot.toString(), currentCount
+                                )
                             }
                         }
 
                         override fun onPuckListRetrieved(
                             slotData: ArrayList<ByteArray?>, active: Int
                         ) {
-                            CoroutineScope(Dispatchers.IO).launch {
-                                currentCount = slotData.size
-                                val flaskAmiibos: ArrayList<Amiibo?> = arrayListOf()
-                                for (i in 0 until currentCount) {
-                                    if (slotData[i]?.isNotEmpty() == true) {
-                                        val amiibo = getAmiiboFromHead(slotData[i])
-                                        flaskAmiibos.add(amiibo)
-                                    } else {
-                                        flaskAmiibos.add(null)
-                                    }
+                            currentCount = slotData.size
+                            val flaskAmiibos: ArrayList<Amiibo?> = arrayListOf()
+                            for (i in 0 until currentCount) {
+                                if (slotData[i]?.isNotEmpty() == true) {
+                                    val amiibo = getAmiiboFromHead(slotData[i])
+                                    flaskAmiibos.add(amiibo)
+                                } else {
+                                    flaskAmiibos.add(null)
                                 }
-                                flaskAdapter = FlaskSlotAdapter(
-                                    settings, this@FlaskSlotFragment
-                                ).also {
-                                    it.setFlaskAmiibo(flaskAmiibos)
-                                    withContext(Dispatchers.Main) {
-                                        dismissSnackbarNotice(true)
-                                    }
-                                    flaskContent?.post {
-                                        flaskContent?.adapter = it
-                                    }
-                                    if (currentCount > 0) {
-                                        it.notifyItemRangeInserted(0, currentCount)
-                                        onPuckActiveChanged(active)
-                                    } else {
-                                        withContext(Dispatchers.Main) {
-                                            amiiboTile?.isInvisible = true
-                                            flaskButtonState
-                                        }
-                                    }
+                            }
+                            flaskAdapter = FlaskSlotAdapter(
+                                settings, this@FlaskSlotFragment
+                            ).also {
+                                it.setFlaskAmiibo(flaskAmiibos)
+                                dismissSnackbarNotice(true)
+                                flaskContent?.adapter = it
+                                if (currentCount > 0) {
+                                    it.notifyItemRangeInserted(0, currentCount)
+                                    onPuckActiveChanged(active)
+                                } else {
+                                    amiiboTile?.isInvisible = true
+                                    flaskButtonState
                                 }
                             }
                         }
 
                         override fun onPuckFilesDownload(tagData: ByteArray) {}
                         override fun onPuckProcessFinish() {
-                            CoroutineScope(Dispatchers.Main).launch {
-                                processDialog?.let {
-                                    if (it.isShowing) it.dismiss()
-                                }
+                            processDialog?.let {
+                                if (it.isShowing) it.dismiss()
                             }
                         }
 
@@ -385,9 +348,7 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
                             fragmentHandler.postDelayed(
                                 { showDisconnectNotice() }, TagMo.uiDelay.toLong()
                             )
-                            CoroutineScope(Dispatchers.Main).launch {
-                                bottomSheet?.setState(BottomSheetBehavior.STATE_COLLAPSED)
-                            }
+                            bottomSheet?.state = BottomSheetBehavior.STATE_COLLAPSED
                             stopGattService()
                         }
                     })
@@ -417,7 +378,7 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR2) return
-        
+
         val activity = requireActivity() as BrowserActivity
 
         val bitmapHeight = Resources.getSystem().displayMetrics.heightPixels / 4
@@ -464,7 +425,7 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
                 }
             }
         }
-        
+
         toolbar = view.findViewById(R.id.toolbar)
 
         settings = activity.settings ?: BrowserSettings().initialize()
@@ -556,7 +517,7 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
                         }
                         override fun onAmiiboDataClicked(amiiboFile: AmiiboFile?, count: Int) {
                             amiiboFile?.let {
-                                writeAmiiboCollection(it.withRandomSerials(keyManager, count))
+                                writeAmiiboDataCollection(it.withRandomSerials(keyManager, count))
                             }
                         }
                     }, count, writeSerials?.isChecked ?: false)
@@ -750,7 +711,7 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
         val txtGameSeries = amiiboView.findViewById<TextView>(R.id.txtGameSeries)
         val imageAmiibo = amiiboView.findViewById<AppCompatImageView>(R.id.imageAmiibo)
         val txtUsageLabel = amiiboView.findViewById<TextView>(R.id.txtUsageLabel)
-        amiiboView.post {
+        requireView().post {
             val amiiboHexId: String
             val amiiboName: String?
             var amiiboSeries = ""
@@ -1026,7 +987,7 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
         }
     }
 
-    private fun writeAmiiboCollection(bytesList: ArrayList<AmiiboData?>) {
+    private fun writeAmiiboDataCollection(bytesList: ArrayList<AmiiboData?>) {
         settings.removeChangeListener(writeTagAdapter)
         AlertDialog.Builder(requireContext())
             .setMessage(R.string.gatt_write_confirm)

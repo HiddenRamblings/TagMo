@@ -13,6 +13,7 @@ import com.hiddenramblings.tagmo.eightbit.os.Version
 import me.weishu.reflection.Reflection
 import org.lsposed.hiddenapibypass.HiddenApiBypass
 import java.io.PrintWriter
+import java.io.Serializable
 import java.io.StringWriter
 import kotlin.system.exitProcess
 
@@ -23,6 +24,11 @@ inline fun <reified T : Parcelable> Intent.parcelable(key: String): T? = when {
 inline fun <reified T : Parcelable> Intent.parcelableArrayList(key: String): ArrayList<T>? = when {
     Version.isTiramisu -> getParcelableArrayListExtra(key, T::class.java)
     else -> @Suppress("DEPRECATION") getParcelableArrayListExtra(key)
+}
+
+inline fun <reified T : Serializable> Intent.serializable(key: String): T? = when {
+    Version.isTiramisu -> getSerializableExtra(key, T::class.java)
+    else -> @Suppress("DEPRECATION") getSerializableExtra(key) as? T
 }
 
 class TagMo : Application() {

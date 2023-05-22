@@ -28,10 +28,6 @@ import com.hiddenramblings.tagmo.amiibo.AmiiboManager
 import com.hiddenramblings.tagmo.eightbit.io.Debug
 import com.hiddenramblings.tagmo.eightbit.os.Storage
 import com.hiddenramblings.tagmo.widget.Toasty
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import org.json.JSONException
 import java.io.File
 import java.io.FileOutputStream
@@ -109,20 +105,18 @@ class ImageActivity : AppCompatActivity() {
             )
         }
 
-        CoroutineScope(Dispatchers.IO).launch {
-                var amiiboManager: AmiiboManager? = null
-                try {
-                    amiiboManager = AmiiboManager.getAmiiboManager(applicationContext)
-                } catch (e: IOException) {
-                    Debug.warn(e)
-                } catch (e: JSONException) {
-                    Debug.warn(e)
-                } catch (e: ParseException) {
-                    Debug.warn(e)
-                }
-                this@ImageActivity.amiiboManager = amiiboManager
-                withContext(Dispatchers.Main) { updateView(amiiboId) }
+        var amiiboManager: AmiiboManager? = null
+        try {
+            amiiboManager = AmiiboManager.getAmiiboManager(applicationContext)
+        } catch (e: IOException) {
+            Debug.warn(e)
+        } catch (e: JSONException) {
+            Debug.warn(e)
+        } catch (e: ParseException) {
+            Debug.warn(e)
         }
+        this@ImageActivity.amiiboManager = amiiboManager
+        updateView(amiiboId)
         GlideApp.with(imageView).load(Amiibo.getImageUrl(amiiboId)).into(imageView)
         findViewById<View>(R.id.toggle).setOnClickListener {
             if (bottomSheetBehavior.state == BottomSheetBehavior.STATE_COLLAPSED) {
@@ -228,7 +222,7 @@ class ImageActivity : AppCompatActivity() {
             FileOutputStream(file).use { fos ->
                 resource.compress(Bitmap.CompressFormat.PNG, 100, fos)
                 Toasty(this@ImageActivity).Short(getString(
-                        R.string.wrote_file, Storage.getRelativePath(file, prefs.preferEmulated())
+                    R.string.wrote_file, Storage.getRelativePath(file, prefs.preferEmulated())
                 ))
             }
         } catch (e: IOException) {

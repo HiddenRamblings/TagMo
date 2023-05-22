@@ -262,8 +262,8 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
             val hasAmiibo = null != amiiboManager
             val foomiiboStats = requireView().findViewById<TextView>(R.id.divider_text)
             foomiiboStats.text = getString(
-                    R.string.number_foomiibo, if (hasAmiibo) amiiboManager!!.amiibos.size else 0
-                )
+                R.string.number_foomiibo, if (hasAmiibo) amiiboManager!!.amiibos.size else 0
+            )
             characterStats.text = getString(
                 R.string.number_character,
                 if (hasAmiibo) amiiboManager!!.characters.size else 0
@@ -315,7 +315,7 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
                         .setAdapter(
                             ArrayAdapter(
                                 requireContext(), android.R.layout.simple_list_item_1, items
-                        ), null)
+                            ), null)
                         .setPositiveButton(R.string.close, null)
                         .show()
                 }
@@ -337,7 +337,7 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
                         .setAdapter(
                             ArrayAdapter(
                                 requireContext(), android.R.layout.simple_list_item_1, items
-                        ), null)
+                            ), null)
                         .setPositiveButton(R.string.close, null)
                         .show()
                 }
@@ -355,41 +355,39 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
 
     fun setAmiiboStats() {
         statsHandler.removeCallbacksAndMessages(null)
-        CoroutineScope(Dispatchers.Main).launch {
-            if (!isAdded || null == activity) return@launch
-            val activity = requireActivity() as BrowserActivity
-            currentFolderView?.run {
-                val size = settings.amiiboFiles.size
-                if (size <= 0) return@run
-                gravity = Gravity.CENTER
-                settings.amiiboManager?.let {
-                    var count = 0
-                    if (!settings.query.isNullOrEmpty()) {
-                        val stats = getAdapterStats(it)
-                        text = getString(
-                            R.string.amiibo_collected,
-                            stats[0], stats[1], activity.getQueryCount(settings.query)
-                        )
-                    } else if (!settings.isFilterEmpty) {
-                        val stats = getAdapterStats(it)
-                        text = getString(
-                            R.string.amiibo_collected,
-                            stats[0], stats[1], activity.filteredCount
-                        )
-                    } else {
-                        it.amiibos.values.forEach { amiibo ->
-                            settings.amiiboFiles.forEach { amiiboFile ->
-                                if (amiibo.id == amiiboFile?.id) count += 1
-                            }
+        if (!isAdded || null == activity) return
+        val activity = requireActivity() as BrowserActivity
+        currentFolderView?.run {
+            val size = settings.amiiboFiles.size
+            if (size <= 0) return@run
+            gravity = Gravity.CENTER
+            settings.amiiboManager?.let {
+                var count = 0
+                if (!settings.query.isNullOrEmpty()) {
+                    val stats = getAdapterStats(it)
+                    text = getString(
+                        R.string.amiibo_collected,
+                        stats[0], stats[1], activity.getQueryCount(settings.query)
+                    )
+                } else if (!settings.isFilterEmpty) {
+                    val stats = getAdapterStats(it)
+                    text = getString(
+                        R.string.amiibo_collected,
+                        stats[0], stats[1], activity.filteredCount
+                    )
+                } else {
+                    it.amiibos.values.forEach { amiibo ->
+                        settings.amiiboFiles.forEach { amiiboFile ->
+                            if (amiibo.id == amiiboFile?.id) count += 1
                         }
-                        text = getString(
-                            R.string.amiibo_collected,
-                            size, count, it.amiibos.size
-                        )
                     }
-                } ?: size.let {
-                    text = getString(R.string.files_displayed, it)
+                    text = getString(
+                        R.string.amiibo_collected,
+                        size, count, it.amiibos.size
+                    )
                 }
+            } ?: size.let {
+                text = getString(R.string.files_displayed, it)
             }
         }
     }
@@ -447,7 +445,7 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
                 button.isVisible = true
                 button.setText(R.string.document_storage_root)
                 button.setOnClickListener {
-                    bottomSheet?.setState(BottomSheetBehavior.STATE_COLLAPSED)
+                    bottomSheet?.state = BottomSheetBehavior.STATE_COLLAPSED
                     try {
                         activity.onDocumentRequested()
                     } catch (anf: ActivityNotFoundException) {
@@ -488,8 +486,8 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
                         val external = !prefs.preferEmulated()
                         button.setText(if (external)
                             R.string.emulated_storage_root
-                            else
-                                R.string.physical_storage_root
+                        else
+                            R.string.physical_storage_root
                         )
                         settings.browserRootFolder = Storage.getFile(external)
                         settings.notifyChanges()
@@ -641,18 +639,12 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
     }
 
     private fun getGameCompatibility(txtUsage: TextView, tagData: ByteArray) {
-        CoroutineScope(Dispatchers.IO).launch {
-            val usage: String? = try {
-                val amiiboId = Amiibo.dataToId(tagData)
-                val gamesManager = getGamesManager(requireContext())
-                gamesManager.getGamesCompatibility(amiiboId)
-            } catch (ex: Exception) {
-                Debug.warn(ex)
-                null
-            }
-            withContext(Dispatchers.Main) {
-                txtUsage.text = usage
-            }
+        try {
+            val amiiboId = Amiibo.dataToId(tagData)
+            val gamesManager = getGamesManager(requireContext())
+            txtUsage.text = gamesManager.getGamesCompatibility(amiiboId)
+        } catch (ex: Exception) {
+            Debug.warn(ex)
         }
     }
 

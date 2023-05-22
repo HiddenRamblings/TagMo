@@ -20,7 +20,6 @@ import android.content.Intent
 import android.content.IntentSender.SendIntentException
 import android.content.pm.PackageInstaller
 import android.net.Uri
-import android.os.Build
 import android.provider.Settings
 import androidx.documentfile.provider.DocumentFile
 import com.google.android.play.core.appupdate.AppUpdateInfo

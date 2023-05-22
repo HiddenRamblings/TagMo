@@ -37,7 +37,7 @@ import com.hiddenramblings.tagmo.eightbit.os.Version
 import com.hiddenramblings.tagmo.nfctech.TagArray.technology
 import com.hiddenramblings.tagmo.parcelable
 import com.hiddenramblings.tagmo.parcelableArrayList
-import com.hiddenramblings.tagmo.widget.Toasty
+import com.hiddenramblings.tagmo.serializable
 import com.shawnlin.numberpicker.NumberPicker
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -319,9 +319,9 @@ class NfcActivity : AppCompatActivity() {
                             if (activeBank <= writeCount) ntag.activateBank(activeBank)
 
                             when {
-                                commandIntent.hasExtra(NFCIntent.EXTRA_AMIIBO_BYTES) -> {
+                                commandIntent.hasExtra(NFCIntent.EXTRA_AMIIBO_DATA) -> {
                                     val amiiboList = commandIntent.parcelableArrayList<AmiiboData>(
-                                        NFCIntent.EXTRA_AMIIBO_BYTES
+                                        NFCIntent.EXTRA_AMIIBO_DATA
                                     )
                                     amiiboList?.forEachIndexed { x, amiiboData ->
                                         showMessage(R.string.bank_writing, x + 1, amiiboList.size)
@@ -330,17 +330,13 @@ class NfcActivity : AppCompatActivity() {
                                         TagWriter.writeEliteAuto(ntag, tagData, keyManager, x)
                                     }
                                 }
-                                commandIntent.hasExtra(NFCIntent.EXTRA_AMIIBO_FILES) -> {
+                                commandIntent.hasExtra(NFCIntent.EXTRA_AMIIBO_BYTES) -> {
                                     val amiiboList = commandIntent.parcelableArrayList<AmiiboFile>(
-                                        NFCIntent.EXTRA_AMIIBO_FILES
+                                        NFCIntent.EXTRA_AMIIBO_BYTES
                                     )
                                     amiiboList?.forEachIndexed { x, amiiboFile ->
                                         showMessage(R.string.bank_writing, x + 1, amiiboList.size)
-                                        val tagData = amiiboFile.data
-                                        if (null != tagData)
-                                            TagWriter.writeEliteAuto(ntag, tagData, keyManager, x)
-                                        else
-                                            Toasty(this@NfcActivity).Long(getString(R.string.fail_bank_data, x + 1))
+                                        TagWriter.writeEliteAuto(ntag, amiiboFile.data, keyManager, x)
                                     }
                                 }
                                 commandIntent.hasExtra(NFCIntent.EXTRA_AMIIBO_LIST) -> {

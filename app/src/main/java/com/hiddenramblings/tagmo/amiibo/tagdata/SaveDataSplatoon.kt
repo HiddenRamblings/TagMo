@@ -1,7 +1,7 @@
 package com.hiddenramblings.tagmo.amiibo.tagdata
 
 import com.hiddenramblings.tagmo.nfctech.TagArray
-import java.util.*
+import java.util.Random
 
 open class SaveDataSplatoon(appData: ByteArray?) : AppData(appData!!) {
     private var saveDataHex = "01 01 00 00" +

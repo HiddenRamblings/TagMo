@@ -321,7 +321,7 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
                 }
             }
             val gamesManager = settings.gamesManager
-            val hasGames = null != amiiboManager
+            val hasGames = null != amiiboManager && null != gamesManager
             amiiboTitleStats.text = getString(
                 R.string.number_titles, if (hasGames) gamesManager?.gameTitles?.size else 0
             )
@@ -639,12 +639,13 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
     }
 
     private fun getGameCompatibility(txtUsage: TextView, tagData: ByteArray) {
-        try {
-            val amiiboId = Amiibo.dataToId(tagData)
-            val gamesManager = getGamesManager(requireContext())
-            txtUsage.text = gamesManager.getGamesCompatibility(amiiboId)
-        } catch (ex: Exception) {
-            Debug.warn(ex)
+        settings.gamesManager?.let {
+            try {
+                val amiiboId = Amiibo.dataToId(tagData)
+                txtUsage.text = it.getGamesCompatibility(amiiboId)
+            } catch (ex: Exception) {
+                Debug.warn(ex)
+            }
         }
     }
 

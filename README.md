@@ -43,6 +43,6 @@ Additional thanks go out to (alphabetically):
 * socram8888 - [amiitool](https://github.com/socram8888/amiitool)
 
 ##
-![TagMo Logo](assets/tagmo_feature.png)
+![TagMo Logo](assets/tagmo_feature.gif)
 ###
 *TagMo is not affiliated, authorized, sponsored, endorsed, or in any way connected with Nintendo Co., Ltd or its subsidiaries. amiibo is a registered trademark of Nintendo of America Inc. No licensed resources are owned. Files created with or resulting from TagMo are not intended for sale or distribution. TagMo is for educational and archival purposes only.*

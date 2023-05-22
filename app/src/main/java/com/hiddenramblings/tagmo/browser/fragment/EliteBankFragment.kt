@@ -129,6 +129,7 @@ class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
                 GridLayoutManager(activity, activity.columnCount)
             else
                 LinearLayoutManager(activity)
+            settings.removeChangeListener(bankAdapter)
             bankAdapter = EliteBankAdapter(settings, this@EliteBankFragment).also {
                 adapter = it
                 settings.addChangeListener(it)

@@ -1288,20 +1288,17 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
         }
     }
 
-    private fun getGameCompatibility(txtUsage: TextView, tagData: ByteArray?) {
-        findViewById<TextView>(R.id.txtUsageLabel).run {
-            settings?.gamesManager?.let {
-                isVisible = true
-                try {
-                    val amiiboId = Amiibo.dataToId(tagData)
-                    txtUsage.text = it.getGamesCompatibility(amiiboId)
-                } catch (ex: Exception) {
-                    Debug.warn(ex)
-                }
-            } ?: {
-                isGone = true
+    private fun getGameCompatibility(txtUsage: TextView, tagData: ByteArray?) : Boolean {
+        return settings?.gamesManager?.let {
+            try {
+                val amiiboId = Amiibo.dataToId(tagData)
+                txtUsage.text = it.getGamesCompatibility(amiiboId)
+                true
+            } catch (ex: Exception) {
+                Debug.warn(ex)
+                false
             }
-        }
+        } ?: false
     }
 
     fun onKeysLoaded(indicator: Boolean) {
@@ -1634,39 +1631,43 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
     }
 
     private fun loadAmiiboManager() {
-        var amiiboManager: AmiiboManager?
-        try {
-            amiiboManager = getAmiiboManager(applicationContext)
-        } catch (e: IOException) {
-            Debug.warn(e)
-            amiiboManager = null
-            Toasty(this@BrowserActivity).Short(R.string.amiibo_info_parse_error)
-        } catch (e: JSONException) {
-            Debug.warn(e)
-            amiiboManager = null
-            Toasty(this@BrowserActivity).Short(R.string.amiibo_info_parse_error)
-        } catch (e: ParseException) {
-            Debug.warn(e)
-            amiiboManager = null
-            Toasty(this@BrowserActivity).Short(R.string.amiibo_info_parse_error)
-        }
-        val gamesManager: GamesManager? = try {
-            getGamesManager(this@BrowserActivity)
-        } catch (e: IOException) {
-            Debug.warn(e)
-            null
-        } catch (e: JSONException) {
-            Debug.warn(e)
-            null
-        } catch (e: ParseException) {
-            Debug.warn(e)
-            null
-        }
-        settings?.let {
-            it.amiiboManager = amiiboManager
-            it.gamesManager = gamesManager
-            it.notifyChanges()
-            pagerAdapter.browser.managerStats
+        CoroutineScope(Dispatchers.IO).launch {
+            var amiiboManager: AmiiboManager?
+            try {
+                amiiboManager = getAmiiboManager(applicationContext)
+            } catch (e: IOException) {
+                Debug.warn(e)
+                amiiboManager = null
+                Toasty(this@BrowserActivity).Short(R.string.amiibo_info_parse_error)
+            } catch (e: JSONException) {
+                Debug.warn(e)
+                amiiboManager = null
+                Toasty(this@BrowserActivity).Short(R.string.amiibo_info_parse_error)
+            } catch (e: ParseException) {
+                Debug.warn(e)
+                amiiboManager = null
+                Toasty(this@BrowserActivity).Short(R.string.amiibo_info_parse_error)
+            }
+            val gamesManager: GamesManager? = try {
+                getGamesManager(this@BrowserActivity)
+            } catch (e: IOException) {
+                Debug.warn(e)
+                null
+            } catch (e: JSONException) {
+                Debug.warn(e)
+                null
+            } catch (e: ParseException) {
+                Debug.warn(e)
+                null
+            }
+            withContext(Dispatchers.Main) {
+                settings?.let {
+                    it.amiiboManager = amiiboManager
+                    it.gamesManager = gamesManager
+                    it.notifyChanges()
+                    pagerAdapter.browser.managerStats
+                }
+            }
         }
     }
 
@@ -2122,17 +2123,23 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
         // setAmiiboInfoText(txtCharacter, character, hasTagInfo);
         try {
             val txtUsage = findViewById<TextView>(R.id.txtUsage)
-            getGameCompatibility(txtUsage, tagData)
-            txtUsage.isGone = true
             val label = findViewById<TextView>(R.id.txtUsageLabel)
-            label.setOnClickListener {
-                label.setText(
-                    if (txtUsage.isVisible)
-                        R.string.game_titles_view
-                    else R.string.game_titles_hide
-                )
-                txtUsage.isGone = txtUsage.isVisible
+            if (getGameCompatibility(txtUsage, tagData)) {
+                label.setOnClickListener {
+                    label.setText(
+                        if (txtUsage.isVisible)
+                            R.string.game_titles_view
+                        else
+                            R.string.game_titles_hide
+                    )
+                    txtUsage.isGone = txtUsage.isVisible
+                }
+                label.isVisible = true
+            } else {
+                label.isVisible = false
             }
+            txtUsage.isGone = true
+
         } catch (ex: Exception) { Debug.warn(ex) }
         if (hasSpoofData(amiiboHexId)) txtTagId?.isEnabled = false
         imageAmiibo?.let {

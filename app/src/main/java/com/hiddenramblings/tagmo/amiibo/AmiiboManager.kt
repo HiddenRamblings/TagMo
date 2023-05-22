@@ -153,12 +153,14 @@ object AmiiboManager {
             }
         }
         val amiiboSeriesJSON = json.getJSONObject("amiibo_series")
-        val iterator = amiiboSeriesJSON.keys()
-        while (iterator.hasNext()) {
-            val key = iterator.next()
-            val name = amiiboSeriesJSON.getString(key)
-            val series = AmiiboSeries(this, key, name)
-            amiiboSeries[series.id] = series
+        run {
+            val iterator = amiiboSeriesJSON.keys()
+            while (iterator.hasNext()) {
+                val key = iterator.next()
+                val name = amiiboSeriesJSON.getString(key)
+                val series = AmiiboSeries(this, key, name)
+                amiiboSeries[series.id] = series
+            }
         }
         return this
     }

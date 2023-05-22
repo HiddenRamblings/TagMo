@@ -96,7 +96,7 @@ class GamesManager {
             return parse(String(data))
         }
 
-        @Throws(JSONException::class)
+        @Throws(JSONException::class, OutOfMemoryError::class)
         fun parse(json: String): GamesManager {
             return parse(JSONObject(json))
         }

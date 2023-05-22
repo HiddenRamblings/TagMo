@@ -167,13 +167,16 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
                                     Debug.warn(ex)
                                 }
                             }
+                            settings.removeChangeListener(flaskAdapter)
                             flaskAdapter = FlaskSlotAdapter(
                                 settings, this@FlaskSlotFragment
                             ).also {
                                 it.setFlaskAmiibo(flaskAmiibos)
                                 dismissSnackbarNotice(true)
-                                flaskContent?.adapter = it
-                                settings.addChangeListener(it)
+                                requireView().post {
+                                    flaskContent?.adapter = it
+                                    settings.addChangeListener(it)
+                                }
                                 if (currentCount > 0) {
                                     activeAmiibo
                                     it.notifyItemRangeInserted(0, currentCount)
@@ -220,9 +223,11 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
                                     BottomSheetBehavior.STATE_COLLAPSED
                                 ) getActiveAmiibo(amiibo, amiiboCard)
                                 prefs.flaskActiveSlot(index.toInt())
-                                flaskStats?.text =
-                                    getString(R.string.flask_count, index, currentCount)
                                 flaskButtonState
+                                requireView().post {
+                                    flaskStats?.text =
+                                        getString(R.string.flask_count, index, currentCount)
+                                }
                             } catch (ex: JSONException) {
                                 Debug.warn(ex)
                             } catch (ex: NullPointerException) {
@@ -302,9 +307,11 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
                                     getActiveAmiibo(amiibo, amiiboCard)
                                 prefs.flaskActiveSlot(slot)
                                 flaskButtonState
-                                flaskStats?.text = getString(
-                                    R.string.flask_count, slot.toString(), currentCount
-                                )
+                                requireView().post {
+                                    flaskStats?.text = getString(
+                                        R.string.flask_count, slot.toString(), currentCount
+                                    )
+                                }
                             }
                         }
 
@@ -321,12 +328,16 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
                                     flaskAmiibos.add(null)
                                 }
                             }
+                            settings.removeChangeListener(flaskAdapter)
                             flaskAdapter = FlaskSlotAdapter(
                                 settings, this@FlaskSlotFragment
                             ).also {
                                 it.setFlaskAmiibo(flaskAmiibos)
                                 dismissSnackbarNotice(true)
-                                flaskContent?.adapter = it
+                                requireView().post {
+                                    flaskContent?.adapter = it
+                                    settings.addChangeListener(it)
+                                }
                                 if (currentCount > 0) {
                                     it.notifyItemRangeInserted(0, currentCount)
                                     onPuckActiveChanged(active)

@@ -2,6 +2,7 @@ package com.hiddenramblings.tagmo.browser.fragment
 
 import android.annotation.SuppressLint
 import android.app.Dialog
+import android.net.http.SslError
 import android.os.*
 import android.util.Base64
 import android.view.LayoutInflater
@@ -32,6 +33,7 @@ import java.nio.file.Files
 import java.nio.file.Paths
 import java.text.ParseException
 import java.util.zip.ZipFile
+
 
 class WebsiteFragment : Fragment() {
     private val webHandler = Handler(Looper.getMainLooper())
@@ -102,6 +104,13 @@ class WebsiteFragment : Fragment() {
                     } else {
                         super.shouldOverrideUrlLoading(view, request)
                     }
+                }
+
+                override fun onReceivedSslError(
+                    view: WebView?, handler: SslErrorHandler, error: SslError?
+                ) {
+                    // handler.proceed()
+                    handler.cancel()
                 }
             }
             if (WebViewFeature.isFeatureSupported(WebViewFeature.SERVICE_WORKER_BASIC_USAGE)) {

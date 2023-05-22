@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.app.PendingIntent
 import android.content.Intent
 import android.content.IntentFilter
+import android.net.http.SslError
 import android.nfc.NfcAdapter
 import android.nfc.Tag
 import android.nfc.tech.NfcA
@@ -18,6 +19,7 @@ import androidx.webkit.*
 import com.hiddenramblings.tagmo.R
 import com.hiddenramblings.tagmo.eightbit.os.Version
 import com.hiddenramblings.tagmo.parcelable
+
 
 class DimensionActivity : AppCompatActivity() {
 
@@ -101,6 +103,13 @@ class DimensionActivity : AppCompatActivity() {
                                 "if(window.appErrorHandler) window.appErrorHandler(err);})();"
                     ) { }
                     return true
+                }
+
+                override fun onReceivedSslError(
+                    view: WebView?, handler: SslErrorHandler, error: SslError?
+                ) {
+                    // handler.proceed()
+                    handler.cancel()
                 }
             }
             if (WebViewFeature.isFeatureSupported(WebViewFeature.SERVICE_WORKER_BASIC_USAGE)) {

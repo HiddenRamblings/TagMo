@@ -10,7 +10,8 @@ permissions:
 jobs:
   clean:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 2
+    continue-on-error: true
 
     steps:
     - name: Remove artifacts

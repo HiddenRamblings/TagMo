@@ -207,7 +207,7 @@ class Preferences(context: Context) {
         putInt(browserPageTransformer, value)
     }
 
-    private val softwareLayer = "settings_software_layer"
+    private val softwareLayer = "settings_force_software_layer"
     fun softwareLayer(): Boolean {
         return getBoolean(softwareLayer, true)
     }

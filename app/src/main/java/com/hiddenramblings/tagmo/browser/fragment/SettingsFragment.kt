@@ -222,7 +222,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
                 }
         }
         findPreference<CheckBoxPreference>(
-            getString(R.string.settings_software_layer)
+            getString(R.string.settings_force_software_layer)
         )?.apply {
             isChecked = prefs.softwareLayer()
             onPreferenceClickListener = Preference.OnPreferenceClickListener {

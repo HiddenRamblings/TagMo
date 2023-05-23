@@ -148,4 +148,13 @@ class ScanTag {
     ) : AlertDialog.Builder {
         return AlertDialog.Builder(activity).setTitle(title).setMessage(message)
     }
+
+    fun onNewIntent(activity: BrowserActivity, intent: Intent) {
+        if (NfcAdapter.ACTION_NDEF_DISCOVERED == intent.action
+            || NfcAdapter.ACTION_TECH_DISCOVERED == intent.action
+            || NfcAdapter.ACTION_TAG_DISCOVERED == intent.action) {
+            if (activity.keyManager.isKeyMissing) return
+            onTagDiscovered(activity, intent)
+        }
+    }
 }

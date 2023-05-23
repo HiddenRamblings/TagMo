@@ -57,7 +57,7 @@ import java.text.ParseException
 
 class SettingsFragment : PreferenceFragmentCompat() {
     private val prefs: Preferences by lazy { Preferences(TagMo.appContext) }
-    private val keyManager: KeyManager by lazy { KeyManager(TagMo.appContext) }
+    private val keyManager: KeyManager by lazy { (requireActivity() as BrowserActivity).keyManager }
 
     private var importKeys: Preference? = null
     var imageNetworkSetting: ListPreference? = null

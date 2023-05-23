@@ -71,7 +71,7 @@ private val Number.toPx get() = TypedValue.applyDimension(
 
 class BrowserFragment : Fragment(), OnFoomiiboClickListener {
     private val prefs: Preferences by lazy { Preferences(TagMo.appContext) }
-    private val keyManager: KeyManager by lazy { KeyManager(TagMo.appContext) }
+    private val keyManager: KeyManager by lazy { (requireActivity() as BrowserActivity).keyManager }
 
     private var chipList: FlexboxLayout? = null
     private var browserWrapper: SwipeRefreshLayout? = null
@@ -199,36 +199,39 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
             buildFoomiiboSet(activity)
         }
 
-        view.findViewById<View>(R.id.list_divider).isGone = true
-        browserWrapper?.layoutParams?.let { layoutParams ->
-            if (BuildConfig.WEAR_OS) layoutParams.height = layoutParams.height / 3
-        }
-        view.findViewById<View>(R.id.list_divider).setOnTouchListener { v: View, event: MotionEvent ->
+        view.findViewById<View>(R.id.list_divider).apply {
+            isGone = true
             browserWrapper?.layoutParams?.let { layoutParams ->
-                val srcHeight = layoutParams.height
-                val y = event.y.toInt()
-                if (layoutParams.height + y >= -0.5f) {
-                    if (event.action == MotionEvent.ACTION_MOVE) {
-                        layoutParams.height += y
-                    } else if (event.action == MotionEvent.ACTION_UP) {
-                        if (layoutParams.height + y < 0f) {
-                            layoutParams.height = 0
-                        } else {
-                            val peekHeight = bottomSheet?.peekHeight ?: 0
-                            val minHeight = peekHeight + v.height + requireContext().resources
-                                .getDimension(R.dimen.sliding_bar_margin)
-                            if (layoutParams.height > view.height - minHeight.toInt())
-                                layoutParams.height = view.height - minHeight.toInt()
-                        }
-                    }
-                    browserWrapper?.let {
-                        if (srcHeight != layoutParams.height) it.requestLayout()
-                        prefs.foomiiboOffset(it.layoutParams.height) }
-                }
+                if (BuildConfig.WEAR_OS) layoutParams.height = layoutParams.height / 3
             }
-            true
+            setOnTouchListener { v: View, event: MotionEvent ->
+                browserWrapper?.layoutParams?.let { layoutParams ->
+                    val srcHeight = layoutParams.height
+                    val y = event.y.toInt()
+                    if (layoutParams.height + y >= -0.5f) {
+                        if (event.action == MotionEvent.ACTION_MOVE) {
+                            layoutParams.height += y
+                        } else if (event.action == MotionEvent.ACTION_UP) {
+                            if (layoutParams.height + y < 0f) {
+                                layoutParams.height = 0
+                            } else {
+                                val peekHeight = bottomSheet?.peekHeight ?: 0
+                                val minHeight = peekHeight + v.height + requireContext().resources
+                                    .getDimension(R.dimen.sliding_bar_margin)
+                                if (layoutParams.height > view.height - minHeight.toInt())
+                                    layoutParams.height = view.height - minHeight.toInt()
+                            }
+                        }
+                        browserWrapper?.let {
+                            if (srcHeight != layoutParams.height) it.requestLayout()
+                            prefs.foomiiboOffset(it.layoutParams.height) }
+                    }
+                }
+                true
+            }
         }
         activity.onFilterContentsLoaded()
+        setFoomiiboVisibility()
     }
 
     @SuppressLint("InflateParams")
@@ -515,11 +518,6 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
                 }
             }
         }
-    }
-
-    override fun onResume() {
-        super.onResume()
-        browserWrapper?.postDelayed({ setFoomiiboVisibility() }, TagMo.uiDelay.toLong())
     }
 
     private suspend fun deleteDir(dialog: ProgressAlert?, dir: File?) {

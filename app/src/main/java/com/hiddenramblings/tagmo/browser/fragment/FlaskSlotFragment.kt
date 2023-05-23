@@ -65,7 +65,7 @@ import java.text.ParseException
 @SuppressLint("NewApi")
 open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListener, BluetoothListener {
     private val prefs: Preferences by lazy { Preferences(TagMo.appContext) }
-    private val keyManager: KeyManager by lazy { KeyManager(TagMo.appContext) }
+    private val keyManager: KeyManager by lazy { (requireActivity() as BrowserActivity).keyManager }
 
     private var bluetoothHandler: BluetoothHandler? = null
     private var isFragmentVisible = false

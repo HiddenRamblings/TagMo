@@ -104,7 +104,7 @@ import java.util.*
 class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
     BrowserAdapter.OnAmiiboClickListener {
     private val prefs: Preferences by lazy { Preferences(applicationContext) }
-    private val keyManager: KeyManager by lazy { KeyManager(this) }
+    val keyManager: KeyManager by lazy { KeyManager(this) }
 
     var filteredCount = 0
     private var clickedAmiibo: AmiiboFile? = null
@@ -2463,12 +2463,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
 
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
-        if (NfcAdapter.ACTION_NDEF_DISCOVERED == intent.action
-            || NfcAdapter.ACTION_TECH_DISCOVERED == intent.action
-            || NfcAdapter.ACTION_TAG_DISCOVERED == intent.action) {
-            if (keyManager.isKeyMissing) return
-            tagScanner.onTagDiscovered(this@BrowserActivity, intent)
-        }
+        tagScanner.onNewIntent(this@BrowserActivity, intent)
     }
 
     override fun onStart() {

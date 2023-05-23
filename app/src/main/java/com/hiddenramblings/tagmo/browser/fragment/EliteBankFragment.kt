@@ -68,7 +68,7 @@ import java.text.ParseException
 
 class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
     private val prefs: Preferences by lazy { Preferences(TagMo.appContext) }
-    private val keyManager: KeyManager by lazy { KeyManager(TagMo.appContext) }
+    private val keyManager: KeyManager by lazy { (requireActivity() as BrowserActivity).keyManager }
 
     var eliteContent: RecyclerView? = null
         private set

@@ -42,6 +42,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.io.IOException
+import java.util.concurrent.Executors
 
 class NfcActivity : AppCompatActivity() {
 
@@ -674,7 +675,7 @@ class NfcActivity : AppCompatActivity() {
             || NfcAdapter.ACTION_TAG_DISCOVERED == intent.action) {
             val tech = tagTech ?: getString(R.string.nfc_tag)
             showMessage(R.string.tag_detected, tech)
-            onTagDiscovered(intent)
+            Executors.newSingleThreadExecutor().execute { onTagDiscovered(intent) }
         }
     }
 

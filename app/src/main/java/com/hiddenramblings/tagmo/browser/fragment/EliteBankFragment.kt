@@ -384,7 +384,7 @@ class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
         if (null == amiiboManager) return
         if (amiibos.isEmpty()) {
             bankAdapter?.setAmiibos(amiibos)
-            amiiboList?.forEachIndexed { i, amiibo ->
+            amiiboList?.forEach { amiibo ->
                 amiibos.add(EliteTag(amiiboManager.amiibos[TagArray.hexToLong(amiibo)]))
             }
             bankAdapter?.notifyItemRangeInserted(0, amiibos.size)

@@ -132,7 +132,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
                 isChecked = prefs.foomiiboDisabled()
                 onPreferenceClickListener = Preference.OnPreferenceClickListener {
                     prefs.foomiiboDisabled((it as CheckBoxPreference).isChecked)
-                    (activity as BrowserActivity).setFoomiiboPanelVisibility()
+                    (activity as BrowserActivity).setFoomiiboVisibility()
                     super@SettingsFragment.onPreferenceTreeClick(it)
                 }
             }

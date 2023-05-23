@@ -18,7 +18,6 @@ import android.graphics.Bitmap
 import android.graphics.Rect
 import android.graphics.drawable.Drawable
 import android.net.Uri
-import android.nfc.NfcAdapter
 import android.os.*
 import android.provider.Settings
 import android.text.method.LinkMovementMethod
@@ -65,7 +64,6 @@ import com.hiddenramblings.tagmo.amiibo.AmiiboManager.getAmiiboManager
 import com.hiddenramblings.tagmo.amiibo.AmiiboManager.hasSpoofData
 import com.hiddenramblings.tagmo.amiibo.AmiiboManager.listAmiiboDocuments
 import com.hiddenramblings.tagmo.amiibo.AmiiboManager.listAmiiboFiles
-import com.hiddenramblings.tagmo.amiibo.PowerTagManager
 import com.hiddenramblings.tagmo.amiibo.games.GamesManager
 import com.hiddenramblings.tagmo.amiibo.games.GamesManager.Companion.getGamesManager
 import com.hiddenramblings.tagmo.amiibo.tagdata.TagDataEditor
@@ -719,7 +717,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
         }
     }
 
-    fun setFoomiiboPanelVisibility() {
+    fun setFoomiiboVisibility() {
         pagerAdapter.browser.setFoomiiboVisibility()
     }
 
@@ -1712,6 +1710,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                 hideFakeSnackbar()
                 settings?.amiiboFiles = amiiboFiles
                 settings?.notifyChanges()
+                setFoomiiboVisibility()
             }
         }
     }
@@ -1735,6 +1734,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                 hideFakeSnackbar()
                 settings?.amiiboFiles = amiiboFiles
                 settings?.notifyChanges()
+                setFoomiiboVisibility()
             }
         }
     }
@@ -2471,29 +2471,38 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
         onBackPressedDispatcher.addCallback(object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
                 if (BuildConfig.WEAR_OS) {
-                    if (browserSheet?.state == BottomSheetBehavior.STATE_EXPANDED) {
-                        browserSheet?.setState(BottomSheetBehavior.STATE_COLLAPSED)
-                    } else if (amiiboContainer?.isVisible == true) {
-                        amiiboContainer?.isGone = true
-                    } else if (viewPager.currentItem != 0) {
-                        if (viewPager.currentItem == pagerAdapter.itemCount - 1
-                            && pagerAdapter.website.hasGoneBack()) return
-                        else viewPager.setCurrentItem(0, true)
-                    } else {
-                        finishAffinity()
+                    when {
+                        browserSheet?.state == BottomSheetBehavior.STATE_EXPANDED -> {
+                            browserSheet?.state = BottomSheetBehavior.STATE_COLLAPSED
+                        }
+                        amiiboContainer?.isVisible == true -> {
+                            amiiboContainer?.isGone = true
+                        }
+                        viewPager.currentItem != 0 -> {
+                            if (viewPager.currentItem == 1 && pagerAdapter.website.hasGoneBack())
+                                return
+                            else
+                                viewPager.setCurrentItem(0, true)
+                        }
+                        else -> {
+                            finishAffinity()
+                        }
                     }
                 } else {
-                    if (!closePrefsDrawer()) {
-                        if (browserSheet?.state == BottomSheetBehavior.STATE_EXPANDED) {
-                            browserSheet?.setState(BottomSheetBehavior.STATE_COLLAPSED)
-                        } else if (amiiboContainer?.isVisible == true) {
-                            amiiboContainer?.isGone = true
-                        } else if (viewPager.currentItem != 0) {
-                            if (viewPager.currentItem == pagerAdapter.itemCount - 1
-                                && pagerAdapter.website.hasGoneBack()) return
-                            else viewPager.setCurrentItem(0, true)
-                        } else {
-                            finishAffinity()
+                    when {
+                        !closePrefsDrawer() -> {
+                            if (browserSheet?.state == BottomSheetBehavior.STATE_EXPANDED) {
+                                browserSheet?.setState(BottomSheetBehavior.STATE_COLLAPSED)
+                            } else if (amiiboContainer?.isVisible == true) {
+                                amiiboContainer?.isGone = true
+                            } else if (viewPager.currentItem != 0) {
+                                if (viewPager.currentItem == 1 && pagerAdapter.website.hasGoneBack())
+                                    return
+                                else
+                                    viewPager.setCurrentItem(0, true)
+                            } else {
+                                finishAffinity()
+                            }
                         }
                     }
                 }

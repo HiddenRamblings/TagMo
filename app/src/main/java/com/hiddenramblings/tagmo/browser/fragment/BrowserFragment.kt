@@ -42,7 +42,6 @@ import com.hiddenramblings.tagmo.amiibo.Amiibo
 import com.hiddenramblings.tagmo.amiibo.AmiiboManager
 import com.hiddenramblings.tagmo.amiibo.Character
 import com.hiddenramblings.tagmo.amiibo.KeyManager
-import com.hiddenramblings.tagmo.amiibo.games.GamesManager.Companion.getGamesManager
 import com.hiddenramblings.tagmo.browser.BrowserActivity
 import com.hiddenramblings.tagmo.browser.BrowserSettings
 import com.hiddenramblings.tagmo.browser.BrowserSettings.BrowserSettingsListener
@@ -205,10 +204,11 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
                 if (BuildConfig.WEAR_OS) layoutParams.height = layoutParams.height / 3
             }
             setOnTouchListener { v: View, event: MotionEvent ->
-                browserWrapper?.layoutParams?.let { layoutParams ->
-                    val srcHeight = layoutParams.height
-                    val y = event.y.toInt()
-                    if (layoutParams.height + y >= -0.5f) {
+                browserWrapper?.let {
+                    it.layoutParams?.let { layoutParams ->
+                        val srcHeight = layoutParams.height
+                        val y = event.y.toInt()
+                        if (layoutParams.height + y < -0.5f) return@setOnTouchListener true
                         if (event.action == MotionEvent.ACTION_MOVE) {
                             layoutParams.height += y
                         } else if (event.action == MotionEvent.ACTION_UP) {
@@ -222,16 +222,14 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
                                     layoutParams.height = view.height - minHeight.toInt()
                             }
                         }
-                        browserWrapper?.let {
-                            if (srcHeight != layoutParams.height) it.requestLayout()
-                            prefs.foomiiboOffset(it.layoutParams.height) }
+                        if (srcHeight != layoutParams.height) it.requestLayout()
+                        prefs.foomiiboOffset(it.layoutParams.height)
                     }
                 }
                 true
             }
         }
         activity.onFilterContentsLoaded()
-        setFoomiiboVisibility()
     }
 
     @SuppressLint("InflateParams")
@@ -414,26 +412,28 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
     }
 
     fun setFoomiiboVisibility() {
-        if (null == view) return
+        if (!isAdded || null == view) return
         val divider = requireView().findViewById<View>(R.id.list_divider)
         val peekHeight = bottomSheet?.peekHeight ?: 0
         val minHeight = (peekHeight + divider.height + requireContext().resources
             .getDimension(R.dimen.sliding_bar_margin))
-        browserWrapper?.layoutParams?.let {
-            val srcHeight = it.height
-            if (it.height > requireView().height - minHeight.toInt()) {
-                it.height = requireView().height - minHeight.toInt()
-            } else {
-                val valueY = prefs.foomiiboOffset()
-                it.height = if (valueY != -1) valueY else it.height
+        browserWrapper?.let {
+            it.layoutParams?.let { layoutParams ->
+                val srcHeight = layoutParams.height
+                if (layoutParams.height > requireView().height - minHeight.toInt()) {
+                    layoutParams.height = requireView().height - minHeight.toInt()
+                } else {
+                    val valueY = prefs.foomiiboOffset()
+                    layoutParams.height = if (valueY != -1) valueY else layoutParams.height
+                }
+                if (prefs.foomiiboDisabled()) {
+                    divider.isGone = true
+                    layoutParams.height = requireView().height
+                } else {
+                    divider.isVisible = true
+                }
+                if (srcHeight != layoutParams.height) it.requestLayout()
             }
-            if (prefs.foomiiboDisabled()) {
-                divider.isGone = true
-                it.height = requireView().height
-            } else {
-                divider.isVisible = true
-            }
-            if (srcHeight != it.height) browserWrapper?.requestLayout()
         }
     }
 

@@ -34,7 +34,7 @@ object PowerTagManager {
 
     @JvmStatic
     @Throws(Exception::class)
-    fun getPowerTagManager() {
+    fun setPowerTagManager() {
         if (null != keys) return
         TagMo.appContext.resources.openRawResource(R.raw.keytable).use { stream ->
             val data = ByteArray(stream.available()).also {

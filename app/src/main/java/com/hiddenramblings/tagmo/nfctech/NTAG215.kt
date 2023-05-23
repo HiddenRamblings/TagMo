@@ -12,6 +12,7 @@ import android.nfc.tech.TagTechnology
 import com.hiddenramblings.tagmo.R
 import com.hiddenramblings.tagmo.TagMo
 import com.hiddenramblings.tagmo.eightbit.io.Debug
+import com.hiddenramblings.tagmo.nfctech.NTAG215.Companion.equals
 import java.io.IOException
 
 class NTAG215 : TagTechnology {

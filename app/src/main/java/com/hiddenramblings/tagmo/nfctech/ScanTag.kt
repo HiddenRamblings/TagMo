@@ -19,8 +19,6 @@ import com.hiddenramblings.tagmo.nfctech.TagArray.isPowerTag
 import com.hiddenramblings.tagmo.nfctech.TagArray.technology
 import com.hiddenramblings.tagmo.parcelable
 import com.hiddenramblings.tagmo.widget.Toasty
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 
 class ScanTag {
     private var hasTestedElite = false
@@ -31,7 +29,7 @@ class ScanTag {
         } catch (ignored: Exception) { }
     }
 
-    suspend fun onTagDiscovered(activity: BrowserActivity, intent: Intent) = withContext(Dispatchers.IO) {
+    fun onTagDiscovered(activity: BrowserActivity, intent: Intent) {
         val prefs = Preferences(activity.applicationContext)
         val tag = intent.parcelable<Tag>(NfcAdapter.EXTRA_TAG)
         val tagTech = tag.technology()
@@ -48,7 +46,7 @@ class ScanTag {
                             if (TagWriter.updateFirmware(ntag))
                                 Toasty(activity).Short(R.string.firmware_update)
                             closeTagSilently(ntag)
-                            return@withContext
+                            return
                         }
                         val bankParams = TagReader.getBankParams(ntag)
                         val banksCount = bankParams?.get(1)?.toInt()?.and(0xFF) ?: -1
@@ -57,7 +55,7 @@ class ScanTag {
                         prefs.eliteSignature(signature)
                         prefs.eliteActiveBank(activeBank)
                         prefs.eliteBankCount(banksCount)
-                        withContext(Dispatchers.Main) {
+                        activity.runOnUiThread {
                             activity.showElitePage(Bundle().apply {
                                 val titles = TagReader.readTagTitles(ntag, banksCount)
                                 putString(NFCIntent.EXTRA_SIGNATURE, signature)
@@ -67,7 +65,7 @@ class ScanTag {
                             })
                         }
                     } else {
-                        withContext(Dispatchers.Main) {
+                        activity.runOnUiThread {
                             activity.updateAmiiboView(TagReader.readFromTag(ntag))
                         }
                     }
@@ -79,7 +77,7 @@ class ScanTag {
                     closeTagSilently(ntag)
                 }
             } ?: if (prefs.eliteEnabled())
-                fixEliteDialog(activity)
+                onEliteVerificationFailed(activity)
             else
                 throw Exception(activity.getString(R.string.error_tag_protocol, tagTech))
         } catch (e: Exception) {
@@ -96,7 +94,7 @@ class ScanTag {
                             }
                             closeTagSilently(mifare)
                         }
-                        isEliteLockedCause(activity, error) -> withContext(Dispatchers.Main) {
+                        isEliteLockedCause(activity, error) -> activity.runOnUiThread {
                             getErrorDialog(activity, R.string.possible_lock, R.string.prepare_unlock)
                                 .setPositiveButton(R.string.unlock) { dialog: DialogInterface, _: Int ->
                                     closeTagSilently(mifare)
@@ -110,7 +108,7 @@ class ScanTag {
                                 }.show()
                         }
                         Debug.hasException(e, NTAG215::class.java.name, "connect") ->
-                            fixEliteDialog(activity)
+                            onEliteVerificationFailed(activity)
                         else -> {}
                     }
                 } else {
@@ -131,16 +129,18 @@ class ScanTag {
                 activity.getString(R.string.invalid_read_result) == error
     }
 
-    private suspend fun fixEliteDialog(activity: BrowserActivity) = withContext(Dispatchers.Main) {
-        getErrorDialog(activity, R.string.possible_blank, R.string.prepare_blank)
-            .setPositiveButton(R.string.scan) { dialog: DialogInterface, _: Int ->
-                dialog.dismiss()
-                activity.onNFCActivity.launch(Intent(
-                    activity, NfcActivity::class.java
-                ).setAction(NFCIntent.ACTION_BLIND_SCAN))
-            }.setNegativeButton(R.string.cancel) { dialog: DialogInterface, _: Int ->
-                dialog.dismiss()
-            }.show()
+    private fun onEliteVerificationFailed(activity: BrowserActivity) {
+        activity.runOnUiThread {
+            getErrorDialog(activity, R.string.possible_blank, R.string.prepare_blank)
+                .setPositiveButton(R.string.scan) { dialog: DialogInterface, _: Int ->
+                    dialog.dismiss()
+                    activity.onNFCActivity.launch(Intent(
+                        activity, NfcActivity::class.java
+                    ).setAction(NFCIntent.ACTION_BLIND_SCAN))
+                }.setNegativeButton(R.string.cancel) { dialog: DialogInterface, _: Int ->
+                    dialog.dismiss()
+                }.show()
+        }
     }
 
     private fun getErrorDialog(

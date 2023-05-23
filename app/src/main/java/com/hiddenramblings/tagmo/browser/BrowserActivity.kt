@@ -1622,7 +1622,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
     fun loadPTagKeyManager() {
         if (prefs.powerTagEnabled()) {
             try {
-                PowerTagManager.getPowerTagManager()
+                PowerTagManager.setPowerTagManager()
             } catch (e: Exception) {
                 Debug.warn(e)
                 Toasty(this@BrowserActivity).Short(R.string.fail_powertag_keys)
@@ -2467,9 +2467,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
             || NfcAdapter.ACTION_TECH_DISCOVERED == intent.action
             || NfcAdapter.ACTION_TAG_DISCOVERED == intent.action) {
             if (keyManager.isKeyMissing) return
-            CoroutineScope(Dispatchers.IO).launch {
-                tagScanner.onTagDiscovered(this@BrowserActivity, intent)
-            }
+            tagScanner.onTagDiscovered(this@BrowserActivity, intent)
         }
     }
 

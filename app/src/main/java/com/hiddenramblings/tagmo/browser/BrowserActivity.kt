@@ -65,7 +65,7 @@ import com.hiddenramblings.tagmo.amiibo.AmiiboManager.getAmiiboManager
 import com.hiddenramblings.tagmo.amiibo.AmiiboManager.hasSpoofData
 import com.hiddenramblings.tagmo.amiibo.AmiiboManager.listAmiiboDocuments
 import com.hiddenramblings.tagmo.amiibo.AmiiboManager.listAmiiboFiles
-import com.hiddenramblings.tagmo.amiibo.PowerTagManager.powerTagManager
+import com.hiddenramblings.tagmo.amiibo.PowerTagManager
 import com.hiddenramblings.tagmo.amiibo.games.GamesManager
 import com.hiddenramblings.tagmo.amiibo.games.GamesManager.Companion.getGamesManager
 import com.hiddenramblings.tagmo.amiibo.tagdata.TagDataEditor
@@ -1622,7 +1622,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
     fun loadPTagKeyManager() {
         if (prefs.powerTagEnabled()) {
             try {
-                powerTagManager
+                PowerTagManager.getPowerTagManager()
             } catch (e: Exception) {
                 Debug.warn(e)
                 Toasty(this@BrowserActivity).Short(R.string.fail_powertag_keys)

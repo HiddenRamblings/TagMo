@@ -3,7 +3,7 @@ package com.hiddenramblings.tagmo.nfctech
 import com.hiddenramblings.tagmo.R
 import com.hiddenramblings.tagmo.TagMo.Companion.appContext
 import com.hiddenramblings.tagmo.amiibo.KeyManager
-import com.hiddenramblings.tagmo.amiibo.PowerTagManager.getPowerTagKey
+import com.hiddenramblings.tagmo.amiibo.PowerTagManager
 import com.hiddenramblings.tagmo.eightbit.io.Debug
 import java.io.BufferedReader
 import java.io.IOException
@@ -140,7 +140,7 @@ object TagWriter {
             val page10 = mifare.readPages(0x10)
             Debug.info(TagWriter::class.java, R.string.page_ten, TagArray.bytesToHex(page10))
             val page10bytes = TagArray.bytesToHex(byteArrayOf(page10?.get(0) ?: 0, page10?.get(3) ?: 0))
-            val ptagKeySuffix = getPowerTagKey(oldid, page10bytes)
+            val ptagKeySuffix = PowerTagManager.getPowerTagKey(oldid, page10bytes)
             val ptagKey = TagArray.hexToByteArray(NfcByte.POWERTAG_KEY)
             System.arraycopy(ptagKeySuffix, 0, ptagKey, 8, 8)
             Debug.info(TagWriter::class.java, R.string.ptag_key, TagArray.bytesToHex(ptagKey))

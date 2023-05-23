@@ -12,19 +12,6 @@ object PowerTagManager {
     // private static final String POWERTAG_KEYTABLE_FILE = "keytable.json";
     private var keys: HashMap<String, HashMap<String, ByteArray>>? = null
 
-    @get:JvmStatic
-    @get:Throws(Exception::class)
-    val powerTagManager: Unit
-        get() {
-            if (null != keys) return
-            TagMo.appContext.resources.openRawResource(R.raw.keytable).use { stream ->
-                val data = ByteArray(stream.available()).also {
-                    stream.read(it)
-                }
-                parseKeyTable(JSONObject(String(data)))
-            }
-        }
-
     @Throws(JSONException::class)
     private fun parseKeyTable(json: JSONObject) {
         val keytable = HashMap<String, HashMap<String, ByteArray>>()
@@ -43,6 +30,18 @@ object PowerTagManager {
             }
         }
         keys = keytable
+    }
+
+    @JvmStatic
+    @Throws(Exception::class)
+    fun getPowerTagManager() {
+        if (null != keys) return
+        TagMo.appContext.resources.openRawResource(R.raw.keytable).use { stream ->
+            val data = ByteArray(stream.available()).also {
+                stream.read(it)
+            }
+            parseKeyTable(JSONObject(String(data)))
+        }
     }
 
     @Suppress("unused")

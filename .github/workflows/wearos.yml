@@ -8,6 +8,23 @@ permissions:
   contents: write
 
 jobs:
+  clean:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+    - name: Remove artifacts
+      uses: c-hive/gha-remove-artifacts@v1
+      with:
+        age: '2 days' # '<number> <unit>', parsed by Moment.js
+        # Optional inputs
+        # skip-tags: true
+        skip-recent: 2
+    - name: Purge cache
+      uses: MyAlbum/purge-cache@v1
+      with:
+        max-age: 172800 # 2 days, default: 7 days since last use
+
   build:
 
     runs-on: ubuntu-latest
@@ -68,11 +85,4 @@ jobs:
         title: TagMo-${{ env.GIT_HASH }}-WearOS
         files: |
           ${{steps.sign_wear.outputs.signedReleaseFile}}
-
-    - name: Discord webhook notification
-      uses: distributhor/workflow-webhook@v3.0.4
-      env:
-        webhook_type: 'json-extended'
-        webhook_url: 'https://discord.com/api/webhooks/1109893889340485632/Vd-DqFhZWlfu86C8UqNxv8Z47WHm8aJC9eWZcu7ggC0lnFboeOHS9hUNdO6J2nowPsmP/github'
-        data: '{ "download": "${{ env.APK_LINK }}" }'
 

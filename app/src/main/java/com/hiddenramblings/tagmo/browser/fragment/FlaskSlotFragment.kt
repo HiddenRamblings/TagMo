@@ -138,9 +138,7 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
                                 flaskSlotCount.maxValue = maxSlotCount
                                 screenOptions?.isVisible = true
                                 createBlank?.isVisible = true
-                                requireView().findViewById<TextView>(
-                                    R.id.hardware_info
-                                ).text = deviceProfile
+                                requireView().findViewById<TextView>(R.id.hardware_info).text = deviceProfile
                             }
                             try {
                                 setFlaskCharacteristicRX()
@@ -289,9 +287,7 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
                                 flaskSlotCount.maxValue = maxSlotCount
                                 screenOptions?.isGone = true
                                 createBlank?.isGone = true
-                                requireView().findViewById<TextView>(
-                                    R.id.hardware_info
-                                ).text = deviceProfile
+                                requireView().findViewById<TextView>(R.id.hardware_info).text = deviceProfile
                                 flaskSlotCount.maxValue = maxSlotCount
                             }
                             try {

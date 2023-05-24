@@ -294,7 +294,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                                     browserSheet = bottomSheet
                                 }
                             } else {
-                                setTitle(R.string.flask_title)
+                                setTitle(R.string.gatt_title)
                                 pagerAdapter.flaskSlots.run {
                                     delayedBluetoothEnable()
                                     amiibosView = flaskContent
@@ -303,7 +303,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                             }
                         }
                         3 -> {
-                            setTitle(R.string.flask_title)
+                            setTitle(R.string.gatt_title)
                             pagerAdapter.flaskSlots.run {
                                 delayedBluetoothEnable()
                                 amiibosView = flaskContent

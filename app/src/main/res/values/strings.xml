@@ -1,6 +1,5 @@
 <resources>
     <string name="topCenterTextMessage">Place the tag under the phone</string>
-    <string translatable="false" name="middleCenterError"> </string>
 
     <string name="fixed_key_found">&#171;locked-secret&#187; stored / loaded.</string>
     <string name="fixed_key_missing">&#171;locked-secret&#187; missing!</string>
@@ -325,9 +324,6 @@
 
     <string name="paired_devices">Paired Bluetooth Devices</string>
     <string name="device_address">MAC: %1$s</string>
-    <string name="connect_flask">Flask</string>
-    <string name="connect_slide">Slide</string>
-    <string name="connect_puck">Puck.js</string>
     <string name="switch_devices">Connect a new device</string>
 
     <string name="clone_serials">Clone with random serial</string>

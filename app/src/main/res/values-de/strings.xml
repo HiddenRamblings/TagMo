@@ -1,6 +1,5 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <string name="topCenterTextMessage">Legen Sie den Anhänger unter das Telefon</string>
-    <string translatable="false" name="middleCenterError"> </string>
 
     <string name="fixed_key_found">&#171;locked-secret&#187; gespeichert / geladen.</string>
     <string name="fixed_key_missing">&#171;locked-secret&#187; fehlt!</string>
@@ -325,8 +324,6 @@
 
     <string name="paired_devices">Gekoppelte Bluetooth-Geräte</string>
     <string name="device_address">MAC: %1$s</string>
-    <string name="connect_flask">Flask verbinden</string>
-    <string name="connect_puck">Puck.js verbinden</string>
     <string name="switch_devices">Verbinden eines Bluetooth-Geräts</string>
 
     <string name="clone_serials">Klonen mit zufälliger Serie</string>

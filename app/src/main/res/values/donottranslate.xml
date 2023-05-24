@@ -58,8 +58,11 @@
     <string name="power_tag" translatable="false">Power Tag</string>
     <string name="elite_n2" translatable="false">N2 Elite</string>
     <string name="elite_amiiqo" translatable="false">N2 Elite / Amiiqo</string>
-    <string name="flask_title" translatable="false">Flask</string>
-    <string name="bluup_flask" translatable="false">Bluup Flask</string>
+    <string name="gatt_title" translatable="false">GATT Device</string>
+
+    <string name="device_flask" translatable="false">Flask</string>
+    <string name="device_slide" translatable="false">Slide</string>
+    <string name="device_puck" translatable="false">Puck.js</string>
 
     <string name="mifare_classic" translatable="false">Mifare Classic</string>
     <string name="mifare_plus" translatable="false">Mifare Plus</string>
@@ -80,4 +83,6 @@
     <string name="old_uid" translatable="false">Old UID %1$s</string>
     <string name="page_ten" translatable="false">page 10 %1$s</string>
     <string name="ptag_key" translatable="false">ptag key %1$s</string>
+
+    <string name="middleCenterError" translatable="false"> </string>
 </resources>

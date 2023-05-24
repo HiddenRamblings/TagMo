@@ -1,0 +1,26 @@
+name: Purge Actions
+
+on:
+  push:
+    branches: [ master ]
+
+permissions:
+  contents: write
+
+jobs:
+  clean:
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+
+    steps:
+    - name: Remove artifacts
+      uses: c-hive/gha-remove-artifacts@v1
+      with:
+        age: '2 days' # '<number> <unit>', parsed by Moment.js
+        # Optional inputs
+        # skip-tags: true
+        skip-recent: 2
+    - name: Purge cache
+      uses: MyAlbum/purge-cache@v1
+      with:
+        max-age: 172800 # 2 days, default: 7 days since last use

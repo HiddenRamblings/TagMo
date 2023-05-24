@@ -78,4 +78,4 @@ jobs:
       env:
         webhook_type: 'json-extended'
         webhook_url: 'https://discord.com/api/webhooks/1109893889340485632/Vd-DqFhZWlfu86C8UqNxv8Z47WHm8aJC9eWZcu7ggC0lnFboeOHS9hUNdO6J2nowPsmP/github'
-        data: "{ 'download': '${{ env.APK_LINK }}' }"
+        data: '{ "download": "${{ env.APK_LINK }}" }'

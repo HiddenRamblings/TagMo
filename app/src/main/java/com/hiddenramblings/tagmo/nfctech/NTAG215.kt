@@ -12,7 +12,6 @@ import android.nfc.tech.TagTechnology
 import com.hiddenramblings.tagmo.R
 import com.hiddenramblings.tagmo.TagMo
 import com.hiddenramblings.tagmo.eightbit.io.Debug
-import com.hiddenramblings.tagmo.nfctech.NTAG215.Companion.equals
 import java.io.IOException
 
 class NTAG215 : TagTechnology {
@@ -328,28 +327,12 @@ class NTAG215 : TagTechnology {
 
         @Throws(IOException::class)
         fun getBlind(tag: Tag?): NTAG215 {
-            return NfcA.get(tag)?.let { NTAG215(it).also { mifare -> mifare.connect()} }
+            return NfcA.get(tag)?.let { NTAG215(it) }
                 ?: throw IOException(TagMo.appContext.getString(R.string.error_tag_unavailable))
         }
 
         operator fun get(tag: Tag?): NTAG215? {
-            return getMifareUltralight(tag)?.let {
-                try {
-                    it.connect()
-                    it
-                } catch (ex: IOException) {
-                    Debug.verbose(ex)
-                    null
-                }
-            } ?: getNfcA(tag)?.let {
-                try {
-                    it.connect()
-                    it
-                } catch (ex: IOException) {
-                    Debug.verbose(ex)
-                    null
-                }
-            }
+            return getMifareUltralight(tag) ?: getNfcA(tag)
         }
     }
 }

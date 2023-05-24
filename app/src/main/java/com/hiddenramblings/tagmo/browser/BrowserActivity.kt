@@ -827,7 +827,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                         it.amiiboType, settings!!.getFilter(FILTER.AMIIBO_TYPE)
                     )
                 ) {
-                    items.add(character.name)
+                    if (!items.contains(character.name)) items.add(character.name)
                 }
             }
         }
@@ -864,7 +864,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                         it.amiiboType, settings!!.getFilter(FILTER.AMIIBO_TYPE)
                     )
                 ) {
-                    items.add(gameSeries.name)
+                    if (!items.contains(gameSeries.name)) items.add(gameSeries.name)
                 }
             }
         }
@@ -899,7 +899,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                         it.amiiboType, settings!!.getFilter(FILTER.AMIIBO_TYPE)
                     )
                 ) {
-                    items.add(amiiboSeries.name)
+                    if (!items.contains(amiiboSeries.name)) items.add(amiiboSeries.name)
                 }
             }
         }
@@ -934,7 +934,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                         it.amiiboSeries, settings!!.getFilter(FILTER.AMIIBO_SERIES)
                     )
                 ) {
-                    items.add(amiiboType)
+                    if (!items.contains(amiiboType)) items.add(amiiboType)
                 }
             }
         }
@@ -960,7 +960,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
         settings?.amiiboManager ?: return
         val gamesManager = settings!!.gamesManager
         val items: ArrayList<String> = arrayListOf()
-        gamesManager?.gameTitles?.forEach { items.add(it.name) }
+        gamesManager?.gameTitles?.forEach { if (!items.contains(it.name))  items.add(it.name) }
         items.sorted().forEach {
             subMenu.add(R.id.filter_game_titles_group, Menu.NONE, 0, it)
                 .setChecked(it == settings!!.getFilter(FILTER.GAME_TITLES))

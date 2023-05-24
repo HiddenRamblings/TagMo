@@ -1,4 +1,4 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <string name="topCenterTextMessage">Legen Sie den Anhänger unter das Telefon</string>
     <string translatable="false" name="middleCenterError"> </string>
 
@@ -409,7 +409,7 @@
     <string name="invalid_tag_cc">CC-Signatur stimmt nicht überein.</string>
     <string name="invalid_tag_dynamic">Dynamische Sperrsignatur nicht übereinstimmend.</string>
     <string name="invalid_tag_cfg_zero">CFG0-Signatur-Fehlanpassung.</string>
-    <string name="invalid_tag_cfg_one">CFG1-Signatur-Fehlanpassung.</string>
+    <string name="invalid_tag_cfg_one" tools:ignore="Typos">CFG1-Signatur-Fehlanpassung.</string>
     <string name="invalid_uid_length">Ungültige UID-Länge</string>
     <string name="invalid_file_size">%1$s Größe: %2$d, Erwartet: %3$d</string>
     <string name="invalid_data_size">Tag-Größe: %1$d, Erwartet: %2$d</string>

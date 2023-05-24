@@ -106,6 +106,12 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
     private var currentCount = 0
     private var deviceDialog: AlertDialog? = null
 
+    private enum class DEVICE {
+        FLASK, SLIDE, PUCK, GATT
+    }
+
+    private var deviceType = DEVICE.GATT
+
     private enum class STATE {
         NONE, SCANNING, CONNECT, MISSING, TIMEOUT
     }
@@ -127,7 +133,7 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
                         override fun onServicesDiscovered() {
                             isServiceDiscovered = true
                             onBottomSheetChanged(SHEET.MENU)
-                            maxSlotCount = 85
+                            maxSlotCount = if (deviceType == DEVICE.SLIDE) 40 else 85
                             requireView().post {
                                 flaskSlotCount.maxValue = maxSlotCount
                                 screenOptions?.isVisible = true
@@ -219,9 +225,8 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
                                 val amiibo = getAmiiboFromTail(name.split("|"))
                                 val index = jsonObject.getString("index")
                                 getActiveAmiibo(amiibo, amiiboTile)
-                                if (bottomSheet?.state ==
-                                    BottomSheetBehavior.STATE_COLLAPSED
-                                ) getActiveAmiibo(amiibo, amiiboCard)
+                                if (bottomSheet?.state == BottomSheetBehavior.STATE_COLLAPSED)
+                                    getActiveAmiibo(amiibo, amiiboCard)
                                 prefs.flaskActiveSlot(index.toInt())
                                 flaskButtonState
                                 requireView().post {
@@ -870,30 +875,51 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
 
     @SuppressLint("InflateParams")
     private fun displayScanResult(
-        deviceDialog: AlertDialog, device: BluetoothDevice, deviceType: Int
+        deviceDialog: AlertDialog, device: BluetoothDevice, detectedType: DEVICE
     ) : View {
         val item = this.layoutInflater.inflate(R.layout.device_bluetooth, null)
         item.findViewById<TextView>(R.id.device_name).text = device.name
         item.findViewById<TextView>(R.id.device_address).text =
             requireActivity().getString(R.string.device_address, device.address)
-        item.findViewById<View>(R.id.connect_flask).setOnClickListener {
-            deviceDialog.dismiss()
-            deviceProfile = device.name
-            deviceAddress = device.address
-            dismissGattDiscovery()
-            showConnectionNotice()
-            startFlaskService()
+
+        item.findViewById<View>(R.id.connect_flask).run {
+            setOnClickListener {
+                deviceDialog.dismiss()
+                deviceProfile = device.name
+                deviceAddress = device.address
+                deviceType = DEVICE.FLASK
+                dismissGattDiscovery()
+                showConnectionNotice()
+                startFlaskService()
+            }
+            isEnabled = detectedType != DEVICE.PUCK
         }
-        item.findViewById<View>(R.id.connect_flask).isEnabled = deviceType != 2
-        item.findViewById<View>(R.id.connect_puck).setOnClickListener {
-            deviceDialog.dismiss()
-            deviceProfile = device.name
-            deviceAddress = device.address
-            dismissGattDiscovery()
-            showConnectionNotice()
-            startPuckService()
+
+        item.findViewById<View>(R.id.connect_slide).run {
+            setOnClickListener {
+                deviceDialog.dismiss()
+                deviceProfile = device.name
+                deviceAddress = device.address
+                deviceType = DEVICE.SLIDE
+                dismissGattDiscovery()
+                showConnectionNotice()
+                startFlaskService()
+            }
+           isEnabled = detectedType != DEVICE.PUCK
         }
-        item.findViewById<View>(R.id.connect_puck).isEnabled = deviceType != 1
+
+        item.findViewById<View>(R.id.connect_puck).run {
+            setOnClickListener {
+                deviceDialog.dismiss()
+                deviceProfile = device.name
+                deviceAddress = device.address
+                deviceType = DEVICE.PUCK
+                dismissGattDiscovery()
+                showConnectionNotice()
+                startPuckService()
+            }
+            isEnabled = detectedType != DEVICE.FLASK && detectedType != DEVICE.SLIDE
+        }
         return item
     }
 
@@ -923,7 +949,7 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
                     if (!devices.contains(result.device)) {
                         devices.add(result.device)
                         deviceDialog.findViewById<LinearLayout>(R.id.bluetooth_result)?.addView(
-                            displayScanResult(deviceDialog, result.device, 1)
+                            displayScanResult(deviceDialog, result.device, DEVICE.GATT)
                         )
                     }
                 }
@@ -938,7 +964,7 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
                     if (!devices.contains(result.device)) {
                         devices.add(result.device)
                         deviceDialog.findViewById<LinearLayout>(R.id.bluetooth_result)?.addView(
-                            displayScanResult(deviceDialog, result.device, 2)
+                            displayScanResult(deviceDialog, result.device, DEVICE.PUCK)
                         )
                     }
                 }
@@ -950,7 +976,7 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
                     if (!devices.contains(bluetoothDevice)) {
                         devices.add(bluetoothDevice)
                         deviceDialog.findViewById<LinearLayout>(R.id.bluetooth_result)?.addView(
-                            displayScanResult(deviceDialog, bluetoothDevice, 1)
+                            displayScanResult(deviceDialog, bluetoothDevice, DEVICE.GATT)
                         )
                     }
                 }
@@ -960,7 +986,7 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
                     if (!devices.contains(bluetoothDevice)) {
                         devices.add(bluetoothDevice)
                         deviceDialog.findViewById<LinearLayout>(R.id.bluetooth_result)?.addView(
-                            displayScanResult(deviceDialog, bluetoothDevice, 2)
+                            displayScanResult(deviceDialog, bluetoothDevice, DEVICE.PUCK)
                         )
                     }
                 }
@@ -989,7 +1015,11 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
         }
         deviceDialog = AlertDialog.Builder(requireActivity()).setView(view).show().apply {
             mBluetoothAdapter?.bondedDevices?.forEach { device ->
-                val deviceType = if (device.name.lowercase().startsWith("flask")) 1 else 0
+                deviceType = when {
+                    device.name.lowercase().startsWith("flask") -> DEVICE.FLASK
+                    device.name.lowercase().startsWith("slide") -> DEVICE.SLIDE
+                    else -> DEVICE.GATT
+                }
                 view.findViewById<LinearLayout>(R.id.bluetooth_paired)?.addView(
                     displayScanResult(this, device, deviceType)
                 )

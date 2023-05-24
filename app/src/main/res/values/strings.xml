@@ -301,7 +301,7 @@
     <string name="tag_update_only">Previously written tags require \&#34;Update\&#34;</string>
 
     <string name="custom_tab_back">Back to TagMo</string>
-    <string name="flask_purchase">Purchase a Bluup Flask</string>
+    <string name="flask_purchase">Purchase a Bluup Device</string>
     <string name="flask_missing">No nearby GATT devices located!</string>
     <string name="device_invalid">Not a valid GATT device!</string>
     <string name="flask_scanning">Scanning for Bluetooth GATT&#8230;</string>
@@ -311,7 +311,7 @@
     <string name="write_slot_file">Upload binary to GATT device</string>
     <string name="write_slots">Write %1$d slots</string>
     <string name="erase_slots">Erase %1$d slots</string>
-    <string name="slots_full">All Bluup Flask slots filled</string>
+    <string name="slots_full">GATT device slots filled</string>
     <string name="slots_empty">Device storage is empty</string>
     <string name="create_blank">Create blank virtual NFC tag</string>
     <string name="gatt_erase_confirm">Erase all slots from GATT device?</string>
@@ -325,9 +325,10 @@
 
     <string name="paired_devices">Paired Bluetooth Devices</string>
     <string name="device_address">MAC: %1$s</string>
-    <string name="connect_flask">Connect Flask</string>
-    <string name="connect_puck">Connect Puck.js</string>
-    <string name="switch_devices">Connect a Bluetooth device</string>
+    <string name="connect_flask">Flask</string>
+    <string name="connect_slide">Slide</string>
+    <string name="connect_puck">Puck.js</string>
+    <string name="switch_devices">Connect a new device</string>
 
     <string name="clone_serials">Clone with random serial</string>
 

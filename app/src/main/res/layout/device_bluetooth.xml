@@ -63,6 +63,12 @@
                     android:layout_weight="1"
                     android:text="@string/connect_flask" />
                 <androidx.appcompat.widget.AppCompatButton
+                    android:id="@+id/connect_slide"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/connect_slide" />
+                <androidx.appcompat.widget.AppCompatButton
                     android:id="@+id/connect_puck"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"

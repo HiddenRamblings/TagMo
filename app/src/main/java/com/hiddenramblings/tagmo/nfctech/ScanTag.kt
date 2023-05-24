@@ -29,7 +29,7 @@ class ScanTag {
         } catch (ignored: Exception) { }
     }
 
-    fun onTagDiscovered(activity: BrowserActivity, intent: Intent) {
+    private fun onTagDiscovered(activity: BrowserActivity, intent: Intent) {
         val prefs = Preferences(activity.applicationContext)
         val tag = intent.parcelable<Tag>(NfcAdapter.EXTRA_TAG)
         val tagTech = tag.technology()
@@ -112,9 +112,18 @@ class ScanTag {
                         else -> {}
                     }
                 } else {
-                    val message = if (Debug.hasException(e, NTAG215::class.java.name, "connect"))
-                         "${activity.getString(R.string.error_tag_faulty)}\n$error" else error
-                    Toasty(activity).Short(message)
+                    Toasty(activity).Short(
+                        when {
+                            e is TagLostException -> {
+                                closeTagSilently(mifare)
+                                "${activity.getString(R.string.tag_disconnect)}\n$error"
+                            }
+                            Debug.hasException(e, NTAG215::class.java.name, "connect") -> {
+                                "${activity.getString(R.string.error_tag_faulty)}\n$error"
+                            }
+                            else -> { error }
+                        }
+                    )
                 }
             } ?: activity.run {
                 Toasty(this).Short(R.string.error_unknown)

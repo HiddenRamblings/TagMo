@@ -282,20 +282,24 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                                 browserSheet = bottomSheet
                             }
                         }
-                        1 -> setTitle(R.string.guides)
-                        2 -> if (hasEliteEnabled) {
-                            showActionButton()
-                            setTitle(R.string.elite_n2)
-                            pagerAdapter.eliteBanks.run {
-                                amiibosView = eliteContent
-                                browserSheet = bottomSheet
-                            }
-                        } else {
-                            setTitle(R.string.flask_title)
-                            pagerAdapter.flaskSlots.run {
-                                delayedBluetoothEnable()
-                                amiibosView = flaskContent
-                                browserSheet = bottomSheet
+                        1 -> {
+                            setTitle(R.string.guides)
+                        }
+                        2 -> {
+                            if (hasEliteEnabled) {
+                                showActionButton()
+                                setTitle(R.string.elite_n2)
+                                pagerAdapter.eliteBanks.run {
+                                    amiibosView = eliteContent
+                                    browserSheet = bottomSheet
+                                }
+                            } else {
+                                setTitle(R.string.flask_title)
+                                pagerAdapter.flaskSlots.run {
+                                    delayedBluetoothEnable()
+                                    amiibosView = flaskContent
+                                    browserSheet = bottomSheet
+                                }
                             }
                         }
                         3 -> {

@@ -276,33 +276,35 @@ class NfcActivity : AppCompatActivity() {
                             TagWriter.writeToTagRaw(ntag, data!!, prefs.tagTypeValidation())
                             setResult(RESULT_OK)
                         }
-                        NFCIntent.ACTION_WRITE_TAG_FULL -> if (isEliteDevice) {
-                            if (bankPicker.isGone) {
-                                showMessage(R.string.bank_select)
-                                runOnUiThread {
-                                    bankPicker.isVisible = true
-                                    bankPicker.isEnabled = true
-                                    bankTextView.isVisible = true
+                        NFCIntent.ACTION_WRITE_TAG_FULL -> {
+                            if (isEliteDevice) {
+                                if (bankPicker.isGone) {
+                                    showMessage(R.string.bank_select)
+                                    runOnUiThread {
+                                        bankPicker.isVisible = true
+                                        bankPicker.isEnabled = true
+                                        bankTextView.isVisible = true
+                                    }
+                                    setIntent(commandIntent)
+                                    hasTestedElite = false
+                                    return
                                 }
-                                setIntent(commandIntent)
-                                hasTestedElite = false
-                                return
-                            }
-                            TagWriter.writeEliteAuto(ntag, data, keyManager, bankNumber)
-                            setResult(RESULT_OK, Intent(NFCIntent.ACTION_NFC_SCANNED).apply {
-                                putExtra(NFCIntent.EXTRA_SIGNATURE, TagReader.getBankSignature(ntag))
-                                putExtra(NFCIntent.EXTRA_BANK_COUNT, banksCount)
-                                putExtra(NFCIntent.EXTRA_ACTIVE_BANK, activeBank)
-                                putExtra(NFCIntent.EXTRA_CURRENT_BANK, bankNumber)
-                                putExtras(Bundle().apply {
-                                    putStringArrayList(NFCIntent.EXTRA_AMIIBO_LIST, TagReader.readTagTitles(ntag, banksCount))
-                                    putByteArray(NFCIntent.EXTRA_TAG_DATA, data)
+                                TagWriter.writeEliteAuto(ntag, data, keyManager, bankNumber)
+                                setResult(RESULT_OK, Intent(NFCIntent.ACTION_NFC_SCANNED).apply {
+                                    putExtra(NFCIntent.EXTRA_SIGNATURE, TagReader.getBankSignature(ntag))
+                                    putExtra(NFCIntent.EXTRA_BANK_COUNT, banksCount)
+                                    putExtra(NFCIntent.EXTRA_ACTIVE_BANK, activeBank)
+                                    putExtra(NFCIntent.EXTRA_CURRENT_BANK, bankNumber)
+                                    putExtras(Bundle().apply {
+                                        putStringArrayList(NFCIntent.EXTRA_AMIIBO_LIST, TagReader.readTagTitles(ntag, banksCount))
+                                        putByteArray(NFCIntent.EXTRA_TAG_DATA, data)
+                                    })
                                 })
-                            })
-                        } else {
-                            update = TagReader.readFromTag(ntag)
-                            TagWriter.writeToTagAuto(ntag, data!!, keyManager, prefs.tagTypeValidation())
-                            setResult(RESULT_OK)
+                            } else {
+                                update = TagReader.readFromTag(ntag)
+                                TagWriter.writeToTagAuto(ntag, data!!, keyManager, prefs.tagTypeValidation())
+                                setResult(RESULT_OK)
+                            }
                         }
                         NFCIntent.ACTION_WRITE_TAG_DATA -> {
                             val ignoreUid = commandIntent.getBooleanExtra(
@@ -449,7 +451,7 @@ class NfcActivity : AppCompatActivity() {
                             ntag.amiiboLock()
                             setResult(RESULT_OK)
                         }
-                        NFCIntent.ACTION_UNLOCK_UNIT ->
+                        NFCIntent.ACTION_UNLOCK_UNIT -> {
                             if (null == ntag.amiiboPrepareUnlock()) {
                                 val unlockBar = IconifiedSnackbar(this@NfcActivity, findViewById(R.id.coordinator))
                                     .buildTickerBar(R.string.progress_unlock)
@@ -461,7 +463,10 @@ class NfcActivity : AppCompatActivity() {
                             } else {
                                 throw Exception(getString(R.string.fail_unlock))
                             }
-                        else -> throw Exception(getString(R.string.error_state, mode))
+                        }
+                        else -> {
+                            throw Exception(getString(R.string.error_state, mode))
+                        }
                     }
                 } catch (ex: Exception) {
                     throw ex
@@ -477,7 +482,7 @@ class NfcActivity : AppCompatActivity() {
             }
         } catch (e: Exception) {
             Debug.warn(e)
-            var error: String? = Debug.getExceptionCause(e)
+            val error: String? = Debug.getExceptionCause(e)
             if (null != error) {
                 when {
                     getString(R.string.error_tag_rewrite) == error -> {
@@ -520,9 +525,18 @@ class NfcActivity : AppCompatActivity() {
                         }
                     }
                     else -> {
-                        if (Debug.hasException(e, NTAG215::class.java.name, "connect"))
-                            error = getString(R.string.error_tag_faulty) + "\n" + error
-                        showError(error)
+                        showError(
+                            when {
+                                e is TagLostException -> {
+                                    closeTagSilently(mifare)
+                                    "${getString(R.string.tag_disconnect)}\n$error"
+                                }
+                                Debug.hasException(e, NTAG215::class.java.name, "connect") -> {
+                                    "${getString(R.string.error_tag_faulty)}\n$error"
+                                }
+                                else -> { error }
+                            }
+                        )
                     }
                 }
             } else {

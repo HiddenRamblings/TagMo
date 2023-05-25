@@ -469,12 +469,10 @@ class NfcActivity : AppCompatActivity() {
                             throw Exception(getString(R.string.error_state, mode))
                         }
                     }
-                } catch (ex: Exception) {
-                    throw ex
                 } finally {
                     closeTagSilently(ntag)
-                    finish()
                 }
+                finish()
             } ?: if (prefs.eliteEnabled()) {
                 onEliteVerificationFailed(commandIntent)
             } else {

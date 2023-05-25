@@ -41,8 +41,8 @@ import com.shawnlin.numberpicker.NumberPicker
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.io.IOException
-import java.util.concurrent.Executors
 
 class NfcActivity : AppCompatActivity() {
 
@@ -185,19 +185,19 @@ class NfcActivity : AppCompatActivity() {
     }
 
     private fun showMessage(msgRes: Int) {
-       runOnUiThread { txtMessage.setText(msgRes) }
+        CoroutineScope(Dispatchers.Main).launch { txtMessage.setText(msgRes) }
     }
 
     private fun showMessage(msgRes: Int, params: String?) {
-        runOnUiThread { txtMessage.text = getString(msgRes, params) }
+        CoroutineScope(Dispatchers.Main).launch { txtMessage.text = getString(msgRes, params) }
     }
 
     private fun showMessage(msgRes: Int, params: Int, size: Int) {
-        runOnUiThread { txtMessage.text = getString(msgRes, params, size) }
+        CoroutineScope(Dispatchers.Main).launch { txtMessage.text = getString(msgRes, params, size) }
     }
 
     private fun showError(msg: String) {
-        runOnUiThread {
+        CoroutineScope(Dispatchers.Main).launch {
             txtError.text = msg
             txtError.isVisible = true
             txtMessage.isGone = true
@@ -221,7 +221,7 @@ class NfcActivity : AppCompatActivity() {
         } catch (ignored: Exception) { }
     }
 
-    private fun onTagDiscovered(intent: Intent) {
+    private suspend fun onTagDiscovered(intent: Intent) = withContext(Dispatchers.IO) {
         val commandIntent = getIntent()
         val mode = commandIntent.action
         setResult(RESULT_CANCELED)
@@ -281,14 +281,14 @@ class NfcActivity : AppCompatActivity() {
                             if (isEliteDevice) {
                                 if (bankPicker.isGone) {
                                     showMessage(R.string.bank_select)
-                                    runOnUiThread {
+                                    withContext(Dispatchers.Main) {
                                         bankPicker.isVisible = true
                                         bankPicker.isEnabled = true
                                         bankTextView.isVisible = true
                                     }
                                     setIntent(commandIntent)
                                     hasTestedElite = false
-                                    return
+                                    return@withContext
                                 }
                                 TagWriter.writeEliteAuto(ntag, data, keyManager, bankNumber)
                                 setResult(RESULT_OK, Intent(NFCIntent.ACTION_NFC_SCANNED).apply {
@@ -489,7 +489,7 @@ class NfcActivity : AppCompatActivity() {
                                 putByteArray(NFCIntent.EXTRA_TAG_DATA, update)
                             })
                         })
-                        runOnUiThread {
+                        withContext(Dispatchers.Main) {
                             getErrorDialog(this@NfcActivity, R.string.error_tag_rewrite, R.string.tag_update_only)
                                 .setPositiveButton(R.string.proceed) { dialog: DialogInterface, _: Int ->
                                     closeTagSilently(mifare)
@@ -504,21 +504,25 @@ class NfcActivity : AppCompatActivity() {
                                 showMessage(R.string.speed_scan)
                                 closeTagSilently(mifare)
                             }
-                            isEliteLockedCause(error) -> runOnUiThread {
-                                getErrorDialog(this@NfcActivity, R.string.possible_lock, R.string.prepare_unlock)
-                                    .setPositiveButton(R.string.unlock) { dialog: DialogInterface, _: Int ->
-                                        closeTagSilently(mifare)
-                                        dialog.dismiss()
-                                        getIntent().action = NFCIntent.ACTION_UNLOCK_UNIT
-                                        recreate()
-                                    }.setNegativeButton(R.string.cancel) { dialog: DialogInterface, _: Int ->
-                                        closeTagSilently(mifare)
-                                        dialog.dismiss()
-                                        finish()
-                                    }.show()
+                            isEliteLockedCause(error) -> {
+                                withContext(Dispatchers.Main) {
+                                    getErrorDialog(this@NfcActivity, R.string.possible_lock, R.string.prepare_unlock)
+                                        .setPositiveButton(R.string.unlock) { dialog: DialogInterface, _: Int ->
+                                            closeTagSilently(mifare)
+                                            dialog.dismiss()
+                                            getIntent().action = NFCIntent.ACTION_UNLOCK_UNIT
+                                            recreate()
+                                        }.setNegativeButton(R.string.cancel) { dialog: DialogInterface, _: Int ->
+                                            closeTagSilently(mifare)
+                                            dialog.dismiss()
+                                            finish()
+                                        }.show()
+                                }
                             }
                             Debug.hasException(e, NTAG215::class.java.name, "connect") -> {
-                                onEliteVerificationFailed(commandIntent)
+                                withContext(Dispatchers.Main) {
+                                    onEliteVerificationFailed(commandIntent)
+                                }
                             }
                             else -> {}
                         }
@@ -554,7 +558,7 @@ class NfcActivity : AppCompatActivity() {
     }
 
     private fun onEliteVerificationFailed(commandIntent: Intent) {
-        runOnUiThread {
+        CoroutineScope(Dispatchers.Main).launch {
             getErrorDialog(this@NfcActivity, R.string.possible_blank, R.string.prepare_blank)
                 .setPositiveButton(R.string.scan) { dialog: DialogInterface, _: Int ->
                     dialog.dismiss()
@@ -688,7 +692,7 @@ class NfcActivity : AppCompatActivity() {
             || NfcAdapter.ACTION_TAG_DISCOVERED == intent.action) {
             val tech = tagTech ?: getString(R.string.nfc_tag)
             showMessage(R.string.tag_detected, tech)
-            Executors.newSingleThreadExecutor().execute { onTagDiscovered(intent) }
+            CoroutineScope(Dispatchers.IO).launch { onTagDiscovered(intent) }
         }
     }
 

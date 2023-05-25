@@ -23,11 +23,9 @@ object TagReader {
     @Throws(Exception::class)
     private fun getTagData(path: String?, inputStream: InputStream): ByteArray {
         return when (val length = inputStream.available()) {
-            NfcByte.KEY_FILE_SIZE, NfcByte.KEY_RETAIL_SZ -> throw IOException(
-                appContext.getString(
-                    R.string.invalid_tag_key
-                )
-            )
+            NfcByte.KEY_FILE_SIZE, NfcByte.KEY_RETAIL_SZ -> {
+                throw IOException(appContext.getString(R.string.invalid_tag_key))
+            }
             NfcByte.TAG_FILE_SIZE -> {
                 val signed = ByteArray(NfcByte.TAG_FILE_SIZE)
                 DataInputStream(inputStream).readFully(signed)
@@ -39,9 +37,11 @@ object TagReader {
                 DataInputStream(inputStream).readFully(tagData)
                 tagData
             }
-            else -> throw IOException(appContext.getString(
+            else -> {
+                throw IOException(appContext.getString(
                     R.string.invalid_file_size, path, length, NfcByte.TAG_DATA_SIZE
-            ))
+                ))
+            }
         }
     }
 

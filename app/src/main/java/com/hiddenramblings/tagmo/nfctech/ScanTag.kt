@@ -108,8 +108,9 @@ class ScanTag {
                                     dialog.dismiss()
                                 }.show()
                         }
-                        Debug.hasException(e, NTAG215::class.java.name, "connect") ->
+                        Debug.hasException(e, NTAG215::class.java.name, "connect") -> {
                             onEliteVerificationFailed(activity)
+                        }
                         else -> {}
                     }
                 } else {

@@ -982,18 +982,19 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
 
     private fun cloneWithRandomSerial(amiiboFile: AmiiboFile?, tagData: ByteArray?, count: Int) {
         val cached = amiiboFile?.let {
-            it.docUri?.let { doc ->
-                Storage.getRelativeDocument(doc.uri).startsWith("/Foomiibo/")
-            } ?: it.filePath?.let { path ->
+            it.filePath?.let { path ->
                 var relativeFile = Storage.getRelativePath(path, prefs.preferEmulated())
                 prefs.browserRootFolder()?.let { root ->
                     relativeFile = relativeFile.replace(root, "")
                 }
                 relativeFile.startsWith("/Foomiibo/")
-            }
+            } ?: it.docUri?.let { doc ->
+                Storage.getRelativeDocument(doc.uri).startsWith("/Foomiibo/")
+            } ?: false
         } ?: false
 
-        if (cached) File(Foomiibo.directory, "Duplicates").mkdirs()
+        val directory = File(Foomiibo.directory, "Foomiibo" + File.pathSeparator + "Duplicates")
+        if (cached) directory.mkdirs()
 
         val fileName = TagArray.decipherFilename(settings?.amiiboManager, tagData, true)
         val amiiboList = amiiboFile?.withRandomSerials(keyManager, count)
@@ -1002,7 +1003,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                 val name = fileName.replace(".bin", "_$index.bin")
                 val outputData = keyManager.encrypt(data.array)
                 val outputFile: AmiiboFile? = if (cached) {
-                    val path = TagArray.writeBytesToFile(File(Foomiibo.directory, "Duplicates"), name, outputData)
+                    val path = TagArray.writeBytesToFile(directory, name, outputData)
                     AmiiboFile(File(path), data.amiiboID, outputData)
                 } else {
                     val path = TagArray.writeBytesWithName(this, name, outputData)

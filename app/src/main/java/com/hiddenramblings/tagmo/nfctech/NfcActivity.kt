@@ -478,7 +478,6 @@ class NfcActivity : AppCompatActivity() {
             } ?: if (prefs.eliteEnabled()) {
                 onEliteVerificationFailed(commandIntent)
             } else {
-                finish()
                 throw Exception(getString(R.string.error_tag_protocol, tagTech))
             }
         } catch (e: Exception) {
@@ -520,8 +519,9 @@ class NfcActivity : AppCompatActivity() {
                                         finish()
                                     }.show()
                             }
-                            Debug.hasException(e, NTAG215::class.java.name, "connect") ->
+                            Debug.hasException(e, NTAG215::class.java.name, "connect") -> {
                                 onEliteVerificationFailed(commandIntent)
+                            }
                             else -> {}
                         }
                     }

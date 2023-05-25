@@ -344,10 +344,10 @@ object TagArray {
         FileOutputStream(binFile).use { it.write(tagData) }
         try {
             MediaScannerConnection.scanFile(
-                TagMo.appContext, arrayOf(binFile.absolutePath), null, null
+                TagMo.appContext, arrayOf(binFile.canonicalPath), null, null
             )
         } catch (e: Exception) { Debug.info(e) }
-        return binFile.absolutePath
+        return binFile.canonicalPath
     }
 
     @JvmStatic

@@ -69,10 +69,7 @@ object TagWriter {
 
     @Throws(Exception::class)
     private fun patchUid(uid: ByteArray, tagData: ByteArray): ByteArray {
-        if (uid.size < 9) throw IOException(
-            appContext
-                .getString(R.string.invalid_uid_length)
-        )
+        if (uid.size < 9) throw IOException(appContext.getString(R.string.invalid_uid_length))
         val patched = tagData.copyOf(tagData.size)
         System.arraycopy(uid, 0, patched, 0x1d4, 8)
         patched[0] = uid[8]
@@ -85,19 +82,13 @@ object TagWriter {
             writePassword(mifare)
             Debug.info(TagWriter::class.java, R.string.password_write)
         } catch (e: Exception) {
-            throw Exception(
-                appContext
-                    .getString(R.string.error_password_write), e
-            )
+            throw Exception(appContext.getString(R.string.error_password_write), e)
         }
         try {
             writeLockInfo(mifare)
             Debug.info(TagWriter::class.java, R.string.lock_write)
         } catch (e: Exception) {
-            throw Exception(
-                appContext
-                    .getString(R.string.error_lock_write), e
-            )
+            throw Exception(appContext.getString(R.string.error_lock_write), e)
         }
     }
 
@@ -107,10 +98,8 @@ object TagWriter {
     ) {
         var writeData = tagData
         val idPages = mifare.readPages(0)
-        if (null == idPages || idPages.size != NfcByte.PAGE_SIZE * 4) throw IOException(
-            appContext
-                .getString(R.string.fail_read_size)
-        )
+        if (null == idPages || idPages.size != NfcByte.PAGE_SIZE * 4)
+            throw IOException(appContext.getString(R.string.fail_read_size))
         val isPowerTag = TagArray.isPowerTag(mifare)
         Debug.info(TagWriter::class.java, R.string.power_tag_verify, isPowerTag.toString())
         writeData = keyManager.decrypt(writeData)
@@ -132,10 +121,8 @@ object TagWriter {
         }
         if (isPowerTag) {
             val oldid = mifare.tag!!.id
-            if (null == oldid || oldid.size != 7) throw Exception(
-                appContext
-                    .getString(R.string.fail_read_uid)
-            )
+            if (null == oldid || oldid.size != 7)
+                throw Exception(appContext.getString(R.string.fail_read_uid))
             Debug.info(TagWriter::class.java, R.string.old_uid, TagArray.bytesToHex(oldid))
             val page10 = mifare.readPages(0x10)
             Debug.info(TagWriter::class.java, R.string.page_ten, TagArray.bytesToHex(page10))
@@ -178,15 +165,9 @@ object TagWriter {
             writeData = keyManager.encrypt(writeData)
             var write = mifare.amiiboFastWrite(0, bankNumber, writeData)
             if (!write) write = mifare.amiiboWrite(0, bankNumber, writeData)
-            if (!write) throw IOException(
-                appContext
-                    .getString(R.string.error_elite_write)
-            )
+            if (!write) throw IOException(appContext.getString(R.string.error_elite_write))
         } else {
-            throw Exception(
-                appContext
-                    .getString(R.string.error_elite_auth)
-            )
+            throw Exception(appContext.getString(R.string.error_elite_auth))
         }
     }
 
@@ -203,8 +184,8 @@ object TagWriter {
                 liveData = keyManager.decrypt(liveData)
                 restoreData = keyManager.decrypt(restoreData)
                 System.arraycopy(restoreData, 0x08, liveData, 0x08, 0x1B4 - 0x08)
-                /* TODO: Verify that 0x1B4 should not be 0x1D4 */restoreData =
-                    keyManager.encrypt(liveData)
+                /* TODO: Verify that 0x1B4 should not be 0x1D4 */
+                restoreData = keyManager.encrypt(liveData)
             }
         }
         doAuth(mifare)
@@ -250,18 +231,11 @@ object TagWriter {
     @Throws(Exception::class)
     private fun doAuth(tag: NTAG215) {
         val pages01 = tag.readPages(0)
-        if (null == pages01 || pages01.size != NfcByte.PAGE_SIZE * 4) throw IOException(
-            appContext.getString(
-                R.string.fail_read
-            )
-        )
+        if (null == pages01 || pages01.size != NfcByte.PAGE_SIZE * 4)
+            throw IOException(appContext.getString(R.string.fail_read))
         val uid = uidFromPages(pages01)
         val password = keygen(uid)
-        Debug.info(
-            TagWriter::class.java, R.string.password, TagArray.bytesToHex(
-                password!!
-            )
-        )
+        Debug.info(TagWriter::class.java, R.string.password, TagArray.bytesToHex(password!!))
         val auth = byteArrayOf(
             0x1B.toByte(),
             password[0],
@@ -293,24 +267,19 @@ object TagWriter {
         }
         return if (null == passBytes || passBytes.size != 2) {
             false
-        } else passBytes[0] == Byte.MIN_VALUE && passBytes[1] == Byte.MIN_VALUE
+        } else {
+            passBytes[0] == Byte.MIN_VALUE && passBytes[1] == Byte.MIN_VALUE
+        }
     }
 
     @Throws(IOException::class)
     private fun writePassword(tag: NTAG215) {
         val pages01 = tag.readPages(0)
-        if (null == pages01 || pages01.size != NfcByte.PAGE_SIZE * 4) throw IOException(
-            appContext.getString(
-                R.string.fail_read
-            )
-        )
+        if (null == pages01 || pages01.size != NfcByte.PAGE_SIZE * 4)
+            throw IOException(appContext.getString(R.string.fail_read))
         val uid = uidFromPages(pages01)
         val password = keygen(uid)
-        Debug.info(
-            TagWriter::class.java, R.string.password, TagArray.bytesToHex(
-                password!!
-            )
-        )
+        Debug.info(TagWriter::class.java, R.string.password, TagArray.bytesToHex(password!!))
         Debug.info(TagWriter::class.java, R.string.write_pack)
         tag.writePage(0x86, byteArrayOf(0x80.toByte(), 0x80.toByte(), 0.toByte(), 0.toByte()))
         Debug.info(TagWriter::class.java, R.string.write_pwd)
@@ -320,11 +289,8 @@ object TagWriter {
     @Throws(IOException::class)
     private fun writeLockInfo(tag: NTAG215) {
         val pages = tag.readPages(0)
-        if (null == pages || pages.size != NfcByte.PAGE_SIZE * 4) throw IOException(
-            appContext.getString(
-                R.string.fail_read
-            )
-        )
+        if (null == pages || pages.size != NfcByte.PAGE_SIZE * 4)
+            throw IOException(appContext.getString(R.string.fail_read))
         tag.writePage(
             2, byteArrayOf(
                 pages[2 * NfcByte.PAGE_SIZE],
@@ -355,16 +321,10 @@ object TagWriter {
                 System.arraycopy(tagData, 84, result, 0, result.size)
                 Debug.info(TagWriter::class.java, TagArray.bytesToHex(result))
             } else {
-                throw Exception(
-                    appContext
-                        .getString(R.string.error_elite_write)
-                )
+                throw Exception(appContext.getString(R.string.error_elite_write))
             }
         } else {
-            throw Exception(
-                appContext
-                    .getString(R.string.error_elite_write)
-            )
+            throw Exception(appContext.getString(R.string.error_elite_write))
         }
     }
 
@@ -400,7 +360,7 @@ object TagWriter {
         tag.getVersion(true)
         return try {
             BufferedReader(InputStreamReader(
-                    context.resources.openRawResource(R.raw.firmware)
+                context.resources.openRawResource(R.raw.firmware)
             )).use { br ->
                 while (true) {
                     val strLine = br.readLine() ?: break

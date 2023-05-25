@@ -37,8 +37,6 @@ jobs:
         echo "GIT_BRANCH=${GIT_BRANCH}" >> $GITHUB_ENV
         GIT_HASH=$(git rev-parse --short HEAD)
         echo "GIT_HASH=${GIT_HASH}" >> $GITHUB_ENV
-        APK_LINK="https://github.com/HiddenRamblings/TagMo/releases/download/master/TagMo-${GIT_HASH}-github-wearos-signed.apk"
-        echo "APK_LINK=${APK_LINK}" >> $GITHUB_ENV
 
     - name: Build Release Gradle
       run: ./gradlew assembleGithubRelease
@@ -72,10 +70,3 @@ jobs:
         title: TagMo-${{ env.GIT_HASH }}
         files: |
           ${{steps.sign_main.outputs.signedReleaseFile}}
-
-    - name: Discord webhook notification
-      uses: distributhor/workflow-webhook@v3.0.4
-      env:
-        webhook_type: 'json-extended'
-        webhook_url: 'https://discord.com/api/webhooks/1109893889340485632/Vd-DqFhZWlfu86C8UqNxv8Z47WHm8aJC9eWZcu7ggC0lnFboeOHS9hUNdO6J2nowPsmP/github'
-        data: '{ "download": "${{ env.APK_LINK }}" }'

@@ -611,6 +611,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
 
     private fun parseUpdateJSON(result: String, isMenuClicked: Boolean) {
         CoroutineScope(Dispatchers.IO).launch {
+            if (activity !is BrowserActivity) return@launch
             try {
                 val jsonObject = JSONObject(result)
                 val lastUpdatedAPI = jsonObject["lastUpdated"] as String
@@ -629,7 +630,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
         }
     }
 
-    fun onSyncRequested(isMenuClicked: Boolean) {
+    private fun onSyncRequested(isMenuClicked: Boolean) {
         val activity = requireActivity() as BrowserActivity
         if (prefs.databaseSource() == 0) {
             JSONExecutor(

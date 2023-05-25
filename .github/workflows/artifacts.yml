@@ -5,7 +5,8 @@ on:
     branches: [ master ]
 
 permissions:
-  contents: write
+  contents: read
+  actions: write
 
 jobs:
   clean:
@@ -14,13 +15,16 @@ jobs:
 
     steps:
     - name: Remove artifacts
-      uses: c-hive/gha-remove-artifacts@v1
+      continue-on-error: true
+      uses: c-hive/gha-remove-artifacts@v1.3.0
       with:
         age: '2 days' # '<number> <unit>', parsed by Moment.js
         # Optional inputs
         # skip-tags: true
         skip-recent: 2
+
     - name: Purge cache
+      continue-on-error: true
       uses: MyAlbum/purge-cache@v1
       with:
         max-age: 172800 # 2 days, default: 7 days since last use

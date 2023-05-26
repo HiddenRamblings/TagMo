@@ -91,9 +91,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
                 super@SettingsFragment.onPreferenceTreeClick(it)
             }
         }
-        findPreference<CheckBoxPreference>(
-            getString(R.string.settings_tag_type_validation)
-        )?.apply {
+        findPreference<CheckBoxPreference>(getString(R.string.settings_tag_type_validation))?.apply {
             isChecked = prefs.tagTypeValidation()
             onPreferenceClickListener =
                 Preference.OnPreferenceClickListener {
@@ -101,9 +99,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
                     super@SettingsFragment.onPreferenceTreeClick(it)
                 }
         }
-        findPreference<CheckBoxPreference>(
-            getString(R.string.settings_automatic_scan)
-        )?.apply {
+        findPreference<CheckBoxPreference>(getString(R.string.settings_automatic_scan))?.apply {
             isChecked = requireContext().packageManager.getComponentEnabledSetting(
                 FilterComponent
             ) != PackageManager.COMPONENT_ENABLED_STATE_DISABLED
@@ -128,30 +124,27 @@ class SettingsFragment : PreferenceFragmentCompat() {
                 }
         }
         findPreference<CheckBoxPreference>(getString(R.string.settings_hide_foomiibo_panel))?.apply {
-            if (activity is BrowserActivity) {
-                isChecked = prefs.foomiiboDisabled()
-                onPreferenceClickListener = Preference.OnPreferenceClickListener {
-                    prefs.foomiiboDisabled((it as CheckBoxPreference).isChecked)
+            isChecked = prefs.foomiiboDisabled()
+            onPreferenceClickListener = Preference.OnPreferenceClickListener {
+                prefs.foomiiboDisabled((it as CheckBoxPreference).isChecked)
+                if (activity is BrowserActivity) {
                     (activity as BrowserActivity).setFoomiiboVisibility()
-                    super@SettingsFragment.onPreferenceTreeClick(it)
                 }
+                super@SettingsFragment.onPreferenceTreeClick(it)
             }
         }
-        findPreference<SwitchPreferenceCompat>(
-            getString(R.string.settings_enable_power_tag_support)
-        )?.apply {
+        findPreference<SwitchPreferenceCompat>(getString(R.string.settings_enable_power_tag_support))?.apply {
+            isChecked = prefs.powerTagEnabled()
             onPreferenceClickListener = Preference.OnPreferenceClickListener {
                 val isEnabled = isChecked
                 prefs.powerTagEnabled(isEnabled)
-                if (isEnabled) {
+                if (isEnabled && activity is BrowserActivity) {
                     (requireActivity() as BrowserActivity).loadPTagKeyManager()
                 }
                 super@SettingsFragment.onPreferenceTreeClick(it)
             }
         }
-        findPreference<SwitchPreferenceCompat>(
-            getString(R.string.settings_enable_elite_support)
-        )?.apply {
+        findPreference<SwitchPreferenceCompat>(getString(R.string.settings_enable_elite_support))?.apply {
             val isElite = prefs.eliteEnabled()
             isChecked = isElite
             if (isElite && prefs.eliteSignature()?.isNotEmpty() == true) {
@@ -162,8 +155,11 @@ class SettingsFragment : PreferenceFragmentCompat() {
                 prefs.eliteEnabled(isChecked)
                 summary = if (isEnabled && !prefs.eliteSignature().isNullOrEmpty())
                     getString(R.string.elite_signature, prefs.eliteSignature())
-                else getString(R.string.elite_details)
-                (requireActivity() as BrowserActivity).reloadTabCollection = true
+                else
+                    getString(R.string.elite_details)
+                if (activity is BrowserActivity) {
+                    (requireActivity() as BrowserActivity).reloadTabCollection = true
+                }
                 super@SettingsFragment.onPreferenceTreeClick(it)
             }
         }
@@ -205,22 +201,6 @@ class SettingsFragment : PreferenceFragmentCompat() {
                 super@SettingsFragment.onPreferenceTreeClick(it)
             }
         }
-        findPreference<ListPreference>(
-            getString(R.string.settings_page_transformer)
-        )?.apply {
-            setValueIndex(prefs.browserPageTransformer())
-            onPreferenceClickListener = Preference.OnPreferenceClickListener {
-                (it as ListPreference).setValueIndex(prefs.browserPageTransformer())
-                super@SettingsFragment.onPreferenceTreeClick(it)
-            }
-            onPreferenceChangeListener =
-                Preference.OnPreferenceChangeListener { preference: Preference, newValue: Any ->
-                    val index = (preference as ListPreference).findIndexOfValue(newValue.toString())
-                    prefs.browserPageTransformer(index)
-                    (requireActivity() as BrowserActivity).setPageTransformer()
-                    super@SettingsFragment.onPreferenceTreeClick(preference)
-                }
-        }
         findPreference<ListPreference>(getString(R.string.settings_tagmo_theme))?.apply {
             setValueIndex(prefs.applicationTheme())
             onPreferenceClickListener = Preference.OnPreferenceClickListener {
@@ -232,7 +212,9 @@ class SettingsFragment : PreferenceFragmentCompat() {
                     val index = (preference as ListPreference).findIndexOfValue(newValue.toString())
                     prefs.applicationTheme(index)
                     (requireActivity().application as TagMo).setThemePreference()
-                    (requireActivity() as BrowserActivity).onApplicationRecreate()
+                    if (activity is BrowserActivity) {
+                        (requireActivity() as BrowserActivity).onApplicationRecreate()
+                    }
                     super@SettingsFragment.onPreferenceTreeClick(preference)
                 }
         }

@@ -67,12 +67,6 @@
     <androidx.preference.PreferenceCategory
         android:title="@string/pref_advanced">
         <androidx.preference.ListPreference
-            android:entries="@array/pageTransformers"
-            android:entryValues="@array/pageTransformers"
-            android:key="@string/settings_page_transformer"
-            android:summary="@string/page_transformer_details"
-            android:title="@string/pref_page_transformer" />
-        <androidx.preference.ListPreference
             android:entries="@array/themeSettingNames"
             android:entryValues="@array/themeSettingValues"
             android:key="@string/settings_tagmo_theme"

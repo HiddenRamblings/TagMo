@@ -242,8 +242,6 @@
     <string name="number_type">%1$d Typ(y) amiibo</string>
     <string name="number_titles">%1$d Włączone gry</string>
     <string name="pref_advanced">Zaawansowane</string>
-    <string name="pref_page_transformer">Transformacja strony</string>
-    <string name="page_transformer_details">Konfiguracja animacji przejścia podczas nawigacji po stronach</string>
     <string name="pref_tagmo_theme">Motyw systemu TagMo</string>
     <string name="tagmo_theme_details">Zmiana lokalnego motywu niezależnie od ustawień motywu systemowego</string>
     <string name="pref_disable_debug">Wyłącz rejestr debugowania</string>

@@ -217,7 +217,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
 
         viewPager.keepScreenOn = BuildConfig.WEAR_OS
         viewPager.adapter = pagerAdapter
-        setPageTransformer()
+        viewPager.setPageTransformer(DepthTransformer())
         setViewPagerSensitivity(viewPager, 4)
         amiibosView = pagerAdapter.browser.browserContent
         foomiiboView = pagerAdapter.browser.foomiiboContent
@@ -325,11 +325,12 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
             text = TagMo.getVersionLabel(false)
         }
 
-        val coordinator = findViewById<CoordinatorLayout>(R.id.coordinator)
-        if (Version.isJellyBeanMR && amiiboContainer is BlurView) {
-            (amiiboContainer as BlurView).setupWith(coordinator)
-                .setFrameClearDrawable(window.decorView.background)
-                .setBlurRadius(2f).setBlurAutoUpdate(true)
+        findViewById<CoordinatorLayout>(R.id.coordinator).apply {
+            if (Version.isJellyBeanMR && amiiboContainer is BlurView) {
+                (amiiboContainer as BlurView).setupWith(this)
+                    .setFrameClearDrawable(window.decorView.background)
+                    .setBlurRadius(2f).setBlurAutoUpdate(true)
+            }
         }
 
         if (BuildConfig.WEAR_OS) {
@@ -337,9 +338,8 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
         } else {
             requestStoragePermission()
             try {
-                @Suppress("DEPRECATION") packageManager.getPackageInfo(
-                    "com.hiddenramblings.tagmo", PackageManager.GET_META_DATA
-                )
+                @Suppress("DEPRECATION")
+                packageManager.getPackageInfo("com.hiddenramblings.tagmo", PackageManager.GET_META_DATA)
                 AlertDialog.Builder(this)
                     .setTitle(R.string.conversion_title)
                     .setMessage(R.string.conversion_message)
@@ -371,8 +371,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                     } else {
                         findViewById<View>(R.id.build_layout).setOnClickListener {
                             closePrefsDrawer()
-                            val repository = "https://github.com/HiddenRamblings/TagMo"
-                            showWebsite(repository)
+                            showWebsite("https://github.com/HiddenRamblings/TagMo")
                         }
                     }
                 }
@@ -387,9 +386,10 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
             })
         }
 
-        val popup = if (Version.isLollipopMR) PopupMenu(
-            this, nfcFab, Gravity.END, 0, R.style.PopupMenu
-        ) else PopupMenu(this, nfcFab)
+        val popup = if (Version.isLollipopMR)
+            PopupMenu(this, nfcFab, Gravity.END, 0, R.style.PopupMenu)
+        else
+            PopupMenu(this, nfcFab)
         try {
             for (field in popup.javaClass.declaredFields) {
                 if ("mPopup" == field.name) {
@@ -1875,7 +1875,6 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
         prefs.filterAmiiboType(newBrowserSettings.getFilter(FILTER.AMIIBO_TYPE))
         prefs.filterGameTitles(newBrowserSettings.getFilter(FILTER.GAME_TITLES))
         prefs.browserAmiiboView(newBrowserSettings.amiiboView)
-        prefs.browserPageTransformer(newBrowserSettings.pageTransformer)
         prefs.imageNetwork(newBrowserSettings.imageNetworkSettings)
         prefs.recursiveFolders(newBrowserSettings.isRecursiveEnabled)
         prefs.lastUpdatedAPI(newBrowserSettings.lastUpdatedAPI)
@@ -2187,19 +2186,6 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
             }
             return if (columns < 1) 3 else columns.toInt()
         }
-
-    fun setPageTransformer() {
-        viewPager.setPageTransformer(when (prefs.browserPageTransformer()) {
-            0 -> CardFlipTransformer().apply { isScalable = true }
-            1 -> ClockSpinTransformer()
-            2 -> DepthTransformer()
-            3 -> FidgetSpinTransformer()
-            4 -> PopTransformer()
-            5 -> SpinnerTransformer()
-            6 -> TossTransformer()
-            else -> null
-        })
-    }
 
     @Suppress("SameParameterValue")
     private fun setViewPagerSensitivity(viewPager: ViewPager2?, sensitivity: Int) {

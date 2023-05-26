@@ -235,8 +235,6 @@
     <string name="number_type">%1$d 種 amiibo 類型</string>
     <string name="number_titles">%1$d 個可使用的遊戲</string>
     <string name="pref_advanced">進階</string>
-    <string name="pref_page_transformer">頁面切換</string>
-    <string name="page_transformer_details">可設定切換頁面時顯示轉場特效</string>
     <string name="pref_tagmo_theme">TagMo系統主題</string>
     <string name="tagmo_theme_details">將程式背景變更為自訂主題</string>
     <string name="pref_disable_debug">停用除錯日誌記錄</string>

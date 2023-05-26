@@ -189,15 +189,6 @@ class Preferences(context: Context) {
         putString(eliteSignature, value)
     }
 
-    private val browserPageTransformer = "browserPageTransformer"
-    fun browserPageTransformer(): Int {
-        return getInt(browserPageTransformer, 0 /*CardFlipTransformer*/)
-    }
-
-    fun browserPageTransformer(value: Int) {
-        putInt(browserPageTransformer, value)
-    }
-
     private val disableDebug = "settings_disable_debug"
     fun disableDebug(): Boolean {
         return getBoolean(disableDebug, false)

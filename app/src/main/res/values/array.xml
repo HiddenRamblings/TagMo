@@ -12,17 +12,6 @@
         <item>NEVER</item>
     </string-array>
 
-    <string-array name="pageTransformers">
-        <item>Card Flip</item>
-        <item>Clock Spin</item>
-        <item>Depth</item>
-        <item>Fidget Spin</item>
-        <item>Pop</item>
-        <item>Spinner</item>
-        <item>Toss</item>
-        <item>None</item>
-    </string-array>
-
     <string-array name="themeSettingNames">
         <item>Auto</item>
         <item>Dark</item>

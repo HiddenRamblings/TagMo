@@ -242,8 +242,6 @@
     <string name="number_type">%1$d amiibo Typ(en)</string>
     <string name="number_titles">%1$d Aktivierte(s) Spiel(e)</string>
     <string name="pref_advanced">Erweitert</string>
-    <string name="pref_page_transformer">Seitenumwandlung</string>
-    <string name="page_transformer_details">Konfigurieren Sie die Übergangsanimation beim Navigieren von Seiten</string>
     <string name="pref_tagmo_theme">TagMo System-Theme</string>
     <string name="tagmo_theme_details">Lokales Theme unabhängig von den System-Theme-Einstellungen ändern</string>
     <string name="pref_disable_debug">Debug-Logger deaktivieren</string>

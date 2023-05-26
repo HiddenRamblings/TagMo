@@ -80,7 +80,6 @@ open class BrowserSettings : Parcelable {
     private var filterGameTitles: String? = null
     var amiiboView = 0
     var imageNetworkSettings: String? = null
-    var pageTransformer = 0
     var browserRootFolder: File? = null
     var browserRootDocument: Uri? = null
     var isRecursiveEnabled = false
@@ -97,8 +96,8 @@ open class BrowserSettings : Parcelable {
         query: String?, sort: Int, filterCharacter: String?,
         filterGameSeries: String?, filterAmiiboSeries: String?,
         filterAmiiboType: String?, filterGameTitles: String?,
-        browserAmiiboView: Int, browserPageTransformer: Int,
-        imageNetworkSettings: String?, recursiveFolders: Boolean,
+        browserAmiiboView: Int, imageNetworkSettings: String?,
+        recursiveFolders: Boolean,
         lastUpdatedAPI: String?, lastUpdatedGit: Long
     ) : super() {
         this.amiiboFiles.addAll(amiiboFiles)
@@ -114,7 +113,6 @@ open class BrowserSettings : Parcelable {
         this.filterGameTitles = filterGameTitles
         this.amiiboView = browserAmiiboView
         this.imageNetworkSettings = imageNetworkSettings
-        this.pageTransformer = browserPageTransformer
         this.isRecursiveEnabled = recursiveFolders
         this.lastUpdatedAPI = lastUpdatedAPI
         this.lastUpdatedGit = lastUpdatedGit
@@ -137,7 +135,6 @@ open class BrowserSettings : Parcelable {
         setFilter(FILTER.GAME_TITLES, prefs.filterGameTitles())
         amiiboView = prefs.browserAmiiboView()
         imageNetworkSettings = prefs.imageNetwork()
-        pageTransformer = prefs.browserPageTransformer()
         browserRootFolder = prefs.browserRootFolder()?.let {
             File(Storage.getFile(prefs.preferEmulated()), it)
         } ?: Storage.getDownloadDir(null)
@@ -212,7 +209,6 @@ open class BrowserSettings : Parcelable {
             it.setFilter(FILTER.GAME_TITLES, getFilter(FILTER.GAME_TITLES))
             it.amiiboView = amiiboView
             it.imageNetworkSettings = imageNetworkSettings
-            it.pageTransformer = pageTransformer
             it.browserRootFolder = browserRootFolder
             it.browserRootDocument = browserRootDocument
             it.isRecursiveEnabled = isRecursiveEnabled
@@ -237,7 +233,6 @@ open class BrowserSettings : Parcelable {
         dest.writeString(filterGameTitles)
         dest.writeInt(amiiboView)
         dest.writeString(imageNetworkSettings)
-        dest.writeInt(pageTransformer)
         dest.writeSerializable(browserRootFolder)
         dest.writeString(browserRootDocument?.toString())
         dest.writeByte(if (isRecursiveEnabled) 1.toByte() else 0.toByte())
@@ -261,7 +256,6 @@ open class BrowserSettings : Parcelable {
         filterGameTitles = parcel.readString()
         amiiboView = parcel.readInt()
         imageNetworkSettings = parcel.readString()
-        pageTransformer = parcel.readInt()
         browserRootFolder = if (Version.isTiramisu)
             parcel.readSerializable(File::class.java.classLoader, File::class.java)
         else

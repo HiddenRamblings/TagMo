@@ -1131,7 +1131,7 @@ class TagDataEditor : AppCompatActivity() {
         }
         txtHearts2 = findViewById<Spinner>(R.id.txtHearts2).also {
             setListForSpinner(it, R.array.editor_tp_hearts)
-        }. apply {
+        }.apply {
             setSelection(hearts % 4)
             isEnabled = hearts / 4 < 20
         }

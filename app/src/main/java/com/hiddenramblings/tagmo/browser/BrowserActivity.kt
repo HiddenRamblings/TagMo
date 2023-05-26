@@ -240,7 +240,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                             pagerAdapter.browser.run {
                                 amiibosView = browserContent
                                 foomiiboView = foomiiboContent?.apply {
-                                    layoutManager = getLayoutManager()
+                                    layoutManager = getFileLayoutManager()
                                 }
                                 browserSheet = bottomSheet
                             }
@@ -273,7 +273,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                             pagerAdapter.browser.run {
                                 amiibosView = browserContent
                                 foomiiboView = foomiiboContent?.apply {
-                                    layoutManager = getLayoutManager()
+                                    layoutManager = getFileLayoutManager()
                                 }
                                 browserSheet = bottomSheet
                             }
@@ -309,7 +309,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                         else -> {}
                     }
                 }
-                amiibosView?.layoutManager = getLayoutManager()
+                amiibosView?.layoutManager = getFileLayoutManager()
                 if (BuildConfig.WEAR_OS) onCreateWearOptionsMenu() else invalidateOptionsMenu()
             }
 
@@ -318,6 +318,12 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                 super.onPageScrollStateChanged(state)
             }
         })
+
+        onLoadSettingsFragment()
+        findViewById<TextView>(R.id.build_text).apply {
+            movementMethod = LinkMovementMethod.getInstance()
+            text = TagMo.getVersionLabel(false)
+        }
 
         val coordinator = findViewById<CoordinatorLayout>(R.id.coordinator)
         if (Version.isJellyBeanMR && amiiboContainer is BlurView) {
@@ -344,11 +350,6 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                     }.show()
             } catch (ignored: PackageManager.NameNotFoundException) { }
         }
-
-        onLoadSettingsFragment()
-        val buildText = findViewById<TextView>(R.id.build_text)
-        buildText.movementMethod = LinkMovementMethod.getInstance()
-        buildText.text = TagMo.getVersionLabel(false)
 
         onCreateMainMenuLayout()
 
@@ -442,7 +443,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
         }
     }
 
-    private fun getLayoutManager() : RecyclerView.LayoutManager {
+    private fun getFileLayoutManager() : RecyclerView.LayoutManager {
         return if (settings?.amiiboView == VIEW.IMAGE.value)
             GridLayoutManager(this@BrowserActivity, columnCount).apply {
                 initialPrefetchItemCount = 10
@@ -2284,13 +2285,11 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
     private fun onLoadSettingsFragment() {
         if (null == fragmentSettings) fragmentSettings = SettingsFragment()
         fragmentSettings?.let {
-            if (!it.isAdded)
-                supportFragmentManager.beginTransaction().replace(R.id.preferences, it).commit()
+            if (!it.isAdded) supportFragmentManager.beginTransaction().replace(R.id.preferences, it).commit()
         }
     }
 
     private fun onShowSettingsFragment() {
-        onLoadSettingsFragment()
         CoroutineScope(Dispatchers.Main).launch {
             if (BuildConfig.WEAR_OS) {
                 settingsPage?.isVisible = true
@@ -2340,34 +2339,52 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
 
     @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
     private suspend fun locateKeyDocumentsRecursive() = withContext(Dispatchers.IO) {
-        val uris = settings?.browserRootDocument?.let {
+        settings?.browserRootDocument?.let {
             AmiiboDocument(this@BrowserActivity).listFiles(it, true)
-        }
-        if (uris.isNullOrEmpty()) {
+        }.also { uris ->
+            if (uris.isNullOrEmpty()) {
+                hideFakeSnackbar()
+                onShowSettingsFragment()
+            } else {
+                uris.forEach { uri ->
+                    try {
+                        try {
+                            contentResolver.openInputStream(uri)?.use { inputStream ->
+                                try {
+                                    keyManager.evaluateKey(inputStream)
+                                } catch (ex: Exception) {
+                                    onShowSettingsFragment()
+                                }
+                                hideFakeSnackbar()
+                            }
+                        } catch (e: Exception) { Debug.warn(e) }
+                    } catch (e: Exception) { Debug.info(e) }
+                }
+                }
+        } ?: {
             hideFakeSnackbar()
             onShowSettingsFragment()
-            return@withContext
         }
-        uris.forEach { uri ->
-            try {
-                try {
-                    contentResolver.openInputStream(uri)?.use { inputStream ->
-                        try {
-                            keyManager.evaluateKey(inputStream)
-                        } catch (ex: Exception) {
-                            onShowSettingsFragment()
-                        }
-                        hideFakeSnackbar()
-                    }
-                } catch (e: Exception) { Debug.warn(e) }
-            } catch (e: Exception) { Debug.info(e) }
-        }
+
     }
 
-    private suspend fun locateKeyFilesRecursive(rootFolder: File?) {
+    private suspend fun locateKeyFilesRecursive(rootFolder: File?, isRoot: Boolean) {
         withContext(Dispatchers.IO) {
             rootFolder?.listFiles { _: File?, name: String -> keyNameMatcher(name) }.also { files ->
-                if (!files.isNullOrEmpty()) {
+                if (files.isNullOrEmpty()) {
+                    rootFolder?.listFiles().also { directories ->
+                        if (directories.isNullOrEmpty()){
+                            if (isRoot) {
+                                hideFakeSnackbar()
+                                onShowSettingsFragment()
+                            }
+                        } else {
+                            directories.forEach {
+                                if (it.isDirectory) locateKeyFilesRecursive(it, false)
+                            }
+                        }
+                    }
+                } else {
                     files.forEach {
                         try {
                             FileInputStream(it).use { inputStream ->
@@ -2380,13 +2397,11 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                             }
                         } catch (e: Exception) { Debug.warn(e) }
                     }
-                } else {
-                    rootFolder?.listFiles().also { directories ->
-                        if (directories.isNullOrEmpty()) return@withContext
-                        directories.forEach {
-                            if (it.isDirectory) locateKeyFilesRecursive(it)
-                        }
-                    }
+                }
+            } ?: {
+                if (isRoot) {
+                    hideFakeSnackbar()
+                    onShowSettingsFragment()
                 }
             }
         }
@@ -2397,8 +2412,13 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
             Storage.getDownloadDir(null).listFiles {
                     _: File?, name: String -> keyNameMatcher(name)
             }.also { files ->
-                when {
-                    !files.isNullOrEmpty() -> files.forEach { file ->
+                if (files.isNullOrEmpty()) {
+                    if (prefs.isDocumentStorage)
+                        locateKeyDocumentsRecursive()
+                    else
+                        locateKeyFilesRecursive(Storage.getFile(prefs.preferEmulated()), true)
+                } else {
+                    files.forEach { file ->
                         try {
                             FileInputStream(file).use { inputStream ->
                                 try {
@@ -2408,10 +2428,10 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                                 }
                                 hideFakeSnackbar()
                             }
-                        } catch (e: Exception) { Debug.warn(e) }
+                        } catch (e: Exception) {
+                            Debug.warn(e)
+                        }
                     }
-                    prefs.isDocumentStorage -> locateKeyDocumentsRecursive()
-                    else -> locateKeyFilesRecursive(Storage.getFile(prefs.preferEmulated()))
                 }
             }
         }

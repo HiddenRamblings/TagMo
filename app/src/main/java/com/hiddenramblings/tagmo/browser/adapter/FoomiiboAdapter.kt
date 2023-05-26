@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Filter
 import android.widget.Filterable
+import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.appcompat.widget.AppCompatImageView
 import androidx.core.view.isGone
@@ -97,28 +98,6 @@ class FoomiiboAdapter(
         setHasStableIds(true)
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): FoomiiboViewHolder {
-        return when (VIEW.valueOf(viewType)) {
-            VIEW.COMPACT -> CompactViewHolder(parent, settings, listener)
-            VIEW.LARGE -> LargeViewHolder(parent, settings, listener)
-            VIEW.IMAGE -> ImageViewHolder(parent, settings, listener)
-            VIEW.SIMPLE -> SimpleViewHolder(parent, settings, listener)
-        }
-    }
-
-    override fun getPopupText(position: Int) : CharSequence {
-        if (position >= filteredData.size) return "?"
-        val item = filteredData[position]
-        return when (SORT.valueOf(settings.sort)) {
-            SORT.NAME -> item.name ?: "?"
-            SORT.CHARACTER -> item.character?.name ?: "?"
-            SORT.GAME_SERIES -> item.gameSeries?.name ?: "?"
-            SORT.AMIIBO_SERIES -> item.amiiboSeries?.name ?: "?"
-            SORT.AMIIBO_TYPE -> item.amiiboType?.name ?: "?"
-            else -> { "?" }
-        }[0].uppercase()
-    }
-
     private fun handleClickEvent(holder: FoomiiboViewHolder) {
         holder.listener?.run {
             if (settings.amiiboView != VIEW.IMAGE.value) {
@@ -134,16 +113,38 @@ class FoomiiboAdapter(
         }
     }
 
-    override fun onBindViewHolder(holder: FoomiiboViewHolder, position: Int) {
-        val clickPosition = if (hasStableIds()) holder.bindingAdapterPosition else position
-        holder.itemView.setOnClickListener { handleClickEvent(holder) }
-        holder.imageAmiibo?.setOnClickListener {
-            if (settings.amiiboView == VIEW.IMAGE.value)
-                handleClickEvent(holder)
-            else
-                holder.listener?.onFoomiiboImageClicked(holder.foomiibo)
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): FoomiiboViewHolder {
+        return when (VIEW.valueOf(viewType)) {
+            VIEW.COMPACT -> CompactViewHolder(parent, settings, listener)
+            VIEW.LARGE -> LargeViewHolder(parent, settings, listener)
+            VIEW.IMAGE -> ImageViewHolder(parent, settings, listener)
+            VIEW.SIMPLE -> SimpleViewHolder(parent, settings, listener)
+        }.apply {
+            itemView.setOnClickListener { handleClickEvent(this) }
+            imageAmiibo?.setOnClickListener {
+                if (settings.amiiboView == VIEW.IMAGE.value)
+                    handleClickEvent(this)
+                else
+                    listener?.onFoomiiboImageClicked(foomiibo)
+            }
         }
-        holder.bind(getItem(clickPosition))
+    }
+
+    override fun onBindViewHolder(holder: FoomiiboViewHolder, position: Int) {
+        holder.bind(getItem(holder.bindingAdapterPosition))
+    }
+
+    override fun getPopupText(position: Int) : CharSequence {
+        if (position >= filteredData.size) return "?"
+        val item = filteredData[position]
+        return when (SORT.valueOf(settings.sort)) {
+            SORT.NAME -> item.name ?: "?"
+            SORT.CHARACTER -> item.character?.name ?: "?"
+            SORT.GAME_SERIES -> item.gameSeries?.name ?: "?"
+            SORT.AMIIBO_SERIES -> item.amiiboSeries?.name ?: "?"
+            SORT.AMIIBO_TYPE -> item.amiiboType?.name ?: "?"
+            else -> { "?" }
+        }[0].uppercase()
     }
 
     fun refresh() {
@@ -214,10 +215,13 @@ class FoomiiboAdapter(
         val txtAmiiboSeries: TextView?
         val txtAmiiboType: TextView?
         val txtGameSeries: TextView?
-
         // public final TextView txtCharacter;
         val txtPath: TextView?
         var imageAmiibo: AppCompatImageView? = null
+
+        private val menuOptions: LinearLayout?
+        val txtUsage: TextView?
+
         var foomiibo: Amiibo? = null
         private val boldSpannable = BoldSpannable()
 
@@ -245,6 +249,9 @@ class FoomiiboAdapter(
             // this.txtCharacter = itemView.findViewById(R.id.txtCharacter);
             txtPath = itemView.findViewById(R.id.txtPath)
             imageAmiibo = itemView.findViewById(R.id.imageAmiibo)
+
+            menuOptions = itemView.findViewById(R.id.menu_options)
+            txtUsage = itemView.findViewById(R.id.txtUsage)
         }
 
         fun bind(item: Amiibo?) {
@@ -308,8 +315,8 @@ class FoomiiboAdapter(
                 // boldText.Matching(character, query), hasTagInfo);
                 txtPath?.isGone = true
                 val expanded = foomiiboId.contains(foomiibo?.id)
-                itemView.findViewById<View>(R.id.menu_options).isVisible = expanded
-                itemView.findViewById<View>(R.id.txtUsage).isVisible = expanded
+                menuOptions?.isVisible = expanded
+                txtUsage?.isVisible = expanded
                 if (expanded) listener?.onFoomiiboRebind(itemView, foomiibo)
             }
             if (AmiiboManager.hasSpoofData(amiiboHexId)) txtTagId?.isEnabled = false

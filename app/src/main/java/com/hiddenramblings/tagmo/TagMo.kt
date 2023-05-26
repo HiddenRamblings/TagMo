@@ -97,5 +97,7 @@ class TagMo : Application() {
         }
 
         var hasSubscription = false
+
+        val forceSoftwareLayer = true
     }
 }

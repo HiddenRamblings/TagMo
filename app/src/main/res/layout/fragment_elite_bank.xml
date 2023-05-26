@@ -165,24 +165,15 @@
                     android:text="@string/erase_banks" />
             </LinearLayout>
 
-            <com.shawnlin.numberpicker.NumberPicker
+            <com.hiddenramblings.tagmo.eightbit.widget.NumberRecycler
                 android:id="@+id/number_picker_bank"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="8dp"
                 android:layout_marginRight="8dp"
                 android:background="@drawable/picker_border_elite"
-                app:np_min="1"
-                app:np_max="200"
-                app:np_value="1"
-                app:np_selectedTextColor="@android:color/white"
-                app:np_textColor="@android:color/white"
-                app:np_dividerThickness="4dp"
-                app:np_dividerColor="@color/backgroundWhite"
-                app:np_dividerDistance="120dp"
-                app:np_fadingEdgeEnabled="true"
-                app:np_wrapSelectorWheel="true"
-                app:np_orientation="horizontal"/>
+                app:nr_min="1"
+                app:nr_max="200"/>
 
             <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/edit_bank_count"

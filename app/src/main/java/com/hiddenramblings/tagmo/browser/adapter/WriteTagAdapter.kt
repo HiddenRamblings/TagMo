@@ -116,24 +116,6 @@ class WriteTagAdapter(private val settings: BrowserSettings?) :
         return settings?.amiiboView ?: 0
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): AmiiboViewHolder {
-        return when (VIEW.valueOf(viewType)) {
-            VIEW.COMPACT -> CompactViewHolder(parent, settings)
-            VIEW.LARGE -> LargeViewHolder(parent, settings)
-            VIEW.IMAGE -> ImageViewHolder(parent, settings)
-            VIEW.SIMPLE -> SimpleViewHolder(parent, settings)
-        }
-    }
-
-    private fun setIsHighlighted(holder: AmiiboViewHolder, isHighlighted: Boolean) {
-        val highlight = holder.itemView.findViewById<View>(R.id.highlight)
-        if (isHighlighted) {
-            highlight.setBackgroundResource(R.drawable.rounded_neon)
-        } else {
-            highlight.setBackgroundResource(0)
-        }
-    }
-
     private fun handleClickEvent(holder: AmiiboViewHolder, position: Int) {
         if (listSize > 1) {
             if (isFillEnabled) {
@@ -153,18 +135,36 @@ class WriteTagAdapter(private val settings: BrowserSettings?) :
         }
     }
 
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): AmiiboViewHolder {
+        return when (VIEW.valueOf(viewType)) {
+            VIEW.COMPACT -> CompactViewHolder(parent, settings)
+            VIEW.LARGE -> LargeViewHolder(parent, settings)
+            VIEW.IMAGE -> ImageViewHolder(parent, settings)
+            VIEW.SIMPLE -> SimpleViewHolder(parent, settings)
+        }.apply {
+            itemView.setOnClickListener {
+                handleClickEvent(this, bindingAdapterPosition)
+            }
+            imageAmiibo?.setOnClickListener {
+                if (settings?.amiiboView == VIEW.IMAGE.value)
+                    handleClickEvent(this, bindingAdapterPosition)
+                else
+                    listener?.onAmiiboImageClicked(amiiboFile)
+            }
+        }
+    }
+
+    private fun setIsHighlighted(holder: AmiiboViewHolder, isHighlighted: Boolean) {
+        val highlight = holder.itemView.findViewById<View>(R.id.highlight)
+        if (isHighlighted) {
+            highlight.setBackgroundResource(R.drawable.rounded_neon)
+        } else {
+            highlight.setBackgroundResource(0)
+        }
+    }
+
     override fun onBindViewHolder(holder: AmiiboViewHolder, position: Int) {
-        val clickPosition = if (hasStableIds()) holder.bindingAdapterPosition else position
-        holder.itemView.setOnClickListener {
-            handleClickEvent(holder, clickPosition)
-        }
-        holder.imageAmiibo?.setOnClickListener {
-            if (settings?.amiiboView == VIEW.IMAGE.value)
-                handleClickEvent(holder, clickPosition)
-            else
-                listener?.onAmiiboImageClicked(holder.amiiboFile)
-        }
-        holder.bind(getItem(clickPosition))
+        holder.bind(getItem(holder.bindingAdapterPosition))
         setIsHighlighted(holder, amiiboList.contains(holder.amiiboFile))
     }
 

@@ -237,8 +237,6 @@
     <string name="pref_advanced">進階</string>
     <string name="pref_page_transformer">頁面切換</string>
     <string name="page_transformer_details">可設定切換頁面時顯示轉場特效</string>
-    <string name="pref_software_layer">改用軟體描繪圖層</string>
-    <string name="software_layer_details">以GPU轉譯描繪項目列表時，在某些搭載中文韌體的裝置設備上有可能造成錯誤</string>
     <string name="pref_tagmo_theme">TagMo系統主題</string>
     <string name="tagmo_theme_details">將程式背景變更為自訂主題</string>
     <string name="pref_disable_debug">停用除錯日誌記錄</string>

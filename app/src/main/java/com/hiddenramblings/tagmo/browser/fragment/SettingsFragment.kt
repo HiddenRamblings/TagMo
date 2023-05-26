@@ -221,16 +221,6 @@ class SettingsFragment : PreferenceFragmentCompat() {
                     super@SettingsFragment.onPreferenceTreeClick(preference)
                 }
         }
-        findPreference<CheckBoxPreference>(
-            getString(R.string.settings_force_software_layer)
-        )?.apply {
-            isChecked = prefs.softwareLayer()
-            onPreferenceClickListener = Preference.OnPreferenceClickListener {
-                prefs.softwareLayer(isChecked)
-                (requireActivity() as BrowserActivity).onApplicationRecreate()
-                super@SettingsFragment.onPreferenceTreeClick(it)
-            }
-        }
         findPreference<ListPreference>(getString(R.string.settings_tagmo_theme))?.apply {
             setValueIndex(prefs.applicationTheme())
             onPreferenceClickListener = Preference.OnPreferenceClickListener {

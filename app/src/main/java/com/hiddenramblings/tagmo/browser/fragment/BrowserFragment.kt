@@ -139,7 +139,8 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
             }
         }
         browserContent = view.findViewById<RecyclerView>(R.id.browser_content).apply {
-            if (prefs.softwareLayer()) setLayerType(View.LAYER_TYPE_SOFTWARE, null)
+            if (TagMo.forceSoftwareLayer) setLayerType(View.LAYER_TYPE_SOFTWARE, null)
+            setItemViewCacheSize(20)
             layoutManager = if (settings.amiiboView == BrowserSettings.VIEW.IMAGE.value)
                 GridLayoutManager(activity, activity.columnCount)
             else LinearLayoutManager(activity)
@@ -149,7 +150,8 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
         }
 
         foomiiboContent = view.findViewById<RecyclerView>(R.id.foomiibo_list).apply {
-            if (prefs.softwareLayer()) setLayerType(View.LAYER_TYPE_SOFTWARE, null)
+            if (TagMo.forceSoftwareLayer) setLayerType(View.LAYER_TYPE_SOFTWARE, null)
+            setItemViewCacheSize(20)
             layoutManager = if (settings.amiiboView == BrowserSettings.VIEW.IMAGE.value)
                 GridLayoutManager(activity, activity.columnCount)
             else LinearLayoutManager(activity)

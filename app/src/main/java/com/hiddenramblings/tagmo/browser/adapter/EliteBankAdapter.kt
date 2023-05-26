@@ -62,31 +62,31 @@ class EliteBankAdapter(
             VIEW.LARGE -> LargeViewHolder(parent, settings, listener)
             VIEW.IMAGE -> ImageViewHolder(parent, settings, listener)
             VIEW.SIMPLE -> SimpleViewHolder(parent, settings, listener)
+        }.apply {
+            val highlight = itemView.findViewById<View>(R.id.highlight)
+            if (mPrefs.eliteActiveBank() == bindingAdapterPosition) {
+                highlight.setBackgroundResource(R.drawable.cardview_outline)
+            } else {
+                highlight.setBackgroundResource(0)
+            }
+            itemView.setOnClickListener {
+                listener?.onAmiiboClicked(amiiboItem, bindingAdapterPosition)
+            }
+            imageAmiibo?.setOnClickListener {
+                if (settings.amiiboView == VIEW.IMAGE.value)
+                    listener?.onAmiiboClicked(amiiboItem, bindingAdapterPosition)
+                else listener?.onAmiiboImageClicked(amiiboItem, bindingAdapterPosition)
+            }
+            itemView.setOnLongClickListener {
+                return@setOnLongClickListener listener?.onAmiiboLongClicked(
+                    amiiboItem, bindingAdapterPosition
+                ) ?: false
+            }
         }
     }
 
     override fun onBindViewHolder(holder: AmiiboViewHolder, position: Int) {
-        val clickPosition = if (hasStableIds()) holder.bindingAdapterPosition else position
-        val highlight = holder.itemView.findViewById<View>(R.id.highlight)
-        if (mPrefs.eliteActiveBank() == position) {
-            highlight.setBackgroundResource(R.drawable.cardview_outline)
-        } else {
-            highlight.setBackgroundResource(0)
-        }
-        holder.itemView.setOnClickListener {
-            holder.listener?.onAmiiboClicked(holder.amiiboItem, clickPosition)
-        }
-        holder.imageAmiibo?.setOnClickListener {
-            if (settings.amiiboView == VIEW.IMAGE.value)
-                holder.listener?.onAmiiboClicked(holder.amiiboItem, clickPosition)
-            else holder.listener?.onAmiiboImageClicked(holder.amiiboItem, clickPosition)
-        }
-        holder.itemView.setOnLongClickListener {
-            return@setOnLongClickListener holder.listener?.onAmiiboLongClicked(
-                holder.amiiboItem, clickPosition
-            ) ?: false
-        }
-        holder.bind(getItem(clickPosition))
+        holder.bind(getItem(holder.bindingAdapterPosition))
     }
 
     abstract class AmiiboViewHolder(

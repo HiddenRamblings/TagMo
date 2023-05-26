@@ -9,6 +9,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Filter
 import android.widget.Filterable
+import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.appcompat.widget.AppCompatImageView
 import androidx.core.content.ContextCompat
@@ -109,34 +110,6 @@ class BrowserAdapter(
         return settings.amiiboView
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): AmiiboViewHolder {
-        return when (VIEW.valueOf(viewType)) {
-            VIEW.COMPACT -> CompactViewHolder(parent, settings, listener)
-            VIEW.LARGE -> LargeViewHolder(parent, settings, listener)
-            VIEW.IMAGE -> ImageViewHolder(parent, settings, listener)
-            VIEW.SIMPLE -> SimpleViewHolder(parent, settings, listener)
-        }
-    }
-
-    override fun getPopupText(position: Int) : CharSequence {
-        if (position >= filteredData.size) return "?"
-        val amiibo: Amiibo? = filteredData[position]?.let { file ->
-            settings.amiiboManager?.let {
-                it.amiibos[file.id] ?: Amiibo(it, file.id, null, null)
-            }
-        }
-        return amiibo?.let {
-            when (SORT.valueOf(settings.sort)) {
-                SORT.NAME -> it.name ?: "?"
-                SORT.CHARACTER -> it.character?.name ?: "?"
-                SORT.GAME_SERIES -> it.gameSeries?.name ?: "?"
-                SORT.AMIIBO_SERIES -> it.amiiboSeries?.name ?: "?"
-                SORT.AMIIBO_TYPE -> it.amiiboType?.name ?: "?"
-                else -> "?"
-            }[0].uppercase()
-        } ?: "?"
-    }
-
     private fun handleClickEvent(holder: AmiiboViewHolder) {
         if (null != holder.listener) {
             val uri = holder.amiiboFile?.docUri?.uri.toString()
@@ -156,15 +129,44 @@ class BrowserAdapter(
         }
     }
 
-    override fun onBindViewHolder(holder: AmiiboViewHolder, position: Int) {
-        holder.itemView.setOnClickListener { handleClickEvent(holder) }
-        holder.imageAmiibo?.setOnClickListener {
-            if (settings.amiiboView == VIEW.IMAGE.value)
-                handleClickEvent(holder)
-            else
-                holder.listener?.onAmiiboImageClicked(holder.amiiboFile)
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): AmiiboViewHolder {
+        return when (VIEW.valueOf(viewType)) {
+            VIEW.COMPACT -> CompactViewHolder(parent, settings, listener)
+            VIEW.LARGE -> LargeViewHolder(parent, settings, listener)
+            VIEW.IMAGE -> ImageViewHolder(parent, settings, listener)
+            VIEW.SIMPLE -> SimpleViewHolder(parent, settings, listener)
+        }.apply {
+            itemView.setOnClickListener { handleClickEvent(this) }
+            imageAmiibo?.setOnClickListener {
+                if (settings.amiiboView == VIEW.IMAGE.value)
+                    handleClickEvent(this)
+                else
+                    listener?.onAmiiboImageClicked(amiiboFile)
+            }
         }
+    }
+
+    override fun onBindViewHolder(holder: AmiiboViewHolder, position: Int) {
         holder.bind(getItem(holder.bindingAdapterPosition))
+    }
+
+    override fun getPopupText(position: Int) : CharSequence {
+        if (position >= filteredData.size) return "?"
+        val amiibo: Amiibo? = filteredData[position]?.let { file ->
+            settings.amiiboManager?.let {
+                it.amiibos[file.id] ?: Amiibo(it, file.id, null, null)
+            }
+        }
+        return amiibo?.let {
+            when (SORT.valueOf(settings.sort)) {
+                SORT.NAME -> it.name ?: "?"
+                SORT.CHARACTER -> it.character?.name ?: "?"
+                SORT.GAME_SERIES -> it.gameSeries?.name ?: "?"
+                SORT.AMIIBO_SERIES -> it.amiiboSeries?.name ?: "?"
+                SORT.AMIIBO_TYPE -> it.amiiboType?.name ?: "?"
+                else -> "?"
+            }[0].uppercase()
+        } ?: "?"
     }
 
     fun refresh() { getFilter().filter(settings.query) }
@@ -236,10 +238,13 @@ class BrowserAdapter(
         val txtAmiiboSeries: TextView?
         val txtAmiiboType: TextView?
         val txtGameSeries: TextView?
-
         // public final TextView txtCharacter;
         val txtPath: TextView?
         var imageAmiibo: AppCompatImageView? = null
+
+        private val menuOptions: LinearLayout?
+        val txtUsage: TextView?
+
         var amiiboFile: AmiiboFile? = null
         private val boldSpannable = BoldSpannable()
 
@@ -267,6 +272,9 @@ class BrowserAdapter(
             // this.txtCharacter = itemView.findViewById(R.id.txtCharacter);
             txtPath = itemView.findViewById(R.id.txtPath)
             imageAmiibo = itemView.findViewById(R.id.imageAmiibo)
+
+            menuOptions = itemView.findViewById(R.id.menu_options)
+            txtUsage = itemView.findViewById(R.id.txtUsage)
         }
 
         fun bind(item: AmiiboFile?) {
@@ -330,8 +338,8 @@ class BrowserAdapter(
                     item?.docUri?.let {
                         val relativeDocument = Storage.getRelativeDocument(it.uri)
                         val expanded = amiiboPath.contains(relativeDocument)
-                        itemView.findViewById<View>(R.id.menu_options).isVisible = expanded
-                        itemView.findViewById<View>(R.id.txtUsage).isVisible = expanded
+                        menuOptions?.isVisible = expanded
+                        txtUsage?.isVisible = expanded
                         if (expanded) listener?.onAmiiboRebind(itemView, amiiboFile)
                         itemView.isEnabled = true
                         text = boldSpannable.indexOf(relativeDocument, query)
@@ -349,8 +357,8 @@ class BrowserAdapter(
                         setIsHighlighted(relativeDocument.startsWith("/Foomiibo/"))
                     } ?: item?.filePath?.let {
                         val expanded = amiiboPath.contains(it.absolutePath)
-                        itemView.findViewById<View>(R.id.menu_options).isVisible = expanded
-                        itemView.findViewById<View>(R.id.txtUsage).isVisible = expanded
+                        menuOptions?.isVisible = expanded
+                        txtUsage?.isVisible = expanded
                         if (expanded) listener?.onAmiiboRebind(itemView, amiiboFile)
                         var relativeFile = Storage.getRelativePath(it, mPrefs.preferEmulated())
                         mPrefs.browserRootFolder()?.let { path ->

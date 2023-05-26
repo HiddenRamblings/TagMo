@@ -63,35 +63,30 @@ class FlaskSlotAdapter(
         return flaskAmiibo.count { it?.id == amiibo.id }
     }
 
+    init {
+        setHasStableIds(true)
+    }
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): FlaskViewHolder {
         return when (VIEW.valueOf(viewType)) {
             VIEW.COMPACT -> CompactViewHolder(parent, settings, listener)
             VIEW.LARGE -> LargeViewHolder(parent, settings, listener)
             VIEW.IMAGE -> ImageViewHolder(parent, settings, listener)
             VIEW.SIMPLE -> SimpleViewHolder(parent, settings, listener)
-        }
-    }
-
-    private fun setIsHighlighted(holder: FlaskViewHolder, position: Int) {
-        val highlight = holder.itemView.findViewById<View>(R.id.highlight)
-        if (mPrefs.flaskActiveSlot() == position) {
-            highlight.setBackgroundResource(R.drawable.cardview_outline)
-        } else {
-            highlight.setBackgroundResource(0)
+        }.apply {
+            itemView.setOnClickListener {
+                listener?.onAmiiboClicked(amiibo, bindingAdapterPosition)
+            }
+            imageAmiibo?.setOnClickListener {
+                if (settings.amiiboView == VIEW.IMAGE.value)
+                    listener?.onAmiiboClicked(amiibo, bindingAdapterPosition)
+                else listener?.onAmiiboImageClicked(amiibo)
+            }
         }
     }
 
     override fun onBindViewHolder(holder: FlaskViewHolder, position: Int) {
-//        setIsHighlighted(holder, position)
-        holder.itemView.setOnClickListener {
-            holder.listener?.onAmiiboClicked(holder.amiibo, holder.bindingAdapterPosition)
-        }
-        holder.imageAmiibo?.setOnClickListener {
-            if (settings.amiiboView == VIEW.IMAGE.value)
-                holder.listener?.onAmiiboClicked(holder.amiibo, holder.bindingAdapterPosition)
-            else holder.listener?.onAmiiboImageClicked(holder.amiibo)
-        }
-        holder.bind(getItem(position))
+        holder.bind(getItem(holder.bindingAdapterPosition))
     }
 
     abstract class FlaskViewHolder(

@@ -5,6 +5,7 @@ import android.graphics.Canvas
 import android.os.Build
 import android.util.AttributeSet
 import android.util.Log
+import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
 import androidx.annotation.ColorInt
@@ -41,11 +42,15 @@ class BlurView : FrameLayout {
 
     private fun init(attrs: AttributeSet?, defStyleAttr: Int) {
         val a = context.obtainStyledAttributes(attrs, R.styleable.BlurView, defStyleAttr, 0)
-        overlayColor = a.getColor(
-            R.styleable.BlurView_blurOverlayColor,
-            PreDrawBlurController.TRANSPARENT
-        )
-        a.recycle()
+        try {
+            overlayColor = a.getColor(
+                R.styleable.BlurView_blurOverlayColor,
+                PreDrawBlurController.TRANSPARENT
+            )
+        } finally {
+            a.recycle()
+        }
+        if (Version.isSnowCone) setLayerType(View.LAYER_TYPE_SOFTWARE, null)
     }
 
     override fun draw(canvas: Canvas) {

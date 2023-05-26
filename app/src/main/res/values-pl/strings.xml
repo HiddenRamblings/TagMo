@@ -244,8 +244,6 @@
     <string name="pref_advanced">Zaawansowane</string>
     <string name="pref_page_transformer">Transformacja strony</string>
     <string name="page_transformer_details">Konfiguracja animacji przejścia podczas nawigacji po stronach</string>
-    <string name="pref_software_layer">Wymuś warstwę oprogramowania</string>
-    <string name="software_layer_details">Renderowanie z GPU może powodować opóźnienia w nakładających się ScrollViews</string>
     <string name="pref_tagmo_theme">Motyw systemu TagMo</string>
     <string name="tagmo_theme_details">Zmiana lokalnego motywu niezależnie od ustawień motywu systemowego</string>
     <string name="pref_disable_debug">Wyłącz rejestr debugowania</string>

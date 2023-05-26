@@ -207,15 +207,6 @@ class Preferences(context: Context) {
         putInt(browserPageTransformer, value)
     }
 
-    private val softwareLayer = "settings_force_software_layer"
-    fun softwareLayer(): Boolean {
-        return getBoolean(softwareLayer, true)
-    }
-
-    fun softwareLayer(value: Boolean) {
-        putBoolean(softwareLayer, value)
-    }
-
     private val disableDebug = "settings_disable_debug"
     fun disableDebug(): Boolean {
         return getBoolean(disableDebug, false)

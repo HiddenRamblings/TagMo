@@ -79,6 +79,7 @@ import com.hiddenramblings.tagmo.eightbit.os.Storage
 import com.hiddenramblings.tagmo.eightbit.os.Version
 import com.hiddenramblings.tagmo.eightbit.view.AnimatedLinearLayout
 import com.hiddenramblings.tagmo.eightbit.viewpager.*
+import com.hiddenramblings.tagmo.eightbit.widget.NumberRecycler
 import com.hiddenramblings.tagmo.hexcode.HexCodeViewer
 import com.hiddenramblings.tagmo.nfctech.Foomiibo
 import com.hiddenramblings.tagmo.nfctech.NfcActivity
@@ -89,7 +90,6 @@ import com.hiddenramblings.tagmo.qrcode.QRCodeScanner
 import com.hiddenramblings.tagmo.update.UpdateManager
 import com.hiddenramblings.tagmo.wave9.DimensionActivity
 import com.hiddenramblings.tagmo.widget.Toasty
-import com.shawnlin.numberpicker.NumberPicker
 import eightbitlab.com.blurview.BlurView
 import kotlinx.coroutines.*
 import org.json.JSONException
@@ -1026,7 +1026,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
         val view = layoutInflater.inflate(R.layout.dialog_duplicator, null)
         val dialog = AlertDialog.Builder(this)
         val copierDialog: Dialog = dialog.setView(view).create()
-        val count = view.findViewById<NumberPicker>(R.id.number_picker_bin)
+        val count = view.findViewById<NumberRecycler>(R.id.number_picker_bin)
         view.findViewById<View>(R.id.button_save).setOnClickListener {
             cloneWithRandomSerial(amiiboFile, tagData, count.value)
             copierDialog.dismiss()

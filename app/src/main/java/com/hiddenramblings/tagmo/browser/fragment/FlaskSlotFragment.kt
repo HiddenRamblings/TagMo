@@ -52,9 +52,9 @@ import com.hiddenramblings.tagmo.browser.adapter.WriteTagAdapter
 import com.hiddenramblings.tagmo.eightbit.io.Debug
 import com.hiddenramblings.tagmo.eightbit.material.IconifiedSnackbar
 import com.hiddenramblings.tagmo.eightbit.os.Version
+import com.hiddenramblings.tagmo.eightbit.widget.NumberRecycler
 import com.hiddenramblings.tagmo.nfctech.TagArray
 import com.hiddenramblings.tagmo.widget.Toasty
-import com.shawnlin.numberpicker.NumberPicker
 import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
@@ -78,7 +78,7 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
         private set
     var flaskAdapter: FlaskSlotAdapter? = null
     private var flaskStats: TextView? = null
-    private lateinit var flaskSlotCount: NumberPicker
+    private lateinit var flaskSlotCount: NumberRecycler
     private var screenOptions: LinearLayout? = null
     private var writeSlots: AppCompatButton? = null
     private var writeSerials: SwitchCompat? = null
@@ -135,7 +135,7 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
                             onBottomSheetChanged(SHEET.MENU)
                             maxSlotCount = if (deviceType == DEVICE.SLIDE) 40 else 85
                             requireView().post {
-                                flaskSlotCount.maxValue = maxSlotCount
+                                flaskSlotCount.setMax(maxSlotCount)
                                 screenOptions?.isVisible = true
                                 createBlank?.isVisible = true
                                 requireView().findViewById<TextView>(R.id.hardware_info).text = deviceProfile
@@ -183,7 +183,9 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
                                 }
                                 if (currentCount > 0) {
                                     activeAmiibo
-                                    it.notifyItemRangeInserted(0, currentCount)
+                                    requireView().post {
+                                        it.notifyItemRangeInserted(0, currentCount)
+                                    }
                                 } else {
                                     amiiboTile?.isInvisible = true
                                     flaskButtonState
@@ -207,7 +209,9 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
                             }
                             flaskAdapter?.run {
                                 addFlaskAmiibo(flaskAmiibos)
-                                notifyItemRangeInserted(currentCount, flaskAmiibos.size)
+                                requireView().post {
+                                    notifyItemRangeInserted(currentCount, flaskAmiibos.size)
+                                }
                                 currentCount = itemCount
                             }
                         }
@@ -284,11 +288,11 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
                             onBottomSheetChanged(SHEET.MENU)
                             maxSlotCount = 32
                             requireView().post {
-                                flaskSlotCount.maxValue = maxSlotCount
+                                flaskSlotCount.setMax(maxSlotCount)
                                 screenOptions?.isGone = true
                                 createBlank?.isGone = true
                                 requireView().findViewById<TextView>(R.id.hardware_info).text = deviceProfile
-                                flaskSlotCount.maxValue = maxSlotCount
+                                flaskSlotCount.setMax(maxSlotCount)
                             }
                             try {
                                 setPuckCharacteristicRX()
@@ -340,7 +344,9 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
                                     settings.addChangeListener(it)
                                 }
                                 if (currentCount > 0) {
-                                    it.notifyItemRangeInserted(0, currentCount)
+                                    requireView().post {
+                                        it.notifyItemRangeInserted(0, currentCount)
+                                    }
                                     onPuckActiveChanged(active)
                                 } else {
                                     amiiboTile?.isInvisible = true
@@ -443,7 +449,8 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
         settings = activity.settings ?: BrowserSettings().initialize()
 
         flaskContent = view.findViewById<RecyclerView>(R.id.flask_content).apply {
-            if (prefs.softwareLayer()) setLayerType(View.LAYER_TYPE_SOFTWARE, null)
+            if (TagMo.forceSoftwareLayer) setLayerType(View.LAYER_TYPE_SOFTWARE, null)
+            setItemViewCacheSize(20)
             layoutManager = if (settings.amiiboView == BrowserSettings.VIEW.IMAGE.value)
                 GridLayoutManager(activity, activity.columnCount)
             else
@@ -556,22 +563,25 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
             }
         }
 
-        flaskSlotCount = view.findViewById<NumberPicker>(R.id.number_picker_slot).apply {
-            if (prefs.softwareLayer()) setLayerType(View.LAYER_TYPE_SOFTWARE, null)
-            maxValue = maxSlotCount
-            setOnValueChangedListener { _, _, newVal ->
-                if (maxSlotCount - currentCount > 0)
-                    writeSlots?.text = getString(R.string.write_slots, newVal)
-            }
+        flaskSlotCount = view.findViewById<NumberRecycler>(R.id.number_picker_slot).apply {
+            if (TagMo.forceSoftwareLayer) setLayerType(View.LAYER_TYPE_SOFTWARE, null)
+            setMax(maxSlotCount)
+            setOnValueChangeListener (object : NumberRecycler.OnValueChangeListener {
+                override fun onValueChanged(value: Int) {
+                    if (maxSlotCount - currentCount > 0)
+                        writeSlots?.text = getString(R.string.write_slots, value)
+                }
+            })
         }
 
         writeSlotsLayout = view.findViewById<LinearLayout>(R.id.write_list_slots).apply {
-            if (prefs.softwareLayer()) setLayerType(View.LAYER_TYPE_SOFTWARE, null)
+            if (TagMo.forceSoftwareLayer) setLayerType(View.LAYER_TYPE_SOFTWARE, null)
         }
 
         view.findViewById<RecyclerView>(R.id.amiibo_files_list).apply {
-            if (prefs.softwareLayer()) setLayerType(View.LAYER_TYPE_SOFTWARE, null)
+            if (TagMo.forceSoftwareLayer) setLayerType(View.LAYER_TYPE_SOFTWARE, null)
             setHasFixedSize(true)
+            setItemViewCacheSize(20)
             layoutManager = if (settings.amiiboView == BrowserSettings.VIEW.IMAGE.value)
                 GridLayoutManager(activity, activity.columnCount)
             else LinearLayoutManager(activity)
@@ -686,7 +696,7 @@ open class FlaskSlotFragment : Fragment(), FlaskSlotAdapter.OnAmiiboClickListene
         get() {
             flaskContent?.post {
                 val openSlots = maxSlotCount - currentCount
-                flaskSlotCount.value = openSlots
+                flaskSlotCount.setValue(openSlots)
                 if (openSlots > 0) {
                     writeSlots?.isEnabled = true
                     writeSlots?.text = getString(R.string.write_slots, openSlots)

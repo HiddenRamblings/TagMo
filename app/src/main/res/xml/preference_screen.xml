@@ -72,11 +72,6 @@
             android:key="@string/settings_page_transformer"
             android:summary="@string/page_transformer_details"
             android:title="@string/pref_page_transformer" />
-        <androidx.preference.CheckBoxPreference
-            android:defaultValue="true"
-            android:key="@string/settings_force_software_layer"
-            android:summary="@string/software_layer_details"
-            android:title="@string/pref_software_layer" />
         <androidx.preference.ListPreference
             android:entries="@array/themeSettingNames"
             android:entryValues="@array/themeSettingValues"

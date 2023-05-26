@@ -87,13 +87,11 @@ class FoldersAdapter(var settings: BrowserSettings?) : RecyclerView.Adapter<Fold
         return count
     }
 
-    abstract class FolderViewHolder(itemView: View?) : RecyclerView.ViewHolder(
-        itemView!!
-    ) {
+    abstract class FolderViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         abstract fun bind(settings: BrowserSettings?, folder: File)
     }
 
-    internal class ParentFolderViewHolder(itemView: View?) : FolderViewHolder(itemView) {
+    internal class ParentFolderViewHolder(itemView: View) : FolderViewHolder(itemView) {
         var settings: BrowserSettings? = null
         private var folder: File? = null
 

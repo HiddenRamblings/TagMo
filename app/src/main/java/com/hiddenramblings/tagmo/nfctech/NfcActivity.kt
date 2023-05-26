@@ -498,6 +498,16 @@ class NfcActivity : AppCompatActivity() {
                                 }.show()
                         }
                     }
+                    getString(R.string.uid_key_missing) == error -> {
+                        withContext(Dispatchers.Main) {
+                            getErrorDialog(this@NfcActivity, R.string.uid_key_missing, R.string.tag_update_only)
+                                .setPositiveButton(R.string.proceed) { dialog: DialogInterface, _: Int ->
+                                    closeTagSilently(mifare)
+                                    dialog.dismiss()
+                                    finish()
+                                }.show()
+                        }
+                    }
                     prefs.eliteEnabled() -> {
                         when {
                             e is TagLostException -> {

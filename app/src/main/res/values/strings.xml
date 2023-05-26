@@ -298,6 +298,7 @@
     <string name="possible_lock">Is this N2 Elite locked?</string>
     <string name="possible_blank">Scanning an N2 Elite?</string>
     <string name="tag_update_only">Previously written tags require \&#34;Update\&#34;</string>
+    <string name="power_tag_reset">Power Tags last used with PowerSaves require a reset.</string>
 
     <string name="custom_tab_back">Back to TagMo</string>
     <string name="flask_purchase">Purchase a Bluup Device</string>

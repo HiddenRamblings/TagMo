@@ -58,8 +58,7 @@ public class NumberPicker extends LinearLayout {
 
     @Retention(SOURCE)
     @IntDef({VERTICAL, HORIZONTAL})
-    public @interface Orientation {
-    }
+    public @interface Orientation { }
 
     public static final int VERTICAL = LinearLayout.VERTICAL;
     public static final int HORIZONTAL = LinearLayout.HORIZONTAL;
@@ -724,172 +723,173 @@ public class NumberPicker extends LinearLayout {
 
         final TypedArray attributes = context.obtainStyledAttributes(attrs,
                 R.styleable.NumberPicker, defStyle, 0);
-
-        final Drawable selectionDivider = attributes.getDrawable(
-                R.styleable.NumberPicker_np_divider);
-        if (selectionDivider != null) {
-            selectionDivider.setCallback(this);
-            if (selectionDivider.isStateful()) {
-                selectionDivider.setState(getDrawableState());
+        try {
+            final Drawable selectionDivider = attributes.getDrawable(
+                    R.styleable.NumberPicker_np_divider);
+            if (selectionDivider != null) {
+                selectionDivider.setCallback(this);
+                if (selectionDivider.isStateful()) {
+                    selectionDivider.setState(getDrawableState());
+                }
+                mDividerDrawable = selectionDivider;
+            } else {
+                mDividerColor = attributes.getColor(R.styleable.NumberPicker_np_dividerColor,
+                        mDividerColor);
+                setDividerColor(mDividerColor);
             }
-            mDividerDrawable = selectionDivider;
-        } else {
-            mDividerColor = attributes.getColor(R.styleable.NumberPicker_np_dividerColor,
-                    mDividerColor);
-            setDividerColor(mDividerColor);
-        }
 
-        final DisplayMetrics displayMetrics = getResources().getDisplayMetrics();
-        final int defDividerDistance = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,
-                UNSCALED_DEFAULT_DIVIDER_DISTANCE, displayMetrics);
-        final int defDividerThickness = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,
-                UNSCALED_DEFAULT_DIVIDER_THICKNESS, displayMetrics);
-        mDividerDistance = attributes.getDimensionPixelSize(
-                R.styleable.NumberPicker_np_dividerDistance, defDividerDistance);
-        mDividerLength = attributes.getDimensionPixelSize(
-                R.styleable.NumberPicker_np_dividerLength, 0);
-        mDividerThickness = attributes.getDimensionPixelSize(
-                R.styleable.NumberPicker_np_dividerThickness, defDividerThickness);
-        mDividerType = attributes.getInt(R.styleable.NumberPicker_np_dividerType, SIDE_LINES);
+            final DisplayMetrics displayMetrics = getResources().getDisplayMetrics();
+            final int defDividerDistance = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,
+                    UNSCALED_DEFAULT_DIVIDER_DISTANCE, displayMetrics);
+            final int defDividerThickness = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,
+                    UNSCALED_DEFAULT_DIVIDER_THICKNESS, displayMetrics);
+            mDividerDistance = attributes.getDimensionPixelSize(
+                    R.styleable.NumberPicker_np_dividerDistance, defDividerDistance);
+            mDividerLength = attributes.getDimensionPixelSize(
+                    R.styleable.NumberPicker_np_dividerLength, 0);
+            mDividerThickness = attributes.getDimensionPixelSize(
+                    R.styleable.NumberPicker_np_dividerThickness, defDividerThickness);
+            mDividerType = attributes.getInt(R.styleable.NumberPicker_np_dividerType, SIDE_LINES);
 
-        mOrder = attributes.getInt(R.styleable.NumberPicker_np_order, ASCENDING);
-        mOrientation = attributes.getInt(R.styleable.NumberPicker_np_orientation, VERTICAL);
+            mOrder = attributes.getInt(R.styleable.NumberPicker_np_order, ASCENDING);
+            mOrientation = attributes.getInt(R.styleable.NumberPicker_np_orientation, VERTICAL);
 
-        final float width = attributes.getDimensionPixelSize(R.styleable.NumberPicker_np_width,
-                SIZE_UNSPECIFIED);
-        final float height = attributes.getDimensionPixelSize(R.styleable.NumberPicker_np_height,
-                SIZE_UNSPECIFIED);
+            final float width = attributes.getDimensionPixelSize(R.styleable.NumberPicker_np_width,
+                    SIZE_UNSPECIFIED);
+            final float height = attributes.getDimensionPixelSize(R.styleable.NumberPicker_np_height,
+                    SIZE_UNSPECIFIED);
 
-        setWidthAndHeight();
+            setWidthAndHeight();
 
-        mComputeMaxWidth = true;
+            mComputeMaxWidth = true;
 
-        mValue = attributes.getInt(R.styleable.NumberPicker_np_value, mValue);
-        mMaxValue = attributes.getInt(R.styleable.NumberPicker_np_max, mMaxValue);
-        mMinValue = attributes.getInt(R.styleable.NumberPicker_np_min, mMinValue);
+            mValue = attributes.getInt(R.styleable.NumberPicker_np_value, mValue);
+            mMaxValue = attributes.getInt(R.styleable.NumberPicker_np_max, mMaxValue);
+            mMinValue = attributes.getInt(R.styleable.NumberPicker_np_min, mMinValue);
 
-        mSelectedTextAlign = attributes.getInt(R.styleable.NumberPicker_np_selectedTextAlign,
-                mSelectedTextAlign);
-        mSelectedTextColor = attributes.getColor(R.styleable.NumberPicker_np_selectedTextColor,
-                mSelectedTextColor);
-        mSelectedTextSize = attributes.getDimension(R.styleable.NumberPicker_np_selectedTextSize,
-                spToPx(mSelectedTextSize));
-        mSelectedTextStrikeThru = attributes.getBoolean(
-                R.styleable.NumberPicker_np_selectedTextStrikeThru, mSelectedTextStrikeThru);
-        mSelectedTextUnderline = attributes.getBoolean(
-                R.styleable.NumberPicker_np_selectedTextUnderline, mSelectedTextUnderline);
-        mSelectedTypeface = Typeface.create(attributes.getString(
-                R.styleable.NumberPicker_np_selectedTypeface), Typeface.NORMAL);
-        mTextAlign = attributes.getInt(R.styleable.NumberPicker_np_textAlign, mTextAlign);
-        mTextColor = attributes.getColor(R.styleable.NumberPicker_np_textColor, mTextColor);
-        mTextSize = attributes.getDimension(R.styleable.NumberPicker_np_textSize,
-                spToPx(mTextSize));
-        mTextStrikeThru = attributes.getBoolean(
-                R.styleable.NumberPicker_np_textStrikeThru, mTextStrikeThru);
-        mTextUnderline = attributes.getBoolean(
-                R.styleable.NumberPicker_np_textUnderline, mTextUnderline);
-        mTypeface = Typeface.create(attributes.getString(R.styleable.NumberPicker_np_typeface),
-                Typeface.NORMAL);
-        mFormatter = stringToFormatter(attributes.getString(R.styleable.NumberPicker_np_formatter));
-        mFadingEdgeEnabled = attributes.getBoolean(R.styleable.NumberPicker_np_fadingEdgeEnabled,
-                mFadingEdgeEnabled);
-        mFadingEdgeStrength = attributes.getFloat(R.styleable.NumberPicker_np_fadingEdgeStrength,
-                mFadingEdgeStrength);
-        mScrollerEnabled = attributes.getBoolean(R.styleable.NumberPicker_np_scrollerEnabled,
-                mScrollerEnabled);
-        mWheelItemCount = attributes.getInt(R.styleable.NumberPicker_np_wheelItemCount,
-                mWheelItemCount);
-        mLineSpacingMultiplier = attributes.getFloat(
-                R.styleable.NumberPicker_np_lineSpacingMultiplier, mLineSpacingMultiplier);
-        mMaxFlingVelocityCoefficient = attributes.getInt(
-                R.styleable.NumberPicker_np_maxFlingVelocityCoefficient,
-                mMaxFlingVelocityCoefficient);
-        mHideWheelUntilFocused = attributes.getBoolean(
-                R.styleable.NumberPicker_np_hideWheelUntilFocused, false);
-        mAccessibilityDescriptionEnabled = attributes.getBoolean(
-                R.styleable.NumberPicker_np_accessibilityDescriptionEnabled, true);
-        mItemSpacing = attributes.getDimensionPixelSize(
-                R.styleable.NumberPicker_np_itemSpacing, 0);
-        // By default LinearLayout that we extend is not drawn. This is
-        // its draw() method is not called but dispatchDraw() is called
-        // directly (see ViewGroup.drawChild()). However, this class uses
-        // the fading edge effect implemented by View and we need our
-        // draw() method to be called. Therefore, we declare we will draw.
-        setWillNotDraw(false);
+            mSelectedTextAlign = attributes.getInt(R.styleable.NumberPicker_np_selectedTextAlign,
+                    mSelectedTextAlign);
+            mSelectedTextColor = attributes.getColor(R.styleable.NumberPicker_np_selectedTextColor,
+                    mSelectedTextColor);
+            mSelectedTextSize = attributes.getDimension(R.styleable.NumberPicker_np_selectedTextSize,
+                    spToPx(mSelectedTextSize));
+            mSelectedTextStrikeThru = attributes.getBoolean(
+                    R.styleable.NumberPicker_np_selectedTextStrikeThru, mSelectedTextStrikeThru);
+            mSelectedTextUnderline = attributes.getBoolean(
+                    R.styleable.NumberPicker_np_selectedTextUnderline, mSelectedTextUnderline);
+            mSelectedTypeface = Typeface.create(attributes.getString(
+                    R.styleable.NumberPicker_np_selectedTypeface), Typeface.NORMAL);
+            mTextAlign = attributes.getInt(R.styleable.NumberPicker_np_textAlign, mTextAlign);
+            mTextColor = attributes.getColor(R.styleable.NumberPicker_np_textColor, mTextColor);
+            mTextSize = attributes.getDimension(R.styleable.NumberPicker_np_textSize,
+                    spToPx(mTextSize));
+            mTextStrikeThru = attributes.getBoolean(
+                    R.styleable.NumberPicker_np_textStrikeThru, mTextStrikeThru);
+            mTextUnderline = attributes.getBoolean(
+                    R.styleable.NumberPicker_np_textUnderline, mTextUnderline);
+            mTypeface = Typeface.create(attributes.getString(R.styleable.NumberPicker_np_typeface),
+                    Typeface.NORMAL);
+            mFormatter = stringToFormatter(attributes.getString(R.styleable.NumberPicker_np_formatter));
+            mFadingEdgeEnabled = attributes.getBoolean(R.styleable.NumberPicker_np_fadingEdgeEnabled,
+                    mFadingEdgeEnabled);
+            mFadingEdgeStrength = attributes.getFloat(R.styleable.NumberPicker_np_fadingEdgeStrength,
+                    mFadingEdgeStrength);
+            mScrollerEnabled = attributes.getBoolean(R.styleable.NumberPicker_np_scrollerEnabled,
+                    mScrollerEnabled);
+            mWheelItemCount = attributes.getInt(R.styleable.NumberPicker_np_wheelItemCount,
+                    mWheelItemCount);
+            mLineSpacingMultiplier = attributes.getFloat(
+                    R.styleable.NumberPicker_np_lineSpacingMultiplier, mLineSpacingMultiplier);
+            mMaxFlingVelocityCoefficient = attributes.getInt(
+                    R.styleable.NumberPicker_np_maxFlingVelocityCoefficient,
+                    mMaxFlingVelocityCoefficient);
+            mHideWheelUntilFocused = attributes.getBoolean(
+                    R.styleable.NumberPicker_np_hideWheelUntilFocused, false);
+            mAccessibilityDescriptionEnabled = attributes.getBoolean(
+                    R.styleable.NumberPicker_np_accessibilityDescriptionEnabled, true);
+            mItemSpacing = attributes.getDimensionPixelSize(
+                    R.styleable.NumberPicker_np_itemSpacing, 0);
+            // By default LinearLayout that we extend is not drawn. This is
+            // its draw() method is not called but dispatchDraw() is called
+            // directly (see ViewGroup.drawChild()). However, this class uses
+            // the fading edge effect implemented by View and we need our
+            // draw() method to be called. Therefore, we declare we will draw.
+            setWillNotDraw(false);
 
-        LayoutInflater inflater = (LayoutInflater) context.getSystemService(
-                Context.LAYOUT_INFLATER_SERVICE);
-        inflater.inflate(R.layout.number_picker_material, this, true);
+            LayoutInflater inflater = (LayoutInflater) context.getSystemService(
+                    Context.LAYOUT_INFLATER_SERVICE);
+            inflater.inflate(R.layout.number_picker_material, this, true);
 
-        // input text
-        mSelectedText = findViewById(R.id.np__numberpicker_input);
-        mSelectedText.setEnabled(false);
-        mSelectedText.setFocusable(false);
-        mSelectedText.setImeOptions(EditorInfo.IME_ACTION_NONE);
+            // input text
+            mSelectedText = findViewById(R.id.np__numberpicker_input);
+            mSelectedText.setEnabled(false);
+            mSelectedText.setFocusable(false);
+            mSelectedText.setImeOptions(EditorInfo.IME_ACTION_NONE);
 
-        // create the selector wheel paint
-        Paint paint = new Paint();
-        paint.setAntiAlias(true);
-        paint.setTextAlign(Paint.Align.CENTER);
-        mSelectorWheelPaint = paint;
+            // create the selector wheel paint
+            Paint paint = new Paint();
+            paint.setAntiAlias(true);
+            paint.setTextAlign(Paint.Align.CENTER);
+            mSelectorWheelPaint = paint;
 
-        setSelectedTextColor(mSelectedTextColor);
-        setTextColor(mTextColor);
-        setTextSize(mTextSize);
-        setSelectedTextSize(mSelectedTextSize);
-        setTypeface(mTypeface);
-        setSelectedTypeface(mSelectedTypeface);
-        setFormatter(mFormatter);
-        updateInputTextView();
+            setSelectedTextColor(mSelectedTextColor);
+            setTextColor(mTextColor);
+            setTextSize(mTextSize);
+            setSelectedTextSize(mSelectedTextSize);
+            setTypeface(mTypeface);
+            setSelectedTypeface(mSelectedTypeface);
+            setFormatter(mFormatter);
+            updateInputTextView();
 
-        setValue(mValue);
-        setMaxValue(mMaxValue);
-        setMinValue(mMinValue);
+            setValue(mValue);
+            setMaxValue(mMaxValue);
+            setMinValue(mMinValue);
 
-        setWheelItemCount(mWheelItemCount);
+            setWheelItemCount(mWheelItemCount);
 
-        mWrapSelectorWheel = attributes.getBoolean(R.styleable.NumberPicker_np_wrapSelectorWheel,
-                mWrapSelectorWheel);
-        setWrapSelectorWheel(mWrapSelectorWheel);
+            mWrapSelectorWheel = attributes.getBoolean(R.styleable.NumberPicker_np_wrapSelectorWheel,
+                    mWrapSelectorWheel);
+            setWrapSelectorWheel(mWrapSelectorWheel);
 
-        if (width != SIZE_UNSPECIFIED && height != SIZE_UNSPECIFIED) {
-            setScaleX(width / mMinWidth);
-            setScaleY(height / mMaxHeight);
-        } else if (width != SIZE_UNSPECIFIED) {
-            final float scale = width / mMinWidth;
-            setScaleX(scale);
-            setScaleY(scale);
-        } else if (height != SIZE_UNSPECIFIED) {
-            final float scale = height / mMaxHeight;
-            setScaleX(scale);
-            setScaleY(scale);
-        }
-
-        // initialize constants
-        mViewConfiguration = ViewConfiguration.get(context);
-        mTouchSlop = mViewConfiguration.getScaledTouchSlop();
-        mMinimumFlingVelocity = mViewConfiguration.getScaledMinimumFlingVelocity();
-        mMaximumFlingVelocity = mViewConfiguration.getScaledMaximumFlingVelocity()
-                / mMaxFlingVelocityCoefficient;
-
-        // create the fling and adjust scrollers
-        mFlingScroller = new Scroller(context, null, true);
-        mAdjustScroller = new Scroller(context, new DecelerateInterpolator(2.5f));
-
-        // If not explicitly specified this view is important for accessibility.
-        if (getImportantForAccessibility() == IMPORTANT_FOR_ACCESSIBILITY_AUTO) {
-            setImportantForAccessibility(IMPORTANT_FOR_ACCESSIBILITY_YES);
-        }
-
-        if (Version.isOreo()) {
-            // Should be focusable by default, as the text view whose visibility changes is focusable
-            if (getFocusable() == View.FOCUSABLE_AUTO) {
-                setFocusable(View.FOCUSABLE);
-                setFocusableInTouchMode(true);
+            if (width != SIZE_UNSPECIFIED && height != SIZE_UNSPECIFIED) {
+                setScaleX(width / mMinWidth);
+                setScaleY(height / mMaxHeight);
+            } else if (width != SIZE_UNSPECIFIED) {
+                final float scale = width / mMinWidth;
+                setScaleX(scale);
+                setScaleY(scale);
+            } else if (height != SIZE_UNSPECIFIED) {
+                final float scale = height / mMaxHeight;
+                setScaleX(scale);
+                setScaleY(scale);
             }
-        }
 
-        attributes.recycle();
+            // initialize constants
+            mViewConfiguration = ViewConfiguration.get(context);
+            mTouchSlop = mViewConfiguration.getScaledTouchSlop();
+            mMinimumFlingVelocity = mViewConfiguration.getScaledMinimumFlingVelocity();
+            mMaximumFlingVelocity = mViewConfiguration.getScaledMaximumFlingVelocity()
+                    / mMaxFlingVelocityCoefficient;
+
+            // create the fling and adjust scrollers
+            mFlingScroller = new Scroller(context, null, true);
+            mAdjustScroller = new Scroller(context, new DecelerateInterpolator(2.5f));
+
+            // If not explicitly specified this view is important for accessibility.
+            if (getImportantForAccessibility() == IMPORTANT_FOR_ACCESSIBILITY_AUTO) {
+                setImportantForAccessibility(IMPORTANT_FOR_ACCESSIBILITY_YES);
+            }
+
+            if (Version.isOreo()) {
+                // Should be focusable by default, as the text view whose visibility changes is focusable
+                if (getFocusable() == View.FOCUSABLE_AUTO) {
+                    setFocusable(View.FOCUSABLE);
+                    setFocusableInTouchMode(true);
+                }
+            }
+        } finally {
+            attributes.recycle();
+        }
     }
 
     @Override

@@ -364,11 +364,11 @@ class SettingsFragment : PreferenceFragmentCompat() {
         keySummary.append("\n")
         keySummary.append(fixedBuilder)
         requireActivity().runOnUiThread { importKeys?.summary = keySummary }
-        if (!keyManager.isKeyMissing) onSyncRequested(false)
+        if (!keyManager.isKeyMissing()) onSyncRequested(false)
     }
 
     private fun rebuildAmiiboDatabase() {
-        if (keyManager.isKeyMissing) return
+        if (keyManager.isKeyMissing()) return
         resetAmiiboDatabase(false)
         onSyncRequested(true)
     }

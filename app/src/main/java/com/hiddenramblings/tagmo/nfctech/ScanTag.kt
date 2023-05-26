@@ -172,7 +172,7 @@ class ScanTag {
         if (NfcAdapter.ACTION_NDEF_DISCOVERED == intent.action
             || NfcAdapter.ACTION_TECH_DISCOVERED == intent.action
             || NfcAdapter.ACTION_TAG_DISCOVERED == intent.action) {
-            if (activity.keyManager.isKeyMissing) return
+            if (activity.keyManager.isKeyMissing()) return
             CoroutineScope(Dispatchers.IO).launch { onTagDiscovered(activity, intent) }
         }
     }

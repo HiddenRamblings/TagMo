@@ -16,10 +16,6 @@ class KeyManager(var context: Context) {
     private var fixedKey: ByteArray? = null
     private var unfixedKey: ByteArray? = null
 
-    init {
-        isKeyMissing
-    }
-
     private fun hasLocalFile(file: String): Boolean {
         context.fileList().forEach {
             if (it == file) return true
@@ -50,8 +46,9 @@ class KeyManager(var context: Context) {
         return null != unfixedKey
     }
 
-    val isKeyMissing: Boolean
-        get() = !hasFixedKey() || !hasUnFixedKey()
+    fun isKeyMissing(): Boolean {
+        return !hasFixedKey() || !hasUnFixedKey()
+    }
 
     @Throws(IOException::class)
     fun saveKeyFile(file: String?, key: ByteArray?) {

@@ -149,7 +149,7 @@ class TagDataEditor : AppCompatActivity() {
             ViewGroup.LayoutParams.MATCH_PARENT,
             ViewGroup.LayoutParams.MATCH_PARENT
         )
-        if (keyManager.isKeyMissing) {
+        if (keyManager.isKeyMissing()) {
             showErrorDialog(R.string.no_decrypt_key)
             return
         }

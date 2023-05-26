@@ -674,7 +674,7 @@ class NfcActivity : AppCompatActivity() {
             NFCIntent.ACTION_WRITE_TAG_FULL,
             NFCIntent.ACTION_WRITE_TAG_DATA,
             NFCIntent.ACTION_WRITE_ALL_TAGS -> {
-                if (keyManager.isKeyMissing) showError("Keys not loaded")
+                if (keyManager.isKeyMissing()) showError("Keys not loaded")
                 startNfcMonitor()
             }
             NFCIntent.ACTION_WRITE_TAG_RAW,

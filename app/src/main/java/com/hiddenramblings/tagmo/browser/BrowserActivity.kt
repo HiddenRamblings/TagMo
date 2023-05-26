@@ -240,9 +240,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                             pagerAdapter.browser.run {
                                 amiibosView = browserContent
                                 foomiiboView = foomiiboContent?.apply {
-                                    layoutManager = if (settings?.amiiboView == VIEW.IMAGE.value)
-                                        GridLayoutManager(this@BrowserActivity, columnCount)
-                                    else LinearLayoutManager(this@BrowserActivity)
+                                    layoutManager = getLayoutManager()
                                 }
                                 browserSheet = bottomSheet
                             }
@@ -275,9 +273,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                             pagerAdapter.browser.run {
                                 amiibosView = browserContent
                                 foomiiboView = foomiiboContent?.apply {
-                                    layoutManager = if (settings?.amiiboView == VIEW.IMAGE.value)
-                                        GridLayoutManager(this@BrowserActivity, columnCount)
-                                    else LinearLayoutManager(this@BrowserActivity)
+                                    layoutManager = getLayoutManager()
                                 }
                                 browserSheet = bottomSheet
                             }
@@ -313,9 +309,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                         else -> {}
                     }
                 }
-                amiibosView?.layoutManager = if (settings?.amiiboView == VIEW.IMAGE.value)
-                    GridLayoutManager(this@BrowserActivity, columnCount)
-                else LinearLayoutManager(this@BrowserActivity)
+                amiibosView?.layoutManager = getLayoutManager()
                 if (BuildConfig.WEAR_OS) onCreateWearOptionsMenu() else invalidateOptionsMenu()
             }
 
@@ -446,11 +440,17 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                 donationManager.onSendDonationClicked()
             }
         }
+    }
 
-        if (!prefs.guidesPrompted()) {
-            prefs.guidesPrompted(true)
-            viewPager.setCurrentItem(1, false)
-        }
+    private fun getLayoutManager() : RecyclerView.LayoutManager {
+        return if (settings?.amiiboView == VIEW.IMAGE.value)
+            GridLayoutManager(this@BrowserActivity, columnCount).apply {
+                initialPrefetchItemCount = 10
+            }
+        else
+            LinearLayoutManager(this@BrowserActivity).apply {
+                initialPrefetchItemCount = 10
+            }
     }
 
     private fun onTextColorAnimation(textView: TextView?, index: Int) {
@@ -1339,7 +1339,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
     }
 
     fun onStorageEnabled() {
-        if (keyManager.isKeyMissing) {
+        if (keyManager.isKeyMissing()) {
             hideFakeSnackbar()
             showFakeSnackbar(getString(R.string.locating_keys))
             locateKeyFiles()
@@ -1420,8 +1420,12 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                 }
             }
             R.id.view_image -> {
-                amiibosView?.layoutManager = GridLayoutManager(this, columnCount)
-                foomiiboView?.layoutManager = GridLayoutManager(this, columnCount)
+                amiibosView?.layoutManager = GridLayoutManager(this, columnCount).apply {
+                    initialPrefetchItemCount = 10
+                }
+                foomiiboView?.layoutManager = GridLayoutManager(this, columnCount).apply {
+                    initialPrefetchItemCount = 10
+                }
                 settings?.let {
                     it.amiiboView = VIEW.IMAGE.value
                     it.notifyChanges()
@@ -1908,13 +1912,13 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
             val rootDocument = settings?.browserRootDocument?.let {
                 DocumentFile.fromTreeUri(this, it)
             }
-            if (!keyManager.isKeyMissing) {
+            if (!keyManager.isKeyMissing()) {
                 if (indicator) showFakeSnackbar(getString(R.string.refreshing_list))
                 loadAmiiboDocuments(rootDocument, settings?.isRecursiveEnabled == true)
             }
         } else {
             val rootFolder = settings?.browserRootFolder
-            if (!keyManager.isKeyMissing) {
+            if (!keyManager.isKeyMissing()) {
                 if (indicator) showFakeSnackbar(getString(R.string.refreshing_list))
                 loadAmiiboFiles(rootFolder, settings?.isRecursiveEnabled == true)
             }
@@ -2286,11 +2290,14 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
     }
 
     private fun onShowSettingsFragment() {
-        if (BuildConfig.WEAR_OS) {
-            settingsPage?.isVisible = true
-        } else {
-            prefsDrawer?.openDrawer(GravityCompat.START)
-            settingsPage?.isVisible = true
+        onLoadSettingsFragment()
+        CoroutineScope(Dispatchers.Main).launch {
+            if (BuildConfig.WEAR_OS) {
+                settingsPage?.isVisible = true
+            } else {
+                prefsDrawer?.openDrawer(GravityCompat.START)
+                settingsPage?.isVisible = true
+            }
         }
     }
 
@@ -2337,10 +2344,8 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
             AmiiboDocument(this@BrowserActivity).listFiles(it, true)
         }
         if (uris.isNullOrEmpty()) {
-            withContext(Dispatchers.Main) {
-                hideFakeSnackbar()
-                onShowSettingsFragment()
-            }
+            hideFakeSnackbar()
+            onShowSettingsFragment()
             return@withContext
         }
         uris.forEach { uri ->
@@ -2350,9 +2355,9 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                         try {
                             keyManager.evaluateKey(inputStream)
                         } catch (ex: Exception) {
-                            withContext(Dispatchers.Main) { onShowSettingsFragment() }
+                            onShowSettingsFragment()
                         }
-                        withContext(Dispatchers.Main) { hideFakeSnackbar() }
+                        hideFakeSnackbar()
                     }
                 } catch (e: Exception) { Debug.warn(e) }
             } catch (e: Exception) { Debug.info(e) }
@@ -2369,9 +2374,9 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                                 try {
                                     keyManager.evaluateKey(inputStream)
                                 } catch (ex: Exception) {
-                                    withContext(Dispatchers.Main) { onShowSettingsFragment() }
+                                    onShowSettingsFragment()
                                 }
-                                withContext(Dispatchers.Main) { hideFakeSnackbar() }
+                                hideFakeSnackbar()
                             }
                         } catch (e: Exception) { Debug.warn(e) }
                     }
@@ -2399,9 +2404,9 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                                 try {
                                     keyManager.evaluateKey(inputStream)
                                 } catch (ex: Exception) {
-                                    withContext(Dispatchers.Main) { onShowSettingsFragment() }
+                                    onShowSettingsFragment()
                                 }
-                                withContext(Dispatchers.Main) { hideFakeSnackbar() }
+                                hideFakeSnackbar()
                             }
                         } catch (e: Exception) { Debug.warn(e) }
                     }

@@ -41,7 +41,7 @@ class HexCodeViewer : AppCompatActivity() {
             ViewGroup.LayoutParams.MATCH_PARENT
         )
         val keyManager = KeyManager(this)
-        if (keyManager.isKeyMissing) {
+        if (keyManager.isKeyMissing()) {
             showErrorDialog(R.string.no_decrypt_key)
             return
         }

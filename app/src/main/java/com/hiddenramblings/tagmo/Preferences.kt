@@ -121,15 +121,6 @@ class Preferences(context: Context) {
         putInt(browserAmiiboView, value)
     }
 
-    private val guidesPrompted = "guides_prompted"
-    fun guidesPrompted(): Boolean {
-        return getBoolean(guidesPrompted, false)
-    }
-
-    fun guidesPrompted(value: Boolean) {
-        putBoolean(guidesPrompted, value)
-    }
-
     private val tagTypeValidation = "enable_tag_type_validation"
     fun tagTypeValidation(): Boolean {
         return getBoolean(tagTypeValidation, true)

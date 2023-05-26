@@ -124,11 +124,15 @@ class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
 
         eliteContent = view.findViewById<RecyclerView>(R.id.elite_content).apply {
             if (TagMo.forceSoftwareLayer) setLayerType(View.LAYER_TYPE_SOFTWARE, null)
-            setItemViewCacheSize(20)
+            setItemViewCacheSize(40)
             layoutManager = if (settings.amiiboView == BrowserSettings.VIEW.IMAGE.value)
-                GridLayoutManager(activity, activity.columnCount)
+                GridLayoutManager(activity, activity.columnCount).apply {
+                    initialPrefetchItemCount = 10
+                }
             else
-                LinearLayoutManager(activity)
+                LinearLayoutManager(activity).apply {
+                    initialPrefetchItemCount = 10
+                }
             settings.removeChangeListener(bankAdapter)
             bankAdapter = EliteBankAdapter(settings, this@EliteBankFragment).also {
                 adapter = it
@@ -148,9 +152,13 @@ class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
             setHasFixedSize(true)
             setItemViewCacheSize(20)
             layoutManager = if (settings.amiiboView == BrowserSettings.VIEW.IMAGE.value)
-                GridLayoutManager(activity, activity.columnCount)
+                GridLayoutManager(activity, activity.columnCount).apply {
+                    initialPrefetchItemCount = 25
+                }
             else
-                LinearLayoutManager(activity)
+                LinearLayoutManager(activity).apply {
+                    initialPrefetchItemCount = 25
+                }
             writeTagAdapter = WriteTagAdapter(settings).also { adapter = it }
         }
 

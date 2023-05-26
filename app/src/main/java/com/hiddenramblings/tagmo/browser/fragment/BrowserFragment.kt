@@ -140,10 +140,15 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
         }
         browserContent = view.findViewById<RecyclerView>(R.id.browser_content).apply {
             if (TagMo.forceSoftwareLayer) setLayerType(View.LAYER_TYPE_SOFTWARE, null)
-            setItemViewCacheSize(20)
+            setItemViewCacheSize(40)
             layoutManager = if (settings.amiiboView == BrowserSettings.VIEW.IMAGE.value)
-                GridLayoutManager(activity, activity.columnCount)
-            else LinearLayoutManager(activity)
+                GridLayoutManager(activity, activity.columnCount).apply {
+                    initialPrefetchItemCount = 10
+                }
+            else
+                LinearLayoutManager(activity).apply {
+                    initialPrefetchItemCount = 10
+                }
             adapter = BrowserAdapter(settings, activity)
             settings.addChangeListener(adapter as? BrowserSettingsListener)
             FastScrollerBuilder(this).build().setPadding(0, (-2).toPx,0,0)
@@ -151,20 +156,29 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
 
         foomiiboContent = view.findViewById<RecyclerView>(R.id.foomiibo_list).apply {
             if (TagMo.forceSoftwareLayer) setLayerType(View.LAYER_TYPE_SOFTWARE, null)
-            setItemViewCacheSize(20)
+            setItemViewCacheSize(40)
             layoutManager = if (settings.amiiboView == BrowserSettings.VIEW.IMAGE.value)
-                GridLayoutManager(activity, activity.columnCount)
-            else LinearLayoutManager(activity)
+                GridLayoutManager(activity, activity.columnCount).apply {
+                    initialPrefetchItemCount = 10
+                }
+            else
+                LinearLayoutManager(activity).apply {
+                    initialPrefetchItemCount = 10
+                }
             adapter = FoomiiboAdapter(settings, this@BrowserFragment)
             settings.addChangeListener(adapter as? BrowserSettingsListener)
             FastScrollerBuilder(this).build()
         }
 
         currentFolderView = view.findViewById(R.id.current_folder)
-        val foldersView = view.findViewById<RecyclerView>(R.id.folders_list)
-        foldersView.layoutManager = LinearLayoutManager(requireContext())
-        foldersView.adapter = FoldersAdapter(settings)
-        settings.addChangeListener(foldersView.adapter as? BrowserSettingsListener)
+        view.findViewById<RecyclerView>(R.id.folders_list).apply {
+            // setItemViewCacheSize(40)
+            layoutManager = LinearLayoutManager(requireContext()).apply {
+                // initialPrefetchItemCount = 5
+            }
+            adapter = FoldersAdapter(settings)
+            settings.addChangeListener(adapter as? BrowserSettingsListener)
+        }
 
         val toggle = view.findViewById<AppCompatImageView>(R.id.toggle)
         bottomSheet = BottomSheetBehavior.from(view.findViewById(R.id.bottom_sheet)).apply {

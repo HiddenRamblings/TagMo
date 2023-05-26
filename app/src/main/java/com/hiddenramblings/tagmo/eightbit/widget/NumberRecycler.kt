@@ -77,10 +77,12 @@ class NumberRecycler : RecyclerView {
         }
 
         setHasFixedSize(true)
-        setItemViewCacheSize(10)
+        setItemViewCacheSize(20)
         setFadingEdgeLength(fadingEdgeLength)
 
-        layoutManager = LinearLayoutManager(context, HORIZONTAL, false)
+        layoutManager = LinearLayoutManager(context, HORIZONTAL, false).apply {
+            initialPrefetchItemCount = 5
+        }
         val intList = arrayListOf<Int>()
         for (i in min until max + 1) {
             intList.add(i)

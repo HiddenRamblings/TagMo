@@ -28,8 +28,8 @@ import android.view.ViewConfiguration;
 import android.view.accessibility.AccessibilityEvent;
 import android.view.animation.DecelerateInterpolator;
 import android.view.inputmethod.EditorInfo;
-import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import androidx.annotation.CallSuper;
 import androidx.annotation.ColorInt;
@@ -232,7 +232,7 @@ public class NumberPicker extends LinearLayout {
     /**
      * The text for showing the current value.
      */
-    private final EditText mSelectedText;
+    private final TextView mSelectedText;
 
     /**
      * The center X position of the selected text.
@@ -438,11 +438,6 @@ public class NumberPicker extends LinearLayout {
      * The previous Y coordinate while scrolling the selector.
      */
     private int mPreviousScrollerY;
-
-    /**
-     * Handle to the reusable command for setting the input text selection.
-     */
-    private SetSelectionCommand mSetSelectionCommand;
 
     /**
      * Handle to the reusable command for changing the current value from long press by one.
@@ -2372,9 +2367,6 @@ public class NumberPicker extends LinearLayout {
         if (mChangeCurrentByOneFromLongPressCommand != null) {
             removeCallbacks(mChangeCurrentByOneFromLongPressCommand);
         }
-        if (mSetSelectionCommand != null) {
-            mSetSelectionCommand.cancel();
-        }
     }
 
     /**
@@ -2402,18 +2394,6 @@ public class NumberPicker extends LinearLayout {
             // Ignore as if it's not a number we don't care
         }
         return mMinValue;
-    }
-
-    /**
-     * Posts a {@link SetSelectionCommand} from the given
-     * {@code selectionStart} to {@code selectionEnd}.
-     */
-    private void postSetSelectionCommand(int selectionStart, int selectionEnd) {
-        if (mSetSelectionCommand == null) {
-            mSetSelectionCommand = new SetSelectionCommand(mSelectedText);
-        } else {
-            mSetSelectionCommand.post(selectionStart, selectionEnd);
-        }
     }
 
     /**
@@ -2460,11 +2440,6 @@ public class NumberPicker extends LinearLayout {
         @Override
         public CharSequence filter(CharSequence source, int start, int end, Spanned dest,
                                    int dstart, int dend) {
-            // We don't know what the output will be, so always cancel any
-            // pending set selection command.
-            if (mSetSelectionCommand != null) {
-                mSetSelectionCommand.cancel();
-            }
 
             if (mDisplayedValues == null) {
                 CharSequence filtered = super.filter(source, start, end, dest, dstart, dend);
@@ -2503,7 +2478,6 @@ public class NumberPicker extends LinearLayout {
                 for (String val : mDisplayedValues) {
                     String valLowerCase = val.toLowerCase();
                     if (valLowerCase.startsWith(str)) {
-                        postSetSelectionCommand(result.length(), val.length());
                         return val.subSequence(dstart, val.length());
                     }
                 }
@@ -2534,48 +2508,6 @@ public class NumberPicker extends LinearLayout {
             mAdjustScroller.startScroll(0, 0, 0, delta, SELECTOR_ADJUSTMENT_DURATION_MILLIS);
         }
         invalidate();
-    }
-
-    /**
-     * Command for setting the input text selection.
-     */
-    private static class SetSelectionCommand implements Runnable {
-
-        private final EditText mInputText;
-
-        private int mSelectionStart;
-        private int mSelectionEnd;
-
-        /**
-         * Whether this runnable is currently posted.
-         */
-        private boolean mPosted;
-
-        SetSelectionCommand(EditText inputText) {
-            mInputText = inputText;
-        }
-
-        void post(int selectionStart, int selectionEnd) {
-            mSelectionStart = selectionStart;
-            mSelectionEnd = selectionEnd;
-            if (!mPosted) {
-                mInputText.post(this);
-                mPosted = true;
-            }
-        }
-
-        void cancel() {
-            if (mPosted) {
-                mInputText.removeCallbacks(this);
-                mPosted = false;
-            }
-        }
-
-        @Override
-        public void run() {
-            mPosted = false;
-            mInputText.setSelection(mSelectionStart, mSelectionEnd);
-        }
     }
 
     /**

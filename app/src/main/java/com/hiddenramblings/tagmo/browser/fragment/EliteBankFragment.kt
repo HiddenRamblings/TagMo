@@ -5,9 +5,7 @@ import android.app.SearchManager
 import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
-import android.content.res.Resources
 import android.graphics.Bitmap
-import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -36,7 +34,6 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.request.target.CustomTarget
-import com.bumptech.glide.request.transition.Transition
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetBehavior.BottomSheetCallback
 import com.hiddenramblings.tagmo.GlideApp
@@ -57,11 +54,12 @@ import com.hiddenramblings.tagmo.browser.ImageActivity
 import com.hiddenramblings.tagmo.browser.adapter.EliteBankAdapter
 import com.hiddenramblings.tagmo.browser.adapter.WriteTagAdapter
 import com.hiddenramblings.tagmo.eightbit.io.Debug
+import com.hiddenramblings.tagmo.eightbit.request.ImageTarget
 import com.hiddenramblings.tagmo.eightbit.widget.NumberRecycler
 import com.hiddenramblings.tagmo.hexcode.HexCodeViewer
 import com.hiddenramblings.tagmo.nfctech.NfcActivity
 import com.hiddenramblings.tagmo.nfctech.TagArray
-import com.hiddenramblings.tagmo.widget.Toasty
+import com.hiddenramblings.tagmo.eightbit.widget.Toasty
 import org.json.JSONException
 import java.io.IOException
 import java.text.ParseException
@@ -81,8 +79,6 @@ class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
     private var amiiboTile: CardView? = null
     private var amiiboCard: CardView? = null
     private var toolbar: Toolbar? = null
-    private lateinit var amiiboTileTarget: CustomTarget<Bitmap?>
-    private lateinit var amiiboCardTarget: CustomTarget<Bitmap?>
     private var bankStats: TextView? = null
     private lateinit var eliteBankCount: NumberRecycler
     private var writeOpenBanks: AppCompatButton? = null
@@ -163,49 +159,10 @@ class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
         }
 
         securityOptions = view.findViewById(R.id.security_options)
-        val bitmapHeight = Resources.getSystem().displayMetrics.heightPixels / 4
-        amiiboTile = view.findViewById<CardView>(R.id.active_tile_layout).apply {
-            with (findViewById<AppCompatImageView>(R.id.imageAmiibo)) {
-                amiiboTileTarget = object : CustomTarget<Bitmap?>() {
-                    override fun onLoadFailed(errorDrawable: Drawable?) {
-                        setImageResource(R.drawable.ic_no_image_60)
-                    }
-
-                    override fun onLoadCleared(placeholder: Drawable?) {
-                        setImageResource(R.drawable.ic_no_image_60)
-                    }
-
-                    override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap?>?) {
-                        maxHeight = bitmapHeight
-                        requestLayout()
-                        setImageBitmap(resource)
-                    }
-                }
-            }
-        }
+        amiiboTile = view.findViewById<CardView>(R.id.active_tile_layout)
         amiiboCard = view.findViewById<CardView>(R.id.active_card_layout).apply {
             findViewById<View>(R.id.txtError)?.isGone = true
             findViewById<View>(R.id.txtPath)?.isGone = true
-            with (findViewById<AppCompatImageView>(R.id.imageAmiibo)) {
-                amiiboCardTarget = object : CustomTarget<Bitmap?>() {
-                    override fun onLoadFailed(errorDrawable: Drawable?) {
-                        setImageResource(0)
-                        isGone = true
-                    }
-
-                    override fun onLoadCleared(placeholder: Drawable?) {
-                        setImageResource(0)
-                        isGone = true
-                    }
-
-                    override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap?>?) {
-                        maxHeight = bitmapHeight
-                        requestLayout()
-                        setImageBitmap(resource)
-                        isVisible = true
-                    }
-                }
-            }
         }
         toolbar = view.findViewById(R.id.toolbar)
 
@@ -841,10 +798,13 @@ class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
                         it.setImageResource(0)
                         it.isGone = true
                     }
+                    val imageTarget: CustomTarget<Bitmap?> = if (amiiboView === amiiboCard) {
+                        ImageTarget.getTargetHR(it)
+                    } else {
+                        ImageTarget.getTargetR(it)
+                    }
                     GlideApp.with(it).clear(it)
-                    GlideApp.with(it).asBitmap().load(amiiboImageUrl).into(
-                        if (amiiboView === amiiboCard) amiiboCardTarget else amiiboTileTarget
-                    )
+                    GlideApp.with(it).asBitmap().load(amiiboImageUrl).into(imageTarget)
                 }
                 it.setOnClickListener {
                     if (amiiboLongId == -1L) return@setOnClickListener

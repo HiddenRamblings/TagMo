@@ -26,7 +26,7 @@ import com.hiddenramblings.tagmo.eightbit.io.Debug
 import com.hiddenramblings.tagmo.eightbit.os.Storage
 import com.hiddenramblings.tagmo.eightbit.os.Version
 import com.hiddenramblings.tagmo.nfctech.TagArray
-import com.hiddenramblings.tagmo.widget.Toasty
+import com.hiddenramblings.tagmo.eightbit.widget.Toasty
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException

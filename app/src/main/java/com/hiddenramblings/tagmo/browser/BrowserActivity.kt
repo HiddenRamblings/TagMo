@@ -13,10 +13,7 @@ import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.ActivityInfo
 import android.content.pm.PackageManager
-import android.content.res.Resources
-import android.graphics.Bitmap
 import android.graphics.Rect
-import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.os.*
 import android.provider.Settings
@@ -51,8 +48,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.ViewPager2
 import androidx.viewpager2.widget.ViewPager2.OnPageChangeCallback
-import com.bumptech.glide.request.target.CustomTarget
-import com.bumptech.glide.request.transition.Transition
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
@@ -77,6 +72,7 @@ import com.hiddenramblings.tagmo.eightbit.io.Debug
 import com.hiddenramblings.tagmo.eightbit.material.IconifiedSnackbar
 import com.hiddenramblings.tagmo.eightbit.os.Storage
 import com.hiddenramblings.tagmo.eightbit.os.Version
+import com.hiddenramblings.tagmo.eightbit.request.ImageTarget
 import com.hiddenramblings.tagmo.eightbit.view.AnimatedLinearLayout
 import com.hiddenramblings.tagmo.eightbit.viewpager.*
 import com.hiddenramblings.tagmo.eightbit.widget.NumberRecycler
@@ -89,7 +85,7 @@ import com.hiddenramblings.tagmo.nfctech.TagReader
 import com.hiddenramblings.tagmo.qrcode.QRCodeScanner
 import com.hiddenramblings.tagmo.update.UpdateManager
 import com.hiddenramblings.tagmo.wave9.DimensionActivity
-import com.hiddenramblings.tagmo.widget.Toasty
+import com.hiddenramblings.tagmo.eightbit.widget.Toasty
 import eightbitlab.com.blurview.BlurView
 import kotlinx.coroutines.*
 import org.json.JSONException
@@ -122,7 +118,8 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
     private var fakeSnackbarItem: AppCompatButton? = null
     lateinit var viewPager: ViewPager2
         private set
-    private var listener: ScrollListener? = null
+    private var scrollListener: ScrollListener? = null
+    private var snackbarListener: SnackbarListener? = null
     private val pagerAdapter = NavPagerAdapter(this)
     private lateinit var nfcFab: FloatingActionButton
     private var amiibosView: RecyclerView? = null
@@ -314,7 +311,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
             }
 
             override fun onPageScrollStateChanged(state: Int) {
-                if (state == ViewPager2.SCROLL_STATE_IDLE) listener?.onScrollComplete()
+                if (state == ViewPager2.SCROLL_STATE_IDLE) scrollListener?.onScrollComplete()
                 super.onPageScrollStateChanged(state)
             }
         })
@@ -1709,6 +1706,12 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
     }
 
     private fun loadAmiiboFiles(rootFolder: File?, recursiveFiles: Boolean) {
+        setSnackbarListener(object: SnackbarListener{
+            override fun onSnackbarHidden() {
+                setFoomiiboVisibility()
+                snackbarListener = null
+            }
+        })
         CoroutineScope(Dispatchers.IO).launch {
             val amiiboFiles = listAmiiboFiles(keyManager, rootFolder, recursiveFiles)
             val download = Storage.getDownloadDir("TagMo")
@@ -1720,13 +1723,18 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                 hideFakeSnackbar()
                 settings?.amiiboFiles = amiiboFiles
                 settings?.notifyChanges()
-                setFoomiiboVisibility()
             }
         }
     }
 
     @SuppressLint("NewApi")
     private fun loadAmiiboDocuments(rootFolder: DocumentFile?, recursiveFiles: Boolean) {
+        setSnackbarListener(object: SnackbarListener{
+            override fun onSnackbarHidden() {
+                setFoomiiboVisibility()
+                snackbarListener = null
+            }
+        })
         CoroutineScope(Dispatchers.IO).launch {
             val amiiboFiles = try {
                 rootFolder?.let {
@@ -1744,7 +1752,6 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                 hideFakeSnackbar()
                 settings?.amiiboFiles = amiiboFiles
                 settings?.notifyChanges()
-                setFoomiiboVisibility()
             }
         }
     }
@@ -2026,32 +2033,6 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
         } ?: deleteAmiiboFile(amiiboFile)
     }
 
-    private val bitmapHeight by lazy { Resources.getSystem().displayMetrics.heightPixels / 4 }
-    private val imageTarget: CustomTarget<Bitmap?> = object : CustomTarget<Bitmap?>() {
-        override fun onLoadFailed(errorDrawable: Drawable?) {
-            imageAmiibo?.let {
-                it.setImageResource(0)
-                it.isGone = true
-            }
-        }
-
-        override fun onLoadCleared(placeholder: Drawable?) {
-            imageAmiibo?.let {
-                it.setImageResource(0)
-                it.isGone = true
-            }
-        }
-
-        override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap?>?) {
-            imageAmiibo?.let {
-                it.maxHeight = bitmapHeight
-                it.requestLayout()
-                it.setImageBitmap(resource)
-                it.isVisible = true
-            }
-        }
-    }
-
     fun setAmiiboInfoText(textView: TextView?, text: CharSequence?, hasTagInfo: Boolean) {
         textView?.isGone = hasTagInfo
         if (!hasTagInfo) {
@@ -2155,6 +2136,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
             it.setImageResource(0)
             it.isGone = true
             if (!amiiboImageUrl.isNullOrEmpty()) {
+                val imageTarget = ImageTarget.getTargetHR(it)
                 GlideApp.with(it).clear(it)
                 GlideApp.with(it).asBitmap().load(amiiboImageUrl).into(imageTarget)
             }
@@ -2228,6 +2210,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                         AnimatedLinearLayout.AnimationListener {
                         override fun onAnimationStart(layout: AnimatedLinearLayout?) {}
                         override fun onAnimationEnd(layout: AnimatedLinearLayout?) {
+                            snackbarListener?.onSnackbarHidden()
                             it.clearAnimation()
                             layout?.setAnimationListener(null)
                             it.isGone = true
@@ -2293,7 +2276,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
             setScrollListener(object : ScrollListener {
                 override fun onScrollComplete() {
                     pagerAdapter.eliteBanks.onHardwareLoaded(extras)
-                    removeScrollListener()
+                    scrollListener = null
                 }
             })
             viewPager.setCurrentItem(2, true)
@@ -2309,7 +2292,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
             setScrollListener(object: ScrollListener {
                 override fun onScrollComplete() {
                     pagerAdapter.website.loadWebsite(address)
-                    removeScrollListener()
+                    scrollListener = null
                 }
             })
             viewPager.setCurrentItem(1, true)
@@ -2548,15 +2531,19 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
         )
     }
 
-    private fun setScrollListener(listener: ScrollListener?) {
-        this.listener = listener
-    }
-
-    private fun removeScrollListener() {
-        this.listener = null
+    private fun setScrollListener(listener: ScrollListener) {
+        this.scrollListener = listener
     }
 
     interface ScrollListener {
         fun onScrollComplete()
+    }
+
+    private fun setSnackbarListener(listener: SnackbarListener) {
+        this.snackbarListener = listener
+    }
+
+    interface SnackbarListener {
+        fun onSnackbarHidden()
     }
 }

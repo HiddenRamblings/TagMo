@@ -34,7 +34,7 @@ import com.hiddenramblings.tagmo.eightbit.io.Debug
 import com.hiddenramblings.tagmo.eightbit.os.Version
 import com.hiddenramblings.tagmo.nfctech.Foomiibo
 import com.hiddenramblings.tagmo.nfctech.TagArray
-import com.hiddenramblings.tagmo.widget.Toasty
+import com.hiddenramblings.tagmo.eightbit.widget.Toasty
 import com.vicmikhailau.maskededittext.MaskedEditText
 import kotlinx.coroutines.*
 import org.json.JSONException
@@ -326,23 +326,6 @@ class TagDataEditor : AppCompatActivity() {
         loadData()
     }
 
-    private val imageTarget: CustomTarget<Bitmap?> = object : CustomTarget<Bitmap?>() {
-        override fun onLoadFailed(errorDrawable: Drawable?) {
-            imageAmiibo.setImageResource(0)
-            imageAmiibo.isGone = true
-        }
-
-        override fun onLoadCleared(placeholder: Drawable?) {
-            imageAmiibo.setImageResource(0)
-            imageAmiibo.isGone = true
-        }
-
-        override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap?>?) {
-            imageAmiibo.setImageBitmap(resource)
-            imageAmiibo.isVisible = true
-        }
-    }
-
     private fun updateAmiiboView(tagData: ByteArray?) {
         var tagInfo: String? = null
         var amiiboHexId = ""
@@ -399,6 +382,22 @@ class TagDataEditor : AppCompatActivity() {
         imageAmiibo.setImageResource(0)
         imageAmiibo.isGone = true
         if (!amiiboImageUrl.isNullOrEmpty()) {
+            val imageTarget: CustomTarget<Bitmap?> = object : CustomTarget<Bitmap?>() {
+                override fun onLoadFailed(errorDrawable: Drawable?) {
+                    imageAmiibo.setImageResource(0)
+                    imageAmiibo.isGone = true
+                }
+
+                override fun onLoadCleared(placeholder: Drawable?) {
+                    imageAmiibo.setImageResource(0)
+                    imageAmiibo.isGone = true
+                }
+
+                override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap?>?) {
+                    imageAmiibo.setImageBitmap(resource)
+                    imageAmiibo.isVisible = true
+                }
+            }
             GlideApp.with(imageAmiibo).clear(imageAmiibo)
             GlideApp.with(imageAmiibo).asBitmap().load(amiiboImageUrl).into(imageTarget)
         }

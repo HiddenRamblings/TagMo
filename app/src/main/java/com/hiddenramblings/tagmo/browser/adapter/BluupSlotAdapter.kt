@@ -1,7 +1,6 @@
 package com.hiddenramblings.tagmo.browser.adapter
 
 import android.graphics.Bitmap
-import android.graphics.drawable.Drawable
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,8 +10,8 @@ import androidx.core.view.isGone
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.request.target.CustomTarget
-import com.bumptech.glide.request.transition.Transition
 import com.hiddenramblings.tagmo.GlideApp
+import com.hiddenramblings.tagmo.GlideTagModule
 import com.hiddenramblings.tagmo.R
 import com.hiddenramblings.tagmo.TagMo
 import com.hiddenramblings.tagmo.amiibo.Amiibo
@@ -22,6 +21,7 @@ import com.hiddenramblings.tagmo.browser.BrowserSettings
 import com.hiddenramblings.tagmo.browser.BrowserSettings.BrowserSettingsListener
 import com.hiddenramblings.tagmo.browser.BrowserSettings.VIEW
 import com.hiddenramblings.tagmo.browser.adapter.BluupSlotAdapter.BluupViewHolder
+import com.hiddenramblings.tagmo.eightbit.request.ImageTarget
 
 class BluupSlotAdapter(
     private val settings: BrowserSettings, private val listener: OnAmiiboClickListener
@@ -102,20 +102,6 @@ class BluupSlotAdapter(
         var imageAmiibo: AppCompatImageView? = null
         var amiibo: Amiibo? = null
 
-        var target: CustomTarget<Bitmap?> = object : CustomTarget<Bitmap?>() {
-            override fun onLoadFailed(errorDrawable: Drawable?) {
-                imageAmiibo?.setImageResource(R.drawable.ic_no_image_60)
-            }
-
-            override fun onLoadCleared(placeholder: Drawable?) {
-                imageAmiibo?.setImageResource(R.drawable.ic_no_image_60)
-            }
-
-            override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap?>?) {
-                imageAmiibo?.setImageBitmap(resource)
-            }
-        }
-
         init {
             txtError = itemView.findViewById(R.id.txtError)
             txtName = itemView.findViewById(R.id.txtName)
@@ -156,11 +142,12 @@ class BluupSlotAdapter(
                 }
             }
             imageAmiibo?.let {
+                val imageTarget: CustomTarget<Bitmap?> = ImageTarget.getTarget(it)
                 GlideApp.with(it).clear(it)
                 if (amiiboImageUrl.isNullOrEmpty()) {
                     it.setImageResource(R.drawable.ic_no_image_60)
                 } else {
-                    GlideApp.with(it).asBitmap().load(amiiboImageUrl).into(target)
+                    GlideApp.with(it).asBitmap().load(amiiboImageUrl).into(imageTarget)
                 }
             }
             if (settings.amiiboView != VIEW.IMAGE.value) {

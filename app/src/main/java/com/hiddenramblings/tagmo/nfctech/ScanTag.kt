@@ -18,7 +18,7 @@ import com.hiddenramblings.tagmo.nfctech.TagArray.isElite
 import com.hiddenramblings.tagmo.nfctech.TagArray.isPowerTag
 import com.hiddenramblings.tagmo.nfctech.TagArray.technology
 import com.hiddenramblings.tagmo.parcelable
-import com.hiddenramblings.tagmo.widget.Toasty
+import com.hiddenramblings.tagmo.eightbit.widget.Toasty
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch

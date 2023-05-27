@@ -2,7 +2,6 @@ package com.hiddenramblings.tagmo.browser.adapter
 
 import android.annotation.SuppressLint
 import android.graphics.Bitmap
-import android.graphics.drawable.Drawable
 import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
@@ -15,7 +14,6 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.isGone
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.request.target.CustomTarget
-import com.bumptech.glide.request.transition.Transition
 import com.hiddenramblings.tagmo.*
 import com.hiddenramblings.tagmo.amiibo.Amiibo
 import com.hiddenramblings.tagmo.amiibo.AmiiboFile
@@ -25,7 +23,8 @@ import com.hiddenramblings.tagmo.browser.BrowserSettings.BrowserSettingsListener
 import com.hiddenramblings.tagmo.browser.BrowserSettings.VIEW
 import com.hiddenramblings.tagmo.eightbit.os.Storage
 import com.hiddenramblings.tagmo.eightbit.os.Version
-import com.hiddenramblings.tagmo.widget.BoldSpannable
+import com.hiddenramblings.tagmo.eightbit.request.ImageTarget
+import com.hiddenramblings.tagmo.eightbit.widget.BoldSpannable
 import java.util.*
 
 class WriteTagAdapter(private val settings: BrowserSettings?) :
@@ -239,19 +238,6 @@ class WriteTagAdapter(private val settings: BrowserSettings?) :
         var imageAmiibo: AppCompatImageView? = null
         var amiiboFile: AmiiboFile? = null
         private val boldSpannable = BoldSpannable()
-        private val target: CustomTarget<Bitmap?> = object : CustomTarget<Bitmap?>() {
-            override fun onLoadFailed(errorDrawable: Drawable?) {
-                imageAmiibo?.setImageResource(R.drawable.ic_no_image_60)
-            }
-
-            override fun onLoadCleared(placeholder: Drawable?) {
-                imageAmiibo?.setImageResource(R.drawable.ic_no_image_60)
-            }
-
-            override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap?>?) {
-                imageAmiibo?.setImageBitmap(resource)
-            }
-        }
 
         init {
             txtError = itemView.findViewById(R.id.txtError)
@@ -294,9 +280,10 @@ class WriteTagAdapter(private val settings: BrowserSettings?) :
                 amiiboImageUrl = Amiibo.getImageUrl(it)
             }
             imageAmiibo?.let {
+                val imageTarget: CustomTarget<Bitmap?> = ImageTarget.getTarget(it)
                 if (!amiiboImageUrl.isNullOrEmpty()) {
                     GlideApp.with(it).clear(it)
-                    GlideApp.with(it).asBitmap().load(amiiboImageUrl).into(target)
+                    GlideApp.with(it).asBitmap().load(amiiboImageUrl).into(imageTarget)
                 }
             }
             val query = settings?.query?.lowercase(Locale.getDefault())

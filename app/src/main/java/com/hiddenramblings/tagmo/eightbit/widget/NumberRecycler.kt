@@ -1,6 +1,6 @@
 /*
  * ====================================================================
- * Copyright (c) 2021-2023 AbandonedCart.  All rights reserved.
+ * Copyright (c) 2023 AbandonedCart.  All rights reserved.
  *
  * https://github.com/AbandonedCart/AbandonedCart/blob/main/LICENSE#L4
  * ====================================================================

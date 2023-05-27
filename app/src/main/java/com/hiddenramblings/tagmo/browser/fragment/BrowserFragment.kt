@@ -56,8 +56,8 @@ import com.hiddenramblings.tagmo.eightbit.os.Storage
 import com.hiddenramblings.tagmo.eightbit.os.Version
 import com.hiddenramblings.tagmo.nfctech.Foomiibo
 import com.hiddenramblings.tagmo.nfctech.TagArray
-import com.hiddenramblings.tagmo.widget.ProgressAlert
-import com.hiddenramblings.tagmo.widget.Toasty
+import com.hiddenramblings.tagmo.eightbit.widget.ProgressAlert
+import com.hiddenramblings.tagmo.eightbit.widget.Toasty
 import com.robertlevonyan.views.chip.Chip
 import com.robertlevonyan.views.chip.OnCloseClickListener
 import kotlinx.coroutines.*
@@ -436,8 +436,9 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
         browserWrapper?.let {
             it.layoutParams?.let { layoutParams ->
                 val srcHeight = layoutParams.height
-                if (layoutParams.height > requireView().height - minHeight.toInt()) {
-                    layoutParams.height = requireView().height - minHeight.toInt()
+                val outHeight = requireView().height - minHeight.toInt()
+                if (layoutParams.height > outHeight && outHeight > 0) {
+                    layoutParams.height = outHeight
                 } else {
                     val valueY = prefs.foomiiboOffset()
                     layoutParams.height = if (valueY != -1) valueY else layoutParams.height

@@ -1,4 +1,4 @@
-package com.hiddenramblings.tagmo.widget
+package com.hiddenramblings.tagmo.eightbit.widget
 
 import android.graphics.Typeface
 import android.text.Spannable

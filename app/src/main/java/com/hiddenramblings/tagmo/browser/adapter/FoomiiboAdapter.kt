@@ -2,7 +2,6 @@ package com.hiddenramblings.tagmo.browser.adapter
 
 import android.annotation.SuppressLint
 import android.graphics.Bitmap
-import android.graphics.drawable.Drawable
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -15,7 +14,6 @@ import androidx.core.view.isGone
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.request.target.CustomTarget
-import com.bumptech.glide.request.transition.Transition
 import com.hiddenramblings.tagmo.GlideApp
 import com.hiddenramblings.tagmo.R
 import com.hiddenramblings.tagmo.amiibo.Amiibo
@@ -23,7 +21,8 @@ import com.hiddenramblings.tagmo.amiibo.AmiiboComparator
 import com.hiddenramblings.tagmo.amiibo.AmiiboManager
 import com.hiddenramblings.tagmo.browser.BrowserSettings
 import com.hiddenramblings.tagmo.browser.BrowserSettings.*
-import com.hiddenramblings.tagmo.widget.BoldSpannable
+import com.hiddenramblings.tagmo.eightbit.request.ImageTarget
+import com.hiddenramblings.tagmo.eightbit.widget.BoldSpannable
 import me.zhanghai.android.fastscroll.PopupTextProvider
 import java.util.*
 
@@ -225,20 +224,6 @@ class FoomiiboAdapter(
         var foomiibo: Amiibo? = null
         private val boldSpannable = BoldSpannable()
 
-        var target: CustomTarget<Bitmap?> = object : CustomTarget<Bitmap?>() {
-            override fun onLoadFailed(errorDrawable: Drawable?) {
-                imageAmiibo?.setImageResource(R.drawable.ic_no_image_60)
-            }
-
-            override fun onLoadCleared(placeholder: Drawable?) {
-                imageAmiibo?.setImageResource(R.drawable.ic_no_image_60)
-            }
-
-            override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap?>?) {
-                imageAmiibo?.setImageBitmap(resource)
-            }
-        }
-
         init {
             txtError = itemView.findViewById(R.id.txtError)
             txtName = itemView.findViewById(R.id.txtName)
@@ -285,9 +270,10 @@ class FoomiiboAdapter(
                 amiiboImageUrl = Amiibo.getImageUrl(it)
             }
             imageAmiibo?.let {
+                val imageTarget: CustomTarget<Bitmap?> = ImageTarget.getTarget(it)
                 if (!amiiboImageUrl.isNullOrEmpty()) {
                     GlideApp.with(it).clear(it)
-                    GlideApp.with(it).asBitmap().load(amiiboImageUrl).into(target)
+                    GlideApp.with(it).asBitmap().load(amiiboImageUrl).into(imageTarget)
                 }
             }
             val query = settings.query?.lowercase(Locale.getDefault())

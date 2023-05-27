@@ -1,4 +1,4 @@
-package com.hiddenramblings.tagmo.browser
+package com.hiddenramblings.tagmo
 
 import android.annotation.SuppressLint
 import android.graphics.Bitmap
@@ -19,10 +19,6 @@ import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetBehavior.BottomSheetCallback
-import com.hiddenramblings.tagmo.GlideApp
-import com.hiddenramblings.tagmo.NFCIntent
-import com.hiddenramblings.tagmo.Preferences
-import com.hiddenramblings.tagmo.R
 import com.hiddenramblings.tagmo.amiibo.Amiibo
 import com.hiddenramblings.tagmo.amiibo.AmiiboManager
 import com.hiddenramblings.tagmo.eightbit.io.Debug

@@ -1,9 +1,8 @@
-package com.hiddenramblings.tagmo.browser
+package com.hiddenramblings.tagmo
 
 import android.net.Uri
 import android.os.Parcel
 import android.os.Parcelable
-import com.hiddenramblings.tagmo.Preferences
 import com.hiddenramblings.tagmo.TagMo.Companion.appContext
 import com.hiddenramblings.tagmo.amiibo.Amiibo
 import com.hiddenramblings.tagmo.amiibo.AmiiboFile

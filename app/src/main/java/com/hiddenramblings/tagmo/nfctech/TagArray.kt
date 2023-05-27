@@ -332,9 +332,10 @@ object TagArray {
 
     @JvmStatic
     @Throws(Exception::class)
-    fun getValidatedData(keyManager: KeyManager?, file: AmiiboFile): ByteArray? {
-        return file.data ?: file.docUri?.let { getValidatedDocument(keyManager, it) }
-        ?: file.filePath?.let { getValidatedFile(keyManager, it) }
+    fun getValidatedAmiibo(keyManager: KeyManager?, file: AmiiboFile): ByteArray? {
+        return file.data?.let { getValidatedData(keyManager, it) }
+            ?: file.docUri?.let { getValidatedDocument(keyManager, it) }
+            ?: file.filePath?.let { getValidatedFile(keyManager, it) }
     }
 
     @JvmStatic

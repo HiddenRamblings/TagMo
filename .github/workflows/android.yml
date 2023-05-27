@@ -19,8 +19,8 @@ jobs:
       JVM_OPTS: -Xmx4G
 
     steps:
-    - name: Pause for 3 minutes
-      run: sleep 180s
+    - name: Pause for 2 minutes
+      run: sleep 120s
       shell: bash
     - uses: actions/checkout@v3
       with:

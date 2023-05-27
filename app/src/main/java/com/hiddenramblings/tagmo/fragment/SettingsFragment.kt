@@ -1,4 +1,4 @@
-package com.hiddenramblings.tagmo.browser.fragment
+package com.hiddenramblings.tagmo.fragment
 
 import android.app.Dialog
 import android.content.ActivityNotFoundException
@@ -35,7 +35,7 @@ import com.hiddenramblings.tagmo.amiibo.AmiiboManager.parse
 import com.hiddenramblings.tagmo.amiibo.AmiiboManager.parseAmiiboAPI
 import com.hiddenramblings.tagmo.amiibo.AmiiboManager.saveDatabase
 import com.hiddenramblings.tagmo.amiibo.KeyManager
-import com.hiddenramblings.tagmo.browser.BrowserActivity
+import com.hiddenramblings.tagmo.BrowserActivity
 import com.hiddenramblings.tagmo.eightbit.io.Debug
 import com.hiddenramblings.tagmo.eightbit.material.IconifiedSnackbar
 import com.hiddenramblings.tagmo.eightbit.net.JSONExecutor

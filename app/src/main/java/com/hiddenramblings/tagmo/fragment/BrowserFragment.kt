@@ -1,4 +1,4 @@
-package com.hiddenramblings.tagmo.browser.fragment
+package com.hiddenramblings.tagmo.fragment
 
 import android.annotation.SuppressLint
 import android.content.ActivityNotFoundException
@@ -42,14 +42,14 @@ import com.hiddenramblings.tagmo.amiibo.Amiibo
 import com.hiddenramblings.tagmo.amiibo.AmiiboManager
 import com.hiddenramblings.tagmo.amiibo.Character
 import com.hiddenramblings.tagmo.amiibo.KeyManager
-import com.hiddenramblings.tagmo.browser.BrowserActivity
-import com.hiddenramblings.tagmo.browser.BrowserSettings
-import com.hiddenramblings.tagmo.browser.BrowserSettings.BrowserSettingsListener
-import com.hiddenramblings.tagmo.browser.ImageActivity
-import com.hiddenramblings.tagmo.browser.adapter.BrowserAdapter
-import com.hiddenramblings.tagmo.browser.adapter.FoldersAdapter
-import com.hiddenramblings.tagmo.browser.adapter.FoomiiboAdapter
-import com.hiddenramblings.tagmo.browser.adapter.FoomiiboAdapter.OnFoomiiboClickListener
+import com.hiddenramblings.tagmo.BrowserActivity
+import com.hiddenramblings.tagmo.BrowserSettings
+import com.hiddenramblings.tagmo.BrowserSettings.BrowserSettingsListener
+import com.hiddenramblings.tagmo.ImageActivity
+import com.hiddenramblings.tagmo.adapter.BrowserAdapter
+import com.hiddenramblings.tagmo.adapter.FoldersAdapter
+import com.hiddenramblings.tagmo.adapter.FoomiiboAdapter
+import com.hiddenramblings.tagmo.adapter.FoomiiboAdapter.OnFoomiiboClickListener
 import com.hiddenramblings.tagmo.eightbit.io.Debug
 import com.hiddenramblings.tagmo.eightbit.material.IconifiedSnackbar
 import com.hiddenramblings.tagmo.eightbit.os.Storage

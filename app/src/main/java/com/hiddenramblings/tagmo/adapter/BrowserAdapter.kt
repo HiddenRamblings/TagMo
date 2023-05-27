@@ -1,4 +1,4 @@
-package com.hiddenramblings.tagmo.browser.adapter
+package com.hiddenramblings.tagmo.adapter
 
 import android.annotation.SuppressLint
 import android.graphics.Bitmap
@@ -24,8 +24,8 @@ import com.hiddenramblings.tagmo.amiibo.Amiibo
 import com.hiddenramblings.tagmo.amiibo.AmiiboFile
 import com.hiddenramblings.tagmo.amiibo.AmiiboFileComparator
 import com.hiddenramblings.tagmo.amiibo.AmiiboManager.hasSpoofData
-import com.hiddenramblings.tagmo.browser.BrowserSettings
-import com.hiddenramblings.tagmo.browser.BrowserSettings.*
+import com.hiddenramblings.tagmo.BrowserSettings
+import com.hiddenramblings.tagmo.BrowserSettings.*
 import com.hiddenramblings.tagmo.eightbit.os.Storage
 import com.hiddenramblings.tagmo.eightbit.os.Version
 import com.hiddenramblings.tagmo.eightbit.request.ImageTarget

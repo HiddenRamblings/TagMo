@@ -2,7 +2,7 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
       xmlns:app="http://schemas.android.com/apk/res-auto"
       xmlns:tools="http://schemas.android.com/tools"
-      tools:context=".browser.BrowserActivity">
+      tools:context=".BrowserActivity">
     <item
         android:id="@+id/mnu_scan"
         android:title="@string/scan"
@@ -17,8 +17,9 @@
         app:showAsAction="always"/>
     <item
         android:id="@+id/mnu_update"
-        android:title="@string/update"
-        app:showAsAction="ifRoom"/>
+        android:title="@string/update_tag"
+        android:titleCondensed="@string/update"
+        app:showAsAction="ifRoom|withText"/>
     <item
         android:id="@+id/mnu_edit"
         android:title="@string/edit_props"

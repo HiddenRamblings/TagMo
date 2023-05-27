@@ -18,7 +18,7 @@ import android.app.Activity
 import com.hiddenramblings.tagmo.GlideTagModule
 import com.hiddenramblings.tagmo.Preferences
 import com.hiddenramblings.tagmo.amiibo.AmiiboManager
-import com.hiddenramblings.tagmo.browser.BrowserActivity
+import com.hiddenramblings.tagmo.BrowserActivity
 import com.hiddenramblings.tagmo.eightbit.charset.CharsetCompat
 import com.hiddenramblings.tagmo.eightbit.io.Debug
 import com.hiddenramblings.tagmo.security.SecurityHandler

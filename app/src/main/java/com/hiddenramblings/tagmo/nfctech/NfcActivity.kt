@@ -34,7 +34,7 @@ import com.hiddenramblings.tagmo.amiibo.tagdata.AmiiboData
 import com.hiddenramblings.tagmo.eightbit.io.Debug
 import com.hiddenramblings.tagmo.eightbit.material.IconifiedSnackbar
 import com.hiddenramblings.tagmo.eightbit.os.Version
-import com.hiddenramblings.tagmo.eightbit.widget.NumberRecycler
+import com.shawnlin.numberpicker.NumberPicker
 import com.hiddenramblings.tagmo.nfctech.TagArray.technology
 import com.hiddenramblings.tagmo.parcelable
 import com.hiddenramblings.tagmo.parcelableArrayList
@@ -53,7 +53,7 @@ class NfcActivity : AppCompatActivity() {
     private lateinit var txtError: TextView
     private lateinit var imgNfcBar: AppCompatImageView
     private lateinit var imgNfcCircle: AppCompatImageView
-    private lateinit var bankPicker: NumberRecycler
+    private lateinit var bankPicker: NumberPicker
     private lateinit var bankTextView: TextView
     private lateinit var nfcAnimation: Animation
 
@@ -98,7 +98,6 @@ class NfcActivity : AppCompatActivity() {
 
         configureInterface()
 
-        bankPicker.setBackgroundResource(R.drawable.picker_border)
         nfcAnimation = AnimationUtils.loadAnimation(this, R.anim.nfc_scanning)
     }
 
@@ -109,10 +108,10 @@ class NfcActivity : AppCompatActivity() {
         when {
             commandIntent.hasExtra(NFCIntent.EXTRA_CURRENT_BANK) -> {
                 val position = bankPicker.getPositionByValue(bankPicker.value)
-                bankPicker.setPosition(commandIntent.getIntExtra(NFCIntent.EXTRA_CURRENT_BANK, position))
+                bankPicker.setPositionByValue(commandIntent.getIntExtra(NFCIntent.EXTRA_CURRENT_BANK, position))
             }
             isEliteIntent -> {
-                bankPicker.setPosition(commandIntent.getIntExtra(NFCIntent.EXTRA_CURRENT_BANK, prefs.eliteActiveBank()))
+                bankPicker.setPositionByValue(commandIntent.getIntExtra(NFCIntent.EXTRA_CURRENT_BANK, prefs.eliteActiveBank()))
             }
             else -> {
                 bankTextView.isGone = true
@@ -131,7 +130,7 @@ class NfcActivity : AppCompatActivity() {
                     bankPicker.isEnabled = false
                     bankTextView.isGone = true
                 }
-                bankPicker.setMax(prefs.eliteBankCount())
+                bankPicker.maxValue = prefs.eliteBankCount()
             }
             NFCIntent.ACTION_WRITE_ALL_TAGS,
             NFCIntent.ACTION_ERASE_ALL_TAGS,

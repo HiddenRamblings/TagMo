@@ -1,4 +1,4 @@
-package com.hiddenramblings.tagmo.browser.fragment
+package com.hiddenramblings.tagmo.fragment
 
 import android.annotation.SuppressLint
 import android.app.Dialog

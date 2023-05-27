@@ -1,4 +1,4 @@
-package com.hiddenramblings.tagmo.browser.fragment
+package com.hiddenramblings.tagmo.fragment
 
 import android.annotation.SuppressLint
 import android.app.Dialog
@@ -29,6 +29,8 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetBehavior.BottomSheetCallback
 import com.google.android.material.snackbar.Snackbar
 import com.hiddenramblings.tagmo.*
+import com.hiddenramblings.tagmo.adapter.BluupSlotAdapter
+import com.hiddenramblings.tagmo.adapter.WriteTagAdapter
 import com.hiddenramblings.tagmo.amiibo.Amiibo
 import com.hiddenramblings.tagmo.amiibo.AmiiboFile
 import com.hiddenramblings.tagmo.amiibo.AmiiboManager
@@ -41,18 +43,13 @@ import com.hiddenramblings.tagmo.bluetooth.BluetoothHandler
 import com.hiddenramblings.tagmo.bluetooth.BluetoothHandler.BluetoothListener
 import com.hiddenramblings.tagmo.bluetooth.BluupGattService
 import com.hiddenramblings.tagmo.bluetooth.PuckGattService
-import com.hiddenramblings.tagmo.browser.BrowserActivity
-import com.hiddenramblings.tagmo.browser.BrowserSettings
-import com.hiddenramblings.tagmo.browser.ImageActivity
-import com.hiddenramblings.tagmo.browser.adapter.BluupSlotAdapter
-import com.hiddenramblings.tagmo.browser.adapter.WriteTagAdapter
 import com.hiddenramblings.tagmo.eightbit.io.Debug
 import com.hiddenramblings.tagmo.eightbit.material.IconifiedSnackbar
 import com.hiddenramblings.tagmo.eightbit.os.Version
 import com.hiddenramblings.tagmo.eightbit.request.ImageTarget
-import com.hiddenramblings.tagmo.eightbit.widget.NumberRecycler
-import com.hiddenramblings.tagmo.nfctech.TagArray
 import com.hiddenramblings.tagmo.eightbit.widget.Toasty
+import com.hiddenramblings.tagmo.nfctech.TagArray
+import com.shawnlin.numberpicker.NumberPicker
 import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
@@ -75,7 +72,7 @@ open class BluupSlotFragment : Fragment(), BluupSlotAdapter.OnAmiiboClickListene
         private set
     var bluupAdapter: BluupSlotAdapter? = null
     private var bluupStats: TextView? = null
-    private lateinit var bluupSlotCount: NumberRecycler
+    private lateinit var bluupSlotCount: NumberPicker
     private var screenOptions: LinearLayout? = null
     private var writeSlots: AppCompatButton? = null
     private var writeSerials: SwitchCompat? = null
@@ -132,7 +129,7 @@ open class BluupSlotFragment : Fragment(), BluupSlotAdapter.OnAmiiboClickListene
                             onBottomSheetChanged(SHEET.MENU)
                             maxSlotCount = if (deviceType == DEVICE.SLIDE) 40 else 85
                             requireView().post {
-                                bluupSlotCount.setMax(maxSlotCount)
+                                bluupSlotCount.maxValue = maxSlotCount
                                 screenOptions?.isVisible = true
                                 createBlank?.isVisible = true
                                 requireView().findViewById<TextView>(R.id.hardware_info).text = deviceProfile
@@ -285,11 +282,11 @@ open class BluupSlotFragment : Fragment(), BluupSlotAdapter.OnAmiiboClickListene
                             onBottomSheetChanged(SHEET.MENU)
                             maxSlotCount = 32
                             requireView().post {
-                                bluupSlotCount.setMax(maxSlotCount)
+                                bluupSlotCount.maxValue = maxSlotCount
                                 screenOptions?.isGone = true
                                 createBlank?.isGone = true
                                 requireView().findViewById<TextView>(R.id.hardware_info).text = deviceProfile
-                                bluupSlotCount.setMax(maxSlotCount)
+                                bluupSlotCount.maxValue = maxSlotCount
                             }
                             try {
                                 setPuckCharacteristicRX()
@@ -525,15 +522,13 @@ open class BluupSlotFragment : Fragment(), BluupSlotAdapter.OnAmiiboClickListene
             }
         }
 
-        bluupSlotCount = view.findViewById<NumberRecycler>(R.id.number_picker_slot).apply {
+        bluupSlotCount = view.findViewById<NumberPicker>(R.id.number_picker_slot).apply {
             if (TagMo.forceSoftwareLayer) setLayerType(View.LAYER_TYPE_SOFTWARE, null)
-            setMax(maxSlotCount)
-            setOnValueChangeListener (object : NumberRecycler.OnValueChangeListener {
-                override fun onValueChanged(value: Int) {
-                    if (maxSlotCount - currentCount > 0)
-                        writeSlots?.text = getString(R.string.write_slots, value)
-                }
-            })
+            maxValue = maxSlotCount
+            setOnValueChangedListener { _, _, newVal ->
+                if (maxSlotCount - currentCount > 0)
+                    writeSlots?.text = getString(R.string.write_slots, newVal)
+            }
         }
 
         writeSlotsLayout = view.findViewById<LinearLayout>(R.id.write_list_slots).apply {
@@ -543,14 +538,14 @@ open class BluupSlotFragment : Fragment(), BluupSlotAdapter.OnAmiiboClickListene
         view.findViewById<RecyclerView>(R.id.amiibo_files_list).apply {
             if (TagMo.forceSoftwareLayer) setLayerType(View.LAYER_TYPE_SOFTWARE, null)
             setHasFixedSize(true)
-            setItemViewCacheSize(20)
+            setItemViewCacheSize(40)
             layoutManager = if (settings.amiiboView == BrowserSettings.VIEW.IMAGE.value)
                 GridLayoutManager(activity, activity.columnCount).apply {
-                    initialPrefetchItemCount = 25
+                    initialPrefetchItemCount = 10
                 }
             else
                 LinearLayoutManager(activity).apply {
-                    initialPrefetchItemCount = 25
+                    initialPrefetchItemCount = 10
                 }
             writeTagAdapter = WriteTagAdapter(settings).also { adapter = it }
         }
@@ -663,7 +658,7 @@ open class BluupSlotFragment : Fragment(), BluupSlotAdapter.OnAmiiboClickListene
         get() {
             bluupContent?.post {
                 val openSlots = maxSlotCount - currentCount
-                bluupSlotCount.setValue(openSlots)
+                bluupSlotCount.value = openSlots
                 if (openSlots > 0) {
                     writeSlots?.isEnabled = true
                     writeSlots?.text = getString(R.string.write_slots, openSlots)

@@ -1,4 +1,4 @@
-package com.hiddenramblings.tagmo.browser
+package com.hiddenramblings.tagmo
 
 import android.Manifest
 import android.animation.Animator
@@ -62,12 +62,12 @@ import com.hiddenramblings.tagmo.amiibo.AmiiboManager.listAmiiboFiles
 import com.hiddenramblings.tagmo.amiibo.games.GamesManager
 import com.hiddenramblings.tagmo.amiibo.games.GamesManager.Companion.getGamesManager
 import com.hiddenramblings.tagmo.amiibo.tagdata.TagDataEditor
-import com.hiddenramblings.tagmo.browser.BrowserSettings.*
-import com.hiddenramblings.tagmo.browser.adapter.BrowserAdapter
-import com.hiddenramblings.tagmo.browser.adapter.FoomiiboAdapter
-import com.hiddenramblings.tagmo.browser.fragment.BrowserFragment
-import com.hiddenramblings.tagmo.browser.fragment.JoyConFragment.Companion.newInstance
-import com.hiddenramblings.tagmo.browser.fragment.SettingsFragment
+import com.hiddenramblings.tagmo.BrowserSettings.*
+import com.hiddenramblings.tagmo.adapter.BrowserAdapter
+import com.hiddenramblings.tagmo.adapter.FoomiiboAdapter
+import com.hiddenramblings.tagmo.fragment.BrowserFragment
+import com.hiddenramblings.tagmo.fragment.JoyConFragment.Companion.newInstance
+import com.hiddenramblings.tagmo.fragment.SettingsFragment
 import com.hiddenramblings.tagmo.eightbit.io.Debug
 import com.hiddenramblings.tagmo.eightbit.material.IconifiedSnackbar
 import com.hiddenramblings.tagmo.eightbit.os.Storage
@@ -75,7 +75,7 @@ import com.hiddenramblings.tagmo.eightbit.os.Version
 import com.hiddenramblings.tagmo.eightbit.request.ImageTarget
 import com.hiddenramblings.tagmo.eightbit.view.AnimatedLinearLayout
 import com.hiddenramblings.tagmo.eightbit.viewpager.*
-import com.hiddenramblings.tagmo.eightbit.widget.NumberRecycler
+import com.shawnlin.numberpicker.NumberPicker
 import com.hiddenramblings.tagmo.hexcode.HexCodeViewer
 import com.hiddenramblings.tagmo.nfctech.Foomiibo
 import com.hiddenramblings.tagmo.nfctech.NfcActivity
@@ -483,13 +483,13 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
     private fun onCreateMainMenuLayout() {
         findViewById<CardView>(R.id.menu_amiibo).setOnClickListener {
             closePrefsDrawer()
-            if (viewPager.currentItem != 0) viewPager.setCurrentItem(0, true)
+            if (viewPager.currentItem != 0) viewPager.setCurrentItem(0, false)
         }
 
         findViewById<CardView>(R.id.menu_elite).apply {
             setOnClickListener {
                 closePrefsDrawer()
-                if (viewPager.currentItem != 2) viewPager.setCurrentItem(2, true)
+                if (viewPager.currentItem != 2) viewPager.setCurrentItem(2, false)
             }
             isVisible = prefs.eliteEnabled()
         }
@@ -499,9 +499,9 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
             setOnClickListener {
                 closePrefsDrawer()
                 if (!prefs.eliteEnabled()) {
-                    if (viewPager.currentItem != 2) viewPager.setCurrentItem(2, true)
+                    if (viewPager.currentItem != 2) viewPager.setCurrentItem(2, false)
                 } else {
-                    if (viewPager.currentItem != 3) viewPager.setCurrentItem(3, true)
+                    if (viewPager.currentItem != 3) viewPager.setCurrentItem(3, false)
                 }
 
             }
@@ -536,7 +536,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
 
         findViewById<CardView>(R.id.menu_guides).setOnClickListener {
             closePrefsDrawer()
-            if (viewPager.currentItem != 3) viewPager.setCurrentItem(1, true)
+            if (viewPager.currentItem != 3) viewPager.setCurrentItem(1, false)
         }
 
         settingsPage = findViewById(R.id.preferences)
@@ -591,7 +591,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                 prefs.eliteBankCount(bankCount)
                 intent.extras?.let { showElitePage(it) }
             } else {
-                viewPager.setCurrentItem(0, true)
+                viewPager.setCurrentItem(0, false)
                 updateAmiiboView(intent.getByteArrayExtra(NFCIntent.EXTRA_TAG_DATA))
             }
         }
@@ -1024,7 +1024,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
         val view = layoutInflater.inflate(R.layout.dialog_duplicator, null)
         val dialog = AlertDialog.Builder(this)
         val copierDialog: Dialog = dialog.setView(view).create()
-        val count = view.findViewById<NumberRecycler>(R.id.number_picker_bin)
+        val count = view.findViewById<NumberPicker>(R.id.number_picker_bin)
         view.findViewById<View>(R.id.button_save).setOnClickListener {
             cloneWithRandomSerial(amiiboFile, tagData, count.value)
             copierDialog.dismiss()
@@ -1588,7 +1588,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
     override fun onAmiiboClicked(itemView: View, amiiboFile: AmiiboFile?) {
         if (null == amiiboFile?.docUri && null == amiiboFile?.filePath) return
         try {
-            val tagData = TagArray.getValidatedData(keyManager, amiiboFile)
+            val tagData = TagArray.getValidatedAmiibo(keyManager, amiiboFile)
             if (settings?.amiiboView != VIEW.IMAGE.value) {
                 val menuOptions = itemView.findViewById<LinearLayout>(R.id.menu_options)
                 if (menuOptions.isGone) onCreateToolbarMenu(itemView, tagData, amiiboFile)
@@ -1706,7 +1706,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
     }
 
     private fun loadAmiiboFiles(rootFolder: File?, recursiveFiles: Boolean) {
-        setSnackbarListener(object: SnackbarListener{
+        setSnackbarListener(object: SnackbarListener {
             override fun onSnackbarHidden() {
                 setFoomiiboVisibility()
                 snackbarListener = null
@@ -1729,7 +1729,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
 
     @SuppressLint("NewApi")
     private fun loadAmiiboDocuments(rootFolder: DocumentFile?, recursiveFiles: Boolean) {
-        setSnackbarListener(object: SnackbarListener{
+        setSnackbarListener(object: SnackbarListener {
             override fun onSnackbarHidden() {
                 setFoomiiboVisibility()
                 snackbarListener = null
@@ -2279,7 +2279,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                     scrollListener = null
                 }
             })
-            viewPager.setCurrentItem(2, true)
+            viewPager.setCurrentItem(2, false)
         }
     }
 
@@ -2295,7 +2295,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                     scrollListener = null
                 }
             })
-            viewPager.setCurrentItem(1, true)
+            viewPager.setCurrentItem(1, false)
         }
     }
 
@@ -2481,7 +2481,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                             if (viewPager.currentItem == 1 && pagerAdapter.website.hasGoneBack())
                                 return
                             else
-                                viewPager.setCurrentItem(0, true)
+                                viewPager.setCurrentItem(0, false)
                         }
                         else -> {
                             finishAffinity()
@@ -2498,7 +2498,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                                 if (viewPager.currentItem == 1 && pagerAdapter.website.hasGoneBack())
                                     return
                                 else
-                                    viewPager.setCurrentItem(0, true)
+                                    viewPager.setCurrentItem(0, false)
                             } else {
                                 finishAffinity()
                             }

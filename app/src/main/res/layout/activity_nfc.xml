@@ -60,16 +60,25 @@
             android:padding="5dp"
             app:srcCompat="@drawable/ic_signal_bar_24dp" />
 
-        <com.hiddenramblings.tagmo.eightbit.widget.NumberRecycler
+        <com.shawnlin.numberpicker.NumberPicker
             android:id="@+id/number_picker_nfc"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginLeft="8dp"
             android:layout_marginRight="8dp"
             android:layout_alignParentBottom="true"
-            android:background="@drawable/picker_border_elite"
-            app:nr_min="1"
-            app:nr_max="200"/>
+            android:background="@drawable/picker_border"
+            app:np_min="1"
+            app:np_max="200"
+            app:np_value="1"
+            app:np_selectedTextColor="?android:attr/text"
+            app:np_textColor="?android:attr/text"
+            app:np_dividerThickness="4dp"
+            app:np_dividerColor="@color/backgroundWhite"
+            app:np_dividerDistance="120dp"
+            app:np_fadingEdgeEnabled="true"
+            app:np_wrapSelectorWheel="true"
+            app:np_orientation="horizontal"/>
 
         <TextView
             android:id="@+id/bank_number_details"

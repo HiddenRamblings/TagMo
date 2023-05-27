@@ -17,21 +17,22 @@
     <item
         android:id="@+id/mnu_erase_bank"
         android:title="@string/erase_bank"
-        app:showAsAction="ifRoom"/>
+        android:titleCondensed="@string/erase"
+        app:showAsAction="ifRoom|withText"/>
     <item
         android:id="@+id/mnu_edit"
         android:title="@string/edit_props"
-        app:showAsAction="ifRoom"/>
+        app:showAsAction="never"/>
     <item
         android:id="@+id/mnu_view_hex"
         android:title="@string/view_hex"
-        app:showAsAction="ifRoom"/>
+        app:showAsAction="never"/>
     <item
         android:id="@+id/mnu_backup"
         android:title="@string/amiibo_backup"
-        app:showAsAction="ifRoom"/>
+        app:showAsAction="never"/>
     <item
         android:id="@+id/mnu_validate"
         android:title="@string/validate_data"
-        app:showAsAction="ifRoom"/>
+        app:showAsAction="never"/>
 </menu>

@@ -1,8 +1,8 @@
 package com.hiddenramblings.tagmo.amiibo
 
 import androidx.documentfile.provider.DocumentFile
-import com.hiddenramblings.tagmo.browser.BrowserSettings
-import com.hiddenramblings.tagmo.browser.BrowserSettings.SORT
+import com.hiddenramblings.tagmo.BrowserSettings
+import com.hiddenramblings.tagmo.BrowserSettings.SORT
 import java.io.File
 
 class AmiiboFileComparator(var settings: BrowserSettings) : Comparator<AmiiboFile?> {

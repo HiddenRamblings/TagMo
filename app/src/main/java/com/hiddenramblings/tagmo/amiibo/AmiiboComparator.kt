@@ -1,7 +1,7 @@
 package com.hiddenramblings.tagmo.amiibo
 
-import com.hiddenramblings.tagmo.browser.BrowserSettings
-import com.hiddenramblings.tagmo.browser.BrowserSettings.SORT
+import com.hiddenramblings.tagmo.BrowserSettings
+import com.hiddenramblings.tagmo.BrowserSettings.SORT
 
 class AmiiboComparator(var settings: BrowserSettings) : Comparator<Amiibo> {
     override fun compare(amiiboFile1: Amiibo, amiiboFile2: Amiibo): Int {

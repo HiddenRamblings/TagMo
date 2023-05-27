@@ -1,13 +1,15 @@
-package com.hiddenramblings.tagmo.browser
+package com.hiddenramblings.tagmo
 
 import android.annotation.SuppressLint
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.viewpager2.adapter.FragmentStateAdapter
-import com.hiddenramblings.tagmo.Preferences
-import com.hiddenramblings.tagmo.TagMo
-import com.hiddenramblings.tagmo.browser.fragment.*
+import com.hiddenramblings.tagmo.fragment.*
 import com.hiddenramblings.tagmo.eightbit.os.Version
+import com.hiddenramblings.tagmo.fragment.BluupSlotFragment
+import com.hiddenramblings.tagmo.fragment.BrowserFragment
+import com.hiddenramblings.tagmo.fragment.EliteBankFragment
+import com.hiddenramblings.tagmo.fragment.WebsiteFragment
 
 class NavPagerAdapter(fa: FragmentActivity?) : FragmentStateAdapter(fa!!) {
     private var mPrefs = Preferences(TagMo.appContext)

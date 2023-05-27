@@ -1,4 +1,4 @@
-package com.hiddenramblings.tagmo.browser
+package com.hiddenramblings.tagmo
 
 import android.annotation.SuppressLint
 import android.content.DialogInterface
@@ -16,9 +16,6 @@ import androidx.core.content.ContextCompat
 import com.android.billingclient.api.*
 import com.android.billingclient.api.BillingFlowParams.ProductDetailsParams
 import com.android.billingclient.api.QueryProductDetailsParams.Product
-import com.hiddenramblings.tagmo.BuildConfig
-import com.hiddenramblings.tagmo.R
-import com.hiddenramblings.tagmo.TagMo
 import com.hiddenramblings.tagmo.eightbit.material.IconifiedSnackbar
 import com.hiddenramblings.tagmo.eightbit.os.Version
 import kotlinx.coroutines.*

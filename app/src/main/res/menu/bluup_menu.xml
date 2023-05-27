@@ -12,6 +12,7 @@
         app:showAsAction="always"/>
     <item
         android:id="@+id/mnu_backup"
-        android:title="@string/download"
-        app:showAsAction="ifRoom"/>
+        android:title="@string/download_slot"
+        android:titleCondensed="@string/download"
+        app:showAsAction="ifRoom|withText"/>
 </menu>

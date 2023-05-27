@@ -1,4 +1,4 @@
-package com.hiddenramblings.tagmo.browser.fragment
+package com.hiddenramblings.tagmo.fragment
 
 import android.app.Dialog
 import android.app.SearchManager
@@ -48,18 +48,19 @@ import com.hiddenramblings.tagmo.amiibo.EliteTag
 import com.hiddenramblings.tagmo.amiibo.KeyManager
 import com.hiddenramblings.tagmo.amiibo.tagdata.AmiiboData
 import com.hiddenramblings.tagmo.amiibo.tagdata.TagDataEditor
-import com.hiddenramblings.tagmo.browser.BrowserActivity
-import com.hiddenramblings.tagmo.browser.BrowserSettings
-import com.hiddenramblings.tagmo.browser.ImageActivity
-import com.hiddenramblings.tagmo.browser.adapter.EliteBankAdapter
-import com.hiddenramblings.tagmo.browser.adapter.WriteTagAdapter
+import com.hiddenramblings.tagmo.BrowserActivity
+import com.hiddenramblings.tagmo.BrowserSettings
+import com.hiddenramblings.tagmo.ImageActivity
+import com.hiddenramblings.tagmo.adapter.EliteBankAdapter
+import com.hiddenramblings.tagmo.adapter.WriteTagAdapter
 import com.hiddenramblings.tagmo.eightbit.io.Debug
 import com.hiddenramblings.tagmo.eightbit.request.ImageTarget
-import com.hiddenramblings.tagmo.eightbit.widget.NumberRecycler
+import com.shawnlin.numberpicker.NumberPicker
 import com.hiddenramblings.tagmo.hexcode.HexCodeViewer
 import com.hiddenramblings.tagmo.nfctech.NfcActivity
 import com.hiddenramblings.tagmo.nfctech.TagArray
 import com.hiddenramblings.tagmo.eightbit.widget.Toasty
+import com.shawnlin.numberpicker.NumberPicker.OnValueChangeListener
 import org.json.JSONException
 import java.io.IOException
 import java.text.ParseException
@@ -80,7 +81,7 @@ class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
     private var amiiboCard: CardView? = null
     private var toolbar: Toolbar? = null
     private var bankStats: TextView? = null
-    private lateinit var eliteBankCount: NumberRecycler
+    private lateinit var eliteBankCount: NumberPicker
     private var writeOpenBanks: AppCompatButton? = null
     private var writeSerials: SwitchCompat? = null
     private var eraseOpenBanks: AppCompatButton? = null
@@ -146,14 +147,14 @@ class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
         amiiboFilesView = view.findViewById<RecyclerView>(R.id.amiibo_files_list).apply {
             if (TagMo.forceSoftwareLayer) setLayerType(View.LAYER_TYPE_SOFTWARE, null)
             setHasFixedSize(true)
-            setItemViewCacheSize(20)
+            setItemViewCacheSize(40)
             layoutManager = if (settings.amiiboView == BrowserSettings.VIEW.IMAGE.value)
                 GridLayoutManager(activity, activity.columnCount).apply {
-                    initialPrefetchItemCount = 25
+                    initialPrefetchItemCount = 10
                 }
             else
                 LinearLayoutManager(activity).apply {
-                    initialPrefetchItemCount = 25
+                    initialPrefetchItemCount = 10
                 }
             writeTagAdapter = WriteTagAdapter(settings).also { adapter = it }
         }
@@ -212,13 +213,9 @@ class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
             }
         }
 
-        eliteBankCount = view.findViewById<NumberRecycler>(R.id.number_picker_bank).apply {
+        eliteBankCount = view.findViewById<NumberPicker>(R.id.number_picker_bank).apply {
             if (TagMo.forceSoftwareLayer) setLayerType(View.LAYER_TYPE_SOFTWARE, null)
-            setOnValueChangeListener (object : NumberRecycler.OnValueChangeListener {
-                override fun onValueChanged(value: Int) {
-                    updateNumberedText(value)
-                }
-            })
+            setOnValueChangedListener { _, _, newVal -> updateNumberedText(newVal) }
         }
 
         val toggle = view.findViewById<AppCompatImageView>(R.id.toggle)
@@ -824,7 +821,7 @@ class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
             if (NFCIntent.ACTION_NFC_SCANNED != intent.action) return@registerForActivityResult
             val bankCount = intent.getIntExtra(NFCIntent.EXTRA_BANK_COUNT, prefs.eliteBankCount())
             prefs.eliteBankCount(bankCount)
-            eliteBankCount.setValue(bankCount)
+            eliteBankCount.value = bankCount
             val activeBank = prefs.eliteActiveBank()
             setRefreshListener(object : RefreshListener {
                 override fun onListRefreshed(amiibos: ArrayList<EliteTag?>) {

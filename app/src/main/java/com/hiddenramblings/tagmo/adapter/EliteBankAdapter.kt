@@ -1,5 +1,6 @@
-package com.hiddenramblings.tagmo.browser.adapter
+package com.hiddenramblings.tagmo.adapter
 
+import android.annotation.SuppressLint
 import android.graphics.Bitmap
 import android.view.LayoutInflater
 import android.view.View
@@ -11,29 +12,25 @@ import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.request.target.CustomTarget
 import com.hiddenramblings.tagmo.GlideApp
-import com.hiddenramblings.tagmo.GlideTagModule
+import com.hiddenramblings.tagmo.Preferences
 import com.hiddenramblings.tagmo.R
 import com.hiddenramblings.tagmo.TagMo
 import com.hiddenramblings.tagmo.amiibo.Amiibo
-import com.hiddenramblings.tagmo.amiibo.AmiiboManager.hasSpoofData
-import com.hiddenramblings.tagmo.amiibo.BluupTag
-import com.hiddenramblings.tagmo.browser.BrowserSettings
-import com.hiddenramblings.tagmo.browser.BrowserSettings.BrowserSettingsListener
-import com.hiddenramblings.tagmo.browser.BrowserSettings.VIEW
-import com.hiddenramblings.tagmo.browser.adapter.BluupSlotAdapter.BluupViewHolder
+import com.hiddenramblings.tagmo.amiibo.EliteTag
+import com.hiddenramblings.tagmo.BrowserSettings
+import com.hiddenramblings.tagmo.BrowserSettings.BrowserSettingsListener
+import com.hiddenramblings.tagmo.BrowserSettings.VIEW
 import com.hiddenramblings.tagmo.eightbit.request.ImageTarget
+import com.hiddenramblings.tagmo.eightbit.widget.BoldSpannable
+import java.util.*
 
-class BluupSlotAdapter(
+class EliteBankAdapter(
     private val settings: BrowserSettings, private val listener: OnAmiiboClickListener
-) : RecyclerView.Adapter<BluupViewHolder>(), BrowserSettingsListener {
-
-    private var bluupAmiibo: ArrayList<Amiibo?> = arrayListOf()
-    fun setBluupAmiibo(amiibo: ArrayList<Amiibo?>) {
-        bluupAmiibo = amiibo
-    }
-
-    fun addBluupAmiibo(amiibo: ArrayList<Amiibo?>) {
-        bluupAmiibo.addAll(amiibo)
+    ) : RecyclerView.Adapter<EliteBankAdapter.AmiiboViewHolder>(), BrowserSettingsListener {
+    var mPrefs = Preferences(TagMo.appContext)
+    private var amiibos: ArrayList<EliteTag?> = arrayListOf()
+    fun setAmiibos(amiibos: ArrayList<EliteTag?>) {
+        this.amiibos = amiibos
     }
 
     override fun onBrowserSettingsChanged(
@@ -43,52 +40,55 @@ class BluupSlotAdapter(
     }
 
     override fun getItemCount(): Int {
-        return bluupAmiibo.size
+        return amiibos.size
     }
 
     override fun getItemId(i: Int): Long {
-        return (bluupAmiibo[i]?.bluupTail ?: "").toLong()
+        return (amiibos[i]?.id ?: 0).toLong()
     }
 
-    fun getItem(i: Int): Amiibo? {
-        return bluupAmiibo[i]
+    private fun getItem(i: Int): EliteTag? {
+        return amiibos[i]
     }
 
     override fun getItemViewType(position: Int): Int {
         return settings.amiiboView
     }
 
-    fun getDuplicates(amiibo: Amiibo) : Int {
-        return bluupAmiibo.count { it?.id == amiibo.id }
-    }
-
-    init {
-        setHasStableIds(true)
-    }
-
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BluupViewHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): AmiiboViewHolder {
         return when (VIEW.valueOf(viewType)) {
             VIEW.COMPACT -> CompactViewHolder(parent, settings, listener)
             VIEW.LARGE -> LargeViewHolder(parent, settings, listener)
             VIEW.IMAGE -> ImageViewHolder(parent, settings, listener)
             VIEW.SIMPLE -> SimpleViewHolder(parent, settings, listener)
         }.apply {
+            val highlight = itemView.findViewById<View>(R.id.highlight)
+            if (mPrefs.eliteActiveBank() == bindingAdapterPosition) {
+                highlight.setBackgroundResource(R.drawable.cardview_outline)
+            } else {
+                highlight.setBackgroundResource(0)
+            }
             itemView.setOnClickListener {
-                listener?.onAmiiboClicked(amiibo, bindingAdapterPosition)
+                listener?.onAmiiboClicked(amiiboItem, bindingAdapterPosition)
             }
             imageAmiibo?.setOnClickListener {
                 if (settings.amiiboView == VIEW.IMAGE.value)
-                    listener?.onAmiiboClicked(amiibo, bindingAdapterPosition)
-                else listener?.onAmiiboImageClicked(amiibo)
+                    listener?.onAmiiboClicked(amiiboItem, bindingAdapterPosition)
+                else listener?.onAmiiboImageClicked(amiiboItem, bindingAdapterPosition)
+            }
+            itemView.setOnLongClickListener {
+                return@setOnLongClickListener listener?.onAmiiboLongClicked(
+                    amiiboItem, bindingAdapterPosition
+                ) ?: false
             }
         }
     }
 
-    override fun onBindViewHolder(holder: BluupViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: AmiiboViewHolder, position: Int) {
         holder.bind(getItem(holder.bindingAdapterPosition))
     }
 
-    abstract class BluupViewHolder(
+    abstract class AmiiboViewHolder(
         itemView: View, private val settings: BrowserSettings, val listener: OnAmiiboClickListener?
     ) : RecyclerView.ViewHolder(itemView) {
         val txtError: TextView?
@@ -97,10 +97,13 @@ class BluupSlotAdapter(
         val txtAmiiboSeries: TextView?
         val txtAmiiboType: TextView?
         val txtGameSeries: TextView?
+
+        // public final TextView txtCharacter;
         val txtPath: TextView?
         val txtUsage: TextView?
         var imageAmiibo: AppCompatImageView? = null
-        var amiibo: Amiibo? = null
+        var amiiboItem: EliteTag? = null
+        private val boldSpannable = BoldSpannable()
 
         init {
             txtError = itemView.findViewById(R.id.txtError)
@@ -109,37 +112,40 @@ class BluupSlotAdapter(
             txtAmiiboSeries = itemView.findViewById(R.id.txtAmiiboSeries)
             txtAmiiboType = itemView.findViewById(R.id.txtAmiiboType)
             txtGameSeries = itemView.findViewById(R.id.txtGameSeries)
+            // this.txtCharacter = itemView.findViewById(R.id.txtCharacter);
             txtPath = itemView.findViewById(R.id.txtPath)
             txtUsage = itemView.findViewById(R.id.txtUsage)
             imageAmiibo = itemView.findViewById(R.id.imageAmiibo)
         }
 
-        fun bind(item: Amiibo?) {
-            amiibo = item
+        @SuppressLint("SetTextI18n")
+        fun bind(amiibo: EliteTag?) {
+            amiiboItem = amiibo
             txtPath?.isGone = true
             txtUsage?.isGone = true
-            var amiiboHexId = ""
+            var amiiboHexId: String? = ""
+            var amiiboName = ""
             var amiiboSeries = ""
             var amiiboType = ""
             var gameSeries = ""
+            // String character = "";
             var amiiboImageUrl: String? = null
-            when (amiibo) {
-                null -> {
-                    setAmiiboInfoText(txtName, TagMo.appContext.getString(R.string.empty_tag))
-                    txtError?.isGone = true
-                    txtTagId?.isGone = true
-                    txtAmiiboSeries?.isGone = true
-                    txtAmiiboType?.isGone = true
-                    txtGameSeries?.isGone = true
-                    return
-                }
-                is BluupTag -> {
-                    setAmiiboInfoText(txtName, TagMo.appContext.getString(R.string.blank_tag))
-                }
-                else -> {
-                    setAmiiboInfoText(txtName, amiibo?.name)
-                    amiiboImageUrl = amiibo?.imageUrl
-                }
+            val isAmiibo = null != amiibo?.manager
+            val query = settings.query?.lowercase(Locale.getDefault())
+            val value = (absoluteAdapterPosition + 1).toString()
+            if (isAmiibo) {
+                amiiboItem!!.index = absoluteAdapterPosition
+                amiiboHexId = Amiibo.idToHex(amiibo!!.id)
+                amiiboImageUrl = amiibo.imageUrl
+                amiibo.name?.let { name -> amiiboName = name }
+                amiibo.amiiboSeries?.let { series -> amiiboSeries = series.name }
+                amiibo.amiiboType?.let { type -> amiiboType = type.name }
+                amiibo.gameSeries?.let { series -> gameSeries = series.name }
+                setAmiiboInfoText(txtName, "$value: $amiiboName")
+            } else {
+                setAmiiboInfoText(
+                    txtName, TagMo.appContext.getString(R.string.blank_bank, value)
+                )
             }
             imageAmiibo?.let {
                 val imageTarget: CustomTarget<Bitmap?> = ImageTarget.getTarget(it)
@@ -152,46 +158,37 @@ class BluupSlotAdapter(
             }
             if (settings.amiiboView != VIEW.IMAGE.value) {
                 txtError?.isGone = true
-                if (amiibo is BluupTag) {
+                if (isAmiibo) {
+                    setAmiiboInfoText(txtTagId, boldSpannable.startsWith(amiiboHexId, query))
+                    setAmiiboInfoText(txtAmiiboSeries, boldSpannable.indexOf(amiiboSeries, query))
+                    setAmiiboInfoText(txtAmiiboType, boldSpannable.indexOf(amiiboType, query))
+                    setAmiiboInfoText(txtGameSeries, boldSpannable.indexOf(gameSeries, query))
+                } else {
                     txtTagId?.isGone = true
                     txtAmiiboSeries?.isGone = true
                     txtAmiiboType?.isGone = true
                     txtGameSeries?.isGone = true
-                } else {
-                    amiibo?.let {
-                        amiiboHexId = Amiibo.idToHex(it.id)
-                        it.amiiboSeries?.let { series -> amiiboSeries = series.name }
-                        it.amiiboType?.let { type -> amiiboType = type.name }
-                        it.gameSeries?.let { series -> gameSeries = series.name }
-                    }
-                    txtTagId?.isVisible = true
-                    txtAmiiboSeries?.isVisible = true
-                    txtAmiiboType?.isVisible = true
-                    txtGameSeries?.isVisible = true
-                    setAmiiboInfoText(txtTagId, amiiboHexId)
-                    setAmiiboInfoText(txtAmiiboSeries, amiiboSeries)
-                    setAmiiboInfoText(txtAmiiboType, amiiboType)
-                    setAmiiboInfoText(txtGameSeries, gameSeries)
-                    if (hasSpoofData(amiiboHexId)) txtTagId?.isEnabled = false
                 }
             }
         }
 
-        fun setAmiiboInfoText(textView: TextView?, text: CharSequence?) {
-            textView?.isVisible = true
-             if (!text.isNullOrEmpty()) {
-                textView?.text = text
-                textView?.isEnabled = true
-            } else {
-                textView?.setText(R.string.unknown)
-                textView?.isEnabled = false
+        private fun setAmiiboInfoText(textView: TextView?, text: CharSequence?) {
+            textView?.run {
+                isVisible = true
+                if (text.isNullOrEmpty()) {
+                    setText(R.string.unknown)
+                    isEnabled = false
+                } else {
+                    this.text = text
+                    isEnabled = true
+                }
             }
         }
     }
 
     internal class SimpleViewHolder(
         parent: ViewGroup, settings: BrowserSettings, listener: OnAmiiboClickListener?
-    ) : BluupViewHolder(
+    ) : AmiiboViewHolder(
         LayoutInflater.from(parent.context).inflate(
             R.layout.amiibo_simple_card, parent, false
         ),
@@ -200,7 +197,7 @@ class BluupSlotAdapter(
 
     internal class CompactViewHolder(
         parent: ViewGroup, settings: BrowserSettings, listener: OnAmiiboClickListener?
-    ) : BluupViewHolder(
+    ) : AmiiboViewHolder(
         LayoutInflater.from(parent.context).inflate(
             R.layout.amiibo_compact_card, parent, false
         ),
@@ -209,7 +206,7 @@ class BluupSlotAdapter(
 
     internal class LargeViewHolder(
         parent: ViewGroup, settings: BrowserSettings, listener: OnAmiiboClickListener?
-    ) : BluupViewHolder(
+    ) : AmiiboViewHolder(
         LayoutInflater.from(parent.context).inflate(
             R.layout.amiibo_large_card, parent, false
         ),
@@ -218,7 +215,7 @@ class BluupSlotAdapter(
 
     internal class ImageViewHolder(
         parent: ViewGroup, settings: BrowserSettings, listener: OnAmiiboClickListener?
-    ) : BluupViewHolder(
+    ) : AmiiboViewHolder(
         LayoutInflater.from(parent.context).inflate(
             R.layout.amiibo_image_card, parent, false
         ),
@@ -226,7 +223,8 @@ class BluupSlotAdapter(
     )
 
     interface OnAmiiboClickListener {
-        fun onAmiiboClicked(amiibo: Amiibo?, position: Int)
-        fun onAmiiboImageClicked(amiibo: Amiibo?)
+        fun onAmiiboClicked(amiibo: EliteTag?, position: Int)
+        fun onAmiiboImageClicked(amiibo: EliteTag?, position: Int)
+        fun onAmiiboLongClicked(amiibo: EliteTag?, position: Int): Boolean
     }
 }

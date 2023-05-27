@@ -1,4 +1,4 @@
-package com.hiddenramblings.tagmo.browser.adapter
+package com.hiddenramblings.tagmo.adapter
 
 import android.annotation.SuppressLint
 import android.graphics.Bitmap
@@ -19,8 +19,8 @@ import com.hiddenramblings.tagmo.R
 import com.hiddenramblings.tagmo.amiibo.Amiibo
 import com.hiddenramblings.tagmo.amiibo.AmiiboComparator
 import com.hiddenramblings.tagmo.amiibo.AmiiboManager
-import com.hiddenramblings.tagmo.browser.BrowserSettings
-import com.hiddenramblings.tagmo.browser.BrowserSettings.*
+import com.hiddenramblings.tagmo.BrowserSettings
+import com.hiddenramblings.tagmo.BrowserSettings.*
 import com.hiddenramblings.tagmo.eightbit.request.ImageTarget
 import com.hiddenramblings.tagmo.eightbit.widget.BoldSpannable
 import me.zhanghai.android.fastscroll.PopupTextProvider
@@ -152,7 +152,7 @@ class FoomiiboAdapter(
 
     override fun getFilter(): FoomiiboFilter {
         if (null == filter) filter = FoomiiboFilter()
-        return filter as FoomiiboAdapter.FoomiiboFilter
+        return filter as FoomiiboFilter
     }
 
     inner class FoomiiboFilter : Filter() {

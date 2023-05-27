@@ -13,7 +13,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
 import com.hiddenramblings.tagmo.GlideApp
-import com.hiddenramblings.tagmo.Preferences
 import com.hiddenramblings.tagmo.R
 import com.hiddenramblings.tagmo.TagMo
 import com.hiddenramblings.tagmo.amiibo.Amiibo
@@ -27,7 +26,7 @@ import com.hiddenramblings.tagmo.browser.adapter.BluupSlotAdapter.BluupViewHolde
 class BluupSlotAdapter(
     private val settings: BrowserSettings, private val listener: OnAmiiboClickListener
 ) : RecyclerView.Adapter<BluupViewHolder>(), BrowserSettingsListener {
-    var mPrefs = Preferences(TagMo.appContext)
+
     private var bluupAmiibo: ArrayList<Amiibo?> = arrayListOf()
     fun setBluupAmiibo(amiibo: ArrayList<Amiibo?>) {
         bluupAmiibo = amiibo

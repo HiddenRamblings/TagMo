@@ -267,9 +267,9 @@ class PuckGattService : Service() {
         mBluetoothGatt?.disconnect()
     }
 
-    private fun setResponseDescriptors(characteristic: BluetoothGattCharacteristic?) {
+    private fun setResponseDescriptors(characteristic: BluetoothGattCharacteristic) {
         try {
-            val descriptorTX = characteristic!!.getDescriptor(
+            val descriptorTX = characteristic.getDescriptor(
                 UUID.fromString("00002902-0000-1000-8000-00805f9b34fb")
             )
             val value = BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE
@@ -281,7 +281,7 @@ class PuckGattService : Service() {
             }
         } catch (ignored: Exception) { }
         try {
-            val descriptorTX = characteristic!!.getDescriptor(
+            val descriptorTX = characteristic.getDescriptor(
                 UUID.fromString("00002902-0000-1000-8000-00805f9b34fb")
             )
             val value = BluetoothGattDescriptor.ENABLE_INDICATION_VALUE
@@ -302,7 +302,7 @@ class PuckGattService : Service() {
      */
     @Suppress("SameParameterValue")
     private fun setCharacteristicNotification(
-        characteristic: BluetoothGattCharacteristic?, enabled: Boolean
+        characteristic: BluetoothGattCharacteristic, enabled: Boolean
     ) {
         if (mBluetoothAdapter == null || mBluetoothGatt == null) {
             return
@@ -355,7 +355,7 @@ class PuckGattService : Service() {
         } else {
             mCharacteristicRX = getCharacteristicRX(mCustomService)
         }
-        setCharacteristicNotification(mCharacteristicRX, true)
+        mCharacteristicRX?.let { setCharacteristicNotification(it, true) }
     }
 
     private fun getCharacteristicTX(mCustomService: BluetoothGattService): BluetoothGattCharacteristic {
@@ -391,7 +391,7 @@ class PuckGattService : Service() {
         } else {
             mCharacteristicTX = getCharacteristicTX(mCustomService)
         }
-        setCharacteristicNotification(mCharacteristicTX, true)
+        mCharacteristicTX?.let { setCharacteristicNotification(it, true) }
     }
 
     private fun delayedWriteCharacteristic(value: ByteArray) {

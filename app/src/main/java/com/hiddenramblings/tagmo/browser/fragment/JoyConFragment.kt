@@ -27,6 +27,7 @@ import com.mumumusuc.libjoycon.BluetoothHelper.StateChangedCallback
 class JoyConFragment : DialogFragment(), BluetoothListener {
     private var bluetoothHandler: BluetoothHandler? = null
     private var bluetoothHelper: BluetoothHelper? = null
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,

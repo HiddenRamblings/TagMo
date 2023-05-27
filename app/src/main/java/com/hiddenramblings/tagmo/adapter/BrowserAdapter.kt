@@ -16,6 +16,8 @@ import androidx.core.view.isGone
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.request.target.CustomTarget
+import com.hiddenramblings.tagmo.BrowserSettings
+import com.hiddenramblings.tagmo.BrowserSettings.*
 import com.hiddenramblings.tagmo.GlideApp
 import com.hiddenramblings.tagmo.Preferences
 import com.hiddenramblings.tagmo.R
@@ -24,8 +26,6 @@ import com.hiddenramblings.tagmo.amiibo.Amiibo
 import com.hiddenramblings.tagmo.amiibo.AmiiboFile
 import com.hiddenramblings.tagmo.amiibo.AmiiboFileComparator
 import com.hiddenramblings.tagmo.amiibo.AmiiboManager.hasSpoofData
-import com.hiddenramblings.tagmo.BrowserSettings
-import com.hiddenramblings.tagmo.BrowserSettings.*
 import com.hiddenramblings.tagmo.eightbit.os.Storage
 import com.hiddenramblings.tagmo.eightbit.os.Version
 import com.hiddenramblings.tagmo.eightbit.request.ImageTarget

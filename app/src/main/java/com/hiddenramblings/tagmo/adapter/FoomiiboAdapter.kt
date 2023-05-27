@@ -14,13 +14,13 @@ import androidx.core.view.isGone
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.request.target.CustomTarget
+import com.hiddenramblings.tagmo.BrowserSettings
+import com.hiddenramblings.tagmo.BrowserSettings.*
 import com.hiddenramblings.tagmo.GlideApp
 import com.hiddenramblings.tagmo.R
 import com.hiddenramblings.tagmo.amiibo.Amiibo
 import com.hiddenramblings.tagmo.amiibo.AmiiboComparator
 import com.hiddenramblings.tagmo.amiibo.AmiiboManager
-import com.hiddenramblings.tagmo.BrowserSettings
-import com.hiddenramblings.tagmo.BrowserSettings.*
 import com.hiddenramblings.tagmo.eightbit.request.ImageTarget
 import com.hiddenramblings.tagmo.eightbit.widget.BoldSpannable
 import me.zhanghai.android.fastscroll.PopupTextProvider

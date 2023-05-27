@@ -23,6 +23,7 @@ import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
 import androidx.preference.SwitchPreferenceCompat
 import com.google.android.material.snackbar.Snackbar
+import com.hiddenramblings.tagmo.BrowserActivity
 import com.hiddenramblings.tagmo.GlideApp
 import com.hiddenramblings.tagmo.GlideTagModule
 import com.hiddenramblings.tagmo.NFCIntent.FilterComponent
@@ -35,14 +36,13 @@ import com.hiddenramblings.tagmo.amiibo.AmiiboManager.parse
 import com.hiddenramblings.tagmo.amiibo.AmiiboManager.parseAmiiboAPI
 import com.hiddenramblings.tagmo.amiibo.AmiiboManager.saveDatabase
 import com.hiddenramblings.tagmo.amiibo.KeyManager
-import com.hiddenramblings.tagmo.BrowserActivity
 import com.hiddenramblings.tagmo.eightbit.io.Debug
 import com.hiddenramblings.tagmo.eightbit.material.IconifiedSnackbar
 import com.hiddenramblings.tagmo.eightbit.net.JSONExecutor
 import com.hiddenramblings.tagmo.eightbit.os.Version
+import com.hiddenramblings.tagmo.eightbit.widget.Toasty
 import com.hiddenramblings.tagmo.nfctech.TagArray
 import com.hiddenramblings.tagmo.security.SecurityHandler
-import com.hiddenramblings.tagmo.eightbit.widget.Toasty
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch

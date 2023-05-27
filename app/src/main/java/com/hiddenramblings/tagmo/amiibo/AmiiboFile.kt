@@ -8,6 +8,10 @@ import com.hiddenramblings.tagmo.eightbit.io.Debug
 import com.hiddenramblings.tagmo.eightbit.os.Version
 import com.hiddenramblings.tagmo.nfctech.Foomiibo
 import com.hiddenramblings.tagmo.nfctech.TagArray
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.coroutineScope
 import java.io.File
 
 open class AmiiboFile : Parcelable {
@@ -51,20 +55,23 @@ open class AmiiboFile : Parcelable {
         data = ByteArray(parcel.readInt()).also { parcel.readByteArray(it) }
     }
 
-    fun withRandomSerials(keyManager: KeyManager, count: Int) : ArrayList<AmiiboData> {
-        val tagData = TagArray.getValidatedAmiibo(keyManager, this)
-        val amiiboData = AmiiboData(keyManager.decrypt(tagData))
+    suspend fun withRandomSerials(keyManager: KeyManager, count: Int) : ArrayList<AmiiboData> {
         val dataList: ArrayList<AmiiboData> = arrayListOf()
-        for (i in 0 until count) {
-            val newAmiiboData = try {
-                amiiboData.apply {
-                    uID = Foomiibo.generateRandomUID()
+        coroutineScope {
+            val tagData = TagArray.getValidatedAmiibo(keyManager, this@AmiiboFile)
+            (0 until count).map {
+                async(Dispatchers.IO) {
+                    val newAmiiboData = try {
+                        AmiiboData(keyManager.decrypt(tagData)).apply {
+                            uID = Foomiibo.generateRandomUID()
+                        }
+                    } catch (e: Exception) {
+                        Debug.warn(e)
+                        null
+                    }
+                    newAmiiboData?.let { dataList.add(it) }
                 }
-            } catch (e: Exception) {
-                Debug.warn(e)
-                null
-            }
-            newAmiiboData?.let { dataList.add(i, it) }
+            }.awaitAll()
         }
         return dataList
     }

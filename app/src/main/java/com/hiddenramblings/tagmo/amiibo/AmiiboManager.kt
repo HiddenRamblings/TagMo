@@ -9,6 +9,10 @@ import com.hiddenramblings.tagmo.R
 import com.hiddenramblings.tagmo.eightbit.io.Debug
 import com.hiddenramblings.tagmo.eightbit.os.Storage
 import com.hiddenramblings.tagmo.nfctech.TagArray
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.coroutineScope
 import org.json.JSONException
 import org.json.JSONObject
 import java.io.*
@@ -314,46 +318,59 @@ object AmiiboManager {
                 && (spoofRange == "0000" || spoofRange == "ffff"))
     }
 
-    fun listAmiiboFiles(
+    suspend fun listAmiiboFiles(
         keyManager: KeyManager?, rootFolder: File?, recursiveFiles: Boolean
     ): ArrayList<AmiiboFile?> {
         val amiiboFiles = ArrayList<AmiiboFile?>()
         val files = rootFolder?.listFiles { _: File?, name: String -> binFileMatches(name) }
         if (!files.isNullOrEmpty()) {
-            files.forEach { file ->
-                try {
-                    TagArray.getValidatedFile(keyManager, file).also { data ->
-                        data?.let { amiiboFiles.add(AmiiboFile(file, Amiibo.dataToId(it), it)) }
+            coroutineScope {
+                files.map { file ->
+                    async(Dispatchers.IO) {
+                        try {
+                            TagArray.getValidatedFile(keyManager, file).also { data ->
+                                data?.let { amiiboFiles.add(AmiiboFile(file, Amiibo.dataToId(it), it)) }
+                            }
+                        } catch (e: Exception) { Debug.info(e) }
                     }
-                } catch (e: Exception) { Debug.info(e) }
+                }.awaitAll()
             }
         } else if (recursiveFiles) {
             val directories = rootFolder?.listFiles()
             if (directories.isNullOrEmpty()) return amiiboFiles
-            directories.forEach {
-                if (it.isDirectory)
-                    amiiboFiles.addAll(listAmiiboFiles(keyManager, it, true))
+            coroutineScope {
+                directories.map {
+                    async(Dispatchers.IO) {
+                        if (it.isDirectory) {
+                            amiiboFiles.addAll(listAmiiboFiles(keyManager, it, true))
+                        }
+                    }
+                }.awaitAll()
             }
         }
         return amiiboFiles
     }
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
-    fun listAmiiboDocuments(
+    suspend fun listAmiiboDocuments(
         context: Context?, keyManager: KeyManager?,
         rootFolder: DocumentFile, recursiveFiles: Boolean
     ): ArrayList<AmiiboFile?> {
         return arrayListOf<AmiiboFile?>().apply {
             val uris = context?.let { AmiiboDocument(it).listFiles(rootFolder.uri, recursiveFiles) }
             if (uris.isNullOrEmpty()) return this
-            uris.forEach { uri ->
-                try {
-                    TagArray.getValidatedDocument(keyManager, uri)?.also { data ->
-                        add(AmiiboFile(
-                            DocumentFile.fromSingleUri(context, uri), Amiibo.dataToId(data), data
-                        ))
+            coroutineScope {
+                uris.map { uri ->
+                    async(Dispatchers.IO) {
+                        try {
+                            TagArray.getValidatedDocument(keyManager, uri)?.also { data ->
+                                add(AmiiboFile(
+                                    DocumentFile.fromSingleUri(context, uri), Amiibo.dataToId(data), data
+                                ))
+                            }
+                        } catch (e: Exception) { Debug.info(e) }
                     }
-                } catch (e: Exception) { Debug.info(e) }
+                }.awaitAll()
             }
         }
     }

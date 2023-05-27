@@ -10,16 +10,16 @@ import androidx.core.view.isGone
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.request.target.CustomTarget
-import com.hiddenramblings.tagmo.GlideApp
-import com.hiddenramblings.tagmo.R
-import com.hiddenramblings.tagmo.TagMo
-import com.hiddenramblings.tagmo.amiibo.Amiibo
-import com.hiddenramblings.tagmo.amiibo.AmiiboManager.hasSpoofData
-import com.hiddenramblings.tagmo.amiibo.BluupTag
 import com.hiddenramblings.tagmo.BrowserSettings
 import com.hiddenramblings.tagmo.BrowserSettings.BrowserSettingsListener
 import com.hiddenramblings.tagmo.BrowserSettings.VIEW
+import com.hiddenramblings.tagmo.GlideApp
+import com.hiddenramblings.tagmo.R
+import com.hiddenramblings.tagmo.TagMo
 import com.hiddenramblings.tagmo.adapter.BluupSlotAdapter.BluupViewHolder
+import com.hiddenramblings.tagmo.amiibo.Amiibo
+import com.hiddenramblings.tagmo.amiibo.AmiiboManager.hasSpoofData
+import com.hiddenramblings.tagmo.amiibo.BluupTag
 import com.hiddenramblings.tagmo.eightbit.request.ImageTarget
 
 class BluupSlotAdapter(

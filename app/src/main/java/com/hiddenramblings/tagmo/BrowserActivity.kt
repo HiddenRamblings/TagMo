@@ -52,7 +52,10 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
 import com.hiddenramblings.tagmo.*
+import com.hiddenramblings.tagmo.BrowserSettings.*
 import com.hiddenramblings.tagmo.NFCIntent.FilterComponent
+import com.hiddenramblings.tagmo.adapter.BrowserAdapter
+import com.hiddenramblings.tagmo.adapter.FoomiiboAdapter
 import com.hiddenramblings.tagmo.amiibo.*
 import com.hiddenramblings.tagmo.amiibo.AmiiboManager.binFileMatches
 import com.hiddenramblings.tagmo.amiibo.AmiiboManager.getAmiiboManager
@@ -62,12 +65,6 @@ import com.hiddenramblings.tagmo.amiibo.AmiiboManager.listAmiiboFiles
 import com.hiddenramblings.tagmo.amiibo.games.GamesManager
 import com.hiddenramblings.tagmo.amiibo.games.GamesManager.Companion.getGamesManager
 import com.hiddenramblings.tagmo.amiibo.tagdata.TagDataEditor
-import com.hiddenramblings.tagmo.BrowserSettings.*
-import com.hiddenramblings.tagmo.adapter.BrowserAdapter
-import com.hiddenramblings.tagmo.adapter.FoomiiboAdapter
-import com.hiddenramblings.tagmo.fragment.BrowserFragment
-import com.hiddenramblings.tagmo.fragment.JoyConFragment.Companion.newInstance
-import com.hiddenramblings.tagmo.fragment.SettingsFragment
 import com.hiddenramblings.tagmo.eightbit.io.Debug
 import com.hiddenramblings.tagmo.eightbit.material.IconifiedSnackbar
 import com.hiddenramblings.tagmo.eightbit.os.Storage
@@ -75,7 +72,10 @@ import com.hiddenramblings.tagmo.eightbit.os.Version
 import com.hiddenramblings.tagmo.eightbit.request.ImageTarget
 import com.hiddenramblings.tagmo.eightbit.view.AnimatedLinearLayout
 import com.hiddenramblings.tagmo.eightbit.viewpager.*
-import com.shawnlin.numberpicker.NumberPicker
+import com.hiddenramblings.tagmo.eightbit.widget.Toasty
+import com.hiddenramblings.tagmo.fragment.BrowserFragment
+import com.hiddenramblings.tagmo.fragment.JoyConFragment.Companion.newInstance
+import com.hiddenramblings.tagmo.fragment.SettingsFragment
 import com.hiddenramblings.tagmo.hexcode.HexCodeViewer
 import com.hiddenramblings.tagmo.nfctech.Foomiibo
 import com.hiddenramblings.tagmo.nfctech.NfcActivity
@@ -85,7 +85,7 @@ import com.hiddenramblings.tagmo.nfctech.TagReader
 import com.hiddenramblings.tagmo.qrcode.QRCodeScanner
 import com.hiddenramblings.tagmo.update.UpdateManager
 import com.hiddenramblings.tagmo.wave9.DimensionActivity
-import com.hiddenramblings.tagmo.eightbit.widget.Toasty
+import com.shawnlin.numberpicker.NumberPicker
 import eightbitlab.com.blurview.BlurView
 import kotlinx.coroutines.*
 import org.json.JSONException
@@ -2025,10 +2025,11 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                         getString(R.string.delete_file, relativeFile), Snackbar.LENGTH_SHORT
                     ).show()
                     dialog.dismiss()
-                    settings?.let {
-                        it.amiiboFiles.remove(amiiboFile)
-                        it.notifyChanges()
-                    } ?: onRootFolderChanged(true)
+//                    settings?.let {
+//                        it.amiiboFiles.remove(amiiboFile)
+//                        it.notifyChanges()
+//                    } ?: onRootFolderChanged(true)
+                    onRootFolderChanged(true)
                 }
                 .setNegativeButton(R.string.cancel) { dialog: DialogInterface, _: Int -> dialog.dismiss() }
                 .show()

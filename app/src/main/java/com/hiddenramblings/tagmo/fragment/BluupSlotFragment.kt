@@ -50,6 +50,10 @@ import com.hiddenramblings.tagmo.eightbit.request.ImageTarget
 import com.hiddenramblings.tagmo.eightbit.widget.Toasty
 import com.hiddenramblings.tagmo.nfctech.TagArray
 import com.shawnlin.numberpicker.NumberPicker
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
@@ -492,8 +496,13 @@ open class BluupSlotFragment : Fragment(), BluupSlotAdapter.OnAmiiboClickListene
                             if (!amiiboList.isNullOrEmpty()) writeAmiiboFileCollection(amiiboList)
                         }
                         override fun onAmiiboDataClicked(amiiboFile: AmiiboFile?, count: Int) {
-                            amiiboFile?.let {
-                                writeAmiiboDataCollection(it.withRandomSerials(keyManager, count))
+                            CoroutineScope(Dispatchers.IO).launch {
+                                amiiboFile?.let {
+                                    val amiiboData = it.withRandomSerials(keyManager, count)
+                                    withContext(Dispatchers.Main) {
+                                        writeAmiiboDataCollection(amiiboData)
+                                    }
+                                }
                             }
                         }
                     }, count, writeSerials?.isChecked ?: false)

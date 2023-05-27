@@ -15,12 +15,11 @@ import androidx.core.view.isGone
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.request.target.CustomTarget
 import com.hiddenramblings.tagmo.*
+import com.hiddenramblings.tagmo.BrowserSettings.BrowserSettingsListener
+import com.hiddenramblings.tagmo.BrowserSettings.VIEW
 import com.hiddenramblings.tagmo.amiibo.Amiibo
 import com.hiddenramblings.tagmo.amiibo.AmiiboFile
 import com.hiddenramblings.tagmo.amiibo.AmiiboFileComparator
-import com.hiddenramblings.tagmo.BrowserSettings
-import com.hiddenramblings.tagmo.BrowserSettings.BrowserSettingsListener
-import com.hiddenramblings.tagmo.BrowserSettings.VIEW
 import com.hiddenramblings.tagmo.eightbit.os.Storage
 import com.hiddenramblings.tagmo.eightbit.os.Version
 import com.hiddenramblings.tagmo.eightbit.request.ImageTarget

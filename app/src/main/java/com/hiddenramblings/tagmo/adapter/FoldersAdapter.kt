@@ -6,11 +6,11 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.hiddenramblings.tagmo.BrowserSettings
+import com.hiddenramblings.tagmo.BrowserSettings.BrowserSettingsListener
 import com.hiddenramblings.tagmo.Preferences
 import com.hiddenramblings.tagmo.R
 import com.hiddenramblings.tagmo.TagMo
-import com.hiddenramblings.tagmo.BrowserSettings
-import com.hiddenramblings.tagmo.BrowserSettings.BrowserSettingsListener
 import com.hiddenramblings.tagmo.adapter.FoldersAdapter.FolderViewHolder
 import com.hiddenramblings.tagmo.eightbit.os.Storage
 import java.io.File

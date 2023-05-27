@@ -36,11 +36,16 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.request.target.CustomTarget
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetBehavior.BottomSheetCallback
+import com.hiddenramblings.tagmo.BrowserActivity
+import com.hiddenramblings.tagmo.BrowserSettings
 import com.hiddenramblings.tagmo.GlideApp
+import com.hiddenramblings.tagmo.ImageActivity
 import com.hiddenramblings.tagmo.NFCIntent
 import com.hiddenramblings.tagmo.Preferences
 import com.hiddenramblings.tagmo.R
 import com.hiddenramblings.tagmo.TagMo
+import com.hiddenramblings.tagmo.adapter.EliteBankAdapter
+import com.hiddenramblings.tagmo.adapter.WriteTagAdapter
 import com.hiddenramblings.tagmo.amiibo.Amiibo
 import com.hiddenramblings.tagmo.amiibo.AmiiboFile
 import com.hiddenramblings.tagmo.amiibo.AmiiboManager.getAmiiboManager
@@ -48,19 +53,17 @@ import com.hiddenramblings.tagmo.amiibo.EliteTag
 import com.hiddenramblings.tagmo.amiibo.KeyManager
 import com.hiddenramblings.tagmo.amiibo.tagdata.AmiiboData
 import com.hiddenramblings.tagmo.amiibo.tagdata.TagDataEditor
-import com.hiddenramblings.tagmo.BrowserActivity
-import com.hiddenramblings.tagmo.BrowserSettings
-import com.hiddenramblings.tagmo.ImageActivity
-import com.hiddenramblings.tagmo.adapter.EliteBankAdapter
-import com.hiddenramblings.tagmo.adapter.WriteTagAdapter
 import com.hiddenramblings.tagmo.eightbit.io.Debug
 import com.hiddenramblings.tagmo.eightbit.request.ImageTarget
-import com.shawnlin.numberpicker.NumberPicker
+import com.hiddenramblings.tagmo.eightbit.widget.Toasty
 import com.hiddenramblings.tagmo.hexcode.HexCodeViewer
 import com.hiddenramblings.tagmo.nfctech.NfcActivity
 import com.hiddenramblings.tagmo.nfctech.TagArray
-import com.hiddenramblings.tagmo.eightbit.widget.Toasty
-import com.shawnlin.numberpicker.NumberPicker.OnValueChangeListener
+import com.shawnlin.numberpicker.NumberPicker
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.json.JSONException
 import java.io.IOException
 import java.text.ParseException
@@ -179,8 +182,13 @@ class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
                             if (!amiiboList.isNullOrEmpty()) writeAmiiboFileCollection(amiiboList)
                         }
                         override fun onAmiiboDataClicked(amiiboFile: AmiiboFile?, count: Int) {
-                            amiiboFile?.let {
-                                writeAmiiboDataCollection(it.withRandomSerials(keyManager, count))
+                            CoroutineScope(Dispatchers.IO).launch {
+                                amiiboFile?.let {
+                                    val amiiboData = it.withRandomSerials(keyManager, count)
+                                    withContext(Dispatchers.Main) {
+                                        writeAmiiboDataCollection(amiiboData)
+                                    }
+                                }
                             }
                         }
                     }, count, writeSerials?.isChecked ?: false)

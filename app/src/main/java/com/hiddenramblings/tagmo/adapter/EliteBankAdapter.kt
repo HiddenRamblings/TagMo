@@ -21,7 +21,7 @@ import com.hiddenramblings.tagmo.TagMo
 import com.hiddenramblings.tagmo.amiibo.Amiibo
 import com.hiddenramblings.tagmo.amiibo.EliteTag
 import com.hiddenramblings.tagmo.eightbit.request.ImageTarget
-import com.hiddenramblings.tagmo.eightbit.widget.BoldSpannable
+import com.hiddenramblings.tagmo.widget.BoldSpannable
 import java.util.*
 
 class EliteBankAdapter(

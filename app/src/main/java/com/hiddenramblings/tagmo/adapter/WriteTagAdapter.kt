@@ -23,7 +23,7 @@ import com.hiddenramblings.tagmo.amiibo.AmiiboFileComparator
 import com.hiddenramblings.tagmo.eightbit.os.Storage
 import com.hiddenramblings.tagmo.eightbit.os.Version
 import com.hiddenramblings.tagmo.eightbit.request.ImageTarget
-import com.hiddenramblings.tagmo.eightbit.widget.BoldSpannable
+import com.hiddenramblings.tagmo.widget.BoldSpannable
 import java.util.*
 
 class WriteTagAdapter(private val settings: BrowserSettings?) :

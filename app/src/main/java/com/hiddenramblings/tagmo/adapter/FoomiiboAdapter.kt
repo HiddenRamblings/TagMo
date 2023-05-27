@@ -22,7 +22,7 @@ import com.hiddenramblings.tagmo.amiibo.Amiibo
 import com.hiddenramblings.tagmo.amiibo.AmiiboComparator
 import com.hiddenramblings.tagmo.amiibo.AmiiboManager
 import com.hiddenramblings.tagmo.eightbit.request.ImageTarget
-import com.hiddenramblings.tagmo.eightbit.widget.BoldSpannable
+import com.hiddenramblings.tagmo.widget.BoldSpannable
 import me.zhanghai.android.fastscroll.PopupTextProvider
 import java.util.*
 

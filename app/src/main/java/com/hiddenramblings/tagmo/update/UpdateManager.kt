@@ -32,7 +32,7 @@ import com.hiddenramblings.tagmo.eightbit.io.Debug
 import com.hiddenramblings.tagmo.eightbit.net.JSONExecutor
 import com.hiddenramblings.tagmo.eightbit.os.Storage
 import com.hiddenramblings.tagmo.eightbit.os.Version
-import com.hiddenramblings.tagmo.eightbit.widget.Toasty
+import com.hiddenramblings.tagmo.widget.Toasty
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -41,6 +41,7 @@ import org.json.JSONException
 import org.json.JSONObject
 import org.json.JSONTokener
 import java.io.File
+import java.io.FileNotFoundException
 import java.io.FileOutputStream
 import java.io.IOException
 import java.net.URL
@@ -117,8 +118,13 @@ class UpdateManager internal constructor(activity: BrowserActivity) {
             val apk = File(
                 browserActivity.externalCacheDir, apkUrl.substringAfterLast(File.separator)
             )
-            URL(apkUrl).openStream().use { stream ->
-                FileOutputStream(apk).use { stream.copyTo(it) }
+            try {
+                URL(apkUrl).openStream().use { stream ->
+                    FileOutputStream(apk).use { stream.copyTo(it) }
+                }
+            } catch (fnf: FileNotFoundException) {
+                Debug.warn(fnf)
+                return@launch
             }
             if (!apk.name.lowercase().endsWith(".apk")) apk.delete()
             try {

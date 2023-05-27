@@ -72,7 +72,7 @@ import com.hiddenramblings.tagmo.eightbit.os.Version
 import com.hiddenramblings.tagmo.eightbit.request.ImageTarget
 import com.hiddenramblings.tagmo.eightbit.view.AnimatedLinearLayout
 import com.hiddenramblings.tagmo.eightbit.viewpager.*
-import com.hiddenramblings.tagmo.eightbit.widget.Toasty
+import com.hiddenramblings.tagmo.widget.Toasty
 import com.hiddenramblings.tagmo.fragment.BrowserFragment
 import com.hiddenramblings.tagmo.fragment.JoyConFragment.Companion.newInstance
 import com.hiddenramblings.tagmo.fragment.SettingsFragment
@@ -818,7 +818,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
         subMenu?.clear() ?: return true
         val amiiboManager = settings?.amiiboManager ?: return true
         val items: ArrayList<String> = arrayListOf()
-        amiiboManager.amiibos.values?.forEach {
+        amiiboManager.amiibos.values.forEach {
             it.character?.let { character ->
                 if (Amiibo.matchesGameSeriesFilter(
                         it.gameSeries, settings!!.getFilter(FILTER.GAME_SERIES)
@@ -2341,21 +2341,29 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                 hideFakeSnackbar()
                 onShowSettingsFragment()
             } else {
-                uris.forEach { uri ->
-                    try {
-                        try {
-                            contentResolver.openInputStream(uri)?.use { inputStream ->
+                coroutineScope {
+                    uris.map { uri ->
+                        async(Dispatchers.IO) {
+                            try {
                                 try {
-                                    keyManager.evaluateKey(inputStream)
-                                } catch (ex: Exception) {
-                                    onShowSettingsFragment()
-                                }
-                                hideFakeSnackbar()
-                            }
-                        } catch (e: Exception) { Debug.warn(e) }
-                    } catch (e: Exception) { Debug.info(e) }
+                                    contentResolver.openInputStream(uri)?.use { inputStream ->
+                                        try {
+                                            keyManager.evaluateKey(inputStream)
+                                        } catch (ex: Exception) {
+                                            onShowSettingsFragment()
+                                        }
+                                        hideFakeSnackbar()
+                                    }
+                                } catch (e: Exception) { Debug.warn(e) }
+                            } catch (e: Exception) { Debug.info(e) }
+                        }
+                    }.awaitAll()
                 }
+                if (keyManager.isKeyMissing()) {
+                    onShowSettingsFragment()
+                    hideFakeSnackbar()
                 }
+            }
         } ?: {
             hideFakeSnackbar()
             onShowSettingsFragment()
@@ -2374,24 +2382,33 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                                 onShowSettingsFragment()
                             }
                         } else {
-                            directories.forEach {
-                                if (it.isDirectory) locateKeyFilesRecursive(it, false)
+                            coroutineScope {
+                                directories.map {
+                                    async(Dispatchers.IO) {
+                                        if (it.isDirectory) locateKeyFilesRecursive(it, false)
+                                    }
+                                }.awaitAll()
                             }
                         }
                     }
                 } else {
-                    files.forEach {
-                        try {
-                            FileInputStream(it).use { inputStream ->
+                    coroutineScope {
+                        files.map { file ->
+                            async(Dispatchers.IO) {
                                 try {
-                                    keyManager.evaluateKey(inputStream)
-                                } catch (ex: Exception) {
-                                    onShowSettingsFragment()
-                                }
-                                hideFakeSnackbar()
+                                    FileInputStream(file).use { inputStream ->
+                                        try {
+                                            keyManager.evaluateKey(inputStream)
+                                        } catch (ignored: Exception) { }
+                                    }
+                                } catch (e: Exception) { Debug.warn(e) }
                             }
-                        } catch (e: Exception) { Debug.warn(e) }
-                    }
+                        }
+                    }.awaitAll()
+                }
+                if (keyManager.isKeyMissing()) {
+                    onShowSettingsFragment()
+                    hideFakeSnackbar()
                 }
             } ?: {
                 if (isRoot) {
@@ -2413,19 +2430,24 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                     else
                         locateKeyFilesRecursive(Storage.getFile(prefs.preferEmulated()), true)
                 } else {
-                    files.forEach { file ->
-                        try {
-                            FileInputStream(file).use { inputStream ->
+                    coroutineScope {
+                        files.map { file ->
+                            async(Dispatchers.IO) {
                                 try {
-                                    keyManager.evaluateKey(inputStream)
-                                } catch (ex: Exception) {
-                                    onShowSettingsFragment()
+                                    FileInputStream(file).use { inputStream ->
+                                        try {
+                                            keyManager.evaluateKey(inputStream)
+                                        } catch (ignored: Exception) { }
+                                    }
+                                } catch (e: Exception) {
+                                    Debug.warn(e)
                                 }
-                                hideFakeSnackbar()
                             }
-                        } catch (e: Exception) {
-                            Debug.warn(e)
-                        }
+                        }.awaitAll()
+                    }
+                    if (keyManager.isKeyMissing()) {
+                        onShowSettingsFragment()
+                        hideFakeSnackbar()
                     }
                 }
             }
@@ -2446,7 +2468,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
     }
 
     @RequiresApi(api = Build.VERSION_CODES.R)
-    var onRequestScopedStorage = registerForActivityResult(
+    val onRequestScopedStorage = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
     ) {
         if (Environment.isExternalStorageManager()) {

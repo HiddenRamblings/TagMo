@@ -30,7 +30,7 @@ Additional thanks go out to (alphabetically):
 
 ### Hardware
 * Catflap62 - N2 Elite
-* withgallantry - [Bluup Flask](https://www.bluuplabs.com/flask/)
+* withgallantry - [Bluup Flask](https://www.bluuplabs.com/)
 
 ### Miscellaneous
 * \_Tim\_ - [DIY amiibo cards](https://gbatemp.net/threads/diy-amiibo-cards.406978/)

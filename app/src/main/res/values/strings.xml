@@ -207,7 +207,7 @@
 
     <string name="menu_amiibo">Backup Browser</string>
     <string name="menu_elite">N2 Elite Browser</string>
-    <string name="menu_flask">Bluetooth Browser</string>
+    <string name="menu_gatt">Bluetooth Browser</string>
     <string name="menu_qr_code">QR Code Toolkit</string>
     <string name="menu_dimensions">Dimensions 213</string>
     <string name="menu_joystick">Joystick Testing</string>
@@ -297,13 +297,13 @@
     <string name="power_tag_reset">Power Tags last used with PowerSaves require a reset.</string>
 
     <string name="custom_tab_back">Back to TagMo</string>
-    <string name="flask_purchase">Purchase a Bluup Device</string>
-    <string name="flask_missing">No nearby GATT devices located!</string>
+    <string name="bluup_purchase">Purchase a Bluup Device</string>
+    <string name="gatt_missing">No nearby GATT devices located!</string>
     <string name="device_invalid">Not a valid GATT device!</string>
-    <string name="flask_scanning">Scanning for Bluetooth GATT&#8230;</string>
-    <string name="flask_located">Connecting to Bluetooth GATT&#8230;</string>
-    <string name="flask_disconnect">GATT device connection lost!</string>
-    <string name="flask_count">Slot %1$s Active, %2$d Slots Occupied</string>
+    <string name="gatt_scanning">Scanning for Bluetooth GATT&#8230;</string>
+    <string name="gatt_located">Connecting to Bluetooth GATT&#8230;</string>
+    <string name="gatt_disconnect">GATT device connection lost!</string>
+    <string name="gatt_count">Slot %1$s Active, %2$d Slots Occupied</string>
     <string name="write_slot_file">Upload binary to GATT device</string>
     <string name="write_slots">Write %1$d slots</string>
     <string name="erase_slots">Erase %1$d slots</string>
@@ -312,8 +312,8 @@
     <string name="create_blank">Create blank virtual NFC tag</string>
     <string name="gatt_erase_confirm">Erase all slots from GATT device?</string>
     <string name="gatt_write_confirm">Write selections to GATT device?</string>
-    <string name="flask_upload">Uploading binary&#8230;</string>
-    <string name="flask_remove">Wiping slot data&#8230;</string>
+    <string name="gatt_upload">Uploading binary&#8230;</string>
+    <string name="gatt_remove">Wiping slot data&#8230;</string>
     <string name="fail_bluetooth_adapter">Bluetooth adapter unavailable!</string>
     <string name="tiramisu_bluetooth">Android 13 requires manually enabling Bluetooth. Open Settings to enable Bluetooth?</string>
     <string name="fail_permissions">Required permission denied by user!</string>

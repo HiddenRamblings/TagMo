@@ -225,7 +225,7 @@
     <string name="custom_tab_back">Retour à TagMo</string>
 
     <string name="create_blank">Créer un Tag NFC virtuel vide</string>
-    <string name="flask_upload">Téléversement de binaire&#8230;</string>
+    <string name="gatt_upload">Téléversement de binaire&#8230;</string>
     <string name="location_disclosure">L’emplacement est requis pour l’analyse Bluetooth LE. Conformément à la politique de Google Play, TagMo est tenu de vous informer que des données de localisation peuvent être collectées en arrière-plan. TagMo ne lit, ne stocke ni ne partage les données de localisation. En tant que tel, cet avis est strictement une formalité.</string>
 
     <string name="data_write">Données principales écrites</string>

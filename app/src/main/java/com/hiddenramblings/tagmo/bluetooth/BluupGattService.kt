@@ -69,8 +69,8 @@ import java.util.*
  */
 @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
 @SuppressLint("MissingPermission")
-class FlaskGattService : Service() {
-    private var listener: BluetoothGattListener? = null
+class BluupGattService : Service() {
+    private var listener: BluupBluetoothListener? = null
     private var mBluetoothManager: BluetoothManager? = null
     private var mBluetoothAdapter: BluetoothAdapter? = null
     private var mBluetoothDeviceAddress: String? = null
@@ -82,23 +82,23 @@ class FlaskGattService : Service() {
     private var wipeDeviceCount = 0
     private var maxTransmissionUnit = 23
     private val chunkTimeout = 30L
-    fun setListener(listener: BluetoothGattListener?) {
+    fun setListener(listener: BluupBluetoothListener?) {
         this.listener = listener
     }
 
     private val commandCallbacks = ArrayList<Runnable>()
-    private val flaskHandler = Handler(Looper.getMainLooper())
+    private val bluupHandler = Handler(Looper.getMainLooper())
     private val listCount = 10
 
-    interface BluetoothGattListener {
-        fun onServicesDiscovered()
-        fun onFlaskActiveChanged(jsonObject: JSONObject?)
-        fun onFlaskStatusChanged(jsonObject: JSONObject?)
-        fun onFlaskListRetrieved(jsonArray: JSONArray)
-        fun onFlaskRangeRetrieved(jsonArray: JSONArray)
-        fun onFlaskFilesDownload(dataString: String)
-        fun onFlaskProcessFinish()
-        fun onGattConnectionLost()
+    interface BluupBluetoothListener {
+        fun onBluupServicesDiscovered()
+        fun onBluupActiveChanged(jsonObject: JSONObject?)
+        fun onBluupStatusChanged(jsonObject: JSONObject?)
+        fun onBluupListRetrieved(jsonArray: JSONArray)
+        fun onBluupRangeRetrieved(jsonArray: JSONArray)
+        fun onBluupFilesDownload(dataString: String)
+        fun onBluupProcessFinish()
+        fun onBluupConnectionLost()
     }
 
     private var response = StringBuilder()
@@ -106,7 +106,7 @@ class FlaskGattService : Service() {
     private fun getCharacteristicValue(characteristic: BluetoothGattCharacteristic, output: String?) {
         if (!output.isNullOrEmpty()) {
             Debug.verbose(this.javaClass, "${getLogTag(characteristic.uuid)} $output")
-            if (characteristic.uuid.compareTo(FlaskRX) == 0) {
+            if (characteristic.uuid.compareTo(BluupRX) == 0) {
                 if (output.contains(">tag.")) {
                     response = StringBuilder()
                     response.append(output.split(">".toRegex()).toTypedArray()[1])
@@ -143,14 +143,14 @@ class FlaskGattService : Service() {
                                 progress.lastIndexOf("}") + 1
                             )
                             try {
-                                listener?.onFlaskActiveChanged(JSONObject(getAmiibo))
+                                listener?.onBluupActiveChanged(JSONObject(getAmiibo))
                             } catch (e: JSONException) {
                                 Debug.warn(e)
-                                listener?.onFlaskActiveChanged(null)
+                                listener?.onBluupActiveChanged(null)
                             }
                         } catch (ex: StringIndexOutOfBoundsException) {
                             Debug.warn(ex)
-                            listener?.onFlaskActiveChanged(null)
+                            listener?.onBluupActiveChanged(null)
                         }
                         response = StringBuilder()
                         nameCompat = null
@@ -171,16 +171,16 @@ class FlaskGattService : Service() {
                                 if (rangeIndex > 0) {
                                     rangeIndex = 0
                                     escapedList = escapedList.replace(" ...", "")
-                                    listener?.onFlaskListRetrieved(JSONArray(escapedList))
+                                    listener?.onBluupListRetrieved(JSONArray(escapedList))
                                 } else {
                                     rangeIndex += 1
-                                    listener?.onFlaskListRetrieved(JSONArray())
+                                    listener?.onBluupListRetrieved(JSONArray())
                                     getDeviceAmiiboRange(0)
                                 }
                             } else if (rangeIndex > 0) {
                                 val jsonArray = JSONArray(escapedList)
                                 if (jsonArray.length() > 0) {
-                                    listener?.onFlaskRangeRetrieved(jsonArray)
+                                    listener?.onBluupRangeRetrieved(jsonArray)
                                     getDeviceAmiiboRange(rangeIndex * listCount)
                                     rangeIndex += 1
                                 } else {
@@ -188,13 +188,13 @@ class FlaskGattService : Service() {
                                     activeAmiibo
                                 }
                             } else {
-                                listener?.onFlaskListRetrieved(JSONArray(escapedList))
+                                listener?.onBluupListRetrieved(JSONArray(escapedList))
                             }
                         } catch (e: JSONException) {
                             Debug.warn(e)
                         }
                         response = StringBuilder()
-                        if (rangeIndex == 0) listener?.onFlaskProcessFinish()
+                        if (rangeIndex == 0) listener?.onBluupProcessFinish()
                     }
                 } else if (progress.startsWith("tag.remove")) {
                     if (progress.endsWith(">") || progress.endsWith("\n")) {
@@ -202,7 +202,7 @@ class FlaskGattService : Service() {
                             wipeDeviceCount -= 1
                             delayedTagCharacteristic("remove(tag.get().name)")
                         } else {
-                            listener?.onFlaskStatusChanged(null)
+                            listener?.onBluupStatusChanged(null)
                         }
                         response = StringBuilder()
                     }
@@ -215,7 +215,7 @@ class FlaskGattService : Service() {
                                 if (dataString.startsWith("tag.download")
                                     && dataString.endsWith("=")
                                 ) continue
-                                it.onFlaskFilesDownload(dataString.substring(
+                                it.onBluupFilesDownload(dataString.substring(
                                     1, dataString.lastIndexOf(">") - 2
                                 ))
                             }
@@ -224,7 +224,7 @@ class FlaskGattService : Service() {
                 } else if (progress.startsWith("tag.createBlank()")) {
                     if (progress.endsWith(">") || progress.endsWith("\n")) {
                         response = StringBuilder()
-                        listener?.onFlaskStatusChanged(null)
+                        listener?.onBluupStatusChanged(null)
                     }
                 } else if (progress.endsWith("}")) {
                     if (progress.startsWith("tag.saveUploadedTag")) {
@@ -234,8 +234,8 @@ class FlaskGattService : Service() {
                             try {
                                 val jsonObject = JSONObject(response.toString())
                                 val event = jsonObject.getString("event")
-                                if (event == "button") it.onFlaskActiveChanged(jsonObject)
-                                if (event == "delete") it.onFlaskStatusChanged(jsonObject)
+                                if (event == "button") it.onBluupActiveChanged(jsonObject)
+                                if (event == "delete") it.onBluupStatusChanged(jsonObject)
                             } catch (e: JSONException) {
                                 if (e.message?.contains("tag.setTag") == true)
                                     activeAmiibo
@@ -263,7 +263,7 @@ class FlaskGattService : Service() {
             if (newState == BluetoothProfile.STATE_CONNECTED) {
                 mBluetoothGatt?.discoverServices()
             } else if (newState == BluetoothProfile.STATE_DISCONNECTED) {
-                listener?.onGattConnectionLost()
+                listener?.onBluupConnectionLost()
             }
         }
 
@@ -271,7 +271,7 @@ class FlaskGattService : Service() {
             if (status == BluetoothGatt.GATT_SUCCESS) {
                 if (Version.isLollipop)
                     gatt.requestMtu(512) // Maximum: 517
-                else listener?.onServicesDiscovered()
+                else listener?.onBluupServicesDiscovered()
             } else {
                 Debug.warn(this.javaClass, "onServicesDiscovered received: $status")
             }
@@ -323,13 +323,13 @@ class FlaskGattService : Service() {
             } else {
                 Debug.warn(this.javaClass, "onMtuChange received: $status")
             }
-            listener?.onServicesDiscovered()
+            listener?.onBluupServicesDiscovered()
         }
     }
 
     inner class LocalBinder : Binder() {
-        val service: FlaskGattService
-            get() = this@FlaskGattService
+        val service: BluupGattService
+            get() = this@BluupGattService
     }
 
     override fun onBind(intent: Intent): IBinder {
@@ -454,12 +454,12 @@ class FlaskGattService : Service() {
         get() = mBluetoothGatt?.services
 
     private fun getCharacteristicRX(mCustomService: BluetoothGattService): BluetoothGattCharacteristic {
-        var mReadCharacteristic = mCustomService.getCharacteristic(FlaskRX)
+        var mReadCharacteristic = mCustomService.getCharacteristic(BluupRX)
         if (mBluetoothGatt?.readCharacteristic(mReadCharacteristic) != true) run breaking@{
             mCustomService.characteristics.forEach {
                 val customUUID = it.uuid
                 /*get the read characteristic from the service*/
-                if (customUUID.compareTo(FlaskRX) == 0) {
+                if (customUUID.compareTo(BluupRX) == 0) {
                     Debug.verbose(this.javaClass, "GattReadCharacteristic: $customUUID")
                     mReadCharacteristic = mCustomService.getCharacteristic(customUUID)
                     return@breaking
@@ -470,11 +470,11 @@ class FlaskGattService : Service() {
     }
 
     @Throws(UnsupportedOperationException::class)
-    fun setFlaskCharacteristicRX() {
+    fun setBluupCharacteristicRX() {
         if (mBluetoothAdapter == null || mBluetoothGatt == null) {
             throw UnsupportedOperationException()
         }
-        val mCustomService = mBluetoothGatt!!.getService(FlaskNUS)
+        val mCustomService = mBluetoothGatt!!.getService(BluupNUS)
         if (null == mCustomService) {
             val services = supportedGattServices
             if (services.isNullOrEmpty()) throw UnsupportedOperationException()
@@ -492,12 +492,12 @@ class FlaskGattService : Service() {
     }
 
     private fun getCharacteristicTX(mCustomService: BluetoothGattService): BluetoothGattCharacteristic {
-        var mWriteCharacteristic = mCustomService.getCharacteristic(FlaskTX)
+        var mWriteCharacteristic = mCustomService.getCharacteristic(BluupTX)
         if (!mCustomService.characteristics.contains(mWriteCharacteristic)) {
             run breaking@{
                 mCustomService.characteristics.forEach {
                     val customUUID = it.uuid
-                    if (customUUID.compareTo(FlaskTX) == 0) {
+                    if (customUUID.compareTo(BluupTX) == 0) {
                         Debug.verbose(this.javaClass, "GattWriteCharacteristic: $customUUID")
                         mWriteCharacteristic = mCustomService.getCharacteristic(customUUID)
                         return@breaking
@@ -509,11 +509,11 @@ class FlaskGattService : Service() {
     }
 
     @Throws(UnsupportedOperationException::class)
-    fun setFlaskCharacteristicTX() {
+    fun setBluupCharacteristicTX() {
         if (mBluetoothAdapter == null || mBluetoothGatt == null) {
             throw UnsupportedOperationException()
         }
-        val mCustomService = mBluetoothGatt!!.getService(FlaskNUS)
+        val mCustomService = mBluetoothGatt!!.getService(BluupNUS)
         if (null == mCustomService) {
             val services = supportedGattServices
             if (services.isNullOrEmpty()) throw UnsupportedOperationException()
@@ -530,9 +530,9 @@ class FlaskGattService : Service() {
     private fun delayedWriteCharacteristic(value: String) {
         val chunks = GattArray.stringToPortions(value, maxTransmissionUnit)
         val commandQueue = commandCallbacks.size + chunks.size
-        flaskHandler.postDelayed({
+        bluupHandler.postDelayed({
             chunks.forEachIndexed { i, chunk ->
-                flaskHandler.postDelayed({
+                bluupHandler.postDelayed({
                     try {
                         mCharacteristicTX!!.writeType =
                             BluetoothGattCharacteristic.WRITE_TYPE_NO_RESPONSE
@@ -546,7 +546,7 @@ class FlaskGattService : Service() {
                             mBluetoothGatt!!.writeCharacteristic(mCharacteristicTX)
                         }
                     } catch (ex: NullPointerException) {
-                        listener?.onServicesDiscovered()
+                        listener?.onBluupServicesDiscovered()
                     }
                 }, (i + 1) * chunkTimeout)
             }
@@ -556,9 +556,9 @@ class FlaskGattService : Service() {
     private fun delayedWriteCharacteristic(value: ByteArray) {
         val chunks = GattArray.byteToPortions(value, maxTransmissionUnit)
         val commandQueue = commandCallbacks.size + chunks.size
-        flaskHandler.postDelayed({
+        bluupHandler.postDelayed({
             chunks.forEachIndexed { i, chunk ->
-                flaskHandler.postDelayed({
+                bluupHandler.postDelayed({
                     try {
                         mCharacteristicTX!!.writeType =
                             BluetoothGattCharacteristic.WRITE_TYPE_NO_RESPONSE
@@ -572,7 +572,7 @@ class FlaskGattService : Service() {
                             mBluetoothGatt!!.writeCharacteristic(mCharacteristicTX)
                         }
                     } catch (ex: NullPointerException) {
-                        listener?.onServicesDiscovered()
+                        listener?.onBluupServicesDiscovered()
                     }
                 }, (i + 1) * chunkTimeout)
             }
@@ -582,7 +582,7 @@ class FlaskGattService : Service() {
     private fun queueTagCharacteristic(value: String, index: Int) {
         if (null == mCharacteristicTX) {
             try {
-                setFlaskCharacteristicTX()
+                setBluupCharacteristicTX()
             } catch (e: UnsupportedOperationException) {
                 Debug.warn(e)
             }
@@ -597,7 +597,7 @@ class FlaskGattService : Service() {
     private fun queueByteCharacteristic(value: ByteArray, index: Int) {
         if (null == mCharacteristicTX) {
             try {
-                setFlaskCharacteristicTX()
+                setBluupCharacteristicTX()
             } catch (e: UnsupportedOperationException) {
                 Debug.warn(e)
             }
@@ -624,7 +624,7 @@ class FlaskGattService : Service() {
     private fun queueScreenCharacteristic(value: String, index: Int) {
         if (null == mCharacteristicTX) {
             try {
-                setFlaskCharacteristicTX()
+                setBluupCharacteristicTX()
             } catch (e: UnsupportedOperationException) {
                 Debug.warn(e)
             }
@@ -671,8 +671,8 @@ class FlaskGattService : Service() {
         amiibo.name?.let { name ->
             val nameUnicode = GattArray.stringToUnicode(name)
             val nameIndexed = if (index > 0) "$index.$nameUnicode" else nameUnicode
-            val amiiboName = truncateUnicode(nameIndexed, amiibo.flaskTail.length)
-            parameters.add("saveUploadedTag(\"$amiiboName|${amiibo.flaskTail}|0\")")
+            val amiiboName = truncateUnicode(nameIndexed, amiibo.bluupTail.length)
+            parameters.add("saveUploadedTag(\"$amiiboName|${amiibo.bluupTail}|0\")")
         }
         if (complete) {
             parameters.add("uploadsComplete()")
@@ -764,20 +764,20 @@ class FlaskGattService : Service() {
     }
 
     private fun getLogTag(uuid: UUID): String {
-        return if (uuid.compareTo(FlaskTX) == 0) {
-            "FlaskTX"
-        } else if (uuid.compareTo(FlaskRX) == 0) {
-            "FlaskRX"
-        } else if (uuid.compareTo(FlaskNUS) == 0) {
-            "FlaskNUS"
+        return if (uuid.compareTo(BluupTX) == 0) {
+            "BluupTX"
+        } else if (uuid.compareTo(BluupRX) == 0) {
+            "BluupRX"
+        } else if (uuid.compareTo(BluupNUS) == 0) {
+            "BluupNUS"
         } else {
             uuid.toString()
         }
     }
 
     companion object {
-        val FlaskNUS: UUID = UUID.fromString("6e400001-b5a3-f393-e0a9-e50e24dcca9e")
-        private val FlaskTX = UUID.fromString("6e400002-b5a3-f393-e0a9-e50e24dcca9e")
-        private val FlaskRX = UUID.fromString("6e400003-b5a3-f393-e0a9-e50e24dcca9e")
+        val BluupNUS: UUID = UUID.fromString("6e400001-b5a3-f393-e0a9-e50e24dcca9e")
+        private val BluupTX = UUID.fromString("6e400002-b5a3-f393-e0a9-e50e24dcca9e")
+        private val BluupRX = UUID.fromString("6e400003-b5a3-f393-e0a9-e50e24dcca9e")
     }
 }

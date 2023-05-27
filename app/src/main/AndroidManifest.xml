@@ -127,7 +127,7 @@
             android:configChanges="orientation|screenLayout|screenSize|smallestScreenSize"
             android:launchMode="singleTop" />
         <service
-            android:name=".bluetooth.FlaskGattService" />
+            android:name=".bluetooth.BluupGattService" />
         <service
             android:name=".bluetooth.PuckGattService" />
         <receiver

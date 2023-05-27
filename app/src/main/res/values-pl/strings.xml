@@ -207,7 +207,7 @@
 
     <string name="menu_amiibo">Kopia zapasowa przeglądarki</string>
     <string name="menu_elite">Przeglądarka N2 Elite</string>
-    <string name="menu_flask">Przeglądarka Bluetooth</string>
+    <string name="menu_gatt">Przeglądarka Bluetooth</string>
     <string name="menu_qr_code">QR Code Toolkit</string>
     <string name="menu_dimensions">Wymiary </string>
     <string name="menu_joystick">Testowanie joysticka</string>
@@ -296,13 +296,13 @@
     <string name="tag_update_only">Poprzednio zapisane tagi wymagają \"Update\"</string>
 
     <string name="custom_tab_back">Powrót do TagMo</string>
-    <string name="flask_purchase">Kup kolbę Bluup</string>
-    <string name="flask_missing">Brak urządzeń GATT w pobliżu!</string>
+    <string name="bluup_purchase">Kup kolbę Bluup</string>
+    <string name="gatt_missing">Brak urządzeń GATT w pobliżu!</string>
     <string name="device_invalid">Nieprawidłowe urządzenie GATT!</string>
-    <string name="flask_scanning">Skanowanie w poszukiwaniu Bluetooth GATT&#8230;</string>
-    <string name="flask_located">Łączenie z Bluetooth GATT&#8230;</string>
-    <string name="flask_disconnect">Utracono połączenie z urządzeniem GATT!</string>
-    <string name="flask_count">Slot %1$s aktywny, %2$d slotów zajętych</string>
+    <string name="gatt_scanning">Skanowanie w poszukiwaniu Bluetooth GATT&#8230;</string>
+    <string name="gatt_located">Łączenie z Bluetooth GATT&#8230;</string>
+    <string name="gatt_disconnect">Utracono połączenie z urządzeniem GATT!</string>
+    <string name="gatt_count">Slot %1$s aktywny, %2$d slotów zajętych</string>
     <string name="write_slot_file">Prześlij plik binarny do urządzenia GATT</string>
     <string name="write_slots">Zapis %1$d slotów</string>
     <string name="erase_slots">Wymaż %1$d slotów</string>
@@ -311,8 +311,8 @@
     <string name="create_blank">Utwórz pusty wirtualny tag NFC</string>
     <string name="gatt_erase_confirm">Wymazać wszystkie sloty z urządzenia GATT?</string>
     <string name="gatt_write_confirm">Write selections to GATT device?</string>
-    <string name="flask_upload">Przesyłanie pliku binarnego&#8230;</string>
-    <string name="flask_remove">Wiping slot data&#8230;</string>
+    <string name="gatt_upload">Przesyłanie pliku binarnego&#8230;</string>
+    <string name="gatt_remove">Wiping slot data&#8230;</string>
     <string name="fail_bluetooth_adapter">Adapter Bluetooth niedostępny!</string>
     <string name="tiramisu_bluetooth">Android 13 wymaga ręcznego włączenia Bluetooth. Otworzyć Ustawienia, aby włączyć Bluetooth?</string>
     <string name="fail_permissions">Wymagane uprawnienie odrzucone przez użytkownika!</string>

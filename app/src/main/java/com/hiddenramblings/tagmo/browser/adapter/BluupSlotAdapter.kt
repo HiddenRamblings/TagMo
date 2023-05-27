@@ -18,23 +18,23 @@ import com.hiddenramblings.tagmo.R
 import com.hiddenramblings.tagmo.TagMo
 import com.hiddenramblings.tagmo.amiibo.Amiibo
 import com.hiddenramblings.tagmo.amiibo.AmiiboManager.hasSpoofData
-import com.hiddenramblings.tagmo.amiibo.FlaskTag
+import com.hiddenramblings.tagmo.amiibo.BluupTag
 import com.hiddenramblings.tagmo.browser.BrowserSettings
 import com.hiddenramblings.tagmo.browser.BrowserSettings.BrowserSettingsListener
 import com.hiddenramblings.tagmo.browser.BrowserSettings.VIEW
-import com.hiddenramblings.tagmo.browser.adapter.FlaskSlotAdapter.FlaskViewHolder
+import com.hiddenramblings.tagmo.browser.adapter.BluupSlotAdapter.BluupViewHolder
 
-class FlaskSlotAdapter(
+class BluupSlotAdapter(
     private val settings: BrowserSettings, private val listener: OnAmiiboClickListener
-) : RecyclerView.Adapter<FlaskViewHolder>(), BrowserSettingsListener {
+) : RecyclerView.Adapter<BluupViewHolder>(), BrowserSettingsListener {
     var mPrefs = Preferences(TagMo.appContext)
-    private var flaskAmiibo: ArrayList<Amiibo?> = arrayListOf()
-    fun setFlaskAmiibo(amiibo: ArrayList<Amiibo?>) {
-        flaskAmiibo = amiibo
+    private var bluupAmiibo: ArrayList<Amiibo?> = arrayListOf()
+    fun setBluupAmiibo(amiibo: ArrayList<Amiibo?>) {
+        bluupAmiibo = amiibo
     }
 
-    fun addFlaskAmiibo(amiibo: ArrayList<Amiibo?>) {
-        flaskAmiibo.addAll(amiibo)
+    fun addBluupAmiibo(amiibo: ArrayList<Amiibo?>) {
+        bluupAmiibo.addAll(amiibo)
     }
 
     override fun onBrowserSettingsChanged(
@@ -44,15 +44,15 @@ class FlaskSlotAdapter(
     }
 
     override fun getItemCount(): Int {
-        return flaskAmiibo.size
+        return bluupAmiibo.size
     }
 
     override fun getItemId(i: Int): Long {
-        return (flaskAmiibo[i]?.flaskTail ?: "").toLong()
+        return (bluupAmiibo[i]?.bluupTail ?: "").toLong()
     }
 
     fun getItem(i: Int): Amiibo? {
-        return flaskAmiibo[i]
+        return bluupAmiibo[i]
     }
 
     override fun getItemViewType(position: Int): Int {
@@ -60,14 +60,14 @@ class FlaskSlotAdapter(
     }
 
     fun getDuplicates(amiibo: Amiibo) : Int {
-        return flaskAmiibo.count { it?.id == amiibo.id }
+        return bluupAmiibo.count { it?.id == amiibo.id }
     }
 
     init {
         setHasStableIds(true)
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): FlaskViewHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BluupViewHolder {
         return when (VIEW.valueOf(viewType)) {
             VIEW.COMPACT -> CompactViewHolder(parent, settings, listener)
             VIEW.LARGE -> LargeViewHolder(parent, settings, listener)
@@ -85,11 +85,11 @@ class FlaskSlotAdapter(
         }
     }
 
-    override fun onBindViewHolder(holder: FlaskViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: BluupViewHolder, position: Int) {
         holder.bind(getItem(holder.bindingAdapterPosition))
     }
 
-    abstract class FlaskViewHolder(
+    abstract class BluupViewHolder(
         itemView: View, private val settings: BrowserSettings, val listener: OnAmiiboClickListener?
     ) : RecyclerView.ViewHolder(itemView) {
         val txtError: TextView?
@@ -148,7 +148,7 @@ class FlaskSlotAdapter(
                     txtGameSeries?.isGone = true
                     return
                 }
-                is FlaskTag -> {
+                is BluupTag -> {
                     setAmiiboInfoText(txtName, TagMo.appContext.getString(R.string.blank_tag))
                 }
                 else -> {
@@ -166,7 +166,7 @@ class FlaskSlotAdapter(
             }
             if (settings.amiiboView != VIEW.IMAGE.value) {
                 txtError?.isGone = true
-                if (amiibo is FlaskTag) {
+                if (amiibo is BluupTag) {
                     txtTagId?.isGone = true
                     txtAmiiboSeries?.isGone = true
                     txtAmiiboType?.isGone = true
@@ -205,7 +205,7 @@ class FlaskSlotAdapter(
 
     internal class SimpleViewHolder(
         parent: ViewGroup, settings: BrowserSettings, listener: OnAmiiboClickListener?
-    ) : FlaskViewHolder(
+    ) : BluupViewHolder(
         LayoutInflater.from(parent.context).inflate(
             R.layout.amiibo_simple_card, parent, false
         ),
@@ -214,7 +214,7 @@ class FlaskSlotAdapter(
 
     internal class CompactViewHolder(
         parent: ViewGroup, settings: BrowserSettings, listener: OnAmiiboClickListener?
-    ) : FlaskViewHolder(
+    ) : BluupViewHolder(
         LayoutInflater.from(parent.context).inflate(
             R.layout.amiibo_compact_card, parent, false
         ),
@@ -223,7 +223,7 @@ class FlaskSlotAdapter(
 
     internal class LargeViewHolder(
         parent: ViewGroup, settings: BrowserSettings, listener: OnAmiiboClickListener?
-    ) : FlaskViewHolder(
+    ) : BluupViewHolder(
         LayoutInflater.from(parent.context).inflate(
             R.layout.amiibo_large_card, parent, false
         ),
@@ -232,7 +232,7 @@ class FlaskSlotAdapter(
 
     internal class ImageViewHolder(
         parent: ViewGroup, settings: BrowserSettings, listener: OnAmiiboClickListener?
-    ) : FlaskViewHolder(
+    ) : BluupViewHolder(
         LayoutInflater.from(parent.context).inflate(
             R.layout.amiibo_image_card, parent, false
         ),

@@ -17,6 +17,6 @@
         android:layout_width="wrap_content"
         android:textAppearance="?android:textAppearanceSmall"
         android:layout_gravity="center_vertical"
-        android:text="@string/flask_upload"
+        android:text="@string/gatt_upload"
         android:layout_height="wrap_content" />
 </LinearLayout>

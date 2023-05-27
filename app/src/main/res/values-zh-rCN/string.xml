@@ -277,7 +277,7 @@
     <string name="speed_scan">Tag 卡片离手机远点试试</string>
     <string name="accept">明白</string>
     <string name="foomiibo_removing">Clearing %1$s&#8230;</string>
-    <string name="flask_located">Connecting Bluup Flask&#8230;</string>
+    <string name="gatt_located">Connecting Bluup Flask&#8230;</string>
     <string name="fail_permissions">Required permission denied!</string>
 
     <string name="prefs_configuration">浏览器选项</string>

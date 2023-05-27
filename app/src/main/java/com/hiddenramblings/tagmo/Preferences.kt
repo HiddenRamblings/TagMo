@@ -243,13 +243,13 @@ class Preferences(context: Context) {
         putInt(eliteActiveBank, value)
     }
 
-    private val flaskActiveSlot = "flaskActiveSlot"
-    fun flaskActiveSlot(): Int {
-        return getInt(flaskActiveSlot, 0)
+    private val bluupActiveSlot = "bluupActiveSlot"
+    fun bluupActiveSlot(): Int {
+        return getInt(bluupActiveSlot, 0)
     }
 
-    fun flaskActiveSlot(value: Int) {
-        putInt(flaskActiveSlot, value)
+    fun bluupActiveSlot(value: Int) {
+        putInt(bluupActiveSlot, value)
     }
 
     private val recursiveFolders = "recursiveFolders"

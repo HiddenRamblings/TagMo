@@ -294,14 +294,13 @@ object Debug {
     @JvmStatic
     @Throws(IOException::class)
     fun processLogcat(context: Context) {
-        CoroutineScope(Dispatchers.IO).launch {
+        CoroutineScope(Dispatchers.IO).launch(Dispatchers.IO) {
             val separator = if (System.getProperty("line.separator") != null)
                 Objects.requireNonNull(System.getProperty("line.separator")) else "\n"
             val log = getDeviceProfile(context)
             val mLogcatProc = Runtime.getRuntime().exec(arrayOf(
-                    "logcat", "-d", "-t", "192", BuildConfig.APPLICATION_ID,
-                    "AndroidRuntime", "System.err",
-                    "ViewRootImpl*:S", "IssueReporterActivity:S", "*:W"
+                "logcat", "-d", "-t", "256", "--pid=${android.os.Process.myPid()}",
+                "*:W", "AndroidRuntime", "System.err", "AppIconSolution*:S", "ViewRootImpl*:S"
             ))
             val reader = BufferedReader(InputStreamReader(mLogcatProc.inputStream))
             log.append(separator).append(separator)

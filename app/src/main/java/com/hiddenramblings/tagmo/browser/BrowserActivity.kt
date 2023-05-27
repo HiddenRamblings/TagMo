@@ -249,17 +249,17 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                             if (hasEliteEnabled) {
                                 showActionButton()
                             } else {
-                                pagerAdapter.flaskSlots.run {
+                                pagerAdapter.bluupSlots.run {
                                     delayedBluetoothEnable()
-                                    amiibosView = flaskContent
+                                    amiibosView = bluupContent
                                     browserSheet = bottomSheet
                                 }
                             }
                         }
                         3 -> {
-                            pagerAdapter.flaskSlots.run {
+                            pagerAdapter.bluupSlots.run {
                                 delayedBluetoothEnable()
-                                amiibosView = flaskContent
+                                amiibosView = bluupContent
                                 browserSheet = bottomSheet
                             }
                         }
@@ -291,18 +291,18 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                                 }
                             } else {
                                 setTitle(R.string.gatt_title)
-                                pagerAdapter.flaskSlots.run {
+                                pagerAdapter.bluupSlots.run {
                                     delayedBluetoothEnable()
-                                    amiibosView = flaskContent
+                                    amiibosView = bluupContent
                                     browserSheet = bottomSheet
                                 }
                             }
                         }
                         3 -> {
                             setTitle(R.string.gatt_title)
-                            pagerAdapter.flaskSlots.run {
+                            pagerAdapter.bluupSlots.run {
                                 delayedBluetoothEnable()
-                                amiibosView = flaskContent
+                                amiibosView = bluupContent
                                 browserSheet = bottomSheet
                             }
                         }
@@ -498,7 +498,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
         }
 
 
-        findViewById<CardView>(R.id.menu_flask).apply {
+        findViewById<CardView>(R.id.menu_gatt).apply {
             setOnClickListener {
                 closePrefsDrawer()
                 if (!prefs.eliteEnabled()) {

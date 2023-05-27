@@ -207,7 +207,7 @@
 
     <string name="menu_amiibo">Backup-Browser</string>
     <string name="menu_elite">N2 Elite-Browser</string>
-    <string name="menu_flask">Bluetooth-Browser</string>
+    <string name="menu_gatt">Bluetooth-Browser</string>
     <string name="menu_qr_code">QR-Code-Werkzeugsatz</string>
     <string name="menu_dimensions">Abmessungen </string>
     <string name="menu_joystick">Joystick-Prüfung</string>
@@ -296,13 +296,13 @@
     <string name="tag_update_only">Zuvor geschriebene Tags erfordern "Update".</string>
 
     <string name="custom_tab_back">Zurück zu TagMo</string>
-    <string name="flask_purchase">Kaufen Sie einen Bluup Flask</string>
-    <string name="flask_missing">Keine GATT-Geräte in der Nähe gefunden!</string>
+    <string name="bluup_purchase">Kaufen Sie einen Bluup Flask</string>
+    <string name="gatt_missing">Keine GATT-Geräte in der Nähe gefunden!</string>
     <string name="device_invalid">Kein gültiges GATT-Gerät!</string>
-    <string name="flask_scanning">Scannen nach Bluetooth GATT&#8230;</string>
-    <string name="flask_located">Verbinde mit Bluetooth GATT&#8230;</string>
-    <string name="flask_disconnect">GATT-Geräteverbindung verloren!</string>
-    <string name="flask_count">Slot %1$s aktiv, %2$d Slots belegt</string>
+    <string name="gatt_scanning">Scannen nach Bluetooth GATT&#8230;</string>
+    <string name="gatt_located">Verbinde mit Bluetooth GATT&#8230;</string>
+    <string name="gatt_disconnect">GATT-Geräteverbindung verloren!</string>
+    <string name="gatt_count">Slot %1$s aktiv, %2$d Slots belegt</string>
     <string name="write_slot_file">Binärdatei auf GATT-Gerät hochladen</string>
     <string name="write_slots">Schreibe %1$d Slots</string>
     <string name="erase_slots">Löschen von %1$d Steckplätzen</string>
@@ -311,8 +311,8 @@
     <string name="create_blank">Leeren virtuellen NFC-Tag erstellen</string>
     <string name="gatt_erase_confirm">Alle Slots vom GATT-Gerät löschen?</string>
     <string name="gatt_write_confirm">Auswahlen auf GATT-Gerät schreiben?</string>
-    <string name="flask_upload">Binärdatei hochladen&#8230;</string>
-    <string name="flask_remove">Slot-Daten löschen&#8230;</string>
+    <string name="gatt_upload">Binärdatei hochladen&#8230;</string>
+    <string name="gatt_remove">Slot-Daten löschen&#8230;</string>
     <string name="fail_bluetooth_adapter">Bluetooth-Adapter nicht verfügbar!</string>
     <string name="tiramisu_bluetooth">Android 13 erfordert die manuelle Aktivierung von Bluetooth. Öffnen Sie die Einstellungen, um Bluetooth zu aktivieren?</string>
     <string name="fail_permissions">Erforderliche Berechtigung vom Benutzer verweigert!</string>

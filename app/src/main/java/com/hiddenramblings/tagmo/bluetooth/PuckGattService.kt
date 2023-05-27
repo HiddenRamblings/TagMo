@@ -63,12 +63,12 @@ class PuckGattService : Service() {
     private val puckHandler = Handler(Looper.getMainLooper())
 
     interface BluetoothGattListener {
-        fun onServicesDiscovered()
+        fun onPuckServicesDiscovered()
         fun onPuckActiveChanged(slot: Int)
         fun onPuckListRetrieved(slotData: ArrayList<ByteArray?>, active: Int)
         fun onPuckFilesDownload(tagData: ByteArray)
         fun onPuckProcessFinish()
-        fun onGattConnectionLost()
+        fun onPuckConnectionLost()
     }
 
     private var puckArray = ArrayList<ByteArray?>()
@@ -128,7 +128,7 @@ class PuckGattService : Service() {
             if (newState == BluetoothProfile.STATE_CONNECTED) {
                 mBluetoothGatt?.discoverServices()
             } else if (newState == BluetoothProfile.STATE_DISCONNECTED) {
-                listener?.onGattConnectionLost()
+                listener?.onPuckConnectionLost()
             }
         }
 
@@ -136,7 +136,7 @@ class PuckGattService : Service() {
             if (status == BluetoothGatt.GATT_SUCCESS) {
                 if (Version.isLollipop)
                     gatt.requestMtu(512) // Maximum: 517
-                else listener?.onServicesDiscovered()
+                else listener?.onPuckServicesDiscovered()
             } else {
                 Debug.warn(this.javaClass, "onServicesDiscovered received: $status")
             }
@@ -188,7 +188,7 @@ class PuckGattService : Service() {
             } else {
                 Debug.warn(this.javaClass, "onMtuChange received: $status")
             }
-            listener?.onServicesDiscovered()
+            listener?.onPuckServicesDiscovered()
         }
     }
 

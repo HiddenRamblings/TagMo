@@ -287,13 +287,13 @@
     <string name="tag_update_only">之前寫入的tags需要進行&quot;更新&quot;</string>
 
     <string name="custom_tab_back">返回 TagMo</string>
-    <string name="flask_purchase">取得Bluup Flask</string>
-    <string name="flask_missing">附近沒有可用的GATT設備！</string>
+    <string name="bluup_purchase">取得Bluup Flask</string>
+    <string name="gatt_missing">附近沒有可用的GATT設備！</string>
     <string name="device_invalid">無效的GATT設備！</string>
-    <string name="flask_scanning">正在掃描Bluetooth GATT&#8230;</string>
-    <string name="flask_located">正在連接Bluetooth GATT&#8230;</string>
-    <string name="flask_disconnect">GATT連線無法使用！</string>
-    <string name="flask_count">Slot %1$s 可啟用，%2$d Slots 已執行</string>
+    <string name="gatt_scanning">正在掃描Bluetooth GATT&#8230;</string>
+    <string name="gatt_located">正在連接Bluetooth GATT&#8230;</string>
+    <string name="gatt_disconnect">GATT連線無法使用！</string>
+    <string name="gatt_count">Slot %1$s 可啟用，%2$d Slots 已執行</string>
     <string name="write_slot_file">將二進位檔案上傳到GATT 設備</string>
     <string name="write_slots">寫入 %1$d slots</string>
     <string name="erase_slots">抹除 %1$d slots</string>
@@ -302,8 +302,8 @@
     <string name="create_blank">建立空白的虛擬 NFC tag</string>
     <string name="gatt_erase_confirm">將GATT所有的slots進行抹除？</string>
     <string name="gatt_write_confirm">將所有選取項目寫入GATT?</string>
-    <string name="flask_upload">正在上傳二進位檔案&#8230;</string>
-    <string name="flask_remove">正在抹除slot數據&#8230;</string>
+    <string name="gatt_upload">正在上傳二進位檔案&#8230;</string>
+    <string name="gatt_remove">正在抹除slot數據&#8230;</string>
     <string name="fail_bluetooth_adapter">沒有可用的藍牙裝置!</string>
     <string name="tiramisu_bluetooth">Android 13需要手動啟用藍牙. 是否開啟設定頁面來啟用藍牙?</string>
     <string name="fail_permissions">無法取得執行所需的權限！</string>

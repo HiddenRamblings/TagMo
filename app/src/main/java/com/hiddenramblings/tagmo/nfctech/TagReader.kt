@@ -4,7 +4,6 @@ import android.net.Uri
 import com.hiddenramblings.tagmo.R
 import com.hiddenramblings.tagmo.TagMo.Companion.appContext
 import com.hiddenramblings.tagmo.eightbit.io.Debug
-import com.hiddenramblings.tagmo.nfctech.Foomiibo.Companion.getDataSignature
 import java.io.*
 import java.util.*
 
@@ -29,7 +28,7 @@ object TagReader {
             NfcByte.TAG_FILE_SIZE -> {
                 val signed = ByteArray(NfcByte.TAG_FILE_SIZE)
                 DataInputStream(inputStream).readFully(signed)
-                getDataSignature(signed)
+                Foomiibo.getDataSignature(signed)
                 signed.copyOfRange(0, NfcByte.TAG_DATA_SIZE)
             }
             NfcByte.TAG_DATA_SIZE, NfcByte.TAG_DATA_SIZE + 8 -> {

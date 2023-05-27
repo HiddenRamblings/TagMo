@@ -13,7 +13,9 @@ import java.io.File
 import java.text.DecimalFormat
 import java.util.*
 
-class Foomiibo {
+object Foomiibo {
+    val directory: File by lazy { File(TagMo.appContext.filesDir, "Foomiibo") }
+
     private fun getRandomBytes(size: Int): ByteArray {
         val random = Random()
         val randBytes = ByteArray(size)
@@ -89,6 +91,8 @@ class Foomiibo {
         return generateData(id.toString())
     }
 
+    private const val hexSingature = "5461674d6f20382d426974204e544147"
+
     fun getSignedData(tagData: ByteArray): ByteArray {
         val signedData = ByteArray(NfcByte.TAG_FILE_SIZE)
         System.arraycopy(tagData, 0, signedData, 0x0, tagData.size)
@@ -101,18 +105,14 @@ class Foomiibo {
         return getSignedData(generateData(id))
     }
 
-    companion object {
-        private const val hexSingature = "5461674d6f20382d426974204e544147"
-        fun getDataSignature(tagData: ByteArray): String? {
-            if (tagData.size == NfcByte.TAG_FILE_SIZE) {
-                val signature = TagArray.bytesToHex(
-                    tagData.copyOfRange(540, NfcByte.TAG_FILE_SIZE)
-                ).substring(0, 32).lowercase()
-                Debug.info(TagMo::class.java, TagArray.hexToString(signature))
-                if (hexSingature == signature) return signature
-            }
-            return null
+    fun getDataSignature(tagData: ByteArray): String? {
+        if (tagData.size == NfcByte.TAG_FILE_SIZE) {
+            val signature = TagArray.bytesToHex(
+                tagData.copyOfRange(540, NfcByte.TAG_FILE_SIZE)
+            ).substring(0, 32).lowercase()
+            Debug.info(TagMo::class.java, TagArray.hexToString(signature))
+            if (hexSingature == signature) return signature
         }
-        val directory: File by lazy { File(TagMo.appContext.filesDir, "Foomiibo") }
+        return null
     }
 }

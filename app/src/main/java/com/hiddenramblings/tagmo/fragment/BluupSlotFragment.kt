@@ -67,7 +67,6 @@ open class BluupSlotFragment : Fragment(), BluupSlotAdapter.OnAmiiboClickListene
     private var amiiboTile: CardView? = null
     private var amiiboCard: CardView? = null
     private var toolbar: Toolbar? = null
-    private lateinit var amiiboTileTarget: CustomTarget<Bitmap?>
     var bluupContent: RecyclerView? = null
         private set
     var bluupAdapter: BluupSlotAdapter? = null
@@ -404,7 +403,6 @@ open class BluupSlotFragment : Fragment(), BluupSlotAdapter.OnAmiiboClickListene
         settings = activity.settings ?: BrowserSettings().initialize()
 
         bluupContent = view.findViewById<RecyclerView>(R.id.bluup_content).apply {
-            if (TagMo.forceSoftwareLayer) setLayerType(View.LAYER_TYPE_SOFTWARE, null)
             setItemViewCacheSize(40)
             layoutManager = if (settings.amiiboView == BrowserSettings.VIEW.IMAGE.value)
                 GridLayoutManager(activity, activity.columnCount).apply {
@@ -531,12 +529,9 @@ open class BluupSlotFragment : Fragment(), BluupSlotAdapter.OnAmiiboClickListene
             }
         }
 
-        writeSlotsLayout = view.findViewById<LinearLayout>(R.id.write_list_slots).apply {
-            if (TagMo.forceSoftwareLayer) setLayerType(View.LAYER_TYPE_SOFTWARE, null)
-        }
+        writeSlotsLayout = view.findViewById<LinearLayout>(R.id.write_list_slots)
 
         view.findViewById<RecyclerView>(R.id.amiibo_files_list).apply {
-            if (TagMo.forceSoftwareLayer) setLayerType(View.LAYER_TYPE_SOFTWARE, null)
             setHasFixedSize(true)
             setItemViewCacheSize(40)
             layoutManager = if (settings.amiiboView == BrowserSettings.VIEW.IMAGE.value)
@@ -999,7 +994,7 @@ open class BluupSlotFragment : Fragment(), BluupSlotAdapter.OnAmiiboClickListene
         }
     }
 
-    private fun writeAmiiboDataCollection(bytesList: ArrayList<AmiiboData?>) {
+    private fun writeAmiiboDataCollection(bytesList: ArrayList<AmiiboData>) {
         settings.removeChangeListener(writeTagAdapter)
         AlertDialog.Builder(requireContext())
             .setMessage(R.string.gatt_write_confirm)

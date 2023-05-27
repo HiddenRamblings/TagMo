@@ -219,7 +219,7 @@ class TagDataEditor : AppCompatActivity() {
         txtSerialNumber = findViewById(R.id.txtSerialNumber)
         generateSerial = findViewById<AppCompatButton>(R.id.random_serial).apply {
             setOnClickListener {
-                txtSerialNumber.setText(TagArray.bytesToHex(Foomiibo().generateRandomUID()))
+                txtSerialNumber.setText(TagArray.bytesToHex(Foomiibo.generateRandomUID()))
             }
         }
         txtInitDate = findViewById<EditText>(R.id.txtInitDate).apply {

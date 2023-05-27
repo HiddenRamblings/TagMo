@@ -58,7 +58,6 @@ class NfcActivity : AppCompatActivity() {
     private lateinit var nfcAnimation: Animation
 
     private var nfcAdapter: NfcAdapter? = null
-    private val foomiibo = Foomiibo()
 
     private var isEliteIntent = false
     private var isEliteDevice = false
@@ -323,7 +322,7 @@ class NfcActivity : AppCompatActivity() {
                                     amiiboList?.forEachIndexed { x, amiiboData ->
                                         showMessage(R.string.bank_writing, x + 1, amiiboList.size)
                                         val tagData = TagArray.getValidatedData(keyManager, amiiboData.array)
-                                            ?: foomiibo.generateData(amiiboData.amiiboID)
+                                            ?: Foomiibo.generateData(amiiboData.amiiboID)
                                         TagWriter.writeEliteAuto(ntag, tagData, keyManager, x)
                                     }
                                 }
@@ -343,7 +342,7 @@ class NfcActivity : AppCompatActivity() {
                                     amiiboList?.forEachIndexed { x, eliteTag ->
                                         showMessage(R.string.bank_writing, x + 1, amiiboList.size)
                                         val tagData = TagArray.getValidatedData(keyManager, eliteTag.data)
-                                            ?: foomiibo.generateData(eliteTag.id)
+                                            ?: Foomiibo.generateData(eliteTag.id)
                                         TagWriter.writeEliteAuto(ntag, tagData, keyManager, x)
                                     }
                                 }

@@ -36,8 +36,7 @@ class EliteBankAdapter(
     override fun onBrowserSettingsChanged(
         newBrowserSettings: BrowserSettings?,
         oldBrowserSettings: BrowserSettings?
-    ) {
-    }
+    ) { }
 
     override fun getItemCount(): Int {
         return amiibos.size

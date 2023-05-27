@@ -167,9 +167,7 @@ class WriteTagAdapter(private val settings: BrowserSettings?) :
         setIsHighlighted(holder, amiiboList.contains(holder.amiiboFile))
     }
 
-    fun refresh() {
-        getFilter().filter(settings?.query)
-    }
+    fun refresh() { getFilter().filter(settings?.query) }
 
     override fun getFilter(): AmiiboFilter {
         if (null == filter) {

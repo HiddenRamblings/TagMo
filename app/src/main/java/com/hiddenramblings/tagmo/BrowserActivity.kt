@@ -735,7 +735,6 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
 
     private fun getFilteredCount(filter: String, filterType: FILTER): Int {
         val amiiboManager = settings?.amiiboManager ?: return 0
-        val gamesManager = settings?.gamesManager
         val items: HashSet<Long> = hashSetOf()
         amiiboManager.amiibos.values.forEach { amiibo ->
             when (filterType) {
@@ -805,7 +804,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                         amiibo.amiiboType, settings!!.getFilter(FILTER.AMIIBO_TYPE)
                     )
                 ) {
-                    gamesManager?.let {
+                    settings?.gamesManager?.let {
                         items.addAll(it.getGameAmiiboIds(amiiboManager, filter))
                     }
                 }
@@ -817,9 +816,9 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
     private fun onFilterCharacterClick(): Boolean {
         val subMenu = menuFilterCharacter?.subMenu
         subMenu?.clear() ?: return true
-        settings?.amiiboManager ?: return true
+        val amiiboManager = settings?.amiiboManager ?: return true
         val items: ArrayList<String> = arrayListOf()
-        settings?.amiiboManager?.amiibos?.values?.forEach {
+        amiiboManager.amiibos.values?.forEach {
             it.character?.let { character ->
                 if (Amiibo.matchesGameSeriesFilter(
                         it.gameSeries, settings!!.getFilter(FILTER.GAME_SERIES)
@@ -852,11 +851,11 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
     }
 
     private fun onFilterGameSeriesClick(): Boolean {
-        val subMenu = menuFilterGameSeries!!.subMenu
+        val subMenu = menuFilterGameSeries?.subMenu
         subMenu?.clear() ?: return true
-        settings?.amiiboManager ?: return false
+        val amiiboManager = settings?.amiiboManager ?: return true
         val items: ArrayList<String> = arrayListOf()
-        settings?.amiiboManager?.amiibos?.values?.forEach {
+        amiiboManager.amiibos.values.forEach {
             it.gameSeries?.let { gameSeries ->
                 if (Amiibo.matchesCharacterFilter(
                         it.character, settings!!.getFilter(FILTER.CHARACTER)
@@ -880,14 +879,16 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
     }
 
     private val onFilterGameSeriesItemClick = MenuItem.OnMenuItemClickListener { menuItem ->
-        settings?.setFilter(FILTER.GAME_SERIES, menuItem.title.toString())
-        settings?.notifyChanges()
+        settings?.let {
+            it.setFilter(FILTER.GAME_SERIES, menuItem.title.toString())
+            it.notifyChanges()
+        }
         filteredCount = getFilteredCount(menuItem.title.toString(), FILTER.GAME_SERIES)
         false
     }
 
     private fun onFilterAmiiboSeriesClick(): Boolean {
-        val subMenu = menuFilterAmiiboSeries!!.subMenu
+        val subMenu = menuFilterAmiiboSeries?.subMenu
         subMenu?.clear() ?: return true
         val amiiboManager = settings?.amiiboManager ?: return true
         val items: ArrayList<String> = arrayListOf()
@@ -915,14 +916,16 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
     }
 
     private val onFilterAmiiboSeriesItemClick = MenuItem.OnMenuItemClickListener { menuItem ->
-        settings?.setFilter(FILTER.AMIIBO_SERIES, menuItem.title.toString())
-        settings?.notifyChanges()
+        settings?.let{
+            it.setFilter(FILTER.AMIIBO_SERIES, menuItem.title.toString())
+            it.notifyChanges()
+        }
         filteredCount = getFilteredCount(menuItem.title.toString(), FILTER.AMIIBO_SERIES)
         false
     }
 
     private fun onFilterAmiiboTypeClick(): Boolean {
-        val subMenu = menuFilterAmiiboType!!.subMenu
+        val subMenu = menuFilterAmiiboType?.subMenu
         subMenu?.clear() ?: return true
         val amiiboManager = settings?.amiiboManager ?: return true
         val items: ArrayList<AmiiboType> = arrayListOf()
@@ -957,12 +960,11 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
     }
 
     private fun onFilterGameTitlesClick() {
-        val subMenu = menuFilterGameTitles!!.subMenu
+        val subMenu = menuFilterGameTitles?.subMenu
         subMenu?.clear() ?: return
         settings?.amiiboManager ?: return
-        val gamesManager = settings!!.gamesManager
         val items: ArrayList<String> = arrayListOf()
-        gamesManager?.gameTitles?.forEach { if (!items.contains(it.name))  items.add(it.name) }
+        settings?.gamesManager?.gameTitles?.forEach { if (!items.contains(it.name))  items.add(it.name) }
         items.sorted().forEach {
             subMenu.add(R.id.filter_game_titles_group, Menu.NONE, 0, it)
                 .setChecked(it == settings!!.getFilter(FILTER.GAME_TITLES))
@@ -972,49 +974,62 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
     }
 
     private val onFilterGameTitlesItemClick = MenuItem.OnMenuItemClickListener { menuItem ->
-        settings?.setFilter(FILTER.GAME_TITLES, menuItem.title.toString())
-        settings?.notifyChanges()
+        settings?.let {
+            it.setFilter(FILTER.GAME_TITLES, menuItem.title.toString())
+            it.notifyChanges()
+        }
         filteredCount = getFilteredCount(menuItem.title.toString(), FILTER.GAME_TITLES)
         false
     }
 
     private fun cloneWithRandomSerial(amiiboFile: AmiiboFile?, tagData: ByteArray?, count: Int) {
-        val cached = amiiboFile?.let {
-            it.filePath?.let { path ->
-                var relativeFile = Storage.getRelativePath(path, prefs.preferEmulated())
-                prefs.browserRootFolder()?.let { root ->
-                    relativeFile = relativeFile.replace(root, "")
-                }
-                relativeFile.startsWith("/Foomiibo/")
-            } ?: it.docUri?.let { doc ->
-                Storage.getRelativeDocument(doc.uri).startsWith("/Foomiibo/")
+        CoroutineScope(Dispatchers.IO).launch {
+            val cached = amiiboFile?.let {
+                it.filePath?.let { path ->
+                    var relativeFile = Storage.getRelativePath(path, prefs.preferEmulated())
+                    prefs.browserRootFolder()?.let { root ->
+                        relativeFile = relativeFile.replace(root, "")
+                    }
+                    relativeFile.startsWith("/Foomiibo/")
+                } ?: it.docUri?.let { doc ->
+                    Storage.getRelativeDocument(doc.uri).startsWith("/Foomiibo/")
+                } ?: false
             } ?: false
-        } ?: false
 
-        val directory = File(Foomiibo.directory, "Foomiibo" + File.pathSeparator + "Duplicates")
-        if (cached) directory.mkdirs()
+            val directory = File(Foomiibo.directory, "Duplicates")
+            if (cached) directory.mkdirs()
 
-        val fileName = TagArray.decipherFilename(settings?.amiiboManager, tagData, true)
-        val amiiboList = amiiboFile?.withRandomSerials(keyManager, count)
-        amiiboList?.forEachIndexed { index, amiiboData ->
-            amiiboData?.let { data ->
+            val outputFiles: ArrayList<AmiiboFile> = arrayListOf()
+
+            val fileName = TagArray.decipherFilename(settings?.amiiboManager, tagData, true)
+            val amiiboList = amiiboFile?.withRandomSerials(keyManager, count)
+            amiiboList?.forEachIndexed { index, amiiboData ->
                 val name = fileName.replace(".bin", "_$index.bin")
-                val outputData = keyManager.encrypt(data.array)
+                val outputData = keyManager.encrypt(amiiboData.array)
                 val outputFile: AmiiboFile? = if (cached) {
                     val path = TagArray.writeBytesToFile(directory, name, outputData)
-                    AmiiboFile(File(path), data.amiiboID, outputData)
+                    AmiiboFile(File(path), amiiboData.amiiboID, outputData)
                 } else {
-                    val path = TagArray.writeBytesWithName(this, name, outputData)
-                    if (prefs.isDocumentStorage)
-                        AmiiboFile(DocumentFile.fromTreeUri(this, Uri.parse(path)), data.amiiboID, outputData)
-                    else
-                        path?.let { AmiiboFile(File(it), data.amiiboID, data.array) }
+                    TagArray.writeBytesWithName(this@BrowserActivity, name, outputData)?.let {
+                        if (prefs.isDocumentStorage)
+                            AmiiboFile(DocumentFile.fromTreeUri(
+                                this@BrowserActivity, Uri.parse(it)
+                            ), amiiboData.amiiboID, outputData)
+                        else
+                            AmiiboFile(File(it), amiiboData.amiiboID, amiiboData.array)
+                    }
                 }
                 outputFile?.let { file ->
-                    settings?.let {
-                        it.amiiboFiles.add(file)
-                        it.notifyChanges()
-                    } ?: onRootFolderChanged(true)
+                    outputFiles.add(file)
+                }
+            }
+            if (outputFiles.isNotEmpty()) {
+                withContext(Dispatchers.Main) {
+//                    settings?.let {
+//                        it.amiiboFiles.addAll(outputFiles)
+//                        it.notifyChanges()
+//                    } ?: onRootFolderChanged(true)
+                    onRootFolderChanged(true)
                 }
             }
         }
@@ -1721,8 +1736,10 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
             amiiboFiles.addAll(listAmiiboFiles(keyManager, foomiibo, true))
             withContext(Dispatchers.Main) {
                 hideFakeSnackbar()
-                settings?.amiiboFiles = amiiboFiles
-                settings?.notifyChanges()
+                settings?.let {
+                    it.amiiboFiles = amiiboFiles
+                    it.notifyChanges()
+                }
             }
         }
     }
@@ -1750,8 +1767,10 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
             amiiboFiles.addAll(listAmiiboFiles(keyManager, foomiibo, true))
             withContext(Dispatchers.Main) {
                 hideFakeSnackbar()
-                settings?.amiiboFiles = amiiboFiles
-                settings?.notifyChanges()
+                settings?.let {
+                    it.amiiboFiles = amiiboFiles
+                    it.notifyChanges()
+                }
             }
         }
     }
@@ -1943,8 +1962,10 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
             FILTER.GAME_TITLES -> getString(R.string.filter_game_titles)
         }
         pagerAdapter.browser.addFilterItemView(filterText, filterTag) {
-            settings?.setFilter(filter, "")
-            settings?.notifyChanges()
+            settings?.let {
+                it.setFilter(filter, "")
+                it.notifyChanges()
+            }
             if (viewPager.currentItem == 0) pagerAdapter.browser.setAmiiboStats()
         }
     }
@@ -1993,18 +2014,21 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
     }
 
     private fun deleteAmiiboFile(amiiboFile: AmiiboFile?) {
-        amiiboFile?.filePath?.let {
-            val relativeFile = Storage.getRelativePath(it, prefs.preferEmulated())
+        amiiboFile?.filePath?.let { file ->
+            val relativeFile = Storage.getRelativePath(file, prefs.preferEmulated())
             AlertDialog.Builder(this)
                 .setMessage(getString(R.string.warn_delete_file, relativeFile))
                 .setPositiveButton(R.string.delete) { dialog: DialogInterface, _: Int ->
                     amiiboContainer?.isGone = true
-                    it.delete()
+                    file.delete()
                     IconifiedSnackbar(this, viewPager).buildSnackbar(
                         getString(R.string.delete_file, relativeFile), Snackbar.LENGTH_SHORT
                     ).show()
                     dialog.dismiss()
-                    onRootFolderChanged(true)
+                    settings?.let {
+                        it.amiiboFiles.remove(amiiboFile)
+                        it.notifyChanges()
+                    } ?: onRootFolderChanged(true)
                 }
                 .setNegativeButton(R.string.cancel) { dialog: DialogInterface, _: Int -> dialog.dismiss() }
                 .show()
@@ -2023,10 +2047,11 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                         getString(R.string.delete_file, relativeDocument), Snackbar.LENGTH_SHORT
                     ).show()
                     dialog.dismiss()
-                    settings?.let {
-                        it.amiiboFiles.remove(amiiboFile)
-                        it.notifyChanges()
-                    } ?: onRootFolderChanged(true)
+//                    settings?.let {
+//                        it.amiiboFiles.remove(amiiboFile)
+//                        it.notifyChanges()
+//                    } ?: onRootFolderChanged(true)
+                    onRootFolderChanged(true)
                 }
                 .setNegativeButton(R.string.cancel) { dialog: DialogInterface, _: Int -> dialog.dismiss() }
                 .show()

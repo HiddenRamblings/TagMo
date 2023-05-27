@@ -50,13 +50,6 @@ class FoomiiboAdapter(
                 ) ||
                 BrowserSettings.hasFilterChanged(newBrowserSettings, oldBrowserSettings)
         if (!BrowserSettings.equals(
-                newBrowserSettings.amiiboFiles,
-                oldBrowserSettings.amiiboFiles
-            )
-        ) {
-            refresh = true
-        }
-        if (!BrowserSettings.equals(
                 newBrowserSettings.amiiboManager,
                 oldBrowserSettings.amiiboManager
             )
@@ -70,9 +63,7 @@ class FoomiiboAdapter(
         ) {
             refresh = true
         }
-        if (refresh) {
-            refresh()
-        }
+        if (refresh) refresh()
         firstRun = false
     }
 
@@ -146,9 +137,7 @@ class FoomiiboAdapter(
         }[0].uppercase()
     }
 
-    fun refresh() {
-        getFilter().filter(settings.query)
-    }
+    fun refresh() { getFilter().filter(settings.query) }
 
     override fun getFilter(): FoomiiboFilter {
         if (null == filter) filter = FoomiiboFilter()

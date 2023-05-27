@@ -120,7 +120,6 @@ class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
         settings = activity.settings ?: BrowserSettings().initialize()
 
         eliteContent = view.findViewById<RecyclerView>(R.id.elite_content).apply {
-            if (TagMo.forceSoftwareLayer) setLayerType(View.LAYER_TYPE_SOFTWARE, null)
             setItemViewCacheSize(40)
             layoutManager = if (settings.amiiboView == BrowserSettings.VIEW.IMAGE.value)
                 GridLayoutManager(activity, activity.columnCount).apply {
@@ -140,12 +139,9 @@ class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
         switchMenuOptions = view.findViewById(R.id.switch_menu_btn)
         bankOptionsMenu = view.findViewById(R.id.bank_options_menu)
 
-        writeBankLayout = view.findViewById<LinearLayout>(R.id.write_list_banks).apply {
-            if (TagMo.forceSoftwareLayer) setLayerType(View.LAYER_TYPE_SOFTWARE, null)
-        }
+        writeBankLayout = view.findViewById<LinearLayout>(R.id.write_list_banks)
 
         amiiboFilesView = view.findViewById<RecyclerView>(R.id.amiibo_files_list).apply {
-            if (TagMo.forceSoftwareLayer) setLayerType(View.LAYER_TYPE_SOFTWARE, null)
             setHasFixedSize(true)
             setItemViewCacheSize(40)
             layoutManager = if (settings.amiiboView == BrowserSettings.VIEW.IMAGE.value)
@@ -841,7 +837,7 @@ class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
         }
     }
 
-    private fun writeAmiiboDataCollection(bytesList: ArrayList<AmiiboData?>) {
+    private fun writeAmiiboDataCollection(bytesList: ArrayList<AmiiboData>) {
         settings.removeChangeListener(writeTagAdapter)
         AlertDialog.Builder(requireContext())
             .setMessage(R.string.elite_write_confirm)

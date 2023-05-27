@@ -4,6 +4,7 @@ import android.os.Parcel
 import android.os.Parcelable
 import androidx.documentfile.provider.DocumentFile
 import com.hiddenramblings.tagmo.amiibo.tagdata.AmiiboData
+import com.hiddenramblings.tagmo.eightbit.io.Debug
 import com.hiddenramblings.tagmo.eightbit.os.Version
 import com.hiddenramblings.tagmo.nfctech.Foomiibo
 import com.hiddenramblings.tagmo.nfctech.TagArray
@@ -50,15 +51,22 @@ open class AmiiboFile : Parcelable {
         data = ByteArray(parcel.readInt()).also { parcel.readByteArray(it) }
     }
 
-    fun withRandomSerials(keyManager: KeyManager, count: Int) : ArrayList<AmiiboData?> {
-        val tagData = keyManager.decrypt(TagArray.getValidatedAmiibo(keyManager, this))
-        return arrayListOf<AmiiboData?>().also { dataList ->
-            for (i in 0 until count) {
-                dataList.add(AmiiboData(tagData).also {
-                    it.uID = Foomiibo().generateRandomUID()
-                })
+    fun withRandomSerials(keyManager: KeyManager, count: Int) : ArrayList<AmiiboData> {
+        val tagData = TagArray.getValidatedAmiibo(keyManager, this)
+        val amiiboData = AmiiboData(keyManager.decrypt(tagData))
+        val dataList: ArrayList<AmiiboData> = arrayListOf()
+        for (i in 0 until count) {
+            val newAmiiboData = try {
+                amiiboData.apply {
+                    uID = Foomiibo.generateRandomUID()
+                }
+            } catch (e: Exception) {
+                Debug.warn(e)
+                null
             }
+            newAmiiboData?.let { dataList.add(i, it) }
         }
+        return dataList
     }
 
     companion object {

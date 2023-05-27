@@ -78,7 +78,6 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
         private set
     var foomiiboContent: RecyclerView? = null
         private set
-    private val foomiibo = Foomiibo()
     private lateinit var settings: BrowserSettings
     var bottomSheet: BottomSheetBehavior<View>? = null
         private set
@@ -139,7 +138,6 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
             }
         }
         browserContent = view.findViewById<RecyclerView>(R.id.browser_content).apply {
-            if (TagMo.forceSoftwareLayer) setLayerType(View.LAYER_TYPE_SOFTWARE, null)
             setItemViewCacheSize(40)
             layoutManager = if (settings.amiiboView == BrowserSettings.VIEW.IMAGE.value)
                 GridLayoutManager(activity, activity.columnCount).apply {
@@ -149,13 +147,13 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
                 LinearLayoutManager(activity).apply {
                     initialPrefetchItemCount = 10
                 }
-            adapter = BrowserAdapter(settings, activity)
-            settings.addChangeListener(adapter as? BrowserSettingsListener)
+            adapter = BrowserAdapter(settings, activity).also {
+                settings.addChangeListener(it)
+            }
             FastScrollerBuilder(this).build().setPadding(0, (-2).toPx,0,0)
         }
 
         foomiiboContent = view.findViewById<RecyclerView>(R.id.foomiibo_list).apply {
-            if (TagMo.forceSoftwareLayer) setLayerType(View.LAYER_TYPE_SOFTWARE, null)
             setItemViewCacheSize(40)
             layoutManager = if (settings.amiiboView == BrowserSettings.VIEW.IMAGE.value)
                 GridLayoutManager(activity, activity.columnCount).apply {
@@ -165,8 +163,9 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
                 LinearLayoutManager(activity).apply {
                     initialPrefetchItemCount = 10
                 }
-            adapter = FoomiiboAdapter(settings, this@BrowserFragment)
-            settings.addChangeListener(adapter as? BrowserSettingsListener)
+            adapter = FoomiiboAdapter(settings, this@BrowserFragment).also {
+                settings.addChangeListener(it)
+            }
             FastScrollerBuilder(this).build()
         }
 
@@ -599,7 +598,7 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
 
     private fun buildFoomiiboFile(amiibo: Amiibo) {
         try {
-            val tagData = foomiibo.getSignedData(Amiibo.idToHex(amiibo.id))
+            val tagData = Foomiibo.getSignedData(Amiibo.idToHex(amiibo.id))
             val directory = File(Foomiibo.directory, amiibo.amiiboSeries!!.name)
             directory.mkdirs()
             TagArray.writeBytesToFile(
@@ -615,7 +614,7 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
                 File(Foomiibo.directory, it.name)
             } ?: Foomiibo.directory
             directory.mkdirs()
-            val foomiiboData = foomiibo.getSignedData(tagData)
+            val foomiiboData = Foomiibo.getSignedData(tagData)
             TagArray.writeBytesToFile(
                 directory, TagArray.decipherFilename(
                     amiibo, foomiiboData, false
@@ -680,7 +679,7 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
             }
         }
         if (tagData.isEmpty() && null != amiibo)
-            tagData = foomiibo.generateData(Amiibo.idToHex(amiibo.id))
+            tagData = Foomiibo.generateData(Amiibo.idToHex(amiibo.id))
         try {
             tagData = TagArray.getValidatedData(keyManager, tagData)!!
         } catch (ignored: Exception) { }
@@ -715,7 +714,7 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
             }
         }
         if (tagData.isEmpty() && null != amiibo)
-            tagData = foomiibo.generateData(Amiibo.idToHex(amiibo.id))
+            tagData = Foomiibo.generateData(Amiibo.idToHex(amiibo.id))
         try {
             tagData = TagArray.getValidatedData(keyManager, tagData)!!
         } catch (ignored: Exception) { }

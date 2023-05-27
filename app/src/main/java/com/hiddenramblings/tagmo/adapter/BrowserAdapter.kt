@@ -61,7 +61,8 @@ class BrowserAdapter(
                 oldBrowserSettings.amiiboFiles
             )
         ) {
-            data = newBrowserSettings.amiiboFiles
+            data = arrayListOf()
+            data.addAll(newBrowserSettings.amiiboFiles)
             refresh = true
         }
         if (!BrowserSettings.equals(
@@ -78,9 +79,7 @@ class BrowserAdapter(
         ) {
             refresh = true
         }
-        if (refresh) {
-            refresh()
-        }
+        if (refresh) refresh()
         firstRun = false
     }
 

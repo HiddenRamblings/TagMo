@@ -102,8 +102,8 @@ class WriteTagAdapter(private val settings: BrowserSettings?) :
         return filteredData.size
     }
 
-    override fun getItemId(i: Int): Long {
-        return (filteredData[i]?.id ?: 0).toLong()
+    override fun getItemId(position: Int): Long {
+        return position.toLong()
     }
 
     private fun getItem(i: Int): AmiiboFile? {

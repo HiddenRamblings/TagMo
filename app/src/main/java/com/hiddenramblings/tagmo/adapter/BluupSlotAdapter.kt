@@ -44,8 +44,8 @@ class BluupSlotAdapter(
         return bluupAmiibo.size
     }
 
-    override fun getItemId(i: Int): Long {
-        return (bluupAmiibo[i]?.bluupTail ?: "").toLong()
+    override fun getItemId(position: Int): Long {
+        return position.toLong()
     }
 
     fun getItem(i: Int): Amiibo? {

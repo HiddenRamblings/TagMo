@@ -71,8 +71,8 @@ class FoomiiboAdapter(
         return filteredData.size
     }
 
-    override fun getItemId(i: Int): Long {
-        return filteredData[i].id
+    override fun getItemId(position: Int): Long {
+        return position.toLong()
     }
 
     private fun getItem(i: Int): Amiibo {

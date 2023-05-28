@@ -61,15 +61,15 @@ open class AmiiboFile : Parcelable {
             val tagData = TagArray.getValidatedAmiibo(keyManager, this@AmiiboFile)
             (0 until count).map {
                 async(Dispatchers.IO) {
-                    val newAmiiboData = try {
+                    try {
                         AmiiboData(keyManager.decrypt(tagData)).apply {
                             uID = Foomiibo.generateRandomUID()
+                        }.also {
+                            dataList.add(it)
                         }
                     } catch (e: Exception) {
                         Debug.warn(e)
-                        null
                     }
-                    newAmiiboData?.let { dataList.add(it) }
                 }
             }.awaitAll()
         }

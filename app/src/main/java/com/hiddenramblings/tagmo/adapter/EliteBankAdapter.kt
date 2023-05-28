@@ -42,8 +42,8 @@ class EliteBankAdapter(
         return amiibos.size
     }
 
-    override fun getItemId(i: Int): Long {
-        return (amiibos[i]?.id ?: 0).toLong()
+    override fun getItemId(position: Int): Long {
+        return position.toLong()
     }
 
     private fun getItem(i: Int): EliteTag? {
@@ -133,7 +133,7 @@ class EliteBankAdapter(
             val query = settings.query?.lowercase(Locale.getDefault())
             val value = (absoluteAdapterPosition + 1).toString()
             if (isAmiibo) {
-                amiiboItem!!.index = absoluteAdapterPosition
+                amiiboItem?.index = absoluteAdapterPosition
                 amiiboHexId = Amiibo.idToHex(amiibo!!.id)
                 amiiboImageUrl = amiibo.imageUrl
                 amiibo.name?.let { name -> amiiboName = name }

@@ -16,7 +16,7 @@
         android:singleLine="true"
         android:ellipsize="marquee"
         android:marqueeRepeatLimit="marquee_forever"
-        android:text="@string/clone_serials"
+        android:text="@string/clone_random"
         android:textSize="16sp"/>
 
     <com.shawnlin.numberpicker.NumberPicker

@@ -91,7 +91,7 @@
     <string name="hex_code">Hexadezimal-Code</string>
     <string name="share_qr">QR-Code freigeben</string>
     <string name="edit_props">Eigenschaften bearbeiten</string>
-    <string name="bin_copier">Bin Vervielfältiger</string>
+    <string name="bin_random">Bin-Zufallsgenerator</string>
     <string name="delete_binary">Binär löschen</string>
     <string name="ignore_tag_id">Tag ID # ignorieren</string>
     <string name="random_serial">Zufällige Seriennummer</string>
@@ -322,7 +322,7 @@
     <string name="device_address">MAC: %1$s</string>
     <string name="switch_devices">Verbinden eines Bluetooth-Geräts</string>
 
-    <string name="clone_serials">Klonen mit zufälliger Serie</string>
+    <string name="clone_random">Klonen mit zufälliger Serie</string>
 
     <string name="data_write">Schrieb Hauptdaten</string>
     <string name="password_write">Passwort schreiben</string>

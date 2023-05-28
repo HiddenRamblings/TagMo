@@ -117,13 +117,13 @@
                 android:text="@string/create_blank" />
 
             <androidx.appcompat.widget.SwitchCompat
-                android:id="@+id/write_serial_fill"
+                android:id="@+id/write_fill_random"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_marginHorizontal="2dp"
                 android:defaultValue="false"
-                android:text="@string/clone_serials"
+                android:text="@string/clone_random"
                 app:switchPadding="4dp" />
 
             <LinearLayout

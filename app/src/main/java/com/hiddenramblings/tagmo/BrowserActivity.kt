@@ -1005,22 +1005,26 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
             val amiiboList = amiiboFile?.withRandomSerials(keyManager, count)
             amiiboList?.forEachIndexed { index, amiiboData ->
                 val name = fileName.replace(".bin", "_$index.bin")
-                val outputData = keyManager.encrypt(amiiboData.array)
-                val outputFile: AmiiboFile? = if (cached) {
-                    val path = TagArray.writeBytesToFile(directory, name, outputData)
-                    AmiiboFile(File(path), amiiboData.amiiboID, outputData)
-                } else {
-                    TagArray.writeBytesWithName(this@BrowserActivity, name, outputData)?.let {
-                        if (prefs.isDocumentStorage)
-                            AmiiboFile(DocumentFile.fromTreeUri(
-                                this@BrowserActivity, Uri.parse(it)
-                            ), amiiboData.amiiboID, outputData)
-                        else
-                            AmiiboFile(File(it), amiiboData.amiiboID, amiiboData.array)
+                try {
+                    val outputData = keyManager.encrypt(amiiboData.array)
+                    val outputFile: AmiiboFile? = if (cached) {
+                        val path = TagArray.writeBytesToFile(directory, name, outputData)
+                        AmiiboFile(File(path), amiiboData.amiiboID, outputData)
+                    } else {
+                        TagArray.writeBytesWithName(this@BrowserActivity, name, outputData)?.let {
+                            if (prefs.isDocumentStorage)
+                                AmiiboFile(DocumentFile.fromTreeUri(
+                                    this@BrowserActivity, Uri.parse(it)
+                                ), amiiboData.amiiboID, outputData)
+                            else
+                                AmiiboFile(File(it), amiiboData.amiiboID, amiiboData.array)
+                        }
                     }
-                }
-                outputFile?.let { file ->
-                    outputFiles.add(file)
+                    outputFile?.let { file ->
+                        outputFiles.add(file)
+                    }
+                } catch (ex: Exception) {
+                    Debug.warn(ex)
                 }
             }
             if (outputFiles.isNotEmpty()) {
@@ -1030,6 +1034,12 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
 //                        it.notifyChanges()
 //                    } ?: onRootFolderChanged(true)
                     onRootFolderChanged(true)
+                }
+            } else {
+                withContext(Dispatchers.Main) {
+                    IconifiedSnackbar(this@BrowserActivity, viewPager).buildSnackbar(
+                        getString(R.string.fail_randomize), Snackbar.LENGTH_SHORT
+                    ).show()
                 }
             }
         }
@@ -1072,7 +1082,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
         toolbar.menu.findItem(R.id.mnu_view_hex).isEnabled = available
         toolbar.menu.findItem(R.id.mnu_share_qr).isEnabled = available
         toolbar.menu.findItem(R.id.mnu_validate).isEnabled = available
-        toolbar.menu.findItem(R.id.mnu_copier).apply {
+        toolbar.menu.findItem(R.id.mnu_random).apply {
             isVisible = null != amiiboFile
         }
         toolbar.menu.findItem(R.id.mnu_delete).apply {
@@ -1167,7 +1177,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                     )
                     return@setOnMenuItemClickListener true
                 }
-                R.id.mnu_copier -> {
+                R.id.mnu_random -> {
                     showDuplicatorDialog(amiiboFile, tagData)
                     return@setOnMenuItemClickListener true
                 }
@@ -1217,7 +1227,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
         if (!toolbar.menu.hasVisibleItems()) toolbar.inflateMenu(R.menu.amiibo_menu)
         toolbar.menu.findItem(R.id.mnu_save).setTitle(R.string.cache)
         toolbar.menu.findItem(R.id.mnu_scan).isVisible = false
-        toolbar.menu.findItem(R.id.mnu_copier).isVisible = false
+        toolbar.menu.findItem(R.id.mnu_random).isVisible = false
         toolbar.setOnMenuItemClickListener {
             val args = Bundle()
             val scan = Intent(this, NfcActivity::class.java)

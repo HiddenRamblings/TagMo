@@ -91,7 +91,7 @@
     <string name="hex_code">Kod szesnastkowy</string>
     <string name="share_qr">Udostępnij kod QR</string>
     <string name="edit_props">Edytuj właściwości</string>
-    <string name="bin_copier">Duplikator kosza</string>
+    <string name="bin_random">Randomizator pojemników</string>
     <string name="delete_binary">Usuń binarny</string>
     <string name="ignore_tag_id">Ignoruj identyfikator tagu #</string>
     <string name="random_serial">Losowy numer seryjny</string>
@@ -322,7 +322,7 @@
     <string name="device_address">MAC: %1$s</string>
     <string name="switch_devices">Podłącz urządzenie Bluetooth</string>
 
-    <string name="clone_serials">Klonowanie z losowym serialem</string>
+    <string name="clone_random">Klonowanie z losowym serialem</string>
 
     <string name="data_write">Zapisano główne dane</string>
     <string name="password_write">Zapisanie hasła</string>

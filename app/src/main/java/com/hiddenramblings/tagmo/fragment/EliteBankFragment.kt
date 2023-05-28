@@ -86,7 +86,7 @@ class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
     private var bankStats: TextView? = null
     private lateinit var eliteBankCount: NumberPicker
     private var writeOpenBanks: AppCompatButton? = null
-    private var writeSerials: SwitchCompat? = null
+    private var writeRandom: SwitchCompat? = null
     private var eraseOpenBanks: AppCompatButton? = null
     private var securityOptions: LinearLayout? = null
     private var searchView: SearchView? = null
@@ -168,6 +168,8 @@ class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
 
         bankStats = view.findViewById(R.id.bank_stats)
 
+        writeRandom = view.findViewById(R.id.write_fill_random)
+
         writeOpenBanks = view.findViewById<AppCompatButton>(R.id.write_open_banks).apply {
             setOnClickListener {
                 settings.addChangeListener(writeTagAdapter)
@@ -191,13 +193,11 @@ class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
                                 }
                             }
                         }
-                    }, count, writeSerials?.isChecked ?: false)
+                    }, count, writeRandom?.isChecked ?: false)
                 }
                 bottomSheet?.setState(BottomSheetBehavior.STATE_EXPANDED)
             }
         }
-
-        writeSerials = view.findViewById(R.id.write_serial_fill)
 
         eraseOpenBanks = view.findViewById<AppCompatButton>(R.id.erase_open_banks).apply {
             setOnClickListener {

@@ -25,8 +25,8 @@
         android:title="@string/edit_props"
         app:showAsAction="never"/>
     <item
-        android:id="@+id/mnu_copier"
-        android:title="@string/bin_copier"
+        android:id="@+id/mnu_random"
+        android:title="@string/bin_random"
         app:showAsAction="never"/>
     <item
         android:id="@+id/mnu_share_qr"

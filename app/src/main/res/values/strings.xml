@@ -92,7 +92,7 @@
     <string name="hex_code">Hex Code</string>
     <string name="share_qr">Share QR Code</string>
     <string name="edit_props">Edit Properties</string>
-    <string name="bin_copier">Bin Duplicator</string>
+    <string name="bin_random">Bin Randomizer</string>
     <string name="download_slot">Download Slot</string>
     <string name="delete_binary">Delete Binary</string>
     <string name="ignore_tag_id">Ignore Tag ID #</string>
@@ -325,7 +325,7 @@
     <string name="device_address">MAC: %1$s</string>
     <string name="switch_devices">Connect a new device</string>
 
-    <string name="clone_serials">Clone with random serial</string>
+    <string name="clone_random">Clone with random serial</string>
 
     <string name="data_write">Wrote main data</string>
     <string name="password_write">Wrote password</string>
@@ -385,6 +385,7 @@
     <string name="fail_logcat">Failed to prepare logcat!</string>
     <string name="fail_bitmap">Failed to generate bitmap!</string>
     <string name="fail_bank_data">Binary data empty!\nSkipping bank %1$d&#8230;</string>
+    <string name="fail_randomize">Randomizer failed to create duplicates!</string>
 
     <string name="no_tag_loaded">&lt;No Tag Loaded&gt;</string>
     <string name="read_error">&lt;Error Reading Tag&gt;</string>

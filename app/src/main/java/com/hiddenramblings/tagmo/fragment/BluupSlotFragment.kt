@@ -78,7 +78,7 @@ open class BluupSlotFragment : Fragment(), BluupSlotAdapter.OnAmiiboClickListene
     private lateinit var bluupSlotCount: NumberPicker
     private var screenOptions: LinearLayout? = null
     private var writeSlots: AppCompatButton? = null
-    private var writeSerials: SwitchCompat? = null
+    private var writeRandom: SwitchCompat? = null
     private var eraseSlots: AppCompatButton? = null
     private var slotOptionsMenu: LinearLayout? = null
     private var createBlank: AppCompatButton? = null
@@ -481,6 +481,8 @@ open class BluupSlotFragment : Fragment(), BluupSlotAdapter.OnAmiiboClickListene
             }
         }
 
+        writeRandom = view.findViewById(R.id.write_fill_random)
+
         writeSlots = view.findViewById<AppCompatButton>(R.id.write_slot_count).apply {
             text = getString(R.string.write_slots, 1)
             setOnClickListener {
@@ -505,13 +507,11 @@ open class BluupSlotFragment : Fragment(), BluupSlotAdapter.OnAmiiboClickListene
                                 }
                             }
                         }
-                    }, count, writeSerials?.isChecked ?: false)
+                    }, count, writeRandom?.isChecked ?: false)
                 }
                 bottomSheet?.setState(BottomSheetBehavior.STATE_EXPANDED)
             }
         }
-
-        writeSerials = view.findViewById(R.id.write_serial_fill)
 
         eraseSlots = view.findViewById<AppCompatButton>(R.id.erase_slot_count).apply {
             text = getString(R.string.erase_slots, 0)

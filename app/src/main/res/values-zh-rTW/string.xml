@@ -91,7 +91,6 @@
     <string name="hex_code">Hex編碼</string>
     <string name="share_qr">分享QR Code</string>
     <string name="edit_props">編輯相關資訊</string>
-    <string name="bin_copier">Bin備份</string>
     <string name="delete_binary">删除二進位檔案</string>
     <string name="ignore_tag_id">忽略此Tag ID #</string>
     <string name="random_serial">隨機序號</string>

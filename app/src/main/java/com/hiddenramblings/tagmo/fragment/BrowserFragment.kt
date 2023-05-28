@@ -52,9 +52,9 @@ import com.hiddenramblings.tagmo.eightbit.material.IconifiedSnackbar
 import com.hiddenramblings.tagmo.eightbit.os.Storage
 import com.hiddenramblings.tagmo.eightbit.os.Version
 import com.hiddenramblings.tagmo.eightbit.widget.ProgressAlert
-import com.hiddenramblings.tagmo.widget.Toasty
 import com.hiddenramblings.tagmo.nfctech.Foomiibo
 import com.hiddenramblings.tagmo.nfctech.TagArray
+import com.hiddenramblings.tagmo.widget.Toasty
 import com.robertlevonyan.views.chip.Chip
 import com.robertlevonyan.views.chip.OnCloseClickListener
 import kotlinx.coroutines.*

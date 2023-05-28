@@ -22,9 +22,9 @@ import com.hiddenramblings.tagmo.eightbit.io.Debug
 import com.hiddenramblings.tagmo.eightbit.os.Storage
 import com.hiddenramblings.tagmo.eightbit.os.Version
 import com.hiddenramblings.tagmo.eightbit.widget.ProgressAlert
-import com.hiddenramblings.tagmo.widget.Toasty
 import com.hiddenramblings.tagmo.nfctech.TagArray
 import com.hiddenramblings.tagmo.security.SecurityHandler
+import com.hiddenramblings.tagmo.widget.Toasty
 import org.json.JSONException
 import java.io.File
 import java.io.FileOutputStream

@@ -1,5 +1,7 @@
 package com.shawnlin.numberpicker;
 
+import static java.lang.annotation.RetentionPolicy.SOURCE;
+
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.Configuration;
@@ -38,16 +40,14 @@ import androidx.annotation.IntDef;
 import androidx.annotation.StringRes;
 import androidx.core.content.ContextCompat;
 
+import com.hiddenramblings.tagmo.R;
+import com.hiddenramblings.tagmo.eightbit.os.Version;
+
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
 import java.util.Locale;
-
-import static java.lang.annotation.RetentionPolicy.SOURCE;
-
-import com.hiddenramblings.tagmo.R;
-import com.hiddenramblings.tagmo.eightbit.os.Version;
 
 /**
  * A widget that enables the user to select a number from a predefined range.

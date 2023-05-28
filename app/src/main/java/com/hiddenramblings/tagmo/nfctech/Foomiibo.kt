@@ -4,10 +4,13 @@
  * Copyright (C) 2021 AbandonedCart @ TagMo
  * ====================================================================
  */
+
+@file:Suppress("unused", "WeakerAccess")
 package com.hiddenramblings.tagmo.nfctech
 
 import com.hiddenramblings.tagmo.R
 import com.hiddenramblings.tagmo.TagMo
+import com.hiddenramblings.tagmo.amiibo.KeyManager
 import com.hiddenramblings.tagmo.eightbit.io.Debug
 import java.io.File
 import java.text.DecimalFormat
@@ -42,7 +45,7 @@ object Foomiibo {
         return week + year + "000" + identifier + facility
     }
 
-    fun generateData(id: String): ByteArray {
+    private fun generateData(id: String): ByteArray {
         val arr = ByteArray(NfcByte.TAG_DATA_SIZE)
 
         // Set UID, BCC0
@@ -87,10 +90,6 @@ object Foomiibo {
         return arr
     }
 
-    fun generateData(id: Long): ByteArray {
-        return generateData(id.toString())
-    }
-
     private const val hexSingature = "5461674d6f20382d426974204e544147"
 
     fun getSignedData(tagData: ByteArray): ByteArray {
@@ -103,6 +102,10 @@ object Foomiibo {
 
     fun getSignedData(id: String): ByteArray {
         return getSignedData(generateData(id))
+    }
+
+    fun getSignedData(id: Long): ByteArray {
+        return getSignedData(id.toString())
     }
 
     fun getDataSignature(tagData: ByteArray): String? {

@@ -22,7 +22,7 @@ class RenderEffectBlur : BlurAlgorithm {
     private var height = 0
     private var width = 0
     private var lastBlurRadius = 1f
-    var fallbackAlgorithm: BlurAlgorithm? = null
+    private var fallbackAlgorithm: BlurAlgorithm? = null
     private var context: Context? = null
     override fun blur(bitmap: Bitmap?, blurRadius: Float): Bitmap {
         lastBlurRadius = blurRadius
@@ -68,8 +68,8 @@ class RenderEffectBlur : BlurAlgorithm {
             if (fallbackAlgorithm == null) {
                 fallbackAlgorithm = RenderScriptBlur(context!!)
             }
-            fallbackAlgorithm!!.blur(bitmap, lastBlurRadius)
-            fallbackAlgorithm!!.render(canvas, bitmap)
+            fallbackAlgorithm?.blur(bitmap, lastBlurRadius)
+            fallbackAlgorithm?.render(canvas, bitmap)
         }
     }
 

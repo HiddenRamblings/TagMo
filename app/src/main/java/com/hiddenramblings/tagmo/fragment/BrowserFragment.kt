@@ -676,7 +676,7 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
             }
         }
         if (tagData.isEmpty() && null != amiibo)
-            tagData = Foomiibo.generateData(Amiibo.idToHex(amiibo.id))
+            tagData = Foomiibo.getSignedData(Amiibo.idToHex(amiibo.id))
         try {
             tagData = TagArray.getValidatedData(keyManager, tagData)!!
         } catch (ignored: Exception) { }
@@ -711,7 +711,7 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
             }
         }
         if (tagData.isEmpty() && null != amiibo)
-            tagData = Foomiibo.generateData(Amiibo.idToHex(amiibo.id))
+            tagData = Foomiibo.getSignedData(Amiibo.idToHex(amiibo.id))
         try {
             tagData = TagArray.getValidatedData(keyManager, tagData)!!
         } catch (ignored: Exception) { }

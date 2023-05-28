@@ -50,6 +50,13 @@ class FoomiiboAdapter(
                 ) ||
                 BrowserSettings.hasFilterChanged(newBrowserSettings, oldBrowserSettings)
         if (!BrowserSettings.equals(
+                newBrowserSettings.amiiboFiles,
+                oldBrowserSettings.amiiboFiles
+            )
+        ) {
+            refresh = true
+        }
+        if (!BrowserSettings.equals(
                 newBrowserSettings.amiiboManager,
                 oldBrowserSettings.amiiboManager
             )

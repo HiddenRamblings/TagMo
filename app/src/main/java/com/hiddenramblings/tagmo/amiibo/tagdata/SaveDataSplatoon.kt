@@ -4,7 +4,7 @@ import com.hiddenramblings.tagmo.nfctech.TagArray
 import java.util.Random
 
 open class SaveDataSplatoon(appData: ByteArray?) : AppData(appData!!) {
-    private var saveDataHex = "01 01 00 00" +
+    private val saveDataHex = "01 01 00 00" +
             "00 00 00 00 42 C0 7B 0A 36 FA 8F C1 48 F5 09 60" +
             "C3 8E C5 52 EE E2 9A CE 27 71 5C 65 40 5B C3 F1" +
             "45 BF C6 3E 72 68 A8 9E DB 41 F4 25 8D 3A 4B 75" +
@@ -18,8 +18,8 @@ open class SaveDataSplatoon(appData: ByteArray?) : AppData(appData!!) {
             "9E F3 63 B2 BO AE DD A2 5D 09 CC 9B 9B D1 D5 3E" +
             "88 BO 6D C2 AF 9D 66 7E 20 24 77 3B 88 7C AF 7F" +
             "88 9C B6 3D"
-    private var saveDataBytes = TagArray.hexToByteArray(saveDataHex.filter { !it.isWhitespace() })
-    private var saveDataHex2 = "01 01 00 00" +
+    private val saveDataBytes = TagArray.hexToByteArray(saveDataHex.filter { !it.isWhitespace() })
+    private val saveDataHex2 = "01 01 00 00" +
             "00 00 00 00 99 24 8D 4B 4C 84 9D FO A4 98 OC F5" +
             "AE D1 42 9B 40 1D 20 42 7D 85 28 77 62 OD FO C8" +
             "9E B1 B2 AO 8A D4 5A 42 39 95 6E F3 FA C4 36 FB" +
@@ -33,7 +33,8 @@ open class SaveDataSplatoon(appData: ByteArray?) : AppData(appData!!) {
             "02 56 C7 3D B6 D4 F8 7A 90 A1 55 7E D4 4A E1 6B" +
             "78 CO 3F 99 89 47 37 37 ED 6A E2 C8 9E C5 32 67" +
             "AA 42 4E 6D"
-    private var saveDataBytes2 = TagArray.hexToByteArray(saveDataHex2.filter { !it.isWhitespace() })
+    private val saveDataBytes2 = TagArray.hexToByteArray(saveDataHex2.filter { !it.isWhitespace() })
+
     fun hasUnlockData(): Boolean {
         val saveData = appData.array().copyOfRange(GAME_DATA_OFFSET, saveDataBytes.size)
         return saveDataBytes.contentEquals(saveData) || saveDataBytes2.contentEquals(saveData)

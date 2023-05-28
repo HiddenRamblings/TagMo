@@ -3,7 +3,6 @@
  * Copyright (C) 2022 AbandonedCart @ TagMo
  * ====================================================================
  */
-
 package com.hiddenramblings.tagmo.nfctech
 
 import android.content.Context

@@ -795,16 +795,14 @@ open class BluupSlotFragment : Fragment(), BluupSlotAdapter.OnAmiiboClickListene
                 var selectedAmiibo: Amiibo? = null
                 amiiboManager?.let {
                     val matches : ArrayList<Amiibo> = arrayListOf()
-                    run breaking@{
-                        it.amiibos.values.forEach { amiibo ->
-                            if (name[1] == amiibo.bluupTail) {
-                                if (amiibo.bluupName == name[0]) {
-                                    selectedAmiibo = amiibo
-                                    matches.clear()
-                                    return@breaking
-                                } else {
-                                    matches.add(amiibo)
-                                }
+                    for (amiibo in it.amiibos.values) {
+                        if (name[1] == amiibo.bluupTail) {
+                            if (amiibo.bluupName == name[0]) {
+                                selectedAmiibo = amiibo
+                                matches.clear()
+                                break
+                            } else {
+                                matches.add(amiibo)
                             }
                         }
                         selectedAmiibo = matches.find {

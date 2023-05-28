@@ -87,8 +87,8 @@ class DonationManager internal constructor(private val activity: BrowserActivity
     private val subsOwnedListener = PurchasesResponseListener {
             billingResult: BillingResult, purchases: List<Purchase> ->
             if (billingResult.responseCode == BillingClient.BillingResponseCode.OK) {
-                purchases.forEach {
-                    run breaking@{
+                run breaking@{
+                    purchases.forEach {
                         it.products.forEach { sku ->
                             if (subsPurchased.contains(sku)) {
                                 TagMo.hasSubscription = true
@@ -115,8 +115,8 @@ class DonationManager internal constructor(private val activity: BrowserActivity
     private val iapHistoryListener = PurchaseHistoryResponseListener {
             billingResult: BillingResult, purchases: List<PurchaseHistoryRecord>? ->
             if (billingResult.responseCode == BillingClient.BillingResponseCode.OK) {
-                purchases?.forEach {
-                    run breaking@{
+                run breaking@{
+                    purchases?.forEach {
                         it.products.forEach { sku ->
                             if (sku.split("_").toTypedArray()[1].toInt() >= 10) {
                                 return@breaking

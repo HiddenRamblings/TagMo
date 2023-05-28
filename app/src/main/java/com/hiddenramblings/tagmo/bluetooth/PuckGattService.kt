@@ -322,14 +322,14 @@ class PuckGattService : Service() {
 
     private fun getCharacteristicRX(mCustomService: BluetoothGattService): BluetoothGattCharacteristic {
         var mReadCharacteristic = mCustomService.getCharacteristic(PuckRX)
-        if (mBluetoothGatt?.readCharacteristic(mReadCharacteristic) != true) run breaking@{
-            mCustomService.characteristics.forEach {
-                val customUUID = it.uuid
+        if (mBluetoothGatt?.readCharacteristic(mReadCharacteristic) != true) {
+            for (characteristic in mCustomService.characteristics) {
+                val customUUID = characteristic.uuid
                 /*get the read characteristic from the service*/
                 if (customUUID.compareTo(PuckRX) == 0) {
                     Debug.verbose(this.javaClass, "GattReadCharacteristic: $customUUID")
                     mReadCharacteristic = mCustomService.getCharacteristic(customUUID)
-                    return@breaking
+                    break
                 }
             }
         }
@@ -345,12 +345,10 @@ class PuckGattService : Service() {
         if (null == mCustomService) {
             val services = supportedGattServices
             if (services.isNullOrEmpty()) throw UnsupportedOperationException()
-            run breaking@{
-                services.forEach {
-                    Debug.verbose(this.javaClass, "GattReadService: ${it.uuid}")
-                    mCharacteristicRX = getCharacteristicRX(it)
-                    return@breaking
-                }
+            for (service in services) {
+                Debug.verbose(this.javaClass, "GattReadService: ${service.uuid}")
+                mCharacteristicRX = getCharacteristicRX(service)
+                break
             }
         } else {
             mCharacteristicRX = getCharacteristicRX(mCustomService)
@@ -361,14 +359,12 @@ class PuckGattService : Service() {
     private fun getCharacteristicTX(mCustomService: BluetoothGattService): BluetoothGattCharacteristic {
         var mWriteCharacteristic = mCustomService.getCharacteristic(PuckTX)
         if (!mCustomService.characteristics.contains(mWriteCharacteristic)) {
-            run breaking@{
-                mCustomService.characteristics.forEach {
-                    val customUUID = it.uuid
-                    if (customUUID.compareTo(PuckTX) == 0) {
-                        Debug.verbose(this.javaClass, "GattWriteCharacteristic: $customUUID")
-                        mWriteCharacteristic = mCustomService.getCharacteristic(customUUID)
-                        return@breaking
-                    }
+            for (characteristic in mCustomService.characteristics) {
+                val customUUID = characteristic.uuid
+                if (customUUID.compareTo(PuckTX) == 0) {
+                    Debug.verbose(this.javaClass, "GattWriteCharacteristic: $customUUID")
+                    mWriteCharacteristic = mCustomService.getCharacteristic(customUUID)
+                    break
                 }
             }
         }

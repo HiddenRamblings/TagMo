@@ -342,7 +342,8 @@ object AmiiboManager {
                 directories.map {
                     async(Dispatchers.IO) {
                         if (it.isDirectory) {
-                            amiiboFiles.addAll(listAmiiboFiles(keyManager, it, true))
+                            val directory = listAmiiboFiles(keyManager, it, true)
+                            amiiboFiles.addAll(directory)
                         }
                     }
                 }.awaitAll()

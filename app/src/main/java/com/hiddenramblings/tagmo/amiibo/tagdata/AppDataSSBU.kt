@@ -12,7 +12,7 @@ package com.hiddenramblings.tagmo.amiibo.tagdata
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 
-class AppDataSSBU(appData: ByteArray?) : AppData(appData!!) { // 0xE2 - 0D // 0xE3 - 01
+class AppDataSSBU(appData: ByteArray?) : AppData(appData!!) {
 
     private val u0: ByteArray
     init {

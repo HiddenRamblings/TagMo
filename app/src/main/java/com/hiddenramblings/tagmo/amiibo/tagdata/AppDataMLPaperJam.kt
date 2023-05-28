@@ -8,21 +8,23 @@
 package com.hiddenramblings.tagmo.amiibo.tagdata
 
 import com.hiddenramblings.tagmo.nfctech.TagArray
+import java.util.Random
 
 class AppDataMLPaperJam(appData: ByteArray?) : AppData(appData!!) {
 
-    private val sparkleCards = TagArray.hexToByteArray("FFFFFFFFFFFFFF")
+    private val sparkleCardHex = "FF FF FF FF FF FF FF"
+    private val sparkleCardBytes = TagArray.hexToByteArray(sparkleCardHex.filter { !it.isWhitespace() })
+
     fun checkSparkleCards(): Boolean {
-        return sparkleCards.contentEquals(
-            appData.array().copyOfRange(SPARKLE_CARD_OFFSET, sparkleCards.size)
-        )
+        val sparkleCardData = appData.array().copyOfRange(SPARKLE_CARD_OFFSET, sparkleCardBytes.size)
+        return sparkleCardData.contentEquals(sparkleCardBytes)
     }
     fun unlockSparkleCards() {
-        appData.put(sparkleCards, SPARKLE_CARD_OFFSET, sparkleCards.size)
+        sparkleCardBytes.forEachIndexed { x, byte -> appData.put(SPARKLE_CARD_OFFSET + x, byte) }
     }
 
     companion object {
-        const val SPARKLE_CARD_OFFSET = 0x20
+        const val SPARKLE_CARD_OFFSET = 0x20 // 0xF0
     }
 }
 

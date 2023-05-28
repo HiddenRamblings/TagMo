@@ -95,16 +95,14 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
             val tagData = intent.getByteArrayExtra(NFCIntent.EXTRA_TAG_DATA)
             if (tagData?.isNotEmpty() == true) {
                 var updated = false
-                run breaking@{
-                    resultData.forEach { data ->
-                        try {
-                            if (data.isNotEmpty() && Amiibo.dataToId(data) == Amiibo.dataToId(tagData)) {
-                                updated = true
-                                resultData[resultData.indexOf(data)] = tagData
-                                return@breaking
-                            }
-                        } catch (ignored: Exception) { }
-                    }
+                for (data in resultData) {
+                    try {
+                        if (data.isNotEmpty() && Amiibo.dataToId(data) == Amiibo.dataToId(tagData)) {
+                            updated = true
+                            resultData[resultData.indexOf(data)] = tagData
+                            break
+                        }
+                    } catch (ignored: Exception) { }
                 }
                 if (!updated) resultData.add(tagData)
             }
@@ -665,15 +663,13 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
         val activity = requireActivity() as BrowserActivity
 
         var tagData = byteArrayOf()
-        run breaking@{
-            resultData.forEach { data ->
-                try {
-                    if (data.isNotEmpty() && Amiibo.dataToId(data) == amiibo?.id) {
-                        tagData = data
-                        return@breaking
-                    }
-                } catch (ignored: Exception) { }
-            }
+        for (data in resultData) {
+            try {
+                if (data.isNotEmpty() && Amiibo.dataToId(data) == amiibo?.id) {
+                    tagData = data
+                    break
+                }
+            } catch (ignored: Exception) { }
         }
         if (tagData.isEmpty() && null != amiibo)
             tagData = Foomiibo.getSignedData(Amiibo.idToHex(amiibo.id))
@@ -700,15 +696,13 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
 
     override fun onFoomiiboRebind(itemView: View?, amiibo: Amiibo?) {
         var tagData = byteArrayOf()
-        run breaking@{
-            resultData.forEach { data ->
-                try {
-                    if (data.isNotEmpty() && Amiibo.dataToId(data) == amiibo?.id) {
-                        tagData = data
-                        return@breaking
-                    }
-                } catch (ignored: Exception) { }
-            }
+        for (data in resultData) {
+            try {
+                if (data.isNotEmpty() && Amiibo.dataToId(data) == amiibo?.id) {
+                    tagData = data
+                    break
+                }
+            } catch (ignored: Exception) { }
         }
         if (tagData.isEmpty() && null != amiibo)
             tagData = Foomiibo.getSignedData(Amiibo.idToHex(amiibo.id))

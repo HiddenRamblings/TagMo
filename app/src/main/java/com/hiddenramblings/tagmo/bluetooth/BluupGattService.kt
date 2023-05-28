@@ -478,12 +478,10 @@ class BluupGattService : Service() {
         if (null == mCustomService) {
             val services = supportedGattServices
             if (services.isNullOrEmpty()) throw UnsupportedOperationException()
-            run breaking@{
-                services.forEach {
-                    Debug.verbose(this.javaClass, "GattReadService: ${it.uuid}")
-                    mCharacteristicRX = getCharacteristicRX(it)
-                    return@breaking
-                }
+            for (service in services) {
+                Debug.verbose(this.javaClass, "GattReadService: ${service.uuid}")
+                mCharacteristicRX = getCharacteristicRX(service)
+                break
             }
         } else {
             mCharacteristicRX = getCharacteristicRX(mCustomService)
@@ -494,15 +492,14 @@ class BluupGattService : Service() {
     private fun getCharacteristicTX(mCustomService: BluetoothGattService): BluetoothGattCharacteristic {
         var mWriteCharacteristic = mCustomService.getCharacteristic(BluupTX)
         if (!mCustomService.characteristics.contains(mWriteCharacteristic)) {
-            run breaking@{
-                mCustomService.characteristics.forEach {
-                    val customUUID = it.uuid
-                    if (customUUID.compareTo(BluupTX) == 0) {
-                        Debug.verbose(this.javaClass, "GattWriteCharacteristic: $customUUID")
-                        mWriteCharacteristic = mCustomService.getCharacteristic(customUUID)
-                        return@breaking
-                    }
+            for (characteristic in mCustomService.characteristics) {
+                val customUUID = characteristic.uuid
+                if (customUUID.compareTo(BluupTX) == 0) {
+                    Debug.verbose(this.javaClass, "GattWriteCharacteristic: $customUUID")
+                    mWriteCharacteristic = mCustomService.getCharacteristic(customUUID)
+                    break
                 }
+
             }
         }
         return mWriteCharacteristic

@@ -3,7 +3,8 @@
     <dimen name="activity_horizontal_margin">16dp</dimen>
     <dimen name="activity_vertical_margin">16dp</dimen>
     <dimen name="fab_button_margin">24dp</dimen>
-    <dimen name="card_radius">8dp</dimen>
+    <dimen name="list_card_radius">8dp</dimen>
+    <dimen name="menu_card_radius">32dp</dimen>
     <dimen name="card_horizontal_margin">6dp</dimen>
     <dimen name="card_vertical_margin">4dp</dimen>
     <dimen name="divider_radius">12dp</dimen>

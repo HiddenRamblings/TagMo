@@ -7,7 +7,7 @@
     android:clickable="true"
     android:focusable="true"
     app:cardBackgroundColor="@android:color/transparent"
-    app:cardCornerRadius="@dimen/card_radius"
+    app:cardCornerRadius="@dimen/list_card_radius"
     app:cardElevation="0dp"
     android:layout_marginHorizontal="4dp"
     android:layout_gravity="center">

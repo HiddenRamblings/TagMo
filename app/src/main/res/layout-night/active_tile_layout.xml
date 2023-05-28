@@ -13,7 +13,7 @@
         android:clickable="true"
         android:focusable="true"
         android:foreground="@drawable/card_foreground"
-        app:cardCornerRadius="@dimen/card_radius"
+        app:cardCornerRadius="@dimen/list_card_radius"
         android:visibility="invisible"
         tools:ignore="SmallSp">
 

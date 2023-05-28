@@ -56,6 +56,45 @@
                 android:orientation="vertical">
 
                 <androidx.cardview.widget.CardView
+                    android:id="@+id/menu_settings"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="8dp"
+                    android:focusable="true"
+                    android:foreground="@drawable/card_foreground"
+                    app:cardCornerRadius="@dimen/card_radius">
+
+                    <LinearLayout
+                        android:id="@+id/wrapper_settings"
+                        android:layout_width="match_parent"
+                        android:layout_height="64dp"
+                        android:orientation="horizontal">
+
+                        <androidx.appcompat.widget.AppCompatImageView
+                            android:contentDescription="@string/imageview_amiibo"
+                            android:id="@+id/image_settings"
+                            android:layout_width="60dp"
+                            android:layout_height="60dp"
+                            android:scaleType="fitCenter"
+                            android:layout_weight="1"
+                            android:layout_gravity="center_vertical"
+                            app:srcCompat="@drawable/ic_warning_amber_24"
+                            android:foreground="@drawable/card_foreground"
+                            tools:ignore="UnusedAttribute" />
+
+                        <TextView
+                            android:id="@+id/text_settings"
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="3"
+                            android:gravity="center"
+                            android:text="@string/menu_settings"
+                            android:textColor="@color/tag_text"
+                            android:textSize="18sp"/>
+                    </LinearLayout>
+                </androidx.cardview.widget.CardView>
+
+                <androidx.cardview.widget.CardView
                     android:id="@+id/menu_amiibo"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -323,45 +362,6 @@
                             android:layout_weight="3"
                             android:gravity="center"
                             android:text="@string/menu_guides"
-                            android:textColor="@color/tag_text"
-                            android:textSize="18sp"/>
-                    </LinearLayout>
-                </androidx.cardview.widget.CardView>
-
-                <androidx.cardview.widget.CardView
-                    android:id="@+id/menu_settings"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="8dp"
-                    android:focusable="true"
-                    android:foreground="@drawable/card_foreground"
-                    app:cardCornerRadius="@dimen/card_radius">
-
-                    <LinearLayout
-                        android:id="@+id/wrapper_settings"
-                        android:layout_width="match_parent"
-                        android:layout_height="64dp"
-                        android:orientation="horizontal">
-
-                        <androidx.appcompat.widget.AppCompatImageView
-                            android:contentDescription="@string/imageview_amiibo"
-                            android:id="@+id/image_settings"
-                            android:layout_width="60dp"
-                            android:layout_height="60dp"
-                            android:scaleType="fitCenter"
-                            android:layout_weight="1"
-                            android:layout_gravity="center_vertical"
-                            app:srcCompat="@drawable/ic_warning_amber_24"
-                            android:foreground="@drawable/card_foreground"
-                            tools:ignore="UnusedAttribute" />
-
-                        <TextView
-                            android:id="@+id/text_settings"
-                            android:layout_width="0dp"
-                            android:layout_height="match_parent"
-                            android:layout_weight="3"
-                            android:gravity="center"
-                            android:text="@string/menu_settings"
                             android:textColor="@color/tag_text"
                             android:textSize="18sp"/>
                     </LinearLayout>

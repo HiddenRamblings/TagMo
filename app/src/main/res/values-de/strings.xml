@@ -211,7 +211,6 @@
     <string name="menu_qr_code">QR-Code-Werkzeugsatz</string>
     <string name="menu_dimensions">Abmessungen </string>
     <string name="menu_joystick">Joystick-Prüfung</string>
-    <string name="menu_guides">Anleitungen</string>
     <string name="menu_settings">TagMo Einstellungen</string>
 
     <string name="pref_menu_return">Zurück zum Hauptmenü</string>

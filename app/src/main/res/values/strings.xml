@@ -213,7 +213,7 @@
     <string name="menu_qr_code">QR Code Toolkit</string>
     <string name="menu_dimensions">Dimensions 213</string>
     <string name="menu_joystick">Joystick Testing</string>
-    <string name="menu_guides">Instructions</string>
+    <string name="menu_guides">Guides and Help</string>
     <string name="menu_settings">TagMo Settings</string>
 
     <string name="pref_menu_return">Return to main menu</string>

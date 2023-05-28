@@ -59,10 +59,12 @@
                     android:id="@+id/menu_settings"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_margin="8dp"
+                    android:layout_marginVertical="8dp"
+                    android:layout_marginHorizontal="12dp"
                     android:focusable="true"
                     android:foreground="@drawable/card_foreground"
-                    app:cardCornerRadius="@dimen/menu_card_radius">
+                    app:cardCornerRadius="@dimen/menu_card_radius"
+                    app:cardUseCompatPadding="false">
 
                     <LinearLayout
                         android:id="@+id/wrapper_settings"
@@ -98,10 +100,12 @@
                     android:id="@+id/menu_amiibo"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_margin="8dp"
+                    android:layout_marginVertical="8dp"
+                    android:layout_marginHorizontal="12dp"
                     android:focusable="true"
                     android:foreground="@drawable/card_foreground"
-                    app:cardCornerRadius="@dimen/menu_card_radius">
+                    app:cardCornerRadius="@dimen/menu_card_radius"
+                    app:cardUseCompatPadding="false">
 
                     <LinearLayout
                         android:id="@+id/wrapper_amiibo"
@@ -137,10 +141,12 @@
                     android:id="@+id/menu_elite"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_margin="8dp"
+                    android:layout_marginVertical="8dp"
+                    android:layout_marginHorizontal="12dp"
                     android:focusable="true"
                     android:foreground="@drawable/card_foreground"
-                    app:cardCornerRadius="@dimen/menu_card_radius">
+                    app:cardCornerRadius="@dimen/menu_card_radius"
+                    app:cardUseCompatPadding="false">
 
                     <LinearLayout
                         android:id="@+id/wrapper_elite"
@@ -176,10 +182,12 @@
                     android:id="@+id/menu_gatt"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_margin="8dp"
+                    android:layout_marginVertical="8dp"
+                    android:layout_marginHorizontal="12dp"
                     android:focusable="true"
                     android:foreground="@drawable/card_foreground"
-                    app:cardCornerRadius="@dimen/menu_card_radius">
+                    app:cardCornerRadius="@dimen/menu_card_radius"
+                    app:cardUseCompatPadding="false">
 
                     <LinearLayout
                         android:id="@+id/wrapper_gatt"
@@ -215,10 +223,12 @@
                     android:id="@+id/menu_qr_code"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_margin="8dp"
+                    android:layout_marginVertical="8dp"
+                    android:layout_marginHorizontal="12dp"
                     android:focusable="true"
                     android:foreground="@drawable/card_foreground"
-                    app:cardCornerRadius="@dimen/menu_card_radius">
+                    app:cardCornerRadius="@dimen/menu_card_radius"
+                    app:cardUseCompatPadding="false">
 
                     <LinearLayout
                         android:id="@+id/wrapper_qr_code"
@@ -254,10 +264,12 @@
                     android:id="@+id/menu_lego"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_margin="8dp"
+                    android:layout_marginVertical="8dp"
+                    android:layout_marginHorizontal="12dp"
                     android:focusable="true"
                     android:foreground="@drawable/card_foreground"
-                    app:cardCornerRadius="@dimen/menu_card_radius">
+                    app:cardCornerRadius="@dimen/menu_card_radius"
+                    app:cardUseCompatPadding="false">
 
                     <LinearLayout
                         android:id="@+id/wrapper_lego"
@@ -293,10 +305,12 @@
                     android:id="@+id/menu_joystick"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_margin="8dp"
+                    android:layout_marginVertical="8dp"
+                    android:layout_marginHorizontal="12dp"
                     android:focusable="true"
                     android:foreground="@drawable/card_foreground"
-                    app:cardCornerRadius="@dimen/menu_card_radius">
+                    app:cardCornerRadius="@dimen/menu_card_radius"
+                    app:cardUseCompatPadding="false">
 
                     <LinearLayout
                         android:id="@+id/wrapper_joystick"
@@ -332,10 +346,12 @@
                     android:id="@+id/menu_guides"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_margin="8dp"
+                    android:layout_marginVertical="8dp"
+                    android:layout_marginHorizontal="12dp"
                     android:focusable="true"
                     android:foreground="@drawable/card_foreground"
-                    app:cardCornerRadius="@dimen/menu_card_radius">
+                    app:cardCornerRadius="@dimen/menu_card_radius"
+                    app:cardUseCompatPadding="false">
 
                     <LinearLayout
                         android:id="@+id/wrapper_guides"

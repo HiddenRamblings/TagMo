@@ -11,6 +11,7 @@
     android:focusable="true"
     android:foreground="@drawable/card_foreground"
     app:cardCornerRadius="@dimen/list_card_radius"
+    app:cardUseCompatPadding="false"
     tools:ignore="SmallSp">
 
     <LinearLayout

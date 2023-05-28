@@ -460,11 +460,16 @@ class PuckGattService : Service() {
     }
 
     fun uploadSlotAmiibo(tagData: ByteArray, slot: Int) {
-        for (i in 0 until tagData.size % 16) {
+        val count = tagData.size / 16
+        val trail = tagData.size % 16
+        for (i in 0 until count) {
             sendCommand(byteArrayOf(
                 PUCK.WRITE.bytes, slot.toByte(), (i * 4).toByte()
-            ), tagData.copyOfRange(i * 16, 16))
+            ), tagData.copyOfRange(i * 16, (i * 16) + 16))
         }
+        sendCommand(byteArrayOf(
+            PUCK.WRITE.bytes, slot.toByte(), (count * 4).toByte()
+        ), tagData.copyOfRange(count * 16, (count * 16) + trail))
         sendCommand(
             byteArrayOf(PUCK.SAVE.bytes, slot.toByte()),
             if (activeSlot == slot) byteArrayOf(PUCK.NFC.bytes) else null

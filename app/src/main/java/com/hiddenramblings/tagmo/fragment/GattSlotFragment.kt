@@ -319,13 +319,13 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
                         }
 
                         override fun onPuckListRetrieved(
-                            slotData: ArrayList<ByteArray?>, active: Int
+                            slotData: ArrayList<ByteArray>, active: Int
                         ) {
                             currentCount = slotData.size
                             val puckAmiibos: ArrayList<Amiibo?> = arrayListOf()
                             slotData.forEach { bytes ->
-                                if (bytes?.size == 80) {
-                                    val amiibo = getAmiiboFromSlice(Arrays.copyOfRange(bytes, 40, 48))
+                                if (bytes.size == 80) {
+                                    val amiibo = getAmiiboFromSlice(bytes.copyOfRange(40, 48))
                                     puckAmiibos.add(amiibo)
                                 } else {
                                     puckAmiibos.add(null)
@@ -397,7 +397,7 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
 
         val activity = requireActivity() as BrowserActivity
 
-        amiiboTile = view.findViewById<CardView>(R.id.active_tile_layout)
+        amiiboTile = view.findViewById(R.id.active_tile_layout)
         amiiboCard = view.findViewById<CardView>(R.id.active_card_layout).apply {
             findViewById<View>(R.id.txtError)?.isGone = true
             findViewById<View>(R.id.txtPath)?.isGone = true
@@ -539,7 +539,7 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
             }
         }
 
-        writeSlotsLayout = view.findViewById<LinearLayout>(R.id.write_list_slots)
+        writeSlotsLayout = view.findViewById(R.id.write_list_slots)
 
         view.findViewById<RecyclerView>(R.id.amiibo_files_list).apply {
             setHasFixedSize(true)
@@ -806,8 +806,8 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
                                 matches.add(amiibo)
                             }
                         }
-                        selectedAmiibo = matches.find {
-                            null == it.bluupName
+                        selectedAmiibo = matches.find { slot ->
+                            null == slot.bluupName
                         }?.apply { bluupName = name[0] }
                     }
                     if (null == selectedAmiibo && matches.isNotEmpty())

@@ -32,7 +32,7 @@ class PuckGattService : Service() {
     private var mCharacteristicRX: BluetoothGattCharacteristic? = null
     private var mCharacteristicTX: BluetoothGattCharacteristic? = null
     private var maxTransmissionUnit = 23
-    private val chunkTimeout = 30L
+    private val chunkTimeout = 20L
 
     // Command, Slot, Parameters
     @Suppress("unused")
@@ -65,14 +65,15 @@ class PuckGattService : Service() {
     interface BluetoothGattListener {
         fun onPuckServicesDiscovered()
         fun onPuckActiveChanged(slot: Int)
-        fun onPuckListRetrieved(slotData: ArrayList<ByteArray?>, active: Int)
+        fun onPuckListRetrieved(slotData: ArrayList<ByteArray>, active: Int)
         fun onPuckFilesDownload(tagData: ByteArray)
         fun onPuckProcessFinish()
         fun onPuckConnectionLost()
     }
 
-    private var puckArray = ArrayList<ByteArray?>()
+    private var puckArray = ArrayList<ByteArray>()
     private var readResponse = ByteArray(NfcByte.TAG_FILE_SIZE)
+
     private fun getCharacteristicValue(characteristic: BluetoothGattCharacteristic, data: ByteArray?) {
         if (data?.isNotEmpty() == true) {
             Debug.verbose(
@@ -83,34 +84,40 @@ class PuckGattService : Service() {
                     commandCallbacks[0].run()
                     commandCallbacks.removeAt(0)
                 }
-                if (data[0] == PUCK.INFO.bytes) {
-                    if (data.size == 3) {
-                        activeSlot = data[1].toInt()
-                        slotsCount = data[2].toInt()
-                        deviceAmiibo
-                    } else {
-                        val slotData = if (data.size > 2)
-                            Arrays.copyOfRange(data, 2, data.size)
-                        else
-                            null
-                        puckArray.add(data[1].toInt(), slotData)
-                        if (puckArray.size == slotsCount) {
-                            listener?.onPuckListRetrieved(puckArray, activeSlot)
+                when {
+                    data[0] == PUCK.INFO.bytes -> {
+                        if (data.size == 3) {
+                            activeSlot = data[1].toInt()
+                            slotsCount = data[2].toInt()
+                            deviceAmiibo
+                        } else {
+                            puckArray.add(data.copyOfRange(2, data.size))
+                            if (puckArray.size == slotsCount) {
+                                listener?.onPuckListRetrieved(puckArray, activeSlot)
+                            }
                         }
                     }
-                } else if (data[0] == PUCK.READ.bytes) {
-                    if (data[2].toInt() == 0) {
-                        System.arraycopy(data, 4, readResponse, 0, data.size)
-                    } else if (data[2] in 63..125) {
-                        System.arraycopy(data, 4, readResponse, 252, data.size)
-                    } else {
-                        System.arraycopy(data, 4, readResponse, 504, data.size)
-                        listener?.onPuckFilesDownload(readResponse)
-                        readResponse = ByteArray(NfcByte.TAG_FILE_SIZE)
+                    data[0] == PUCK.READ.bytes -> {
+                        when {
+                            data[2].toInt() == 0 -> {
+                                System.arraycopy(data, 4, readResponse, 0, data.size)
+                            }
+
+                            data[2] in 63..125 -> {
+                                System.arraycopy(data, 4, readResponse, 252, data.size)
+                            }
+
+                            else -> {
+                                System.arraycopy(data, 4, readResponse, 504, data.size)
+                                listener?.onPuckFilesDownload(readResponse)
+                                readResponse = ByteArray(NfcByte.TAG_FILE_SIZE)
+                            }
+                        }
                     }
-                } else if (data[0] == PUCK.SAVE.bytes) {
-                    listener?.onPuckProcessFinish()
-                    deviceAmiibo
+                    data[0] == PUCK.SAVE.bytes -> {
+                        listener?.onPuckProcessFinish()
+                        deviceAmiibo
+                    }
                 }
             }
         }
@@ -391,7 +398,7 @@ class PuckGattService : Service() {
     }
 
     private fun delayedWriteCharacteristic(value: ByteArray) {
-        val chunks = GattArray.byteToPortions(value, maxTransmissionUnit - 3)
+        val chunks = GattArray.byteToPortions(value, maxTransmissionUnit - 2)
         val commandQueue = commandCallbacks.size + chunks.size
         puckHandler.postDelayed({
             var i = 0
@@ -441,14 +448,7 @@ class PuckGattService : Service() {
 
     val deviceAmiibo: Unit
         get() {
-            puckArray = ArrayList<ByteArray?>(slotsCount)
-            if (null == mCharacteristicTX) {
-                try {
-                    setPuckCharacteristicTX()
-                } catch (e: UnsupportedOperationException) {
-                    Debug.warn(e)
-                }
-            }
+            puckArray = ArrayList<ByteArray>(slotsCount)
             for (i in 0 until slotsCount) {
                 sendCommand(byteArrayOf(PUCK.INFO.bytes, i.toByte()), null)
             }

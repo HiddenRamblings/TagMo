@@ -81,7 +81,7 @@ class BluupGattService : Service() {
     private var tailCompat: String? = null
     private var wipeDeviceCount = 0
     private var maxTransmissionUnit = 23
-    private val chunkTimeout = 30L
+    private val chunkTimeout = 20L
     fun setListener(listener: BluupBluetoothListener?) {
         this.listener = listener
     }
@@ -103,6 +103,7 @@ class BluupGattService : Service() {
 
     private var response = StringBuilder()
     private var rangeIndex = 0
+
     private fun getCharacteristicValue(characteristic: BluetoothGattCharacteristic, output: String?) {
         if (!output.isNullOrEmpty()) {
             Debug.verbose(this.javaClass, "${getLogTag(characteristic.uuid)} $output")
@@ -126,126 +127,138 @@ class BluupGattService : Service() {
                         commandCallbacks.removeAt(0)
                     }
                 }
-                if (progress.startsWith("tag.get()") || progress.startsWith("tag.setTag")) {
-                    if (progress.endsWith(">")) {
-                        if (progress.contains("Uncaught no such element")
-                            && null != nameCompat && null != tailCompat
-                        ) {
-                            response = StringBuilder()
-                            fixSlotDetails(nameCompat, tailCompat)
-                            nameCompat = null
-                            tailCompat = null
-                            return
-                        }
-                        try {
-                            val getAmiibo = progress.substring(
-                                progress.indexOf("{"),
-                                progress.lastIndexOf("}") + 1
-                            )
+                when {
+                    progress.startsWith("tag.get()") || progress.startsWith("tag.setTag") -> {
+                        if (progress.endsWith(">")) {
+                            if (progress.contains("Uncaught no such element")
+                                && null != nameCompat && null != tailCompat
+                            ) {
+                                response = StringBuilder()
+                                fixSlotDetails(nameCompat, tailCompat)
+                                nameCompat = null
+                                tailCompat = null
+                                return
+                            }
                             try {
-                                listener?.onBluupActiveChanged(JSONObject(getAmiibo))
-                            } catch (e: JSONException) {
-                                Debug.warn(e)
+                                val getAmiibo = progress.substring(
+                                    progress.indexOf("{"),
+                                    progress.lastIndexOf("}") + 1
+                                )
+                                try {
+                                    listener?.onBluupActiveChanged(JSONObject(getAmiibo))
+                                } catch (e: JSONException) {
+                                    Debug.warn(e)
+                                    listener?.onBluupActiveChanged(null)
+                                }
+                            } catch (ex: StringIndexOutOfBoundsException) {
+                                Debug.warn(ex)
                                 listener?.onBluupActiveChanged(null)
                             }
-                        } catch (ex: StringIndexOutOfBoundsException) {
-                            Debug.warn(ex)
-                            listener?.onBluupActiveChanged(null)
+                            response = StringBuilder()
+                            nameCompat = null
+                            tailCompat = null
                         }
-                        response = StringBuilder()
-                        nameCompat = null
-                        tailCompat = null
                     }
-                } else if (progress.startsWith("tag.getList")) {
-                    if (progress.endsWith(">") || progress.endsWith("\n")) {
-                        val getList = progress.substring(
-                            progress.indexOf("["),
-                            progress.lastIndexOf("]") + 1
-                        )
-                        try {
-                            var escapedList = getList
-                                .replace("/", "\\/")
-                                .replace("'", "\\'")
-                                .replace("-", "\\-")
-                            if (getList.contains("...")) {
-                                if (rangeIndex > 0) {
-                                    rangeIndex = 0
-                                    escapedList = escapedList.replace(" ...", "")
-                                    listener?.onBluupListRetrieved(JSONArray(escapedList))
-                                } else {
-                                    rangeIndex += 1
-                                    listener?.onBluupListRetrieved(JSONArray())
-                                    getDeviceAmiiboRange(0)
+                    progress.startsWith("tag.getList") -> {
+                        if (progress.endsWith(">") || progress.endsWith("\n")) {
+                            val getList = progress.substring(
+                                progress.indexOf("["),
+                                progress.lastIndexOf("]") + 1
+                            )
+                            try {
+                                var escapedList = getList
+                                    .replace("/", "\\/")
+                                    .replace("'", "\\'")
+                                    .replace("-", "\\-")
+                                when {
+                                    getList.contains("...") -> {
+                                        if (rangeIndex > 0) {
+                                            rangeIndex = 0
+                                            escapedList = escapedList.replace(" ...", "")
+                                            listener?.onBluupListRetrieved(JSONArray(escapedList))
+                                        } else {
+                                            rangeIndex += 1
+                                            listener?.onBluupListRetrieved(JSONArray())
+                                            getDeviceAmiiboRange(0)
+                                        }
+                                    }
+                                    rangeIndex > 0 -> {
+                                        val jsonArray = JSONArray(escapedList)
+                                        if (jsonArray.length() > 0) {
+                                            listener?.onBluupRangeRetrieved(jsonArray)
+                                            getDeviceAmiiboRange(rangeIndex * listCount)
+                                            rangeIndex += 1
+                                        } else {
+                                            rangeIndex = 0
+                                            activeAmiibo
+                                        }
+                                    }
+                                    else -> {
+                                        listener?.onBluupListRetrieved(JSONArray(escapedList))
+                                    }
                                 }
-                            } else if (rangeIndex > 0) {
-                                val jsonArray = JSONArray(escapedList)
-                                if (jsonArray.length() > 0) {
-                                    listener?.onBluupRangeRetrieved(jsonArray)
-                                    getDeviceAmiiboRange(rangeIndex * listCount)
-                                    rangeIndex += 1
-                                } else {
-                                    rangeIndex = 0
-                                    activeAmiibo
-                                }
-                            } else {
-                                listener?.onBluupListRetrieved(JSONArray(escapedList))
+                            } catch (e: JSONException) {
+                                Debug.warn(e)
                             }
-                        } catch (e: JSONException) {
-                            Debug.warn(e)
+                            response = StringBuilder()
+                            if (rangeIndex == 0) listener?.onBluupProcessFinish()
                         }
-                        response = StringBuilder()
-                        if (rangeIndex == 0) listener?.onBluupProcessFinish()
                     }
-                } else if (progress.startsWith("tag.remove")) {
-                    if (progress.endsWith(">") || progress.endsWith("\n")) {
-                        if (wipeDeviceCount > 0) {
-                            wipeDeviceCount -= 1
-                            delayedTagCharacteristic("remove(tag.get().name)")
-                        } else {
+                    progress.startsWith("tag.remove") -> {
+                        if (progress.endsWith(">") || progress.endsWith("\n")) {
+                            if (wipeDeviceCount > 0) {
+                                wipeDeviceCount -= 1
+                                delayedTagCharacteristic("remove(tag.get().name)")
+                            } else {
+                                listener?.onBluupStatusChanged(null)
+                            }
+                            response = StringBuilder()
+                        }
+                    }
+                    progress.startsWith("tag.download") -> {
+                        if (progress.endsWith(">") || progress.endsWith("\n")) {
+                            listener?.let {
+                                for (dataString in progress.split(
+                                    "new Uint8Array".toRegex()).toTypedArray()
+                                ) {
+                                    if (dataString.startsWith("tag.download")
+                                        && dataString.endsWith("=")
+                                    ) continue
+                                    it.onBluupFilesDownload(dataString.substring(
+                                        1, dataString.lastIndexOf(">") - 2
+                                    ))
+                                }
+                            }
+                        }
+                    }
+                    progress.startsWith("tag.createBlank()") -> {
+                        if (progress.endsWith(">") || progress.endsWith("\n")) {
+                            response = StringBuilder()
                             listener?.onBluupStatusChanged(null)
                         }
-                        response = StringBuilder()
                     }
-                } else if (progress.startsWith("tag.download")) {
-                    if (progress.endsWith(">") || progress.endsWith("\n")) {
-                        listener?.let {
-                            for (dataString in progress.split(
-                                "new Uint8Array".toRegex()).toTypedArray()
-                            ) {
-                                if (dataString.startsWith("tag.download")
-                                    && dataString.endsWith("=")
-                                ) continue
-                                it.onBluupFilesDownload(dataString.substring(
-                                    1, dataString.lastIndexOf(">") - 2
-                                ))
+                    progress.endsWith("}") -> {
+                        if (progress.startsWith("tag.saveUploadedTag")) {
+                            response = StringBuilder()
+                        } else {
+                            listener?.let {
+                                try {
+                                    val jsonObject = JSONObject(response.toString())
+                                    val event = jsonObject.getString("event")
+                                    if (event == "button") it.onBluupActiveChanged(jsonObject)
+                                    if (event == "delete") it.onBluupStatusChanged(jsonObject)
+                                } catch (e: JSONException) {
+                                    if (e.message?.contains("tag.setTag") == true)
+                                        activeAmiibo
+                                    else Debug.warn(e)
+                                }
                             }
                         }
-                    }
-                } else if (progress.startsWith("tag.createBlank()")) {
-                    if (progress.endsWith(">") || progress.endsWith("\n")) {
                         response = StringBuilder()
-                        listener?.onBluupStatusChanged(null)
                     }
-                } else if (progress.endsWith("}")) {
-                    if (progress.startsWith("tag.saveUploadedTag")) {
+                    progress.endsWith(">") -> {
                         response = StringBuilder()
-                    } else {
-                        listener?.let {
-                            try {
-                                val jsonObject = JSONObject(response.toString())
-                                val event = jsonObject.getString("event")
-                                if (event == "button") it.onBluupActiveChanged(jsonObject)
-                                if (event == "delete") it.onBluupStatusChanged(jsonObject)
-                            } catch (e: JSONException) {
-                                if (e.message?.contains("tag.setTag") == true)
-                                    activeAmiibo
-                                else Debug.warn(e)
-                            }
-                        }
                     }
-                    response = StringBuilder()
-                } else if (progress.endsWith(">")) {
-                    response = StringBuilder()
                 }
             }
         }

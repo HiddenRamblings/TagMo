@@ -60,7 +60,6 @@ import org.json.JSONObject
 import java.io.IOException
 import java.nio.ByteBuffer
 import java.text.ParseException
-import java.util.Arrays
 
 @SuppressLint("NewApi")
 open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener, BluetoothListener {
@@ -74,9 +73,9 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
     private var toolbar: Toolbar? = null
     var bluupContent: RecyclerView? = null
         private set
-    var bluupAdapter: GattSlotAdapter? = null
+    var gattAdapter: GattSlotAdapter? = null
     private var bluupStats: TextView? = null
-    private lateinit var bluupSlotCount: NumberPicker
+    private lateinit var gattSlotCount: NumberPicker
     private var screenOptions: LinearLayout? = null
     private var writeSlots: AppCompatButton? = null
     private var writeRandom: SwitchCompat? = null
@@ -133,7 +132,7 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
                             onBottomSheetChanged(SHEET.MENU)
                             maxSlotCount = if (deviceType == DEVICE.SLIDE) 40 else 85
                             requireView().post {
-                                bluupSlotCount.maxValue = maxSlotCount
+                                gattSlotCount.maxValue = maxSlotCount
                                 screenOptions?.isVisible = true
                                 createBlank?.isVisible = true
                                 requireView().findViewById<TextView>(R.id.hardware_info).text = deviceProfile
@@ -169,8 +168,8 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
                                     Debug.warn(ex)
                                 }
                             }
-                            settings.removeChangeListener(bluupAdapter)
-                            bluupAdapter = GattSlotAdapter(
+                            settings.removeChangeListener(gattAdapter)
+                            gattAdapter = GattSlotAdapter(
                                 settings, this@GattSlotFragment
                             ).also {
                                 it.setGattAmiibo(bluupAmiibos)
@@ -205,7 +204,7 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
                                     Debug.warn(ex)
                                 }
                             }
-                            bluupAdapter?.run {
+                            gattAdapter?.run {
                                 addBluupAmiibo(bluupAmiibos)
                                 requireView().post {
                                     notifyItemRangeInserted(currentCount, bluupAmiibos.size)
@@ -284,26 +283,32 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
                         override fun onPuckServicesDiscovered() {
                             isServiceDiscovered = true
                             onBottomSheetChanged(SHEET.MENU)
-                            maxSlotCount = 32
+                            maxSlotCount = 50
                             requireView().post {
-                                bluupSlotCount.maxValue = maxSlotCount
+                                gattSlotCount.maxValue = maxSlotCount
                                 screenOptions?.isGone = true
                                 createBlank?.isGone = true
                                 requireView().findViewById<TextView>(R.id.hardware_info).text = deviceProfile
-                                bluupSlotCount.maxValue = maxSlotCount
                             }
                             try {
                                 setPuckCharacteristicRX()
-                                deviceAmiibo
-                                // getDeviceSlots(32);
+                                deviceDetails
                             } catch (uoe: UnsupportedOperationException) {
                                 disconnectService()
                                 Toasty(requireContext()).Short(R.string.device_invalid)
                             }
                         }
 
+                        override fun onPuckDeviceProfile(slotCount: Int) {
+                            maxSlotCount = slotCount
+                            requireView().post {
+                                gattSlotCount.maxValue = slotCount
+                            }
+                            deviceAmiibo
+                        }
+
                         override fun onPuckActiveChanged(slot: Int) {
-                            bluupAdapter?.run {
+                            gattAdapter?.run {
                                 val amiibo = getItem(slot)
                                 getActiveAmiibo(amiibo, amiiboTile)
                                 if (bottomSheet?.state == BottomSheetBehavior.STATE_COLLAPSED)
@@ -331,8 +336,8 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
                                     puckAmiibos.add(null)
                                 }
                             }
-                            settings.removeChangeListener(bluupAdapter)
-                            bluupAdapter = GattSlotAdapter(
+                            settings.removeChangeListener(gattAdapter)
+                            gattAdapter = GattSlotAdapter(
                                 settings, this@GattSlotFragment
                             ).also {
                                 it.setGattAmiibo(puckAmiibos)
@@ -491,7 +496,7 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
                 onBottomSheetChanged(SHEET.WRITE)
                 searchView.setQuery(settings.query, true)
                 searchView.clearFocus()
-                bluupSlotCount.value.let { count ->
+                gattSlotCount.value.let { count ->
                     writeTagAdapter?.setListener(object : WriteTagAdapter.OnAmiiboClickListener {
                         override fun onAmiiboClicked(amiiboFile: AmiiboFile?) {}
                         override fun onAmiiboImageClicked(amiiboFile: AmiiboFile?) {}
@@ -530,9 +535,8 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
             }
         }
 
-        bluupSlotCount = view.findViewById<NumberPicker>(R.id.number_picker_slot).apply {
+        gattSlotCount = view.findViewById<NumberPicker>(R.id.number_picker_slot).apply {
             if (TagMo.forceSoftwareLayer) setLayerType(View.LAYER_TYPE_SOFTWARE, null)
-            maxValue = maxSlotCount
             setOnValueChangedListener { _, _, newVal ->
                 if (maxSlotCount - currentCount > 0)
                     writeSlots?.text = getString(R.string.write_slots, newVal)
@@ -663,7 +667,7 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
         get() {
             bluupContent?.post {
                 val openSlots = maxSlotCount - currentCount
-                bluupSlotCount.value = openSlots
+                gattSlotCount.value = openSlots
                 if (openSlots > 0) {
                     writeSlots?.isEnabled = true
                     writeSlots?.text = getString(R.string.write_slots, openSlots)
@@ -682,7 +686,7 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
         }
 
     private fun resetActiveSlot() {
-        bluupAdapter?.getItem(0).run {
+        gattAdapter?.getItem(0).run {
             if (this is BluupTag) {
                 serviceBluup?.setActiveAmiibo(name, String(TagArray.longToBytes(id)))
             } else {
@@ -1059,9 +1063,9 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
         amiibo?.let {
             amiiboData?.array?.let { data ->
                 serviceBluup?.uploadAmiiboFile(
-                    data, it, bluupAdapter?.getDuplicates(it) ?: 0, complete
+                    data, it, gattAdapter?.getDuplicates(it) ?: 0, complete
                 )
-                servicePuck?.uploadSlotAmiibo(data, bluupSlotCount.value - 1)
+                servicePuck?.uploadSlotAmiibo(data, gattSlotCount.value - 1)
             }
         }
     }
@@ -1079,9 +1083,9 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
             amiibo?.let {
                 file.data?.let { data ->
                     serviceBluup?.uploadAmiiboFile(
-                        data, it, bluupAdapter?.getDuplicates(it) ?: 0, complete
+                        data, it, gattAdapter?.getDuplicates(it) ?: 0, complete
                     )
-                    servicePuck?.uploadSlotAmiibo(data, bluupSlotCount.value - 1)
+                    servicePuck?.uploadSlotAmiibo(data, gattSlotCount.value - 1)
                 }
             }
         }
@@ -1192,13 +1196,13 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
     }
 
     fun stopGattService() {
+        if (null == context) return
         onBottomSheetChanged(SHEET.LOCKED)
         deviceAddress = null
         try {
             requireContext().unbindService(bluupServerConn)
             requireContext().stopService(Intent(requireContext(), BluupGattService::class.java))
-        } catch (ignored: IllegalArgumentException) {
-        }
+        } catch (ignored: IllegalArgumentException) { }
         try {
             requireContext().unbindService(bluupServerConn)
             requireContext().stopService(Intent(requireContext(), BluupGattService::class.java))

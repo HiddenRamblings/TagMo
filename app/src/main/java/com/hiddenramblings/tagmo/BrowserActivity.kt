@@ -1362,7 +1362,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
     }
 
     fun onStorageEnabled() {
-        if (keyManager.isKeyMissing()) {
+        if (keyManager.isKeyMissing) {
             hideFakeSnackbar()
             showFakeSnackbar(getString(R.string.locating_keys))
             locateKeyFiles()
@@ -1948,13 +1948,13 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
             val rootDocument = settings?.browserRootDocument?.let {
                 DocumentFile.fromTreeUri(this, it)
             }
-            if (!keyManager.isKeyMissing()) {
+            if (!keyManager.isKeyMissing) {
                 if (indicator) showFakeSnackbar(getString(R.string.refreshing_list))
                 loadAmiiboDocuments(rootDocument, settings?.isRecursiveEnabled == true)
             }
         } else {
             val rootFolder = settings?.browserRootFolder
-            if (!keyManager.isKeyMissing()) {
+            if (!keyManager.isKeyMissing) {
                 if (indicator) showFakeSnackbar(getString(R.string.refreshing_list))
                 loadAmiiboFiles(rootFolder, settings?.isRecursiveEnabled == true)
             }
@@ -2369,7 +2369,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                         }
                     }.awaitAll()
                 }
-                if (keyManager.isKeyMissing()) {
+                if (keyManager.isKeyMissing) {
                     onShowSettingsFragment()
                     hideFakeSnackbar()
                 }
@@ -2416,7 +2416,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                         }
                     }.awaitAll()
                 }
-                if (keyManager.isKeyMissing()) {
+                if (keyManager.isKeyMissing) {
                     onShowSettingsFragment()
                     hideFakeSnackbar()
                 }
@@ -2455,7 +2455,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                             }
                         }.awaitAll()
                     }
-                    if (keyManager.isKeyMissing()) {
+                    if (keyManager.isKeyMissing) {
                         onShowSettingsFragment()
                         hideFakeSnackbar()
                     }

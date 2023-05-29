@@ -46,9 +46,10 @@ class KeyManager(var context: Context) {
         return null != unfixedKey
     }
 
-    fun isKeyMissing(): Boolean {
-        return !hasFixedKey() || !hasUnFixedKey()
-    }
+    val isKeyMissing: Boolean
+        get() {
+            return !hasFixedKey() || !hasUnFixedKey()
+        }
 
     @Throws(IOException::class)
     fun saveKeyFile(file: String?, key: ByteArray?) {

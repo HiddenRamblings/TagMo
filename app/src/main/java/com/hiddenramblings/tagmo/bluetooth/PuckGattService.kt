@@ -31,8 +31,11 @@ class PuckGattService : Service() {
     private var mBluetoothGatt: BluetoothGatt? = null
     private var mCharacteristicRX: BluetoothGattCharacteristic? = null
     private var mCharacteristicTX: BluetoothGattCharacteristic? = null
-    private var maxTransmissionUnit = 23
-    private val chunkTimeout = 20L
+    private var maxTransmissionUnit = 53
+    private val chunkTimeout = 25L
+
+    private var commandLength = 20
+    private var returnLength = 260
 
     // Command, Slot, Parameters
     @Suppress("unused")
@@ -48,9 +51,7 @@ class PuckGattService : Service() {
         // RESTART
         val bytes: Byte
 
-        init {
-            this.bytes = bytes.toByte()
-        }
+        init { this.bytes = bytes.toByte() }
     }
 
     private var activeSlot = 0
@@ -58,20 +59,21 @@ class PuckGattService : Service() {
     fun setListener(listener: BluetoothGattListener?) {
         this.listener = listener
     }
-
     private val commandCallbacks = ArrayList<Runnable>()
     private val puckHandler = Handler(Looper.getMainLooper())
 
     interface BluetoothGattListener {
         fun onPuckServicesDiscovered()
         fun onPuckActiveChanged(slot: Int)
+
+        fun onPuckDeviceProfile(slotCount: Int)
         fun onPuckListRetrieved(slotData: ArrayList<ByteArray>, active: Int)
         fun onPuckFilesDownload(tagData: ByteArray)
         fun onPuckProcessFinish()
         fun onPuckConnectionLost()
     }
 
-    private var puckArray = ArrayList<ByteArray>()
+    private var puckArray = ArrayList<ByteArray>(slotsCount)
     private var readResponse = ByteArray(NfcByte.TAG_FILE_SIZE)
 
     private fun getCharacteristicValue(characteristic: BluetoothGattCharacteristic, data: ByteArray?) {
@@ -80,16 +82,12 @@ class PuckGattService : Service() {
                 this.javaClass, "${getLogTag(characteristic.uuid)} ${Arrays.toString(data)}"
             )
             if (characteristic.uuid.compareTo(PuckRX) == 0) {
-                if (commandCallbacks.size > 0) {
-                    commandCallbacks[0].run()
-                    commandCallbacks.removeAt(0)
-                }
                 when {
                     data[0] == PUCK.INFO.bytes -> {
                         if (data.size == 3) {
                             activeSlot = data[1].toInt()
                             slotsCount = data[2].toInt()
-                            deviceAmiibo
+                            listener?.onPuckDeviceProfile(slotsCount)
                         } else {
                             puckArray.add(data.copyOfRange(2, data.size))
                             if (puckArray.size == slotsCount) {
@@ -116,8 +114,12 @@ class PuckGattService : Service() {
                     }
                     data[0] == PUCK.SAVE.bytes -> {
                         listener?.onPuckProcessFinish()
-                        deviceAmiibo
+                        deviceDetails
                     }
+                }
+                if (commandCallbacks.size > 0) {
+                    commandCallbacks[0].run()
+                    commandCallbacks.removeAt(0)
                 }
             }
         }
@@ -398,7 +400,7 @@ class PuckGattService : Service() {
     }
 
     private fun delayedWriteCharacteristic(value: ByteArray) {
-        val chunks = GattArray.byteToPortions(value, maxTransmissionUnit - 2)
+        val chunks = GattArray.byteToPortions(value, commandLength)
         val commandQueue = commandCallbacks.size + chunks.size
         puckHandler.postDelayed({
             var i = 0
@@ -445,6 +447,9 @@ class PuckGattService : Service() {
     private fun sendCommand(params: ByteArray, data: ByteArray?) {
         delayedByteCharacteric(data?.let { params.plus(data) } ?: params)
     }
+
+    val deviceDetails: Unit
+        get() { sendCommand(ByteArray(2).apply { this[0] = PUCK.INFO.bytes }, null) }
 
     val deviceAmiibo: Unit
         get() {

@@ -45,18 +45,26 @@ class JoyConFragment : DialogFragment(), BluetoothListener {
 
     @SuppressLint("MissingPermission")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        controllerList = view.findViewById<LinearLayout>(R.id.controller_list)
+        controllerList = view.findViewById(R.id.controller_list)
         super.onViewCreated(view, savedInstanceState)
     }
 
     private val isBluetoothEnabled: Boolean
         get() {
             context?.run {
-                bluetoothHandler = bluetoothHandler ?: BluetoothHandler(
-                    this, requireActivity().activityResultRegistry,
-                    this@JoyConFragment
-                )
-                bluetoothHandler?.requestPermissions(requireActivity())
+                if (InputDevice.getDeviceIds().any { gamepad ->
+                        InputDevice.getDevice(gamepad).name == "Nintendo Switch Pro Controller"
+                                || InputDevice.getDevice(gamepad).name.contains("JoyCon (R)")
+                    }) {
+                    bluetoothHandler = bluetoothHandler ?: BluetoothHandler(
+                        this, requireActivity().activityResultRegistry,
+                        this@JoyConFragment
+                    )
+                    bluetoothHandler?.requestPermissions(requireActivity())
+                } else {
+                    Toasty(requireActivity()).Short(R.string.no_controllers)
+                    dismiss()
+                }
             } ?: delayedBluetoothEnable()
             return false
         }
@@ -79,6 +87,7 @@ class JoyConFragment : DialogFragment(), BluetoothListener {
         delayedBluetoothEnable()
     }
 
+    @SuppressLint("InflateParams")
     private fun configureController(adapter: BluetoothAdapter, device: BluetoothDevice) {
         val item = this.layoutInflater.inflate(R.layout.device_controller, null)
         item.findViewById<TextView>(R.id.controller_name).text = device.name
@@ -111,37 +120,27 @@ class JoyConFragment : DialogFragment(), BluetoothListener {
             setOnClickListener(onClickListener)
             if (device.name != "JoyCon (R)") isVisible = false
         }
+        controllerList?.addView(item)
     }
 
     @SuppressLint("MissingPermission")
     override fun onAdapterEnabled(adapter: BluetoothAdapter?) {
-        val hasRightJoyCon = InputDevice.getDeviceIds().any { gamepad ->
-            InputDevice.getDevice(gamepad).name.contains("JoyCon (R)")
-        }
-        val hasProController = InputDevice.getDeviceIds().any { gamepad ->
-            InputDevice.getDevice(gamepad).name == "Nintendo Switch Pro Controller"
-        }
-        if (hasProController || hasRightJoyCon) {
-            val proBluetooth = adapter?.bondedDevices?.filter { device -> device.name == "Pro Controller" }
-            val joyBluetooth = adapter?.bondedDevices?.filter { device -> device.name == "JoyCon (R)" }
-            if (proBluetooth.isNullOrEmpty() && joyBluetooth.isNullOrEmpty()) {
-                Toasty(requireActivity()).Short(R.string.no_controllers)
-                dismiss()
-            } else {
-                if (!proBluetooth.isNullOrEmpty()) {
-                    proBluetooth.forEach {
-                        configureController(adapter, it)
-                    }
-                }
-                if (!joyBluetooth.isNullOrEmpty()) {
-                    joyBluetooth.forEach {
-                        configureController(adapter, it)
-                    }
-                }
-            }
-        } else {
+        val proBluetooth = adapter?.bondedDevices?.filter { device -> device.name == "Pro Controller" }
+        val joyBluetooth = adapter?.bondedDevices?.filter { device -> device.name == "JoyCon (R)" }
+        if (proBluetooth.isNullOrEmpty() && joyBluetooth.isNullOrEmpty()) {
             Toasty(requireActivity()).Short(R.string.no_controllers)
             dismiss()
+            return
+        }
+        if (!proBluetooth.isNullOrEmpty()) {
+            proBluetooth.forEach {
+                configureController(adapter, it)
+            }
+        }
+        if (!joyBluetooth.isNullOrEmpty()) {
+            joyBluetooth.forEach {
+                configureController(adapter, it)
+            }
         }
     }
 

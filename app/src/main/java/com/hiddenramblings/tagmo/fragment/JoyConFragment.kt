@@ -3,6 +3,7 @@ package com.hiddenramblings.tagmo.fragment
 import android.annotation.SuppressLint
 import android.app.Dialog
 import android.bluetooth.BluetoothAdapter
+import android.bluetooth.BluetoothDevice
 import android.content.DialogInterface
 import android.os.Build
 import android.os.Bundle
@@ -11,9 +12,13 @@ import android.os.Looper
 import android.view.InputDevice
 import android.view.LayoutInflater
 import android.view.View
+import android.view.View.OnClickListener
 import android.view.ViewGroup
+import android.widget.LinearLayout
+import android.widget.TextView
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AlertDialog
+import androidx.core.view.isVisible
 import androidx.fragment.app.DialogFragment
 import com.hiddenramblings.tagmo.JoyCon
 import com.hiddenramblings.tagmo.R
@@ -28,6 +33,8 @@ class JoyConFragment : DialogFragment(), BluetoothListener {
     private var bluetoothHandler: BluetoothHandler? = null
     private var bluetoothHelper: BluetoothHelper? = null
 
+    private var controllerList: LinearLayout? = null
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -38,6 +45,7 @@ class JoyConFragment : DialogFragment(), BluetoothListener {
 
     @SuppressLint("MissingPermission")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        controllerList = view.findViewById<LinearLayout>(R.id.controller_list)
         super.onViewCreated(view, savedInstanceState)
     }
 
@@ -71,44 +79,83 @@ class JoyConFragment : DialogFragment(), BluetoothListener {
         delayedBluetoothEnable()
     }
 
+    private fun configureController(adapter: BluetoothAdapter, device: BluetoothDevice) {
+        val item = this.layoutInflater.inflate(R.layout.device_controller, null)
+        item.findViewById<TextView>(R.id.controller_name).text = device.name
+        val onClickListener = OnClickListener {
+            bluetoothHelper = BluetoothHelper(adapter).apply {
+                register(requireContext(), object : StateChangedCallback {
+                    override fun onStateChanged(
+                        name: String?, address: String?, state: Int
+                    ) { }
+                })
+            }
+            // bluetoothHelper.connectL2cap(device);
+            val joycon = JoyCon(bluetoothHelper, device)
+            // proController.poll(JoyCon.PollType.STANDARD);
+            joycon.setPlayer(0, 0)
+            joycon.setPlayer(0, 4)
+            Toasty(requireActivity()).Short(
+                "1, 2, 3, 4. I'm connected. Is there more?"
+            )
+            joycon.enableRumble(true)
+            val rumbleData = ByteArray(8)
+            rumbleData[0] = 0x1
+            joycon.rumble(rumbleData)
+        }
+        item.findViewById<View>(R.id.connect_pro).run {
+            setOnClickListener(onClickListener)
+            if (device.name != "Pro Controller") isVisible = false
+        }
+        item.findViewById<View>(R.id.connect_rjc).run {
+            setOnClickListener(onClickListener)
+            if (device.name != "JoyCon (R)") isVisible = false
+        }
+    }
+
     @SuppressLint("MissingPermission")
     override fun onAdapterEnabled(adapter: BluetoothAdapter?) {
-        var hasRightJoyCon = false
+        val hasRightJoyCon = InputDevice.getDeviceIds().any { gamepad ->
+            InputDevice.getDevice(gamepad).name.contains("JoyCon (R)")
+        }
         val hasProController = InputDevice.getDeviceIds().any { gamepad ->
             InputDevice.getDevice(gamepad).name == "Nintendo Switch Pro Controller"
         }
-        if (hasProController) {
-            adapter?.bondedDevices?.forEach {
-                if (it.name == "Pro Controller") {
-                    bluetoothHelper = BluetoothHelper(adapter).apply {
-                        register(requireContext(), object : StateChangedCallback {
-                            override fun onStateChanged(
-                                name: String?, address: String?, state: Int
-                            ) { }
-                        })
+        if (hasProController || hasRightJoyCon) {
+            val proBluetooth = adapter?.bondedDevices?.filter { device -> device.name == "Pro Controller" }
+            val joyBluetooth = adapter?.bondedDevices?.filter { device -> device.name == "JoyCon (R)" }
+            if (proBluetooth.isNullOrEmpty() && joyBluetooth.isNullOrEmpty()) {
+                Toasty(requireActivity()).Short(R.string.no_controllers)
+                dismiss()
+            } else {
+                if (!proBluetooth.isNullOrEmpty()) {
+                    proBluetooth.forEach {
+                        configureController(adapter, it)
                     }
-                    // bluetoothHelper.connectL2cap(device);
-                    val proController = JoyCon(bluetoothHelper, it)
-                    // proController.poll(JoyCon.PollType.STANDARD);
-                    proController.setPlayer(0, 0)
-                    proController.setPlayer(0, 4)
-                    Toasty(requireActivity()).Short(
-                        "1, 2, 3, 4. I'm connected. Is there more?"
-                    )
-                    proController.enableRumble(true)
-                    val rumbleData = ByteArray(8)
-                    rumbleData[0] = 0x1
-                    proController.rumble(rumbleData)
+                }
+                if (!joyBluetooth.isNullOrEmpty()) {
+                    joyBluetooth.forEach {
+                        configureController(adapter, it)
+                    }
                 }
             }
+        } else {
+            Toasty(requireActivity()).Short(R.string.no_controllers)
+            dismiss()
         }
     }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val dialog = AlertDialog.Builder(requireActivity())
         dialog.setNegativeButton(R.string.close) { dialogInterface: DialogInterface, _: Int -> dialogInterface.cancel() }
+
         val joyConDialog: Dialog = dialog.setView(view).create()
         joyConDialog.setOnShowListener { delayedBluetoothEnable() }
+
+        val width = ViewGroup.LayoutParams.MATCH_PARENT
+        val height = ViewGroup.LayoutParams.MATCH_PARENT
+        joyConDialog.window?.setLayout(width, height)
+
         return joyConDialog
     }
 

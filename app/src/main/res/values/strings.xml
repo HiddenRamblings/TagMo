@@ -437,6 +437,10 @@
     <string name="mkdir_failed">Mkdir &#8217;%1$s&#8217; failed!</string>
     <string name="downloads_hidden">Downloads are currently hidden!</string>
 
+    <string name="controller_pro" translatable="false">Pro Controller</string>
+    <string name="controller_rjc" translatable="false">Right Joy-Con</string>
+    <string name="no_controllers">No connected controller found!</string>
+
     <string name="sub_button">%1$s Monthly Donation</string>
     <string name="iap_button">%1$s One-Time Donation</string>
     <string name="donation_thanks">Thanks for supporting TagMo!</string>

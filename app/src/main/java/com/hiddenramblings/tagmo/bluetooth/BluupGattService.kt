@@ -761,14 +761,19 @@ class BluupGattService : Service() {
     }
 
     private fun getLogTag(uuid: UUID): String {
-        return if (uuid.compareTo(BluupTX) == 0) {
-            "BluupTX"
-        } else if (uuid.compareTo(BluupRX) == 0) {
-            "BluupRX"
-        } else if (uuid.compareTo(BluupNUS) == 0) {
-            "BluupNUS"
-        } else {
-            uuid.toString()
+        return when {
+            uuid.compareTo(BluupTX) == 0 -> {
+                "BluupTX"
+            }
+            uuid.compareTo(BluupRX) == 0 -> {
+                "BluupRX"
+            }
+            uuid.compareTo(BluupNUS) == 0 -> {
+                "BluupNUS"
+            }
+            else -> {
+                uuid.toString()
+            }
         }
     }
 

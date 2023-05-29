@@ -8,7 +8,7 @@
     android:layout_margin="6dp"
     android:background="@color/backgroundBlack"
     android:orientation="vertical"
-    tools:context=".fragment.BluupSlotFragment">
+    tools:context=".fragment.GattSlotFragment">
 
     <LinearLayout
         android:layout_width="match_parent"

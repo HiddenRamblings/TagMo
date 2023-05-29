@@ -29,7 +29,7 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetBehavior.BottomSheetCallback
 import com.google.android.material.snackbar.Snackbar
 import com.hiddenramblings.tagmo.*
-import com.hiddenramblings.tagmo.adapter.BluupSlotAdapter
+import com.hiddenramblings.tagmo.adapter.GattSlotAdapter
 import com.hiddenramblings.tagmo.adapter.WriteTagAdapter
 import com.hiddenramblings.tagmo.amiibo.Amiibo
 import com.hiddenramblings.tagmo.amiibo.AmiiboFile
@@ -60,9 +60,10 @@ import org.json.JSONObject
 import java.io.IOException
 import java.nio.ByteBuffer
 import java.text.ParseException
+import java.util.Arrays
 
 @SuppressLint("NewApi")
-open class BluupSlotFragment : Fragment(), BluupSlotAdapter.OnAmiiboClickListener, BluetoothListener {
+open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener, BluetoothListener {
     private val prefs: Preferences by lazy { Preferences(TagMo.appContext) }
     private val keyManager: KeyManager by lazy { (requireActivity() as BrowserActivity).keyManager }
 
@@ -73,7 +74,7 @@ open class BluupSlotFragment : Fragment(), BluupSlotAdapter.OnAmiiboClickListene
     private var toolbar: Toolbar? = null
     var bluupContent: RecyclerView? = null
         private set
-    var bluupAdapter: BluupSlotAdapter? = null
+    var bluupAdapter: GattSlotAdapter? = null
     private var bluupStats: TextView? = null
     private lateinit var bluupSlotCount: NumberPicker
     private var screenOptions: LinearLayout? = null
@@ -169,10 +170,10 @@ open class BluupSlotFragment : Fragment(), BluupSlotAdapter.OnAmiiboClickListene
                                 }
                             }
                             settings.removeChangeListener(bluupAdapter)
-                            bluupAdapter = BluupSlotAdapter(
-                                settings, this@BluupSlotFragment
+                            bluupAdapter = GattSlotAdapter(
+                                settings, this@GattSlotFragment
                             ).also {
-                                it.setBluupAmiibo(bluupAmiibos)
+                                it.setGattAmiibo(bluupAmiibos)
                                 dismissSnackbarNotice(true)
                                 requireView().post {
                                     bluupContent?.adapter = it
@@ -321,20 +322,20 @@ open class BluupSlotFragment : Fragment(), BluupSlotAdapter.OnAmiiboClickListene
                             slotData: ArrayList<ByteArray?>, active: Int
                         ) {
                             currentCount = slotData.size
-                            val bluupAmiibos: ArrayList<Amiibo?> = arrayListOf()
-                            for (i in 0 until currentCount) {
-                                if (slotData[i]?.isNotEmpty() == true) {
-                                    val amiibo = getAmiiboFromHead(slotData[i])
-                                    bluupAmiibos.add(amiibo)
+                            val puckAmiibos: ArrayList<Amiibo?> = arrayListOf()
+                            slotData.forEach { bytes ->
+                                if (bytes?.size == 80) {
+                                    val amiibo = getAmiiboFromSlice(Arrays.copyOfRange(bytes, 40, 48))
+                                    puckAmiibos.add(amiibo)
                                 } else {
-                                    bluupAmiibos.add(null)
+                                    puckAmiibos.add(null)
                                 }
                             }
                             settings.removeChangeListener(bluupAdapter)
-                            bluupAdapter = BluupSlotAdapter(
-                                settings, this@BluupSlotFragment
+                            bluupAdapter = GattSlotAdapter(
+                                settings, this@GattSlotFragment
                             ).also {
-                                it.setBluupAmiibo(bluupAmiibos)
+                                it.setGattAmiibo(puckAmiibos)
                                 dismissSnackbarNotice(true)
                                 requireView().post {
                                     bluupContent?.adapter = it
@@ -817,7 +818,7 @@ open class BluupSlotFragment : Fragment(), BluupSlotAdapter.OnAmiiboClickListene
         }
     }
 
-    private fun getAmiiboFromHead(tagData: ByteArray?): Amiibo? {
+    private fun getAmiiboFromSlice(byteData: ByteArray): Amiibo? {
         var amiiboManager: AmiiboManager?
         try {
             amiiboManager = getAmiiboManager(requireContext().applicationContext)
@@ -838,9 +839,11 @@ open class BluupSlotFragment : Fragment(), BluupSlotAdapter.OnAmiiboClickListene
         var selectedAmiibo: Amiibo? = null
         amiiboManager?.let {
             try {
-                val headData = ByteBuffer.wrap(tagData!!)
-                val amiiboId = headData.getLong(0x28)
-                selectedAmiibo = it.amiibos[amiiboId]
+                val headData = ByteBuffer.wrap(byteData)
+                val amiiboId = headData.getLong(0x0)
+                if(it.amiibos.containsKey(amiiboId)) {
+                    selectedAmiibo = it.amiibos[amiiboId]
+                }
             } catch (e: Exception) { Debug.info(e) }
         }
         return selectedAmiibo
@@ -1238,7 +1241,7 @@ open class BluupSlotFragment : Fragment(), BluupSlotAdapter.OnAmiiboClickListene
             context?.run {
                 bluetoothHandler = bluetoothHandler ?: BluetoothHandler(
                     this, requireActivity().activityResultRegistry,
-                    this@BluupSlotFragment
+                    this@GattSlotFragment
                 )
                 bluetoothHandler?.requestPermissions(requireActivity())
             } ?: fragmentHandler.postDelayed({ isBluetoothEnabled }, 125)

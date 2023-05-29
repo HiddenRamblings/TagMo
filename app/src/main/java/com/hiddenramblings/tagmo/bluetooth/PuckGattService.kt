@@ -54,7 +54,7 @@ class PuckGattService : Service() {
     }
 
     private var activeSlot = 0
-    private var slotsCount = 32
+    private var slotsCount = 50
     fun setListener(listener: BluetoothGattListener?) {
         this.listener = listener
     }
@@ -79,17 +79,21 @@ class PuckGattService : Service() {
                 this.javaClass, "${getLogTag(characteristic.uuid)} ${Arrays.toString(data)}"
             )
             if (characteristic.uuid.compareTo(PuckRX) == 0) {
+                if (commandCallbacks.size > 0) {
+                    commandCallbacks[0].run()
+                    commandCallbacks.removeAt(0)
+                }
                 if (data[0] == PUCK.INFO.bytes) {
                     if (data.size == 3) {
                         activeSlot = data[1].toInt()
                         slotsCount = data[2].toInt()
                         deviceAmiibo
                     } else {
-                        puckArray.add(
-                            if (data.size > 2)
-                                Arrays.copyOfRange(data, 2, data.size)
-                            else null
-                        )
+                        val slotData = if (data.size > 2)
+                            Arrays.copyOfRange(data, 2, data.size)
+                        else
+                            null
+                        puckArray.add(data[1].toInt(), slotData)
                         if (puckArray.size == slotsCount) {
                             listener?.onPuckListRetrieved(puckArray, activeSlot)
                         }
@@ -107,10 +111,6 @@ class PuckGattService : Service() {
                 } else if (data[0] == PUCK.SAVE.bytes) {
                     listener?.onPuckProcessFinish()
                     deviceAmiibo
-                }
-                if (commandCallbacks.size > 0) {
-                    commandCallbacks[0].run()
-                    commandCallbacks.removeAt(0)
                 }
             }
         }
@@ -441,19 +441,18 @@ class PuckGattService : Service() {
 
     val deviceAmiibo: Unit
         get() {
-            puckArray = arrayListOf()
-            getDeviceSlots(slotsCount)
+            puckArray = ArrayList<ByteArray?>(slotsCount)
+            if (null == mCharacteristicTX) {
+                try {
+                    setPuckCharacteristicTX()
+                } catch (e: UnsupportedOperationException) {
+                    Debug.warn(e)
+                }
+            }
+            for (i in 0 until slotsCount) {
+                sendCommand(byteArrayOf(PUCK.INFO.bytes, i.toByte()), null)
+            }
         }
-
-    private fun getSlotSummary(slot: Int) {
-        sendCommand(byteArrayOf(PUCK.INFO.bytes, slot.toByte()), null)
-    }
-
-    private fun getDeviceSlots(total: Int) {
-        for (i in 0 until total) {
-            getSlotSummary(i)
-        }
-    }
 
     fun uploadSlotAmiibo(tagData: ByteArray, slot: Int) {
         val count = tagData.size / 16
@@ -486,14 +485,22 @@ class PuckGattService : Service() {
     }
 
     private fun getLogTag(uuid: UUID): String {
-        return if (uuid.compareTo(PuckTX) == 0) {
-            "PuckTX"
-        } else if (uuid.compareTo(PuckRX) == 0) {
-            "PuckRX"
-        } else if (uuid.compareTo(PuckNUS) == 0) {
-            "PuckNUS"
-        } else {
-            uuid.toString()
+        return when {
+            uuid.compareTo(PuckTX) == 0 -> {
+                "PuckTX"
+            }
+            uuid.compareTo(PuckRX) == 0 -> {
+                "PuckRX"
+            }
+            uuid.compareTo(PuckID) == 0 -> {
+                "PuckID"
+            }
+            uuid.compareTo(PuckNUS) == 0 -> {
+                "PuckNUS"
+            }
+            else -> {
+                uuid.toString()
+            }
         }
     }
 
@@ -501,5 +508,6 @@ class PuckGattService : Service() {
         val PuckNUS: UUID = UUID.fromString("78290001-d52e-473f-a9f4-f03da7c67dd1")
         private val PuckTX = UUID.fromString("78290002-d52e-473f-a9f4-f03da7c67dd1")
         private val PuckRX = UUID.fromString("78290003-d52e-473f-a9f4-f03da7c67dd1")
+        private val PuckID = UUID.fromString("78290004-d52e-473f-a9f4-f03da7c67dd1")
     }
 }

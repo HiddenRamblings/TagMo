@@ -16,23 +16,23 @@ import com.hiddenramblings.tagmo.BrowserSettings.VIEW
 import com.hiddenramblings.tagmo.GlideApp
 import com.hiddenramblings.tagmo.R
 import com.hiddenramblings.tagmo.TagMo
-import com.hiddenramblings.tagmo.adapter.BluupSlotAdapter.BluupViewHolder
+import com.hiddenramblings.tagmo.adapter.GattSlotAdapter.BluupViewHolder
 import com.hiddenramblings.tagmo.amiibo.Amiibo
 import com.hiddenramblings.tagmo.amiibo.AmiiboManager.hasSpoofData
 import com.hiddenramblings.tagmo.amiibo.BluupTag
 import com.hiddenramblings.tagmo.eightbit.request.ImageTarget
 
-class BluupSlotAdapter(
+class GattSlotAdapter(
     private val settings: BrowserSettings, private val listener: OnAmiiboClickListener
 ) : RecyclerView.Adapter<BluupViewHolder>(), BrowserSettingsListener {
 
-    private var bluupAmiibo: ArrayList<Amiibo?> = arrayListOf()
-    fun setBluupAmiibo(amiibo: ArrayList<Amiibo?>) {
-        bluupAmiibo = amiibo
+    private var gattAmiibo: ArrayList<Amiibo?> = arrayListOf()
+    fun setGattAmiibo(amiibo: ArrayList<Amiibo?>) {
+        gattAmiibo = amiibo
     }
 
     fun addBluupAmiibo(amiibo: ArrayList<Amiibo?>) {
-        bluupAmiibo.addAll(amiibo)
+        gattAmiibo.addAll(amiibo)
     }
 
     override fun onBrowserSettingsChanged(
@@ -41,7 +41,7 @@ class BluupSlotAdapter(
     ) { }
 
     override fun getItemCount(): Int {
-        return bluupAmiibo.size
+        return gattAmiibo.size
     }
 
     override fun getItemId(position: Int): Long {
@@ -49,7 +49,7 @@ class BluupSlotAdapter(
     }
 
     fun getItem(i: Int): Amiibo? {
-        return bluupAmiibo[i]
+        return gattAmiibo[i]
     }
 
     override fun getItemViewType(position: Int): Int {
@@ -57,7 +57,7 @@ class BluupSlotAdapter(
     }
 
     fun getDuplicates(amiibo: Amiibo) : Int {
-        return bluupAmiibo.count { it?.id == amiibo.id }
+        return gattAmiibo.count { it?.id == amiibo.id }
     }
 
     init {

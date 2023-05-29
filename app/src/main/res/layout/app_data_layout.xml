@@ -66,6 +66,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
+                android:textSize="14sp"
                 android:layout_gravity="center_vertical"
                 android:text="@string/export_app_data"
                 android:enabled="false"/>
@@ -75,6 +76,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
+                android:textSize="14sp"
                 android:layout_gravity="center_vertical"
                 android:text="@string/format_app_data"
                 android:enabled="false"/>

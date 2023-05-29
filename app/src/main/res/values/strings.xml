@@ -208,8 +208,8 @@
     <string name="donate">Donate</string>
 
     <string name="menu_amiibo">Backup Browser</string>
-    <string name="menu_elite">N2 Elite Browser</string>
-    <string name="menu_gatt">Bluetooth Browser</string>
+    <string name="menu_elite">N2 Elite Connect</string>
+    <string name="menu_gatt">Bluetooth Connect</string>
     <string name="menu_qr_code">QR Code Toolkit</string>
     <string name="menu_dimensions">Dimensions 213</string>
     <string name="menu_joystick">Joystick Testing</string>
@@ -221,7 +221,7 @@
     <string name="pref_import_keys">Import crypto keys</string>
     <string name="image_loading_details">Image data access</string>
     <string name="enable_tag_validation">NTAG215 validation</string>
-    <string name="tag_validation_details">Not all NFC chipsets correctly verify tags.\nDisable to ignore tag compatibility checks.</string>
+    <string name="tag_validation_details">Not all NFC chipsets correctly verify tags.\nDisable to bypass tag compatibility checks.</string>
     <string name="enable_automatic_scan">Automatic NFC Scan</string>
     <string name="automatic_scan_details">Disable to prevent unexpected scans.</string>
     <string name="hide_foomiibo_panel">Hide Foomiibo Panel</string>
@@ -309,8 +309,8 @@
     <string name="write_slot_file">Upload binary to GATT device</string>
     <string name="write_slots">Write %1$d slots</string>
     <string name="erase_slots">Erase %1$d slots</string>
-    <string name="slots_full">GATT device slots filled</string>
-    <string name="slots_empty">Device storage is empty</string>
+    <string name="slots_full">Device full</string>
+    <string name="slots_empty">Device empty</string>
     <string name="create_blank">Create blank virtual NFC tag</string>
     <string name="gatt_erase_confirm">Erase all slots from GATT device?</string>
     <string name="gatt_write_confirm">Write selections to GATT device?</string>

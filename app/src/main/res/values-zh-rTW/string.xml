@@ -296,8 +296,6 @@
     <string name="write_slot_file">將二進位檔案上傳到GATT 設備</string>
     <string name="write_slots">寫入 %1$d slots</string>
     <string name="erase_slots">抹除 %1$d slots</string>
-    <string name="slots_full">所有的Bluup Flask slots都已佔用</string>
-    <string name="slots_empty">Bluup Flask的儲存空間沒有任何項目</string>
     <string name="create_blank">建立空白的虛擬 NFC tag</string>
     <string name="gatt_erase_confirm">將GATT所有的slots進行抹除？</string>
     <string name="gatt_write_confirm">將所有選取項目寫入GATT?</string>

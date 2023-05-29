@@ -208,6 +208,7 @@
                 android:layout_marginRight="-2dp"
                 android:layout_marginEnd="-2dp"
                 android:layout_weight="1"
+                android:textSize="14sp"
                 android:text="@string/clear_foomiibo_set" />
 
             <androidx.appcompat.widget.AppCompatButton
@@ -217,6 +218,7 @@
                 android:layout_marginLeft="-2dp"
                 android:layout_marginStart="-2dp"
                 android:layout_weight="1"
+                android:textSize="14sp"
                 android:text="@string/build_foomiibo_set" />
         </LinearLayout>
 

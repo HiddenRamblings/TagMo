@@ -305,8 +305,6 @@
     <string name="write_slot_file">Binärdatei auf GATT-Gerät hochladen</string>
     <string name="write_slots">Schreibe %1$d Slots</string>
     <string name="erase_slots">Löschen von %1$d Steckplätzen</string>
-    <string name="slots_full">Alle Bluup Flask-Steckplätze belegt</string>
-    <string name="slots_empty">Gerätespeicher ist leer</string>
     <string name="create_blank">Leeren virtuellen NFC-Tag erstellen</string>
     <string name="gatt_erase_confirm">Alle Slots vom GATT-Gerät löschen?</string>
     <string name="gatt_write_confirm">Auswahlen auf GATT-Gerät schreiben?</string>

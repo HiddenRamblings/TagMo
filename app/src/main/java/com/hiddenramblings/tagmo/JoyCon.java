@@ -2,8 +2,7 @@
  * ====================================================================
  * Copyright (C) 2022 AbandonedCart @ TagMo
  * ====================================================================
- menu_card_radius
-
+ */
 package com.hiddenramblings.tagmo;
 
 import android.bluetooth.BluetoothDevice;

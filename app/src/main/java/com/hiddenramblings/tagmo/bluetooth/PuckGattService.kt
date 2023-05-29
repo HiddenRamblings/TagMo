@@ -233,9 +233,7 @@ class PuckGattService : Service() {
         // For API level 18 and above, get a reference to BluetoothAdapter through BluetoothManager.
         if (mBluetoothManager == null) {
             mBluetoothManager = getSystemService(BLUETOOTH_SERVICE) as BluetoothManager
-            if (mBluetoothManager == null) {
-                return false
-            }
+            if (mBluetoothManager == null) return false
         }
         mBluetoothAdapter = mBluetoothManager?.adapter
         return mBluetoothAdapter != null
@@ -251,9 +249,7 @@ class PuckGattService : Service() {
      * callback.
      */
     fun connect(address: String?): Boolean {
-        if (mBluetoothAdapter == null || address == null) {
-            return false
-        }
+        if (mBluetoothAdapter == null || address == null) return false
 
         // Previously connected device.  Try to reconnect.
         if (address == mBluetoothDeviceAddress) mBluetoothGatt?.let { return it.connect() }

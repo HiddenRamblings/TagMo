@@ -225,10 +225,11 @@ class BluupGattService : Service() {
                                         && dataString.endsWith("=")
                                     ) continue
                                     it.onBluupFilesDownload(dataString.substring(
-                                        1, dataString.lastIndexOf(">") - 2
+                                        1, dataString.lastIndexOf(")")
                                     ))
                                 }
                             }
+                            response = StringBuilder()
                         }
                     }
                     progress.startsWith("tag.createBlank()") -> {
@@ -372,9 +373,7 @@ class BluupGattService : Service() {
         // For API level 18 and above, get a reference to BluetoothAdapter through BluetoothManager.
         if (mBluetoothManager == null) {
             mBluetoothManager = getSystemService(BLUETOOTH_SERVICE) as BluetoothManager
-            if (mBluetoothManager == null) {
-                return false
-            }
+            if (mBluetoothManager == null) return false
         }
         mBluetoothAdapter = mBluetoothManager?.adapter
         return mBluetoothAdapter != null
@@ -390,9 +389,7 @@ class BluupGattService : Service() {
      * callback.
      */
     fun connect(address: String?): Boolean {
-        if (mBluetoothAdapter == null || address == null) {
-            return false
-        }
+        if (mBluetoothAdapter == null || address == null) return false
 
         // Previously connected device.  Try to reconnect.
         if (address == mBluetoothDeviceAddress) mBluetoothGatt?.let { return it.connect() }
@@ -563,32 +560,6 @@ class BluupGattService : Service() {
         }, commandQueue * chunkTimeout)
     }
 
-    private fun delayedWriteCharacteristic(value: ByteArray) {
-        val chunks = GattArray.byteToPortions(value, maxTransmissionUnit)
-        val commandQueue = commandCallbacks.size + chunks.size
-        bluupHandler.postDelayed({
-            chunks.forEachIndexed { i, chunk ->
-                bluupHandler.postDelayed({
-                    try {
-                        mCharacteristicTX!!.writeType =
-                            BluetoothGattCharacteristic.WRITE_TYPE_NO_RESPONSE
-                        if (Version.isTiramisu) {
-                            mBluetoothGatt!!.writeCharacteristic(
-                                mCharacteristicTX!!, chunk,
-                                BluetoothGattCharacteristic.WRITE_TYPE_NO_RESPONSE
-                            )
-                        } else @Suppress("DEPRECATION") {
-                            mCharacteristicTX!!.value = chunk
-                            mBluetoothGatt!!.writeCharacteristic(mCharacteristicTX)
-                        }
-                    } catch (ex: NullPointerException) {
-                        listener?.onBluupServicesDiscovered()
-                    }
-                }, (i + 1) * chunkTimeout)
-            }
-        }, commandQueue * chunkTimeout)
-    }
-
     private fun queueTagCharacteristic(value: String, index: Int) {
         if (null == mCharacteristicTX) {
             try {
@@ -604,31 +575,12 @@ class BluupGattService : Service() {
         }
     }
 
-    private fun queueByteCharacteristic(value: ByteArray, index: Int) {
-        if (null == mCharacteristicTX) {
-            try {
-                setBluupCharacteristicTX()
-            } catch (e: UnsupportedOperationException) {
-                Debug.warn(e)
-            }
-        }
-        commandCallbacks.add(index, Runnable { delayedWriteCharacteristic(value) })
-        if (commandCallbacks.size == 1) {
-            commandCallbacks[0].run()
-            commandCallbacks.removeAt(0)
-        }
-    }
-
     private fun delayedTagCharacteristic(value: String) {
         queueTagCharacteristic(value, commandCallbacks.size)
     }
 
     private fun promptTagCharacteristic(value: String) {
         queueTagCharacteristic(value, 0)
-    }
-
-    private fun delayedByteCharacteric(value: ByteArray) {
-        queueByteCharacteristic(value, commandCallbacks.size)
     }
 
     private fun queueScreenCharacteristic(value: String, index: Int) {

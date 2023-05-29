@@ -515,7 +515,8 @@ class SettingsFragment : PreferenceFragmentCompat() {
         Intent(
             if (Version.isKitKat)
                 Intent.ACTION_OPEN_DOCUMENT
-            else Intent.ACTION_GET_CONTENT
+            else
+                Intent.ACTION_GET_CONTENT
         ).apply {
             putExtra("android.content.extra.SHOW_ADVANCED", true)
             putExtra("android.content.extra.FANCY", true)
@@ -525,9 +526,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
                         putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true)
                     try {
                         if (Version.isKitKat) {
-                            putExtra(Intent.EXTRA_MIME_TYPES,
-                                resources.getStringArray(R.array.mimetype_bin)
-                            )
+                            putExtra(Intent.EXTRA_MIME_TYPES, resources.getStringArray(R.array.mimetype_bin))
                         }
                         onLoadKeys.launch(Intent.createChooser(getIntent(this), title))
                     } catch (ex: ActivityNotFoundException) {

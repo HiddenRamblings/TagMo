@@ -104,7 +104,7 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
     private var deviceDialog: AlertDialog? = null
 
     private enum class DEVICE {
-        FLASK, SLIDE, PUCK, GATT
+        FLASK, SLIDE, BLUUP, PUCK, GATT
     }
 
     private var deviceType = DEVICE.GATT
@@ -240,9 +240,11 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
                         }
 
                         override fun onBluupFilesDownload(dataString: String) {
+                            Debug.info(this.javaClass, dataString)
                             try {
                                 val tagData = dataString.toByteArray()
                             } catch (e: Exception) { e.printStackTrace() }
+                            Toasty(requireActivity()).Short(R.string.fail_firmware_api)
                         }
 
                         override fun onBluupProcessFinish() {
@@ -898,7 +900,7 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
                 showConnectionNotice()
                 startPuckService()
             }
-            isEnabled = detectedType != DEVICE.FLASK && detectedType != DEVICE.SLIDE
+            isEnabled = detectedType == DEVICE.PUCK || detectedType == DEVICE.GATT
         }
         return item
     }
@@ -929,7 +931,7 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
                     if (!devices.contains(result.device)) {
                         devices.add(result.device)
                         deviceDialog.findViewById<LinearLayout>(R.id.bluetooth_result)?.addView(
-                            displayScanResult(deviceDialog, result.device, DEVICE.GATT)
+                            displayScanResult(deviceDialog, result.device, DEVICE.BLUUP)
                         )
                     }
                 }
@@ -956,7 +958,7 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
                     if (!devices.contains(bluetoothDevice)) {
                         devices.add(bluetoothDevice)
                         deviceDialog.findViewById<LinearLayout>(R.id.bluetooth_result)?.addView(
-                            displayScanResult(deviceDialog, bluetoothDevice, DEVICE.GATT)
+                            displayScanResult(deviceDialog, bluetoothDevice, DEVICE.BLUUP)
                         )
                     }
                 }

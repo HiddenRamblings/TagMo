@@ -557,12 +557,10 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
             if (BuildConfig.GOOGLE_PLAY) {
                 onDocumentEnabled()
             } else {
-                if (prefs.isDocumentStorage) {
-                    onDocumentEnabled()
-                } else if (Environment.isExternalStorageManager()) {
+                if (Environment.isExternalStorageManager()) {
                     onStorageEnabled()
                 } else {
-                    requestScopedStorage()
+                    onDocumentEnabled()
                 }
             }
         } else if (Version.isMarshmallow) {

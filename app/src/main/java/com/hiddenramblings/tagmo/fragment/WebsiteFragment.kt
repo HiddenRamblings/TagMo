@@ -292,7 +292,7 @@ class WebsiteFragment : Fragment() {
         private fun convertBase64StringSave(base64File: String) {
             val zipType = getString(R.string.mimetype_zip)
             if (base64File.contains("data:$zipType;")) {
-                val filePath = File(Storage.getDownloadDir("TagMo"), "download.zip")
+                val filePath = File(TagMo.downloadDir, "download.zip")
                 FileOutputStream(filePath, false).use {
                     it.write(Base64.decode(base64File.replaceFirst(
                         "^data:$zipType;base64,".toRegex(), ""

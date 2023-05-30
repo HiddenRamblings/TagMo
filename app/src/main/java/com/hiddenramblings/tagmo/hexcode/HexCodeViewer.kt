@@ -20,6 +20,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.hiddenramblings.tagmo.NFCIntent
 import com.hiddenramblings.tagmo.Preferences
 import com.hiddenramblings.tagmo.R
+import com.hiddenramblings.tagmo.TagMo
 import com.hiddenramblings.tagmo.amiibo.Amiibo
 import com.hiddenramblings.tagmo.amiibo.KeyManager
 import com.hiddenramblings.tagmo.eightbit.io.Debug
@@ -141,7 +142,7 @@ class HexCodeViewer : AppCompatActivity() {
             Toasty(this@HexCodeViewer).Short(getString(R.string.fail_bitmap))
             return
         }
-        val dir = File(Storage.getDownloadDir("TagMo"), "HexCode")
+        val dir = File(TagMo.downloadDir, "HexCode")
         if (!dir.exists() && !dir.mkdirs()) {
             Toasty(this@HexCodeViewer).Short(
                 getString(R.string.mkdir_failed, dir.name)

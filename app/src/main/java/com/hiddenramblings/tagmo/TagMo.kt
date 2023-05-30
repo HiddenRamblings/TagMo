@@ -9,6 +9,7 @@ import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.text.HtmlCompat
 import com.hiddenramblings.tagmo.eightbit.content.ScaledContext
 import com.hiddenramblings.tagmo.eightbit.io.Debug
+import com.hiddenramblings.tagmo.eightbit.os.Storage
 import com.hiddenramblings.tagmo.eightbit.os.Version
 import me.weishu.reflection.Reflection
 import org.lsposed.hiddenapibypass.HiddenApiBypass
@@ -76,6 +77,8 @@ class TagMo : Application() {
             private set
         const val uiDelay = 50
 
+        val downloadDir by lazy { Storage.getDownloadDir("TagMo") }
+
         private const val commitHash = "#${BuildConfig.COMMIT}"
         private val versionLabel = "TagMo ${BuildConfig.VERSION_NAME} (${
             if (BuildConfig.GOOGLE_PLAY) "Play" else "GitHub"
@@ -98,6 +101,6 @@ class TagMo : Application() {
 
         var hasSubscription = false
 
-        val forceSoftwareLayer = true
+        const val forceSoftwareLayer = true
     }
 }

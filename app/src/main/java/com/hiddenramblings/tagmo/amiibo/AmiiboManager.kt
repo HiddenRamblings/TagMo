@@ -6,6 +6,7 @@ import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.documentfile.provider.DocumentFile
 import com.hiddenramblings.tagmo.R
+import com.hiddenramblings.tagmo.TagMo
 import com.hiddenramblings.tagmo.eightbit.io.Debug
 import com.hiddenramblings.tagmo.eightbit.os.Storage
 import com.hiddenramblings.tagmo.nfctech.TagArray
@@ -284,7 +285,7 @@ object AmiiboManager {
     @Throws(IOException::class, JSONException::class, ParseException::class)
     fun getAmiiboManager(context: Context): AmiiboManager {
         var amiiboManager: AmiiboManager?
-        if (File(Storage.getDownloadDir("TagMo"), AMIIBO_DATABASE_FILE).exists()) {
+        if (File(TagMo.downloadDir, AMIIBO_DATABASE_FILE).exists()) {
             try {
                 amiiboManager = parse(context.openFileInput(AMIIBO_DATABASE_FILE))
             } catch (e: IOException) {

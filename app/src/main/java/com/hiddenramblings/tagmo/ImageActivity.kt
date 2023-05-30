@@ -204,7 +204,7 @@ class ImageActivity : AppCompatActivity() {
     }
 
     private fun saveImageToFile(prefs: Preferences, resource: Bitmap, filename: String) {
-        val dir = File(Storage.getDownloadDir("TagMo"), "Images")
+        val dir = File(TagMo.downloadDir, "Images")
         if (!dir.exists() && !dir.mkdirs()) {
             Toasty(this@ImageActivity).Short(
                 getString(R.string.mkdir_failed, dir.name)

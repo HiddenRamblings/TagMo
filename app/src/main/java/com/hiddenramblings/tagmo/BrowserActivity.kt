@@ -1721,13 +1721,6 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
         }
     }
 
-    private fun isDirectoryHidden(rootFolder: File?, directory: File, recursive: Boolean): Boolean {
-        if (null == rootFolder) return false
-        return !(rootFolder.canonicalPath == directory.canonicalPath || (recursive
-                && (rootFolder.canonicalPath.startsWith(directory.canonicalPath)
-                || directory.canonicalPath.startsWith(rootFolder.canonicalPath))))
-    }
-
     private fun loadAmiiboFiles(rootFolder: File?, recursiveFiles: Boolean) {
         setSnackbarListener(object: SnackbarListener {
             override fun onSnackbarHidden() {
@@ -1737,11 +1730,18 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
         })
         CoroutineScope(Dispatchers.IO).launch {
             val amiiboFiles = listAmiiboFiles(keyManager, rootFolder, recursiveFiles)
-            val download = Storage.getDownloadDir("TagMo")
-            if (isDirectoryHidden(rootFolder, download, recursiveFiles))
-                amiiboFiles.addAll(listAmiiboFiles(keyManager, download, true))
-            val foomiibo = File(filesDir, "Foomiibo")
-            amiiboFiles.addAll(listAmiiboFiles(keyManager, foomiibo, true))
+            listAmiiboFiles(keyManager, TagMo.downloadDir, true).also { files ->
+                coroutineScope {
+                    files.map { file ->
+                        async(Dispatchers.IO) {
+                            if (!amiiboFiles.contains(file)) amiiboFiles.add(file)
+                        }
+                    }.awaitAll()
+                }
+            }
+            listAmiiboFiles(keyManager, File(filesDir, "Foomiibo"), true).also {
+                amiiboFiles.addAll(it)
+            }
             withContext(Dispatchers.Main) {
                 hideFakeSnackbar()
                 settings?.let {

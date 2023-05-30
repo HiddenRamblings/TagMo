@@ -3,10 +3,10 @@ package com.hiddenramblings.tagmo.amiibo.games
 import android.content.Context
 import android.net.Uri
 import com.hiddenramblings.tagmo.R
+import com.hiddenramblings.tagmo.TagMo
 import com.hiddenramblings.tagmo.amiibo.Amiibo
 import com.hiddenramblings.tagmo.amiibo.AmiiboManager
 import com.hiddenramblings.tagmo.eightbit.io.Debug
-import com.hiddenramblings.tagmo.eightbit.os.Storage
 import org.json.JSONException
 import org.json.JSONObject
 import java.io.File
@@ -161,7 +161,7 @@ class GamesManager {
         @Throws(IOException::class, JSONException::class, ParseException::class)
         fun getGamesManager(context: Context): GamesManager {
             var gamesManager: GamesManager?
-            if (File(Storage.getDownloadDir("TagMo"), GAMES_DATABASE_FILE).exists()) {
+            if (File(TagMo.downloadDir, GAMES_DATABASE_FILE).exists()) {
                 try {
                     gamesManager = parse(context.openFileInput(GAMES_DATABASE_FILE))
                 } catch (e: IOException) {

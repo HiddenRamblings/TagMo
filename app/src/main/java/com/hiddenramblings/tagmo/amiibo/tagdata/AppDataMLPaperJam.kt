@@ -8,7 +8,6 @@
 package com.hiddenramblings.tagmo.amiibo.tagdata
 
 import com.hiddenramblings.tagmo.nfctech.TagArray
-import java.util.Random
 
 class AppDataMLPaperJam(appData: ByteArray?) : AppData(appData!!) {
 

@@ -16,11 +16,11 @@
   </a>
 </p>
 
-## [Instructions](https://tagmo.gitlab.io/)
+## [Code of Conduct](https://github.com/HiddenRamblings/TagMo/blob/master/CODE_OF_CONDUCT.md)
+
+## [Instructions / Help](https://tagmo.gitlab.io/)
 
 ## [Reporting Issues](https://github.com/HiddenRamblings/TagMo/wiki#reporting-issues)
-
-## [Code of Conduct](https://github.com/HiddenRamblings/TagMo/blob/master/CODE_OF_CONDUCT.md)
 
 ## [Contributors](https://github.com/HiddenRamblings/TagMo/graphs/contributors)
 

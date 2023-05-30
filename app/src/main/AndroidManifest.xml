@@ -45,7 +45,8 @@
      androidx.camera.camera2,
      androidx.camera.core,
      androidx.camera.view,
-     androidx.camera.lifecycle" />
+     androidx.camera.lifecycle,
+     androidx.core.splashscreen" />
 
     <queries>
         <package android:name="${applicationId}" />

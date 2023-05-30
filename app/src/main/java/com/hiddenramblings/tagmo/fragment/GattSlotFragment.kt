@@ -538,7 +538,7 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
         }
 
         gattSlotCount = view.findViewById<NumberPicker>(R.id.number_picker_slot).apply {
-            if (TagMo.forceSoftwareLayer) setLayerType(View.LAYER_TYPE_SOFTWARE, null)
+            if (TagMo.isUserInputEnabled) setLayerType(View.LAYER_TYPE_SOFTWARE, null)
             setOnValueChangedListener { _, _, newVal ->
                 if (maxSlotCount - currentCount > 0)
                     writeSlots?.text = getString(R.string.write_slots, newVal)

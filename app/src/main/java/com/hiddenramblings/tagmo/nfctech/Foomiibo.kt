@@ -5,7 +5,6 @@
  * ====================================================================
  */
 
-@file:Suppress("unused", "WeakerAccess")
 package com.hiddenramblings.tagmo.nfctech
 
 import com.hiddenramblings.tagmo.R

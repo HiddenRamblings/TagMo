@@ -101,6 +101,6 @@ class TagMo : Application() {
 
         var hasSubscription = false
 
-        const val forceSoftwareLayer = true
+        const val isUserInputEnabled = false
     }
 }

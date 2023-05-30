@@ -214,8 +214,11 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
 
         viewPager.keepScreenOn = BuildConfig.WEAR_OS
         viewPager.adapter = pagerAdapter
-        viewPager.setPageTransformer(DepthTransformer())
-        setViewPagerSensitivity(viewPager, 4)
+        viewPager.isUserInputEnabled = TagMo.isUserInputEnabled
+        if (TagMo.isUserInputEnabled) {
+            viewPager.setPageTransformer(DepthTransformer())
+            setViewPagerSensitivity(viewPager, 4)
+        }
         amiibosView = pagerAdapter.browser.browserContent
         foomiiboView = pagerAdapter.browser.foomiiboContent
         browserSheet = pagerAdapter.browser.bottomSheet
@@ -2306,31 +2309,41 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
     fun showElitePage(extras: Bundle) {
         if (viewPager.currentItem == 2) {
             pagerAdapter.eliteBanks.onHardwareLoaded(extras)
-        } else {
+            return
+        }
+        if (TagMo.isUserInputEnabled) {
             setScrollListener(object : ScrollListener {
                 override fun onScrollComplete() {
                     pagerAdapter.eliteBanks.onHardwareLoaded(extras)
                     scrollListener = null
                 }
             })
-            viewPager.setCurrentItem(2, false)
+        } else {
+            viewPager.postDelayed({
+                pagerAdapter.eliteBanks.onHardwareLoaded(extras)
+            }, TagMo.uiDelay.toLong())
         }
+        viewPager.setCurrentItem(2, false)
     }
 
     fun showWebsite(address: String?) {
-        CoroutineScope(Dispatchers.Main).launch {
-            if (viewPager.currentItem == pagerAdapter.itemCount - 1) {
-                pagerAdapter.website.loadWebsite(address)
-                return@launch
-            }
-            setScrollListener(object: ScrollListener {
+        if (viewPager.currentItem == pagerAdapter.itemCount - 1) {
+            pagerAdapter.website.loadWebsite(address)
+            return
+        }
+        if (TagMo.isUserInputEnabled) {
+            setScrollListener(object : ScrollListener {
                 override fun onScrollComplete() {
                     pagerAdapter.website.loadWebsite(address)
                     scrollListener = null
                 }
             })
-            viewPager.setCurrentItem(1, false)
+        } else {
+            viewPager.postDelayed({
+                pagerAdapter.website.loadWebsite(address)
+            }, TagMo.uiDelay.toLong())
         }
+        viewPager.setCurrentItem(1, false)
     }
 
     private fun keyNameMatcher(name: String): Boolean {

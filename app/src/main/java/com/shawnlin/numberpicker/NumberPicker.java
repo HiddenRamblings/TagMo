@@ -880,9 +880,7 @@ public class NumberPicker extends LinearLayout {
                     setFocusableInTouchMode(true);
                 }
             }
-        } finally {
-            attributes.recycle();
-        }
+        } finally { attributes.recycle(); }
     }
 
     @Override

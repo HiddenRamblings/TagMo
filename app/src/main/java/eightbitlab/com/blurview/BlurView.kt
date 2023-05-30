@@ -47,10 +47,7 @@ class BlurView : FrameLayout {
                 R.styleable.BlurView_blurOverlayColor,
                 PreDrawBlurController.TRANSPARENT
             )
-        } finally {
-            a.recycle()
-        }
-        if (Version.isSnowCone) setLayerType(View.LAYER_TYPE_SOFTWARE, null)
+        } finally { a.recycle() }
     }
 
     override fun draw(canvas: Canvas) {
@@ -86,6 +83,7 @@ class BlurView : FrameLayout {
      * @param algorithm sets the blur algorithm
      * @return [BlurView] to setup needed params.
      */
+    @SuppressWarnings("WeakerAccess")
     fun setupWith(rootView: ViewGroup, algorithm: BlurAlgorithm): BlurViewFacade {
         blurController.destroy()
         val blurController: BlurController =

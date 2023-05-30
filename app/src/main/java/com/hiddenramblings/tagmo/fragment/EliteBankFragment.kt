@@ -218,7 +218,7 @@ class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
         }
 
         eliteBankCount = view.findViewById<NumberPicker>(R.id.number_picker_bank).apply {
-            if (TagMo.forceSoftwareLayer) setLayerType(View.LAYER_TYPE_SOFTWARE, null)
+            if (TagMo.isUserInputEnabled) setLayerType(View.LAYER_TYPE_SOFTWARE, null)
             setOnValueChangedListener { _, _, newVal -> updateNumberedText(newVal) }
         }
 

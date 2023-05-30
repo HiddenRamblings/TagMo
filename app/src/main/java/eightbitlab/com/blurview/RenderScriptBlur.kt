@@ -47,7 +47,7 @@ class RenderScriptBlur constructor(context: Context) : BlurAlgorithm {
      * @return blurred bitmap
      */
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
-    override fun blur(bitmap: Bitmap?, blurRadius: Float): Bitmap? {
+    override fun blur(bitmap: Bitmap?, blurRadius: Float): Bitmap {
         //Allocation will use the same backing array of pixels as bitmap if created with USAGE_SHARED flag
         val inAllocation = Allocation.createFromBitmap(renderScript, bitmap)
         if (!canReuseAllocation(bitmap!!)) {

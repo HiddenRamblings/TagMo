@@ -1,4 +1,5 @@
-@file:Suppress("unused", "WeakerAccess")
+@file:Suppress("unused")
+@file:SuppressWarnings("WeakerAccess")
 package com.mumumusuc.libjoycon
 
 import android.bluetooth.BluetoothAdapter

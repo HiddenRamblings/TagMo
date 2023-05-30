@@ -40,20 +40,4 @@
         <item>W1</item>
         <item>W2</item>
     </string-array>
-
-    <string-array name="qr_code_type">
-        <item>Unknown</item>
-        <item>Contact</item>
-        <item>Email</item>
-        <item>ISBN</item>
-        <item>Phone</item>
-        <item>Product</item>
-        <item>SMS</item>
-        <item>Text</item>
-        <item>URL</item>
-        <item>WiFi</item>
-        <item>Location</item>
-        <item>Calendar</item>
-        <item>License</item>
-    </string-array>
 </resources>

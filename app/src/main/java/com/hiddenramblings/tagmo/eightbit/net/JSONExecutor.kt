@@ -34,8 +34,8 @@ import javax.net.ssl.HttpsURLConnection
 
 class JSONExecutor(activity: Activity, server: String, path: String? = null) {
 
-    var listener: ResultListener? = null
-    var listenerDb: DatabaseListener? = null
+    var jsonListener: ResultListener? = null
+    var dbListener: DatabaseListener? = null
 
     init {
         SecurityHandler(activity, object : SecurityHandler.ProviderInstallListener {
@@ -53,8 +53,8 @@ class JSONExecutor(activity: Activity, server: String, path: String? = null) {
                 )
                 if (activity is BrowserActivity)
                     CoroutineScope(Dispatchers.Main).launch { activity.settings?.notifyChanges() }
-                listener?.onResults(null)
-                    ?: listenerDb?.onResults(null, false)
+                jsonListener?.onResults(null)
+                    ?: dbListener?.onResults(null, false)
             }
         })
     }
@@ -78,7 +78,7 @@ class JSONExecutor(activity: Activity, server: String, path: String? = null) {
             val url = path?.let { "$server/$path" } ?: server
             try {
                 URL(url).readText().also {
-                    listenerDb?.onResults(it, isRawJSON(url)) ?: listener?.onResults(it)
+                    dbListener?.onResults(it, isRawJSON(url)) ?: jsonListener?.onResults(it)
                     return@launch
                 }
             } catch (fnf: FileNotFoundException) {
@@ -110,9 +110,9 @@ class JSONExecutor(activity: Activity, server: String, path: String? = null) {
                         var inputStr: String?
                         while (null != streamReader.readLine().also { inputStr = it })
                             responseStrBuilder.append(inputStr)
-                        listenerDb?.onResults(
+                        dbListener?.onResults(
                             responseStrBuilder.toString(), isRawJSON(conn)
-                        ) ?: listener?.onResults(
+                        ) ?: jsonListener?.onResults(
                             responseStrBuilder.toString()
                         )
                         conn.disconnect()
@@ -120,7 +120,7 @@ class JSONExecutor(activity: Activity, server: String, path: String? = null) {
                 }
             } catch (e: Exception) {
                 Debug.warn(e)
-                listenerDb?.onException(e) ?: listener?.onException(e)
+                dbListener?.onException(e) ?: jsonListener?.onException(e)
             }
         }
     }
@@ -139,7 +139,7 @@ class JSONExecutor(activity: Activity, server: String, path: String? = null) {
     }
 
     fun setResultListener(listener: ResultListener?) {
-        this.listener = listener
+        jsonListener = listener
     }
 
     interface DatabaseListener {
@@ -148,7 +148,7 @@ class JSONExecutor(activity: Activity, server: String, path: String? = null) {
     }
 
     fun setDatabaseListener(listener: DatabaseListener?) {
-        this.listenerDb = listener
+        dbListener = listener
     }
 
     companion object {

@@ -72,6 +72,7 @@ import com.hiddenramblings.tagmo.eightbit.os.Version
 import com.hiddenramblings.tagmo.eightbit.request.ImageTarget
 import com.hiddenramblings.tagmo.eightbit.view.AnimatedLinearLayout
 import com.hiddenramblings.tagmo.eightbit.viewpager.*
+import com.hiddenramblings.tagmo.eightbit.widget.FABulous
 import com.hiddenramblings.tagmo.fragment.BrowserFragment
 import com.hiddenramblings.tagmo.fragment.JoyConFragment.Companion.newInstance
 import com.hiddenramblings.tagmo.fragment.SettingsFragment
@@ -84,7 +85,6 @@ import com.hiddenramblings.tagmo.nfctech.TagReader
 import com.hiddenramblings.tagmo.qrcode.QRCodeScanner
 import com.hiddenramblings.tagmo.update.UpdateManager
 import com.hiddenramblings.tagmo.wave9.DimensionActivity
-import com.hiddenramblings.tagmo.widget.FABulous
 import com.hiddenramblings.tagmo.widget.Toasty
 import com.shawnlin.numberpicker.NumberPicker
 import eightbitlab.com.blurview.BlurView
@@ -172,7 +172,6 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
         fakeSnackbarText = findViewById(R.id.snackbar_text)
         fakeSnackbarItem = findViewById(R.id.snackbar_item)
         viewPager = findViewById(R.id.browser_pager)
-        nfcFab = findViewById(R.id.nfc_fab)
         amiiboContainer = findViewById(R.id.amiiboContainer)
         toolbar = findViewById(R.id.toolbar)
         amiiboInfo = findViewById(R.id.amiiboInfo)
@@ -211,6 +210,19 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                     it.data?.let { data = it }
                 })
             }
+        }
+
+        nfcFab = findViewById<FABulous>(R.id.nfc_fab).apply {
+            x = prefs.fabulousX()
+            y = prefs.fabulousY()
+            setOnMoveListener(object : FABulous.OnViewMovedListener {
+                override fun onActionMove(x: Float, y: Float) {
+                    prefs.fabulousX(x)
+                    Debug.warn(this.javaClass, "newX: $x")
+                    prefs.fabulousY(y)
+                    Debug.warn(this.javaClass, "newY: $y")
+                }
+            })
         }
 
         viewPager.keepScreenOn = BuildConfig.WEAR_OS
@@ -2252,6 +2264,10 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                             it.clearAnimation()
                             layout?.setAnimationListener(null)
                             it.isGone = true
+                            if (!nfcFab.isOrWillBeHidden) {
+                                nfcFab.x = prefs.fabulousX()
+                                nfcFab.y = prefs.fabulousY() - it.height
+                            }
                         }
                     })
                     it.startAnimation(animate)

@@ -85,7 +85,7 @@
                     layout="@layout/active_card_layout" />
             </FrameLayout>
 
-            <com.hiddenramblings.tagmo.widget.FABulous
+            <com.hiddenramblings.tagmo.eightbit.widget.FABulous
                 android:id="@+id/nfc_fab"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

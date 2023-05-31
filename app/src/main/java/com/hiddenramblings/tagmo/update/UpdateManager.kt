@@ -47,7 +47,7 @@ import java.net.URL
 import kotlin.random.Random
 
 class UpdateManager internal constructor(activity: BrowserActivity) {
-    private var listener: UpdateListener? = null
+    private var updateListener: UpdateListener? = null
     private var appUpdateManager: AppUpdateManager? = null
     private val browserActivity: BrowserActivity = activity
     private var isUpdateAvailable = false
@@ -89,7 +89,7 @@ class UpdateManager internal constructor(activity: BrowserActivity) {
                     && appUpdateInfo.isUpdateTypeAllowed(AppUpdateType.IMMEDIATE))
             if (isUpdateAvailable) {
                 appUpdate = appUpdateInfo
-                listener?.onUpdateFound()
+                updateListener?.onUpdateFound()
             }
         }
     }
@@ -214,7 +214,7 @@ class UpdateManager internal constructor(activity: BrowserActivity) {
             isUpdateAvailable = BuildConfig.COMMIT != lastCommit
             if (isUpdateAvailable) {
                 updateUrl = asset["browser_download_url"] as String
-                listener?.onUpdateFound()
+                updateListener?.onUpdateFound()
             }
         } catch (e: JSONException) {
             Debug.warn(e)
@@ -247,7 +247,7 @@ class UpdateManager internal constructor(activity: BrowserActivity) {
     }
 
     fun setUpdateListener(listener: UpdateListener?) {
-        this.listener = listener
+        updateListener = listener
     }
 
     interface UpdateListener {

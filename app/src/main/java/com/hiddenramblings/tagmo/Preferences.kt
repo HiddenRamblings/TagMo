@@ -28,6 +28,16 @@ class Preferences(context: Context) {
     }
 
     @Suppress("SameParameterValue")
+    private fun getFloat(pref: String, defValue: Float): Float {
+        return prefs.getFloat(pref, defValue)
+    }
+
+    @Suppress("SameParameterValue")
+    private fun putFloat(pref: String, value: Float) {
+        prefs.edit().putFloat(pref, value).apply()
+    }
+
+    @Suppress("SameParameterValue")
     private fun getLong(pref: String, defValue: Long): Long {
         return prefs.getLong(pref, defValue)
     }
@@ -47,6 +57,24 @@ class Preferences(context: Context) {
 
     fun remove(pref: String?) {
         prefs.edit().remove(pref).apply()
+    }
+
+    private val fabulousX = "fabulousX"
+    fun fabulousX(): Float {
+        return getFloat(fabulousX, 0F)
+    }
+
+    fun fabulousX(value: Float) {
+        putFloat(fabulousX, value)
+    }
+
+    private val fabulousY = "fabulousY"
+    fun fabulousY(): Float {
+        return getFloat(fabulousY, 0F)
+    }
+
+    fun fabulousY(value: Float) {
+        putFloat(fabulousY, value)
     }
 
     private val query = "query"

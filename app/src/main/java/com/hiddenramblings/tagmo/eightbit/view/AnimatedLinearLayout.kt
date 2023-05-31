@@ -29,18 +29,18 @@ class AnimatedLinearLayout : LinearLayout {
         fun onAnimationEnd(layout: AnimatedLinearLayout?)
     }
 
-    private var mAnimationListener: AnimationListener? = null
+    private var animationListener: AnimationListener? = null
     fun setAnimationListener(listener: AnimationListener?) {
-        mAnimationListener = listener
+        animationListener = listener
     }
 
     override fun onAnimationStart() {
         super.onAnimationStart()
-        mAnimationListener?.onAnimationStart(this)
+        animationListener?.onAnimationStart(this)
     }
 
     override fun onAnimationEnd() {
         super.onAnimationEnd()
-        mAnimationListener?.onAnimationEnd(this)
+        animationListener?.onAnimationEnd(this)
     }
 }

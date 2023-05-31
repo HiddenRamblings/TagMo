@@ -54,7 +54,7 @@
                 android:layout_gravity="center"
                 android:layout_marginRight="4dp"
                 android:layout_marginEnd="4dp"
-                app:srcCompat="@drawable/ic_bluup_flask_18dp" />
+                app:srcCompat="@drawable/ic_bluup_labs_18dp" />
 
             <TextView
                 android:id="@+id/hardware_info"

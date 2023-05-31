@@ -70,7 +70,7 @@
                         android:id="@+id/wrapper_settings"
                         android:layout_width="match_parent"
                         android:layout_height="64dp"
-                        android:layout_marginHorizontal="10dp"
+                        android:layout_marginHorizontal="2dp"
                         android:orientation="horizontal">
 
                         <androidx.appcompat.widget.AppCompatImageView
@@ -81,7 +81,7 @@
                             android:scaleType="fitCenter"
                             android:layout_weight="0"
                             android:layout_gravity="center_vertical"
-                            app:srcCompat="@drawable/ic_warning_amber_24"
+                            app:srcCompat="@drawable/ic_outline_settings_menu"
                             android:foreground="@drawable/card_foreground"
                             tools:ignore="UnusedAttribute" />
 
@@ -112,7 +112,7 @@
                         android:id="@+id/wrapper_amiibo"
                         android:layout_width="match_parent"
                         android:layout_height="64dp"
-                        android:layout_marginHorizontal="10dp"
+                        android:layout_marginHorizontal="2dp"
                         android:orientation="horizontal">
 
                         <androidx.appcompat.widget.AppCompatImageView
@@ -123,7 +123,7 @@
                             android:scaleType="fitCenter"
                             android:layout_weight="0"
                             android:layout_gravity="center_vertical"
-                            app:srcCompat="@drawable/ic_stat_notice_24dp_scaled"
+                            app:srcCompat="@drawable/ic_nfc_scanner_menu"
                             android:foreground="@drawable/card_foreground"
                             tools:ignore="UnusedAttribute" />
 
@@ -154,7 +154,7 @@
                         android:id="@+id/wrapper_elite"
                         android:layout_width="match_parent"
                         android:layout_height="64dp"
-                        android:layout_marginHorizontal="10dp"
+                        android:layout_marginHorizontal="2dp"
                         android:orientation="horizontal">
 
                         <androidx.appcompat.widget.AppCompatImageView
@@ -165,7 +165,7 @@
                             android:scaleType="fitCenter"
                             android:layout_weight="0"
                             android:layout_gravity="center_vertical"
-                            app:srcCompat="@drawable/ic_nfc_icon_24dp"
+                            app:srcCompat="@drawable/ic_nfc_icon_menu"
                             android:foreground="@drawable/card_foreground"
                             tools:ignore="UnusedAttribute" />
 
@@ -196,7 +196,7 @@
                         android:id="@+id/wrapper_gatt"
                         android:layout_width="match_parent"
                         android:layout_height="64dp"
-                        android:layout_marginHorizontal="10dp"
+                        android:layout_marginHorizontal="2dp"
                         android:orientation="horizontal">
 
                         <androidx.appcompat.widget.AppCompatImageView
@@ -207,7 +207,7 @@
                             android:scaleType="fitCenter"
                             android:layout_weight="0"
                             android:layout_gravity="center_vertical"
-                            app:srcCompat="@drawable/ic_bluup_labs_24dp"
+                            app:srcCompat="@drawable/ic_bluup_labs_menu"
                             android:foreground="@drawable/card_foreground"
                             tools:ignore="UnusedAttribute" />
 
@@ -238,7 +238,7 @@
                         android:id="@+id/wrapper_qr_code"
                         android:layout_width="match_parent"
                         android:layout_height="64dp"
-                        android:layout_marginHorizontal="10dp"
+                        android:layout_marginHorizontal="2dp"
                         android:orientation="horizontal">
 
                         <androidx.appcompat.widget.AppCompatImageView
@@ -249,7 +249,7 @@
                             android:scaleType="fitCenter"
                             android:layout_weight="0"
                             android:layout_gravity="center_vertical"
-                            app:srcCompat="@drawable/ic_qr_code_2_24"
+                            app:srcCompat="@drawable/ic_qr_code_2_menu"
                             android:foreground="@drawable/card_foreground"
                             tools:ignore="UnusedAttribute" />
 
@@ -280,7 +280,7 @@
                         android:id="@+id/wrapper_lego"
                         android:layout_width="match_parent"
                         android:layout_height="64dp"
-                        android:layout_marginHorizontal="10dp"
+                        android:layout_marginHorizontal="2dp"
                         android:orientation="horizontal">
 
                         <androidx.appcompat.widget.AppCompatImageView
@@ -291,7 +291,7 @@
                             android:scaleType="fitCenter"
                             android:layout_weight="0"
                             android:layout_gravity="center_vertical"
-                            app:srcCompat="@drawable/ic_lego_face_24dp"
+                            app:srcCompat="@drawable/ic_lego_face_menu"
                             android:foreground="@drawable/card_foreground"
                             tools:ignore="UnusedAttribute" />
 
@@ -322,7 +322,7 @@
                         android:id="@+id/wrapper_joystick"
                         android:layout_width="match_parent"
                         android:layout_height="64dp"
-                        android:layout_marginHorizontal="10dp"
+                        android:layout_marginHorizontal="2dp"
                         android:orientation="horizontal">
 
                         <androidx.appcompat.widget.AppCompatImageView
@@ -333,7 +333,7 @@
                             android:scaleType="fitCenter"
                             android:layout_weight="0"
                             android:layout_gravity="center_vertical"
-                            app:srcCompat="@drawable/ic_joystick_24dp"
+                            app:srcCompat="@drawable/ic_joystick_menu"
                             android:foreground="@drawable/card_foreground"
                             tools:ignore="UnusedAttribute" />
 
@@ -364,7 +364,7 @@
                         android:id="@+id/wrapper_guides"
                         android:layout_width="match_parent"
                         android:layout_height="64dp"
-                        android:layout_marginHorizontal="10dp"
+                        android:layout_marginHorizontal="2dp"
                         android:orientation="horizontal">
 
                         <androidx.appcompat.widget.AppCompatImageView
@@ -375,7 +375,7 @@
                             android:scaleType="fitCenter"
                             android:layout_weight="0"
                             android:layout_gravity="center_vertical"
-                            app:srcCompat="@drawable/ic_help_outline_24dp"
+                            app:srcCompat="@drawable/ic_help_outline_menu"
                             android:foreground="@drawable/card_foreground"
                             tools:ignore="UnusedAttribute" />
 

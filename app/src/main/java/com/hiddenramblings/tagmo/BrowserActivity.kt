@@ -2275,16 +2275,19 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
 
     fun restoreMenuLayout() {
         settingsPage?.isGone = true
+        if (reloadTabCollection) {
+            reloadTabCollection = false
+            onTabCollectionChanged()
+        }
     }
     fun closePrefsDrawer(): Boolean {
         prefsDrawer?.let {
             if (it.isDrawerOpen(GravityCompat.START)) {
                 it.closeDrawer(GravityCompat.START)
-                restoreMenuLayout()
+                settingsPage?.isGone = true
                 return true
             }
         }
-
         return false
     }
 

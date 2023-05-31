@@ -84,6 +84,7 @@ import com.hiddenramblings.tagmo.nfctech.TagReader
 import com.hiddenramblings.tagmo.qrcode.QRCodeScanner
 import com.hiddenramblings.tagmo.update.UpdateManager
 import com.hiddenramblings.tagmo.wave9.DimensionActivity
+import com.hiddenramblings.tagmo.widget.FABulous
 import com.hiddenramblings.tagmo.widget.Toasty
 import com.shawnlin.numberpicker.NumberPicker
 import eightbitlab.com.blurview.BlurView
@@ -121,7 +122,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
     private var scrollListener: ScrollListener? = null
     private var snackbarListener: SnackbarListener? = null
     private val pagerAdapter = NavPagerAdapter(this)
-    private lateinit var nfcFab: FloatingActionButton
+    private lateinit var nfcFab: FABulous
     private var amiibosView: RecyclerView? = null
     private var foomiiboView: RecyclerView? = null
     private var menuSortId: MenuItem? = null
@@ -170,7 +171,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
         fakeSnackbar = findViewById(R.id.fake_snackbar)
         fakeSnackbarText = findViewById(R.id.snackbar_text)
         fakeSnackbarItem = findViewById(R.id.snackbar_item)
-        viewPager = findViewById(R.id.amiibo_pager)
+        viewPager = findViewById(R.id.browser_pager)
         nfcFab = findViewById(R.id.nfc_fab)
         amiiboContainer = findViewById(R.id.amiiboContainer)
         toolbar = findViewById(R.id.toolbar)

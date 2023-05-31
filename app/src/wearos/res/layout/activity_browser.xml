@@ -89,7 +89,7 @@
                 android:layout_height="match_parent">
 
                 <androidx.viewpager2.widget.ViewPager2
-                    android:id="@+id/amiibo_pager"
+                    android:id="@+id/browser_pager"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent" />
 
@@ -109,21 +109,19 @@
                         layout="@layout/active_card_layout" />
                 </FrameLayout>
 
-                <com.google.android.material.floatingactionbutton.FloatingActionButton
+                <com.hiddenramblings.tagmo.widget.FABulous
                     android:id="@+id/nfc_fab"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentRight="true"
                     android:layout_alignParentEnd="true"
                     android:layout_alignParentBottom="true"
-                    android:layout_marginHorizontal="@dimen/fab_button_margin"
-                    android:layout_marginBottom="@dimen/fab_button_margin"
                     android:clickable="true"
-                    android:contentDescription="@string/fabDescription"
                     android:focusable="true"
+                    android:contentDescription="@string/fabDescription"
                     app:fabSize="mini"
                     app:useCompatPadding="true"
-                    app:layout_anchor="@+id/amiibo_pager"
+                    app:layout_anchor="@+id/browser_pager"
                     app:layout_anchorGravity="bottom|end"
                     app:maxImageSize="56dp"
                     app:srcCompat="@mipmap/ic_nfc_icon"

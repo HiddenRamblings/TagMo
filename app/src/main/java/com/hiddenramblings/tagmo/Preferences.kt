@@ -6,6 +6,7 @@ import android.net.Uri
 import androidx.documentfile.provider.DocumentFile
 import androidx.preference.PreferenceManager
 import com.hiddenramblings.tagmo.eightbit.os.Version
+import com.hiddenramblings.tagmo.eightbit.widget.FABulous
 
 class Preferences(context: Context) {
 
@@ -60,8 +61,8 @@ class Preferences(context: Context) {
     }
 
     private val fabulousX = "fabulousX"
-    fun fabulousX(): Float {
-        return getFloat(fabulousX, 0F)
+    fun fabulousX(fab: FABulous): Float {
+        return getFloat(fabulousX, fab.x)
     }
 
     fun fabulousX(value: Float) {
@@ -69,8 +70,8 @@ class Preferences(context: Context) {
     }
 
     private val fabulousY = "fabulousY"
-    fun fabulousY(): Float {
-        return getFloat(fabulousY, 0F)
+    fun fabulousY(fab: FABulous): Float {
+        return getFloat(fabulousY, fab.y)
     }
 
     fun fabulousY(value: Float) {

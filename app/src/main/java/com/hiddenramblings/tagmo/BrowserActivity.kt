@@ -213,14 +213,12 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
         }
 
         nfcFab = findViewById<FABulous>(R.id.nfc_fab).apply {
-            x = prefs.fabulousX()
-            y = prefs.fabulousY()
+            x = prefs.fabulousX(this)
+            y = prefs.fabulousY(this)
             setOnMoveListener(object : FABulous.OnViewMovedListener {
                 override fun onActionMove(x: Float, y: Float) {
                     prefs.fabulousX(x)
-                    Debug.warn(this.javaClass, "newX: $x")
                     prefs.fabulousY(y)
-                    Debug.warn(this.javaClass, "newY: $y")
                 }
             })
         }
@@ -1739,8 +1737,12 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
 
     private fun loadAmiiboFiles(rootFolder: File?, recursiveFiles: Boolean) {
         setSnackbarListener(object: SnackbarListener {
-            override fun onSnackbarHidden() {
+            override fun onSnackbarHidden(fakeSnackbar: AnimatedLinearLayout) {
                 setFoomiiboVisibility()
+                nfcFab.postDelayed({
+                    nfcFab.x = prefs.fabulousX(nfcFab)
+                    nfcFab.y = prefs.fabulousY(nfcFab)
+                }, TagMo.uiDelay.toLong())
                 snackbarListener = null
             }
         })
@@ -1771,8 +1773,12 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
     @SuppressLint("NewApi")
     private fun loadAmiiboDocuments(rootFolder: DocumentFile?, recursiveFiles: Boolean) {
         setSnackbarListener(object: SnackbarListener {
-            override fun onSnackbarHidden() {
+            override fun onSnackbarHidden(fakeSnackbar: AnimatedLinearLayout) {
                 setFoomiiboVisibility()
+                nfcFab.postDelayed({
+                    nfcFab.x = prefs.fabulousX(nfcFab)
+                    nfcFab.y = prefs.fabulousY(nfcFab)
+                }, TagMo.uiDelay.toLong())
                 snackbarListener = null
             }
         })
@@ -2260,14 +2266,10 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                         AnimatedLinearLayout.AnimationListener {
                         override fun onAnimationStart(layout: AnimatedLinearLayout?) {}
                         override fun onAnimationEnd(layout: AnimatedLinearLayout?) {
-                            snackbarListener?.onSnackbarHidden()
                             it.clearAnimation()
                             layout?.setAnimationListener(null)
                             it.isGone = true
-                            if (!nfcFab.isOrWillBeHidden) {
-                                nfcFab.x = prefs.fabulousX()
-                                nfcFab.y = prefs.fabulousY() - it.height
-                            }
+                            snackbarListener?.onSnackbarHidden(it)
                         }
                     })
                     it.startAnimation(animate)
@@ -2621,7 +2623,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
     }
 
     private fun setScrollListener(listener: ScrollListener) {
-        this.scrollListener = listener
+        scrollListener = listener
     }
 
     interface ScrollListener {
@@ -2629,10 +2631,10 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
     }
 
     private fun setSnackbarListener(listener: SnackbarListener) {
-        this.snackbarListener = listener
+        snackbarListener = listener
     }
 
     interface SnackbarListener {
-        fun onSnackbarHidden()
+        fun onSnackbarHidden(fakeSnackbar: AnimatedLinearLayout)
     }
 }

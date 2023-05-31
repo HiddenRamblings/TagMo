@@ -123,6 +123,8 @@ class UpdateManager internal constructor(activity: BrowserActivity) {
                 }
             } catch (fnf: FileNotFoundException) {
                 Debug.warn(fnf)
+                Toasty(browserActivity).Short(R.string.fail_update_url)
+                refreshUpdateStatus()
                 return@launch
             }
             if (!apk.name.lowercase().endsWith(".apk")) apk.delete()

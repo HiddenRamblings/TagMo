@@ -361,6 +361,7 @@
     <string name="error_unknown">An unknown error has occurred.</string>
 
     <string name="fail_update_git">Unable to contact update server!</string>
+    <string name="fail_update_url">Update invalid! Please try again.</string>
     <string name="fail_ssl_update">OpenSSL security provider obsolete!</string>
     <string name="fail_save_file">Failed writing tag to file</string>
     <string name="fail_save_data">Failed to save tag data</string>

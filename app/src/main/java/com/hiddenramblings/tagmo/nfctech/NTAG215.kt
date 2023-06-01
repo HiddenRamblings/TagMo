@@ -1,6 +1,7 @@
 /*
  * ====================================================================
  * N2 Elite Copyright (C) 2019 MasterCheaterz
+ * Copyright (c) 2021 AbandonedCart @ TagMo
  * ====================================================================
  */
 package com.hiddenramblings.tagmo.nfctech

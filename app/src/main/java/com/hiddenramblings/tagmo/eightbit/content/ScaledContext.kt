@@ -20,7 +20,6 @@ import android.util.DisplayMetrics
 import android.view.WindowManager
 import com.hiddenramblings.tagmo.eightbit.os.Version
 
-
 class ScaledContext(base: Context) : ContextWrapper(base) {
 
     fun getDisplayParams(): IntArray {

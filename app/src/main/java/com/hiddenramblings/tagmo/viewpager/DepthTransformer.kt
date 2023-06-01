@@ -1,4 +1,4 @@
-package com.hiddenramblings.tagmo.eightbit.viewpager
+package com.hiddenramblings.tagmo.viewpager
 
 import android.view.View
 import androidx.viewpager2.widget.ViewPager2

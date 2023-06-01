@@ -1,8 +1,3 @@
-/*
- * ====================================================================
- * Copyright (C) 2022 AbandonedCart @ TagMo
- * ====================================================================
- */
 package com.hiddenramblings.tagmo;
 
 import android.bluetooth.BluetoothDevice;

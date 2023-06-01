@@ -1,6 +1,6 @@
 /*
  * ====================================================================
- * Copyright (C) 2022 AbandonedCart @ TagMo
+ * Copyright (C) 2021 AbandonedCart @ TagMo
  * ====================================================================
  */
 package com.hiddenramblings.tagmo.nfctech
@@ -29,7 +29,6 @@ import java.io.IOException
 import java.nio.BufferUnderflowException
 import java.nio.ByteBuffer
 import java.util.*
-
 
 object TagArray {
     @JvmStatic

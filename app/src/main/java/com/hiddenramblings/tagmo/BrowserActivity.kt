@@ -1733,8 +1733,8 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
     private fun loadAmiiboFiles(rootFolder: File?, recursiveFiles: Boolean) {
         setSnackbarListener(object: SnackbarListener {
             override fun onSnackbarHidden(fakeSnackbar: AnimatedLinearLayout) {
-                setFoomiiboVisibility()
-                nfcFab.postDelayed({
+                viewPager.postDelayed({
+                    setFoomiiboVisibility()
                     nfcFab.x = prefs.fabulousX(nfcFab)
                     nfcFab.y = prefs.fabulousY(nfcFab)
                 }, TagMo.uiDelay.toLong())
@@ -1769,8 +1769,8 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
     private fun loadAmiiboDocuments(rootFolder: DocumentFile?, recursiveFiles: Boolean) {
         setSnackbarListener(object: SnackbarListener {
             override fun onSnackbarHidden(fakeSnackbar: AnimatedLinearLayout) {
-                setFoomiiboVisibility()
-                nfcFab.postDelayed({
+                viewPager.postDelayed({
+                    setFoomiiboVisibility()
                     nfcFab.x = prefs.fabulousX(nfcFab)
                     nfcFab.y = prefs.fabulousY(nfcFab)
                 }, TagMo.uiDelay.toLong())

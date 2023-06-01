@@ -54,7 +54,8 @@
                 android:paddingHorizontal="10dp"
                 android:layout_marginHorizontal="6dp"
                 android:layout_marginTop="4dp"
-                android:orientation="horizontal">
+                android:orientation="horizontal"
+                android:visibility="invisible">
 
                 <androidx.appcompat.widget.AppCompatImageView
                     android:layout_width="24dp"

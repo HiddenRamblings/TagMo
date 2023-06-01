@@ -8,7 +8,6 @@ import androidx.documentfile.provider.DocumentFile
 import com.hiddenramblings.tagmo.R
 import com.hiddenramblings.tagmo.TagMo
 import com.hiddenramblings.tagmo.eightbit.io.Debug
-import com.hiddenramblings.tagmo.eightbit.os.Storage
 import com.hiddenramblings.tagmo.nfctech.TagArray
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -344,7 +343,7 @@ object AmiiboManager {
                     async(Dispatchers.IO) {
                         if (it.isDirectory) {
                             val directory = listAmiiboFiles(keyManager, it, true)
-                            amiiboFiles.addAll(directory)
+                            if (directory.isNotEmpty()) amiiboFiles.addAll(directory)
                         }
                     }
                 }.awaitAll()

@@ -97,15 +97,7 @@ class FoomiiboAdapter(
 
     private fun handleClickEvent(holder: FoomiiboViewHolder) {
         holder.listener?.run {
-            if (settings.amiiboView != VIEW.IMAGE.value) {
-                if (foomiiboId.contains(holder.foomiibo?.id)) {
-                    foomiiboId.remove(holder.foomiibo?.id)
-                } else {
-                    holder.foomiibo?.let { foomiiboId.add(it.id) }
-                }
-            } else {
-                foomiiboId.clear()
-            }
+            holder.isExpanded = !holder.isExpanded
             onFoomiiboClicked(holder.itemView, holder.foomiibo)
         }
     }
@@ -220,6 +212,8 @@ class FoomiiboAdapter(
         var foomiibo: Amiibo? = null
         private val boldSpannable = BoldSpannable()
 
+        var isExpanded = false
+
         init {
             txtError = itemView.findViewById(R.id.txtError)
             txtName = itemView.findViewById(R.id.txtName)
@@ -296,10 +290,9 @@ class FoomiiboAdapter(
                 // setAmiiboInfoText(this.txtCharacter,
                 // boldText.Matching(character, query), hasTagInfo);
                 txtPath?.isGone = true
-                val expanded = foomiiboId.contains(foomiibo?.id)
-                menuOptions?.isVisible = expanded
-                txtUsage?.isVisible = expanded
-                if (expanded) listener?.onFoomiiboRebind(itemView, foomiibo)
+                menuOptions?.isVisible = isExpanded
+                txtUsage?.isVisible = isExpanded
+                if (isExpanded) listener?.onFoomiiboRebind(itemView, foomiibo)
             }
             if (AmiiboManager.hasSpoofData(amiiboHexId)) txtTagId?.isEnabled = false
         }
@@ -358,12 +351,5 @@ class FoomiiboAdapter(
         fun onFoomiiboClicked(itemView: View?, amiibo: Amiibo?)
         fun onFoomiiboRebind(itemView: View?, amiibo: Amiibo?)
         fun onFoomiiboImageClicked(amiibo: Amiibo?)
-    }
-
-    companion object {
-        private val foomiiboId: ArrayList<Long> = arrayListOf()
-        fun resetVisible() {
-            foomiiboId.clear()
-        }
     }
 }

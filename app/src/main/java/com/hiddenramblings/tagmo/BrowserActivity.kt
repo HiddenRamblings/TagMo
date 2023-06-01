@@ -55,7 +55,6 @@ import com.hiddenramblings.tagmo.*
 import com.hiddenramblings.tagmo.BrowserSettings.*
 import com.hiddenramblings.tagmo.NFCIntent.FilterComponent
 import com.hiddenramblings.tagmo.adapter.BrowserAdapter
-import com.hiddenramblings.tagmo.adapter.FoomiiboAdapter
 import com.hiddenramblings.tagmo.amiibo.*
 import com.hiddenramblings.tagmo.amiibo.AmiiboManager.binFileMatches
 import com.hiddenramblings.tagmo.amiibo.AmiiboManager.getAmiiboManager
@@ -71,7 +70,6 @@ import com.hiddenramblings.tagmo.eightbit.os.Storage
 import com.hiddenramblings.tagmo.eightbit.os.Version
 import com.hiddenramblings.tagmo.eightbit.request.ImageTarget
 import com.hiddenramblings.tagmo.eightbit.view.AnimatedLinearLayout
-import com.hiddenramblings.tagmo.viewpager.*
 import com.hiddenramblings.tagmo.eightbit.widget.FABulous
 import com.hiddenramblings.tagmo.fragment.BrowserFragment
 import com.hiddenramblings.tagmo.fragment.JoyConFragment.Companion.newInstance
@@ -84,6 +82,7 @@ import com.hiddenramblings.tagmo.nfctech.TagArray
 import com.hiddenramblings.tagmo.nfctech.TagReader
 import com.hiddenramblings.tagmo.qrcode.QRCodeScanner
 import com.hiddenramblings.tagmo.update.UpdateManager
+import com.hiddenramblings.tagmo.viewpager.*
 import com.hiddenramblings.tagmo.wave9.DimensionActivity
 import com.hiddenramblings.tagmo.widget.Toasty
 import com.shawnlin.numberpicker.NumberPicker
@@ -239,10 +238,6 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
             override fun onPageSelected(position: Int) {
                 super.onPageSelected(position)
                 hideActionButton()
-                if (position != 0) {
-                    BrowserAdapter.resetVisible()
-                    FoomiiboAdapter.resetVisible()
-                }
                 val hasEliteEnabled = prefs.eliteEnabled()
                 if (BuildConfig.WEAR_OS) {
                     when (position) {

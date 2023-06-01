@@ -110,19 +110,7 @@ class BrowserAdapter(
 
     private fun handleClickEvent(holder: AmiiboViewHolder) {
         if (null != holder.listener) {
-            val uri = holder.amiiboFile?.docUri?.uri.toString()
-            val path = holder.amiiboFile?.filePath?.absolutePath
-            if (settings.amiiboView != VIEW.IMAGE.value) {
-                if (amiiboPath.contains(uri) || amiiboPath.contains(path)) {
-                    uri.let { amiiboPath.remove(it) }
-                    path?.let { amiiboPath.remove(it) }
-                } else {
-                    amiiboPath.add(uri)
-                    path?.let { amiiboPath.add(it) }
-                }
-            } else {
-                amiiboPath.clear()
-            }
+            holder.isExpanded = !holder.isExpanded
             holder.listener.onAmiiboClicked(holder.itemView, holder.amiiboFile)
         }
     }
@@ -246,6 +234,8 @@ class BrowserAdapter(
         var amiiboFile: AmiiboFile? = null
         private val boldSpannable = BoldSpannable()
 
+        var isExpanded = false
+
         init {
             txtError = itemView.findViewById(R.id.txtError)
             txtName = itemView.findViewById(R.id.txtName)
@@ -322,10 +312,9 @@ class BrowserAdapter(
                 txtPath?.run {
                     item?.docUri?.let {
                         val relativeDocument = Storage.getRelativeDocument(it.uri)
-                        val expanded = amiiboPath.contains(relativeDocument)
-                        menuOptions?.isVisible = expanded
-                        txtUsage?.isVisible = expanded
-                        if (expanded) listener?.onAmiiboRebind(itemView, amiiboFile)
+                        menuOptions?.isVisible = isExpanded
+                        txtUsage?.isVisible = isExpanded
+                        if (isExpanded) listener?.onAmiiboRebind(itemView, amiiboFile)
                         itemView.isEnabled = true
                         text = boldSpannable.indexOf(relativeDocument, query)
                         val a = TypedValue()
@@ -341,10 +330,9 @@ class BrowserAdapter(
                         }
                         setIsHighlighted(relativeDocument.startsWith("/Foomiibo/"))
                     } ?: item?.filePath?.let {
-                        val expanded = amiiboPath.contains(it.absolutePath)
-                        menuOptions?.isVisible = expanded
-                        txtUsage?.isVisible = expanded
-                        if (expanded) listener?.onAmiiboRebind(itemView, amiiboFile)
+                        menuOptions?.isVisible = isExpanded
+                        txtUsage?.isVisible = isExpanded
+                        if (isExpanded) listener?.onAmiiboRebind(itemView, amiiboFile)
                         var relativeFile = Storage.getRelativePath(it, mPrefs.preferEmulated())
                         mPrefs.browserRootFolder()?.let { path ->
                             relativeFile = relativeFile.replace(path, "")
@@ -446,9 +434,5 @@ class BrowserAdapter(
 
     companion object {
         var mPrefs = Preferences(TagMo.appContext)
-        private val amiiboPath: ArrayList<String?> = arrayListOf()
-        fun resetVisible() {
-            amiiboPath.clear()
-        }
     }
 }

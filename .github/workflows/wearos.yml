@@ -9,6 +9,7 @@ permissions:
 
 jobs:
   build:
+    if: ${{ github.repository == 'HiddenRamblings/TagMo' }}
     runs-on: ubuntu-latest
     env:
       JVM_OPTS: -Xmx4G
@@ -70,7 +71,7 @@ jobs:
           ${{steps.sign_wear.outputs.signedReleaseFile}}
 
     - name: Discord webhook notification
-      uses: distributhor/workflow-webhook@v3.0.4
+      uses: distributhor/workflow-webhook@v3.0.5
       env:
         webhook_type: 'json-extended'
         webhook_url: 'https://discord.com/api/webhooks/1109893889340485632/Vd-DqFhZWlfu86C8UqNxv8Z47WHm8aJC9eWZcu7ggC0lnFboeOHS9hUNdO6J2nowPsmP/github'

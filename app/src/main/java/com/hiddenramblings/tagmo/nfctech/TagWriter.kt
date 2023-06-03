@@ -96,7 +96,7 @@ object TagWriter {
     fun writeToTagAuto(
         mifare: NTAG215, tagData: ByteArray, keyManager: KeyManager, validateNtag: Boolean
     ) {
-        var writeData = tagData
+        var writeData = TagArray.getValidatedData(keyManager, tagData)
         val idPages = mifare.readPages(0)
         if (null == idPages || idPages.size != NfcByte.PAGE_SIZE * 4)
             throw IOException(appContext.getString(R.string.fail_read_size))
@@ -158,7 +158,7 @@ object TagWriter {
     fun writeEliteAuto(
         mifare: NTAG215, tagData: ByteArray?, keyManager: KeyManager, bankNumber: Int
     ) {
-        var writeData = tagData
+        var writeData = TagArray.getValidatedData(keyManager, tagData)
         if (doEliteAuth(mifare, mifare.fastRead(0, 0))) {
             writeData = keyManager.decrypt(writeData)
             // tagData = patchUid(mifare.readPages(0), tagData);

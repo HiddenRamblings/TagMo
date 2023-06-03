@@ -322,11 +322,7 @@ class NfcActivity : AppCompatActivity() {
                                     )
                                     amiiboList?.forEachIndexed { x, amiiboData ->
                                         showMessage(R.string.bank_writing, x + 1, amiiboList.size)
-                                        val tagData = TagArray.getValidatedData(keyManager, amiiboData.array)
-                                            ?: with (Foomiibo.getSignedData(amiiboData.amiiboID)) {
-                                                TagArray.getValidatedData(keyManager, this) ?: this
-                                            }
-                                        TagWriter.writeEliteAuto(ntag, tagData, keyManager, x)
+                                        TagWriter.writeEliteAuto(ntag,  amiiboData.array, keyManager, x)
                                     }
                                 }
                                 commandIntent.hasExtra(NFCIntent.EXTRA_AMIIBO_BYTES) -> {
@@ -344,11 +340,7 @@ class NfcActivity : AppCompatActivity() {
                                     )
                                     amiiboList?.forEachIndexed { x, eliteTag ->
                                         showMessage(R.string.bank_writing, x + 1, amiiboList.size)
-                                        val tagData = TagArray.getValidatedData(keyManager, eliteTag.data)
-                                            ?: with (Foomiibo.getSignedData(eliteTag.id)) {
-                                                TagArray.getValidatedData(keyManager, this) ?: this
-                                            }
-                                        TagWriter.writeEliteAuto(ntag, tagData, keyManager, x)
+                                        TagWriter.writeEliteAuto(ntag, eliteTag.data, keyManager, x)
                                     }
                                 }
                             }

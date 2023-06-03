@@ -531,27 +531,6 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
         }
     }
 
-    private suspend fun deleteDir(dialog: ProgressAlert?, dir: File?) {
-        if (!Foomiibo.directory.exists()) return
-        withContext(Dispatchers.IO) {
-            dir?.listFiles().also { files ->
-                if (!files.isNullOrEmpty()) {
-                    files.forEach {
-                        if (it.isDirectory) {
-                            withContext(Dispatchers.Main) {
-                                dialog?.setMessage(getString(R.string.foomiibo_removing, it.name))
-                            }
-                            deleteDir(dialog, it)
-                        } else {
-                            it.delete()
-                        }
-                    }
-                }
-            }
-            dir?.delete()
-        }
-    }
-
     fun deleteFoomiiboFile(tagData: ByteArray?) {
         try {
             val amiibo = settings.amiiboManager?.amiibos?.get(Amiibo.dataToId(tagData))
@@ -581,9 +560,11 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
     }
 
     private fun clearFoomiiboSet(activity: AppCompatActivity) {
-        val dialog = ProgressAlert.show(activity, "")
+        val dialog = ProgressAlert.show(activity, "").apply {
+            setMessage(getString(R.string.foomiibo_removing, Foomiibo.directory.name))
+        }
         CoroutineScope(Dispatchers.IO).launch {
-            deleteDir(dialog, Foomiibo.directory)
+            Foomiibo.directory.deleteRecursively()
             withContext(Dispatchers.Main) {
                 dialog.dismiss()
                 if (activity is BrowserActivity) activity.onRootFolderChanged(false)
@@ -624,9 +605,11 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
     private fun buildFoomiiboSet(activity: AppCompatActivity) {
         try {
             settings.amiiboManager?.let { amiiboManager ->
-                val dialog = ProgressAlert.show(activity, "")
+                val dialog = ProgressAlert.show(activity, "").apply {
+                    setMessage(getString(R.string.foomiibo_removing, Foomiibo.directory.name))
+                }
                 CoroutineScope(Dispatchers.IO).launch {
-                    deleteDir(null, Foomiibo.directory)
+                    Foomiibo.directory.deleteRecursively()
                     Foomiibo.directory.mkdirs()
                     amiiboManager.amiibos.values.forEach { amiibo ->
                         buildFoomiiboFile(amiibo)

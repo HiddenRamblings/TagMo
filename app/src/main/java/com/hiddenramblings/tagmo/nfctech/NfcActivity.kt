@@ -43,6 +43,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.IOException
+import java.io.PrintWriter
+import java.io.StringWriter
 
 class NfcActivity : AppCompatActivity() {
 
@@ -477,8 +479,7 @@ class NfcActivity : AppCompatActivity() {
             }
         } catch (e: Exception) {
             Debug.warn(e)
-            val error: String? = Debug.getExceptionCause(e)
-            if (null != error) {
+            Debug.getExceptionCause(e)?.let { error ->
                 when {
                     getString(R.string.error_tag_rewrite) == error -> {
                         setResult(RESULT_OK, Intent(NFCIntent.ACTION_UPDATE_TAG).apply {
@@ -535,21 +536,27 @@ class NfcActivity : AppCompatActivity() {
                         }
                     }
                     else -> {
-                        showError(
-                            when {
-                                e is TagLostException -> {
-                                    closeTagSilently(mifare)
-                                    "${getString(R.string.tag_disconnect)}\n$error"
-                                }
-                                Debug.hasException(e, NTAG215::class.java.name, "connect") -> {
-                                    "${getString(R.string.error_tag_faulty)}\n$error"
-                                }
-                                else -> { error }
+                        when {
+                            e is TagLostException -> {
+                                closeTagSilently(mifare)
+                                showError("${getString(R.string.tag_disconnect)}\n\n$error")
                             }
-                        )
+                            Debug.hasException(e, NTAG215::class.java.name, "connect") -> {
+                                showError("${getString(R.string.error_tag_faulty)}\n\n$error")
+                            }
+                            else -> {
+                                showError(error)
+                                val exception = StringWriter().apply {
+                                    e.printStackTrace(PrintWriter(this))
+                                }
+                                try {
+                                    Debug.processException(this@NfcActivity, exception.toString())
+                                } catch (ignored: Exception) { }
+                            }
+                        }
                     }
                 }
-            } else {
+            } ?: {
                 showError(getString(R.string.error_unknown))
                 try {
                     Debug.processLogcat(this@NfcActivity)

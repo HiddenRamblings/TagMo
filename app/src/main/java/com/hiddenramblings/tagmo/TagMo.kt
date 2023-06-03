@@ -58,8 +58,9 @@ class TagMo : Application() {
         AppCompatDelegate.setCompatVectorFromResourcesEnabled(true)
         if (BuildConfig.WEAR_OS) appContext.setTheme(R.style.AppTheme)
         Thread.setDefaultUncaughtExceptionHandler { _: Thread?, error: Throwable ->
-            val exception = StringWriter()
-            error.printStackTrace(PrintWriter(exception))
+            val exception = StringWriter().apply {
+                error.printStackTrace(PrintWriter(this))
+            }
             try {
                 Debug.processException(this, exception.toString())
             } catch (ignored: Exception) { }

@@ -25,7 +25,7 @@ import androidx.core.view.updatePadding
 import androidx.transition.TransitionManager
 import com.google.android.material.snackbar.Snackbar
 import com.hiddenramblings.tagmo.R
-import com.hiddenramblings.tagmo.eightbit.os.Version.isJellyBeanMR
+import com.hiddenramblings.tagmo.eightbit.os.Version
 
 @Suppress("unused")
 class IconifiedSnackbar @JvmOverloads constructor(activity: Activity, layout: ViewGroup? = null) {
@@ -46,7 +46,16 @@ class IconifiedSnackbar @JvmOverloads constructor(activity: Activity, layout: Vi
         val snackbarLayout = snackbar.view
         val textView = snackbarLayout.findViewById<TextView>(
             com.google.android.material.R.id.snackbar_text
-        )
+        ).apply {
+            if (Version.isJellyBeanMR) {
+                setCompoundDrawablesRelativeWithIntrinsicBounds(drawable, 0, 0, 0)
+            } else {
+                setCompoundDrawablesWithIntrinsicBounds(drawable, 0, 0, 0)
+            }
+            gravity = Gravity.CENTER_VERTICAL
+            compoundDrawablePadding = resources.getDimensionPixelOffset(R.dimen.snackbar_icon_padding)
+            maxLines = 3
+        }
         when (mActivity.resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK) {
             Configuration.UI_MODE_NIGHT_YES -> {
                 snackbar.setBackgroundTint(
@@ -65,22 +74,11 @@ class IconifiedSnackbar @JvmOverloads constructor(activity: Activity, layout: Vi
                 )
             }
         }
-        if (isJellyBeanMR) {
-            textView.setCompoundDrawablesRelativeWithIntrinsicBounds(
-                drawable, 0, 0, 0
-            )
-        } else {
-            textView.setCompoundDrawablesWithIntrinsicBounds(
-                drawable, 0, 0, 0
-            )
-        }
-        textView.gravity = Gravity.CENTER_VERTICAL
-        textView.compoundDrawablePadding = textView.resources
-            .getDimensionPixelOffset(R.dimen.snackbar_icon_padding)
-        textView.maxLines = 3
+
         val params = snackbarLayout.layoutParams as CoordinatorLayout.LayoutParams
-        params.width = CoordinatorLayout.LayoutParams.MATCH_PARENT
-        snackbar.view.layoutParams = params
+        snackbar.view.layoutParams = params.apply {
+            width = CoordinatorLayout.LayoutParams.MATCH_PARENT
+        }
         snackbar.anchorView = anchor
         return snackbar
     }

@@ -1554,11 +1554,12 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
         onViewChanged()
         onRecursiveFilesChanged()
         menuUpdate.isVisible = updateManager?.hasPendingUpdate() == true
-        (menuSearch.actionView as? SearchView)?.apply {
+        val searchView = menuSearch.actionView as? SearchView
+        searchView?.let {
             with (getSystemService(SEARCH_SERVICE) as SearchManager) {
-                this@apply.setSearchableInfo(getSearchableInfo(componentName))
+                it.setSearchableInfo(getSearchableInfo(componentName))
             }
-            isSubmitButtonEnabled = false
+            it.isSubmitButtonEnabled = false
             menuSearch.setOnActionExpandListener(object : MenuItem.OnActionExpandListener {
                 override fun onMenuItemActionExpand(menuItem: MenuItem): Boolean {
                     return true
@@ -1576,7 +1577,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                     }
                 }
             })
-            setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            it.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
                 override fun onQueryTextSubmit(query: String): Boolean {
                     settings?.let {
                         it.query = query
@@ -1599,8 +1600,8 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
             val query = settings?.query
             if (!query.isNullOrEmpty()) {
                 menuSearch.expandActionView()
-                setQuery(query, true)
-                clearFocus()
+                it.setQuery(query, true)
+                it.clearFocus()
             }
         }
         return super.onCreateOptionsMenu(menu)
@@ -2274,13 +2275,15 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
     }
 
     private fun hideActionButton() {
-        (nfcFab.behavior as? FloatingActionButton.Behavior)?.isAutoHideEnabled = false
+        val behavior = nfcFab.behavior as? FloatingActionButton.Behavior
+        behavior?.isAutoHideEnabled = false
         nfcFab.hide()
     }
 
     private fun showActionButton() {
         nfcFab.show()
-        (nfcFab.behavior as? FloatingActionButton.Behavior)?.isAutoHideEnabled = true
+        val behavior = nfcFab.behavior as? FloatingActionButton.Behavior
+        behavior?.isAutoHideEnabled = true
     }
 
     fun showDonationPanel() {

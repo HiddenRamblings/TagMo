@@ -338,15 +338,11 @@ object AmiiboManager {
         } else if (recursiveFiles) {
             val directories = rootFolder?.listFiles()
             if (directories.isNullOrEmpty()) return amiiboFiles
-            coroutineScope {
-                directories.map {
-                    async(Dispatchers.IO) {
-                        if (it.isDirectory) {
-                            val directory = listAmiiboFiles(keyManager, it, true)
-                            if (directory.isNotEmpty()) amiiboFiles.addAll(directory)
-                        }
-                    }
-                }.awaitAll()
+            directories.forEach {
+                if (it.isDirectory) {
+                    val directory = listAmiiboFiles(keyManager, it, true)
+                    if (directory.isNotEmpty()) amiiboFiles.addAll(directory)
+                }
             }
         }
         return amiiboFiles

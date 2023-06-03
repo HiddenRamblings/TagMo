@@ -23,6 +23,8 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.io.PrintWriter
+import java.io.StringWriter
 
 class ScanTag {
     private var hasTestedElite = false
@@ -123,18 +125,24 @@ class ScanTag {
                         else -> {}
                     }
                 } else {
-                    Toasty(activity).Short(
                         when {
                             e is TagLostException -> {
                                 closeTagSilently(mifare)
-                                "${activity.getString(R.string.tag_disconnect)}\n$error"
+                                Toasty(activity).Short("${activity.getString(R.string.tag_disconnect)}\n$error")
                             }
                             Debug.hasException(e, NTAG215::class.java.name, "connect") -> {
-                                "${activity.getString(R.string.error_tag_faulty)}\n$error"
+                                Toasty(activity).Short("${activity.getString(R.string.error_tag_faulty)}\n$error")
                             }
-                            else -> { error }
+                            else -> {
+                                Toasty(activity).Short(error)
+                                val exception = StringWriter().apply {
+                                    e.printStackTrace(PrintWriter(this))
+                                }
+                                try {
+                                    Debug.processException(activity, exception.toString())
+                                } catch (ignored: Exception) { }
+                            }
                         }
-                    )
                 }
             } ?: {
                 Toasty(activity).Short(R.string.error_unknown)

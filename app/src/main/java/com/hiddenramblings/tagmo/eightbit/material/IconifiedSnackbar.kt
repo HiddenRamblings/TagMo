@@ -53,6 +53,7 @@ class IconifiedSnackbar @JvmOverloads constructor(activity: Activity, layout: Vi
                 setCompoundDrawablesWithIntrinsicBounds(drawable, 0, 0, 0)
             }
             gravity = Gravity.CENTER_VERTICAL
+            if (Version.isJellyBeanMR) textAlignment = View.TEXT_ALIGNMENT_CENTER
             compoundDrawablePadding = resources.getDimensionPixelOffset(R.dimen.snackbar_icon_padding)
             maxLines = 3
         }

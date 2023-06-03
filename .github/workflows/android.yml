@@ -32,9 +32,6 @@ jobs:
         java-version: '17'
         distribution: 'adopt'
 
-    - name: Grant execute permission for gradlew
-      run: chmod +x gradlew
-
     - name: Retrieve commit identification
       run: |
         GIT_BRANCH=$(git name-rev --name-only HEAD)
@@ -42,8 +39,21 @@ jobs:
         GIT_HASH=$(git rev-parse --short HEAD)
         echo "GIT_HASH=${GIT_HASH}" >> $GITHUB_ENV
 
-    - name: Build Release Gradle
-      run: ./gradlew assembleGithubRelease
+    - uses: burrunan/gradle-cache-action@v1
+      name: Build Release Gradle
+      with:
+        job-id: TagMo
+        # Specifies arguments for Gradle execution
+        arguments: |
+          --configure-on-demand
+          assembleGithubRelease
+        # Gradle version to use for execution:
+        #   wrapper (default), current, rc, nightly, release-nightly, or
+        #   versions like 6.6 (see https://services.gradle.org/versions/all)
+        gradle-version: wrapper
+        # Properties are passed as -Pname=value
+        properties: |
+          org.gradle.unsafe.configuration-cache=true
 
     - uses: r0adkll/sign-android-release@v1
       name: Sign Release APK

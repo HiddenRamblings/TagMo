@@ -25,9 +25,6 @@ jobs:
         java-version: '17'
         distribution: 'adopt'
 
-    - name: Grant execute permission for gradlew
-      run: chmod +x gradlew
-
     - name: Retrieve commit identification
       run: |
         GIT_BRANCH=$(git name-rev --name-only HEAD)
@@ -37,8 +34,21 @@ jobs:
         APK_LINK="https://github.com/HiddenRamblings/TagMo/releases/download/master/TagMo-${GIT_HASH}-github-release-signed.apk"
         echo "APK_LINK=${APK_LINK}" >> $GITHUB_ENV
 
-    - name: Build WearOS Gradle
-      run: ./gradlew assembleGithubWearos
+    - uses: burrunan/gradle-cache-action@v1
+      name: Build WearOS Gradle
+      with:
+        job-id: TagMo-WearOS
+        # Specifies arguments for Gradle execution
+        arguments: |
+          --configure-on-demand
+          assembleGithubWearos
+        # Gradle version to use for execution:
+        #   wrapper (default), current, rc, nightly, release-nightly, or
+        #   versions like 6.6 (see https://services.gradle.org/versions/all)
+        gradle-version: wrapper
+        # Properties are passed as -Pname=value
+        properties: |
+          org.gradle.unsafe.configuration-cache=true
 
     - uses: r0adkll/sign-android-release@v1
       name: Sign WearOS APK

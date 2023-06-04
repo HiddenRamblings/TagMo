@@ -88,12 +88,12 @@ object Foomiibo {
         return arr
     }
 
-    private const val hexSingature = "5461674d6f20382d426974204e544147"
+    private const val hexSignature = "5461674d6f20382d426974204e544147"
 
     fun getSignedData(tagData: ByteArray): ByteArray {
         val signedData = ByteArray(NfcByte.TAG_FILE_SIZE)
         System.arraycopy(tagData, 0, signedData, 0x0, tagData.size)
-        val signature = TagArray.hexToByteArray(hexSingature)
+        val signature = TagArray.hexToByteArray(hexSignature)
         System.arraycopy(signature, 0, signedData, 0x21C, signature.size)
         return signedData
     }
@@ -102,17 +102,13 @@ object Foomiibo {
         return getSignedData(generateData(id))
     }
 
-    fun getSignedData(id: Long): ByteArray {
-        return getSignedData(id.toString())
-    }
-
     fun getDataSignature(tagData: ByteArray): String? {
         if (tagData.size == NfcByte.TAG_FILE_SIZE) {
             val signature = TagArray.bytesToHex(
                 tagData.copyOfRange(540, NfcByte.TAG_FILE_SIZE)
             ).substring(0, 32).lowercase()
             Debug.info(TagMo::class.java, TagArray.hexToString(signature))
-            if (hexSingature == signature) return signature
+            if (hexSignature == signature) return signature
         }
         return null
     }

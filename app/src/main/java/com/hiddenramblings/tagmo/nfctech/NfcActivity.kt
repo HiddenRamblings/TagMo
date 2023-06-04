@@ -322,7 +322,7 @@ class NfcActivity : AppCompatActivity() {
                                     )
                                     amiiboList?.forEachIndexed { x, amiiboData ->
                                         showMessage(R.string.bank_writing, x + 1, amiiboList.size)
-                                        TagWriter.writeEliteAuto(ntag,  amiiboData.array, keyManager, x)
+                                        TagWriter.writeEliteAuto(ntag, amiiboData.array, keyManager, x)
                                     }
                                 }
                                 commandIntent.hasExtra(NFCIntent.EXTRA_AMIIBO_BYTES) -> {
@@ -490,7 +490,17 @@ class NfcActivity : AppCompatActivity() {
                     }
                     getString(R.string.uid_key_missing) == error -> {
                         withContext(Dispatchers.Main) {
-                            getErrorDialog(this@NfcActivity, R.string.uid_key_missing, R.string.tag_update_only)
+                            getErrorDialog(this@NfcActivity, R.string.uid_key_missing, R.string.power_tag_reset)
+                                .setPositiveButton(R.string.proceed) { dialog: DialogInterface, _: Int ->
+                                    closeTagSilently(mifare)
+                                    dialog.dismiss()
+                                    finish()
+                                }.show()
+                        }
+                    }
+                    getString(R.string.fail_encrypt) == error -> {
+                        withContext(Dispatchers.Main) {
+                            getErrorDialog(this@NfcActivity, R.string.fail_encrypt, R.string.encryption_fault)
                                 .setPositiveButton(R.string.proceed) { dialog: DialogInterface, _: Int ->
                                     closeTagSilently(mifare)
                                     dialog.dismiss()

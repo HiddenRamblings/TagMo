@@ -90,49 +90,83 @@ class ScanTag {
         } catch (e: Exception) {
             Debug.warn(e)
             Debug.getExceptionCause(e)?.let { error ->
-                if (prefs.eliteEnabled()) {
-                    when {
-                        e is TagLostException -> {
-                            if (isEliteDevice) {
-                                activity.onNFCActivity.launch(Intent(activity, NfcActivity::class.java).setAction(NFCIntent.ACTION_BLIND_SCAN))
-                            } else {
+                when {
+                    activity.getString(R.string.error_tag_rewrite) == error -> {
+                        withContext(Dispatchers.Main) {
+                            getErrorDialog(activity, R.string.error_tag_rewrite, R.string.tag_update_only)
+                                .setPositiveButton(R.string.proceed) { dialog: DialogInterface, _: Int ->
+                                    closeTagSilently(mifare)
+                                    dialog.dismiss()
+                                }.show()
+                        }
+                    }
+                    activity.getString(R.string.uid_key_missing) == error -> {
+                        withContext(Dispatchers.Main) {
+                            getErrorDialog(activity, R.string.uid_key_missing, R.string.power_tag_reset)
+                                .setPositiveButton(R.string.proceed) { dialog: DialogInterface, _: Int ->
+                                    closeTagSilently(mifare)
+                                    dialog.dismiss()
+                                }.show()
+                        }
+                    }
+                    activity.getString(R.string.fail_encrypt) == error -> {
+                        withContext(Dispatchers.Main) {
+                            getErrorDialog(activity, R.string.fail_encrypt, R.string.encryption_fault)
+                                .setPositiveButton(R.string.proceed) { dialog: DialogInterface, _: Int ->
+                                    closeTagSilently(mifare)
+                                    dialog.dismiss()
+                                }.show()
+                        }
+                    }
+                    prefs.eliteEnabled() -> {
+                        when {
+                            e is TagLostException -> {
+                                if (isEliteDevice) {
+                                    activity.onNFCActivity.launch(Intent(activity, NfcActivity::class.java).setAction(NFCIntent.ACTION_BLIND_SCAN))
+                                } else {
+                                    withContext(Dispatchers.Main) {
+                                        IconifiedSnackbar(activity, activity.viewPager)
+                                            .buildSnackbar(R.string.speed_scan, Snackbar.LENGTH_SHORT)
+                                            .show()
+                                    }
+                                }
+                                closeTagSilently(mifare)
+                            }
+
+                            isEliteLockedCause(activity, error) -> {
                                 withContext(Dispatchers.Main) {
-                                    IconifiedSnackbar(activity, activity.viewPager)
-                                        .buildSnackbar(R.string.speed_scan, Snackbar.LENGTH_SHORT)
-                                        .show()
+                                    getErrorDialog(activity, R.string.possible_lock, R.string.prepare_unlock)
+                                        .setPositiveButton(R.string.unlock) { dialog: DialogInterface, _: Int ->
+                                            closeTagSilently(mifare)
+                                            dialog.dismiss()
+                                            activity.onNFCActivity.launch(Intent(activity, NfcActivity::class.java).setAction(NFCIntent.ACTION_UNLOCK_UNIT))
+                                        }.setNegativeButton(R.string.cancel) { dialog: DialogInterface, _: Int ->
+                                            closeTagSilently(mifare)
+                                            dialog.dismiss()
+                                        }.show()
                                 }
                             }
-                            closeTagSilently(mifare)
-                        }
-                        isEliteLockedCause(activity, error) -> {
-                            withContext(Dispatchers.Main) {
-                                getErrorDialog(activity, R.string.possible_lock, R.string.prepare_unlock)
-                                    .setPositiveButton(R.string.unlock) { dialog: DialogInterface, _: Int ->
-                                        closeTagSilently(mifare)
-                                        dialog.dismiss()
-                                        activity.onNFCActivity.launch(Intent(activity, NfcActivity::class.java).setAction(NFCIntent.ACTION_UNLOCK_UNIT))
-                                    }.setNegativeButton(R.string.cancel) { dialog: DialogInterface, _: Int ->
-                                        closeTagSilently(mifare)
-                                        dialog.dismiss()
-                                    }.show()
+
+                            Debug.hasException(e, NTAG215::class.java.name, "connect") -> {
+                                withContext(Dispatchers.Main) {
+                                    onEliteVerificationFailed(activity)
+                                }
                             }
+
+                            else -> {}
                         }
-                        Debug.hasException(e, NTAG215::class.java.name, "connect") -> {
-                            withContext(Dispatchers.Main) {
-                                onEliteVerificationFailed(activity)
-                            }
-                        }
-                        else -> {}
                     }
-                } else {
+                    else -> {
                         when {
                             e is TagLostException -> {
                                 closeTagSilently(mifare)
                                 Toasty(activity).Short("${activity.getString(R.string.tag_disconnect)}\n$error")
                             }
+
                             Debug.hasException(e, NTAG215::class.java.name, "connect") -> {
                                 Toasty(activity).Short("${activity.getString(R.string.error_tag_faulty)}\n$error")
                             }
+
                             else -> {
                                 Toasty(activity).Short(error)
                                 val exception = StringWriter().apply {
@@ -143,6 +177,7 @@ class ScanTag {
                                 } catch (ignored: Exception) { }
                             }
                         }
+                    }
                 }
             } ?: {
                 Toasty(activity).Short(R.string.error_unknown)

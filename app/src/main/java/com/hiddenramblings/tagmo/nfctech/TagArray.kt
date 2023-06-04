@@ -306,8 +306,7 @@ object TagArray {
             validated = keyManager.encrypt(validated)
             validateData(validated)
         }
-        validated = keyManager.decrypt(validated)
-        return keyManager.encrypt(validated)
+        return keyManager.encrypt(keyManager.decrypt(validated))
     }
 
     @JvmStatic

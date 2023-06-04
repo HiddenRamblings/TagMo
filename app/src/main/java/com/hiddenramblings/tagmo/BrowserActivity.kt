@@ -328,7 +328,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
         onLoadSettingsFragment()
         findViewById<TextView>(R.id.build_text).apply {
             movementMethod = LinkMovementMethod.getInstance()
-            text = TagMo.getVersionLabel(false)
+            text = TagMo.versionLabelLinked
         }
 
         findViewById<CoordinatorLayout>(R.id.coordinator).apply {

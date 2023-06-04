@@ -4,7 +4,6 @@ import android.app.Application
 import android.content.Context
 import android.content.Intent
 import android.os.Parcelable
-import android.text.Spanned
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.text.HtmlCompat
 import com.hiddenramblings.tagmo.eightbit.content.ScaledContext
@@ -81,7 +80,7 @@ class TagMo : Application() {
         val downloadDir by lazy { Storage.getDownloadDir("TagMo") }
 
         private const val commitHash = "#${BuildConfig.COMMIT}"
-        private val versionLabel = "TagMo ${BuildConfig.VERSION_NAME} (${
+        val versionLabel = "TagMo ${BuildConfig.VERSION_NAME} (${
             if (BuildConfig.GOOGLE_PLAY) "Play" else "GitHub"
         } ${
             when {
@@ -93,12 +92,10 @@ class TagMo : Application() {
         private const val commitLink = ("<a href=https://github.com/HiddenRamblings/TagMo/commit/"
                 + BuildConfig.COMMIT + ">" + commitHash + "</a>")
 
-        fun getVersionLabel(plain: Boolean): Spanned {
-            return HtmlCompat.fromHtml(
-                if (plain) versionLabel else versionLabel.replace(commitHash, commitLink),
+        val versionLabelLinked = HtmlCompat.fromHtml(
+                versionLabel.replace(commitHash, commitLink),
                 HtmlCompat.FROM_HTML_MODE_LEGACY
             )
-        }
 
         var hasSubscription = false
 

@@ -222,11 +222,9 @@ object Debug {
     }
 
     private fun getDeviceProfile(context: Context): StringBuilder {
-        val separator = if (System.getProperty("line.separator") != null)
-            Objects.requireNonNull(System.getProperty("line.separator"))
-        else "\n"
+        val separator = System.getProperty("line.separator") ?: "\n"
         val log = StringBuilder(separator)
-        log.append(TagMo.getVersionLabel(true))
+        log.append(TagMo.versionLabel)
         log.append(separator)
         log.append(manufacturer)
         log.append(" ")

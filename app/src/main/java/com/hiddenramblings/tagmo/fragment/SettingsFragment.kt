@@ -342,6 +342,8 @@ class SettingsFragment : PreferenceFragmentCompat() {
             )
         }
         val keySummary = SpannableStringBuilder()
+        keySummary.append(getString(R.string.key_download))
+        keySummary.append("\n")
         keySummary.append(unfixedBuilder)
         keySummary.append("\n")
         keySummary.append(fixedBuilder)

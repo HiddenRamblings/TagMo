@@ -552,7 +552,7 @@ class NfcActivity : AppCompatActivity() {
                                     e.printStackTrace(PrintWriter(this))
                                 }
                                 try {
-                                    Debug.processException(this@NfcActivity, exception.toString())
+                                    Debug.setClipboardException(this@NfcActivity, exception.toString())
                                 } catch (ignored: Exception) { }
                             }
                         }

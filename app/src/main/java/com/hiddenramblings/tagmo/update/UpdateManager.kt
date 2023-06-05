@@ -114,9 +114,7 @@ class UpdateManager internal constructor(activity: BrowserActivity) {
     fun installDownload(apkUrl: String?) {
         if (apkUrl.isNullOrEmpty()) return
         CoroutineScope(Dispatchers.IO).launch(Dispatchers.IO) {
-            val apk = File(
-                browserActivity.externalCacheDir, apkUrl.substringAfterLast(File.separator)
-            )
+            val apk = File(browserActivity.externalCacheDir, apkUrl.substringAfterLast(File.separator))
             try {
                 URL(apkUrl).openStream().use { stream ->
                     FileOutputStream(apk).use { stream.copyTo(it) }

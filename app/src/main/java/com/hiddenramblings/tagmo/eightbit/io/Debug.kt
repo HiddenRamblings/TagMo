@@ -193,7 +193,7 @@ object Debug {
             + "labels=logcat&template=bug_report.yml&title=[Bug]%3A+")
 
     private val Long.floatForm : String
-        get() = String.format(Locale.US, "%.2f", this.toDouble())
+        get() = String.format(Locale.ROOT, "%.2f", this.toDouble())
 
     private const val Kb: Long = 1024
     private const val Mb = Kb * 1024

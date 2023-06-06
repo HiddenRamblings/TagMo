@@ -11,8 +11,6 @@ jobs:
   build:
     if: ${{ github.repository == 'HiddenRamblings/TagMo' }}
     runs-on: ubuntu-latest
-    env:
-      JVM_OPTS: -Xmx3G
 
     steps:
     - uses: actions/checkout@v3

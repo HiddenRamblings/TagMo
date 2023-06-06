@@ -15,8 +15,6 @@ jobs:
   build:
     if: ${{ github.event.workflow_run.conclusion != 'cancelled' }}
     runs-on: ubuntu-latest
-    env:
-      JVM_OPTS: -Xmx4G
 
     steps:
     - name: Pause for 2 minutes

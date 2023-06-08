@@ -1,6 +1,7 @@
 <resources>
     <string name="topCenterTextMessage">請將tag卡放在手機後方</string>
 
+    <string name="key_download">請勿將金鑰儲存在Download資料夾的根目錄下</string>
     <string name="fixed_key_found">&#171;locked-secret&#187;已快取/已載入</string>
     <string name="fixed_key_missing">缺少&#171;locked-secret&#187;！</string>
     <string name="unfixed_key_found">&#171;unfixed-info&#187;已快取/已載入</string>
@@ -61,6 +62,7 @@
     <string name="save">儲存</string>
     <string name="cache">快取</string>
     <string name="write">寫入</string>
+    <string name="erase">抹除</string>
     <string name="cancel">取消</string>
     <string name="accept">接受</string>
     <string name="deny">拒絕</string>
@@ -91,6 +93,8 @@
     <string name="hex_code">Hex編碼</string>
     <string name="share_qr">分享QR Code</string>
     <string name="edit_props">編輯相關資訊</string>
+    <string name="bin_random">Bin隨機產生</string>
+    <string name="download_slot">下載Slot</string>
     <string name="delete_binary">删除二進位檔案</string>
     <string name="ignore_tag_id">忽略此Tag ID #</string>
     <string name="random_serial">隨機序號</string>
@@ -175,7 +179,7 @@
     <string name="scan_bank_no">掃描 Bank %1$d</string>
     <string name="scan_bank">掃描 Bank %1$s</string>
     <string name="scan_elite">掃描 N2 Elite</string>
-    <string name="erase_bank">抹除 Bank</string>
+    <string name="erase_bank">抹除 Bank Tag</string>
     <string name="activate_bank">啟用 Bank</string>
     <string name="amiibo_backup">建立備份檔案</string>
     <string name="validate_data">數據驗證</string>
@@ -200,13 +204,20 @@
     <string name="qr_invalid">無法存取或數據不正確</string>
 
     <string name="settings">設定</string>
+    <string name="about">關於</string>
     <string name="guides">協助</string>
     <string name="donate">贊助</string>
-
-    <string name="menu_qr_code">QR Code 工具箱</string>
+    
+    <string name="menu_amiibo">備份瀏覽器</string>
+    <string name="menu_elite">連接N2 Elite</string>
+    <string name="menu_gatt">連接Bluetooth</string>
+    <string name="menu_qr_code">QR Code工具箱</string>
     <string name="menu_dimensions">樂高次元</string>
-    <string name="menu_joystick">Joystick 測試</string>
+    <string name="menu_joystick">Joystick測試</string>
+    <string name="menu_guides">使用手冊與協助</string>
+    <string name="menu_settings">TagMo設定</string>
 
+    <string name="pref_menu_return">返回主畫面</string>
     <string name="prefs_configuration">配置</string>
     <string name="pref_import_keys">匯入crypto金鑰</string>
     <string name="image_loading_details">存取圖片數據</string>
@@ -272,6 +283,8 @@
     <string name="document_storage_root">更新文件儲存空間</string>
     <string name="emulated_storage_root">瀏覽模擬儲存空間</string>
     <string name="physical_storage_root">瀏覽實體儲存空間</string>
+    <string name="grant_file_permission">啟用 "所有檔案" 管理器</string>
+    <string name="force_document_storage">啟用 文件儲存空間</string>
     <string name="refresh_browser">重新整理瀏覽器</string>
 
     <string name="hint_filename">設定二進位檔案名稱</string>
@@ -284,6 +297,8 @@
     <string name="possible_lock">N2 Elite是否已經鎖定？</string>
     <string name="possible_blank">進行掃描N2 Elite？</string>
     <string name="tag_update_only">之前寫入的tags需要進行&quot;更新&quot;</string>
+    <string name="power_tag_reset">Power Tags 上一次與 PowerSaves 執行，需要進行重置</string>
+    <string name="encryption_fault">此檔案可能已損壞或建立時內容出現錯誤</string>
 
     <string name="custom_tab_back">返回 TagMo</string>
     <string name="bluup_purchase">取得Bluup Flask</string>
@@ -296,6 +311,8 @@
     <string name="write_slot_file">將二進位檔案上傳到GATT 設備</string>
     <string name="write_slots">寫入 %1$d slots</string>
     <string name="erase_slots">抹除 %1$d slots</string>
+    <string name="slots_full">Device 已滿</string>
+    <string name="slots_empty">Device 無項目</string>
     <string name="create_blank">建立空白的虛擬 NFC tag</string>
     <string name="gatt_erase_confirm">將GATT所有的slots進行抹除？</string>
     <string name="gatt_write_confirm">將所有選取項目寫入GATT?</string>
@@ -309,6 +326,8 @@
     <string name="paired_devices">已配對的藍牙裝置</string>
     <string name="device_address">MAC: %1$s</string>
     <string name="switch_devices">連接其他裝置</string>
+    
+    <string name="clone_random">以隨機序號進行複製</string>
     
     <string name="data_write">寫入主要數據</string>
     <string name="password_write">寫入密碼</string>
@@ -344,6 +363,7 @@
     <string name="error_unknown">發生未知的錯誤</string>
 
     <string name="fail_update_git">無法連接至伺服器進行更新!</string>
+    <string name="fail_update_url">更新失敗! 請稍後再試一次</string>
     <string name="fail_ssl_update">OpenSSL 安全性憑證已逾期！</string>
     <string name="fail_save_file">將tag寫入檔案時發生錯誤</string>
     <string name="fail_save_data">儲存tag數據失敗</string>
@@ -368,6 +388,8 @@
     <string name="fail_logcat">製作操作日誌時發生錯誤！</string>
     <string name="fail_bitmap">製作縮圖時發生錯誤!</string>
     <string name="fail_bank_data">空白的二進位檔案!\n正在略過 bank %1$d&#8230;</string>
+    <string name="fail_randomize">Randomizer failed to duplicate data!</string>
+    <string name="fail_firmware_api">韌體設定已停用API!</string>
 
     <string name="no_tag_loaded">&lt;尚未載入Tag&gt;</string>
     <string name="read_error">&lt;讀取Tag時發生錯誤&gt;</string>
@@ -412,12 +434,17 @@
 
     <string name="firmware_update">N2 Elite 韌體已更新完成！</string>
     <string name="firmware_failed">韌體更新失敗，請再試一次！ (%1$d)</string>
-
+    
     <string name="speed_scan">請將tag靠近感應以完成掃描</string>
+    <string name="tag_disconnect">Tag不在感應距離內!</string>
     <string name="unzip_item">正在解壓縮 %1$s&#8230;</string>
     <string name="mkdir_failed">新建資料夾 &#8217;%1$s&#8217; 失敗！</string>
     <string name="downloads_hidden">下載項目已經隱藏！</string>
 
+    <string name="controller_pro" translatable="false">Pro控制器</string>
+    <string name="controller_rjc" translatable="false">Right Joy-Con</string>
+    <string name="no_controllers">沒有已連線的手把控制器!</string>
+    
     <string name="sub_button">%1$s 每月捐贈</string>
     <string name="iap_button">%1$s 單次捐贈</string>
     <string name="donation_thanks">非常感謝你的捐贈！</string>

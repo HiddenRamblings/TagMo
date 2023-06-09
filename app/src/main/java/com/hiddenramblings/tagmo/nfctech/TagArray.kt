@@ -183,9 +183,7 @@ object TagArray {
             if (data.size == NfcByte.KEY_FILE_SIZE || data.size == NfcByte.KEY_RETAIL_SZ)
                 throw IOException(getString(R.string.invalid_tag_key))
             else if (data.size < NfcByte.TAG_DATA_SIZE)
-                throw IOException(
-                    getString(R.string.invalid_data_size, data.size, NfcByte.TAG_DATA_SIZE)
-                )
+                throw IOException(getString(R.string.invalid_data_size, data.size, NfcByte.TAG_DATA_SIZE))
             val pages = arrayOfNulls<ByteArray>(data.size / NfcByte.PAGE_SIZE)
             var i = 0
             var j = 0
@@ -299,14 +297,16 @@ object TagArray {
     @Throws(Exception::class)
     fun getValidatedData(keyManager: KeyManager?, data: ByteArray?): ByteArray? {
         if (null == keyManager || null == data) return null
-        var validated = data
-        try {
-            validateData(validated)
+        var validated = try {
+            validateData(data)
+            data
         } catch (e: Exception) {
-            validated = keyManager.encrypt(validated)
-            validateData(validated)
+            val encrypted = keyManager.encrypt(data)
+            validateData(encrypted)
+            encrypted
         }
-        return keyManager.encrypt(keyManager.decrypt(validated))
+        validated = keyManager.decrypt(validated)
+        return keyManager.encrypt(validated)
     }
 
     @JvmStatic

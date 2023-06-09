@@ -526,12 +526,12 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
             setOnClickListener {
                 AlertDialog.Builder(requireContext())
                     .setMessage(R.string.gatt_erase_confirm)
-                    .setPositiveButton(R.string.proceed) { _: DialogInterface?, _: Int ->
+                    .setPositiveButton(R.string.cancel) { dialog: DialogInterface, _: Int ->
+                        dialog.dismiss()
+                    }
+                    .setNegativeButton(R.string.proceed) { _: DialogInterface?, _: Int ->
                         showProcessingNotice(false)
                         serviceBluup?.clearStorage(currentCount)
-                    }
-                    .setNegativeButton(R.string.cancel) { dialog: DialogInterface, _: Int ->
-                        dialog.dismiss()
                     }
                     .show()
             }

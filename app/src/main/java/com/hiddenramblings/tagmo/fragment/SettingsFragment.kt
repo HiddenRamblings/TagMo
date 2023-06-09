@@ -2,6 +2,7 @@ package com.hiddenramblings.tagmo.fragment
 
 import android.app.Dialog
 import android.content.ActivityNotFoundException
+import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Color
@@ -22,6 +23,7 @@ import androidx.preference.ListPreference
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
 import androidx.preference.SwitchPreferenceCompat
+import com.android.billingclient.api.BillingFlowParams
 import com.google.android.material.snackbar.Snackbar
 import com.hiddenramblings.tagmo.BrowserActivity
 import com.hiddenramblings.tagmo.GlideApp
@@ -79,7 +81,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
         }
         importKeys = findPreference<Preference>(getString(R.string.settings_import_keys))?.apply {
             onPreferenceClickListener = Preference.OnPreferenceClickListener {
-                onImportKeysClicked()
+                keyEntryMethod()
                 super@SettingsFragment.onPreferenceTreeClick(it)
             }
         }
@@ -310,6 +312,18 @@ class SettingsFragment : PreferenceFragmentCompat() {
         scannerDialog.show()
     }
 
+    private fun keyEntryMethod() {
+        AlertDialog.Builder(requireContext())
+            .setMessage(R.string.key_input_method)
+            .setPositiveButton(R.string.key_input_bin) { _: DialogInterface?, _: Int ->
+                onImportKeysClicked()
+            }
+            .setNegativeButton(R.string.key_input_hex) { _: DialogInterface?, _: Int ->
+                keyEntryDialog()
+            }
+            .show()
+    }
+
     private fun updateKeySummary() {
         val unfixedText: String
         val unfixedSpan: ForegroundColorSpan
@@ -494,16 +508,14 @@ class SettingsFragment : PreferenceFragmentCompat() {
     private val onLoadKeys = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
     ) { result: ActivityResult ->
-        if (result.resultCode != AppCompatActivity.RESULT_OK || result.data == null) {
-            keyEntryDialog()
+        if (result.resultCode != AppCompatActivity.RESULT_OK || null == result.data) {
+            return@registerForActivityResult
         } else if (null != result.data?.clipData) {
             result.data?.clipData?.let {
-                for (i in 0 until it.itemCount) {
-                    validateKeys(it.getItemAt(i).uri)
-                }
+                for (i in 0 until it.itemCount) { validateKeys(it.getItemAt(i).uri) }
             }
         } else {
-            validateKeys(result.data!!.data)
+            result.data?.let { validateKeys(it.data) }
         }
     }
     private val onImportAmiiboDatabase = registerForActivityResult(

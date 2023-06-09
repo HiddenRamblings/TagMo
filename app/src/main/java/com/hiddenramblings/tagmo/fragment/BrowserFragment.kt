@@ -543,7 +543,8 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
             )
             AlertDialog.Builder(requireContext())
                 .setMessage(getString(R.string.warn_delete_file, amiiboFile.name))
-                .setPositiveButton(R.string.delete) { dialog: DialogInterface, _: Int ->
+                .setPositiveButton(R.string.cancel) { dialog: DialogInterface, _: Int -> dialog.dismiss() }
+                .setNegativeButton(R.string.delete) { dialog: DialogInterface, _: Int ->
                     if (amiiboFile.delete()) {
                         IconifiedSnackbar(requireActivity(), browserWrapper).buildSnackbar(
                             getString(R.string.delete_foomiibo, amiibo.name),
@@ -554,7 +555,6 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
                     }
                     dialog.dismiss()
                 }
-                .setNegativeButton(R.string.cancel) { dialog: DialogInterface, _: Int -> dialog.dismiss() }
                 .show()
         } catch (e: Exception) { Toasty(requireContext()).Short(R.string.delete_virtual) }
     }

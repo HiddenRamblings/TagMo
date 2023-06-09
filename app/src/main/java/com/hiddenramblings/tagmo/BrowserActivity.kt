@@ -2044,7 +2044,8 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
             val relativeFile = Storage.getRelativePath(file, prefs.preferEmulated())
             AlertDialog.Builder(this)
                 .setMessage(getString(R.string.warn_delete_file, relativeFile))
-                .setPositiveButton(R.string.delete) { dialog: DialogInterface, _: Int ->
+                .setPositiveButton(R.string.cancel) { dialog: DialogInterface, _: Int -> dialog.dismiss() }
+                .setNegativeButton(R.string.delete) { dialog: DialogInterface, _: Int ->
                     amiiboContainer?.isGone = true
                     file.delete()
                     IconifiedSnackbar(this, viewPager).buildSnackbar(
@@ -2057,7 +2058,6 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
 //                    } ?: onRootFolderChanged(true)
                     onRootFolderChanged(true)
                 }
-                .setNegativeButton(R.string.cancel) { dialog: DialogInterface, _: Int -> dialog.dismiss() }
                 .show()
         } ?: Toasty(this).Short(R.string.delete_missing)
     }
@@ -2067,7 +2067,8 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
             val relativeDocument = Storage.getRelativeDocument(docUri.uri)
             AlertDialog.Builder(this)
                 .setMessage(getString(R.string.warn_delete_file, relativeDocument))
-                .setPositiveButton(R.string.delete) { dialog: DialogInterface, _: Int ->
+                .setPositiveButton(R.string.cancel) { dialog: DialogInterface, _: Int -> dialog.dismiss() }
+                .setNegativeButton(R.string.delete) { dialog: DialogInterface, _: Int ->
                     amiiboContainer?.isGone = true
                     docUri.delete()
                     IconifiedSnackbar(this, viewPager).buildSnackbar(
@@ -2080,7 +2081,6 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
 //                    } ?: onRootFolderChanged(true)
                     onRootFolderChanged(true)
                 }
-                .setNegativeButton(R.string.cancel) { dialog: DialogInterface, _: Int -> dialog.dismiss() }
                 .show()
         } ?: deleteAmiiboFile(amiiboFile)
     }

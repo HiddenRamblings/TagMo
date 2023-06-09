@@ -303,13 +303,13 @@ class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
             android.app.AlertDialog.Builder(requireContext())
                 .setTitle(R.string.lock_elite_warning)
                 .setMessage(R.string.lock_elite_details)
-                .setPositiveButton(R.string.accept) { dialog: DialogInterface, _: Int ->
+                .setPositiveButton(R.string.cancel, null)
+                .setNegativeButton(R.string.accept) { dialog: DialogInterface, _: Int ->
                     val lock = Intent(requireContext(), NfcActivity::class.java)
                     lock.action = NFCIntent.ACTION_LOCK_AMIIBO
                     startActivity(lock)
                     dialog.dismiss()
-                }
-                .setNegativeButton(R.string.cancel, null).show()
+                }.show()
         }
         view.findViewById<View>(R.id.unlock_elite).setOnClickListener {
             AlertDialog.Builder(requireContext())

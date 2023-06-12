@@ -18,6 +18,7 @@ package com.hiddenramblings.tagmo.eightbit.widget
 import android.animation.Animator
 import android.animation.Animator.AnimatorListener
 import android.content.Context
+import android.content.res.Configuration
 import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.View
@@ -51,8 +52,32 @@ class FABulous : FloatingActionButton, OnTouchListener {
         setOnTouchListener(this)
     }
 
-    override fun onTouch(view: View, motionEvent: MotionEvent): Boolean {
+    private fun verifyBounds(view: View, x: Float, y: Float) : FloatArray {
         val layoutParams = view.layoutParams as MarginLayoutParams
+        val viewParent = view.parent as View
+
+        val viewWidth = view.width
+        val viewHeight = view.height
+
+        val parentWidth = viewParent.width
+        val parentHeight = viewParent.height
+
+        var newX = x
+        // Don't allow the FAB past the left hand side of the parent
+        newX = layoutParams.leftMargin.toFloat().coerceAtLeast(newX)
+        // Don't allow the FAB past the right hand side of the parent
+        newX = (parentWidth - viewWidth - layoutParams.rightMargin).toFloat().coerceAtMost(newX)
+
+        var newY = y
+        // Don't allow the FAB past the top of the parent
+        newY = layoutParams.topMargin.toFloat().coerceAtLeast(newY)
+        // Don't allow the FAB past the bottom of the parent
+        newY = (parentHeight - viewHeight - layoutParams.bottomMargin).toFloat().coerceAtMost(newY)
+        
+        return floatArrayOf(newX, newY)
+    }
+
+    override fun onTouch(view: View, motionEvent: MotionEvent): Boolean {
         val action = motionEvent.action
         return if (action == MotionEvent.ACTION_DOWN) {
             downRawX = motionEvent.rawX
@@ -61,24 +86,10 @@ class FABulous : FloatingActionButton, OnTouchListener {
             dY = view.y - downRawY
             true // Consumed
         } else if (action == MotionEvent.ACTION_MOVE) {
-            val viewWidth = view.width
-            val viewHeight = view.height
-            val viewParent = view.parent as View
-            val parentWidth = viewParent.width
-            val parentHeight = viewParent.height
-            var newX = motionEvent.rawX + dX
-            // Don't allow the FAB past the left hand side of the parent
-            newX = layoutParams.leftMargin.toFloat().coerceAtLeast(newX)
-            // Don't allow the FAB past the right hand side of the parent
-            newX = (parentWidth - viewWidth - layoutParams.rightMargin).toFloat().coerceAtMost(newX)
-            var newY = motionEvent.rawY + dY
-            // Don't allow the FAB past the top of the parent
-            newY = layoutParams.topMargin.toFloat().coerceAtLeast(newY)
-            // Don't allow the FAB past the bottom of the parent
-            newY = (parentHeight - viewHeight - layoutParams.bottomMargin).toFloat().coerceAtMost(newY)
+            val coords = verifyBounds(view, motionEvent.rawX + dX, motionEvent.rawY + dY)
             view.animate()
-                .x(newX)
-                .y(newY)
+                .x(coords[0])
+                .y(coords[1])
                 .setDuration(0)
                 .setListener(object : AnimatorListener{
                     override fun onAnimationStart(p0: Animator) { }
@@ -114,6 +125,12 @@ class FABulous : FloatingActionButton, OnTouchListener {
     private var viewMoveListener: OnViewMovedListener? = null
     fun setOnMoveListener(listener: OnViewMovedListener?) {
         this.viewMoveListener = listener
+    }
+
+    override fun onConfigurationChanged(newConfig: Configuration?) {
+        super.onConfigurationChanged(newConfig)
+        val coords = verifyBounds(this, x, y)
+        animate().x(coords[0]).y(coords[1]).setDuration(0).start()
     }
 
     companion object {

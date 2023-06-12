@@ -142,7 +142,7 @@ class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
         switchMenuOptions = view.findViewById(R.id.switch_menu_btn)
         bankOptionsMenu = view.findViewById(R.id.bank_options_menu)
 
-        writeBankLayout = view.findViewById<LinearLayout>(R.id.write_list_banks)
+        writeBankLayout = view.findViewById(R.id.write_list_banks)
 
         amiiboFilesView = view.findViewById<RecyclerView>(R.id.amiibo_files_list).apply {
             setHasFixedSize(true)
@@ -159,7 +159,7 @@ class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
         }
 
         securityOptions = view.findViewById(R.id.security_options)
-        amiiboTile = view.findViewById<CardView>(R.id.active_tile_layout)
+        amiiboTile = view.findViewById(R.id.active_tile_layout)
         amiiboCard = view.findViewById<CardView>(R.id.active_card_layout).apply {
             findViewById<View>(R.id.txtError)?.isGone = true
             findViewById<View>(R.id.txtPath)?.isGone = true
@@ -309,7 +309,8 @@ class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
                     lock.action = NFCIntent.ACTION_LOCK_AMIIBO
                     startActivity(lock)
                     dialog.dismiss()
-                }.show()
+                }
+                .show()
         }
         view.findViewById<View>(R.id.unlock_elite).setOnClickListener {
             AlertDialog.Builder(requireContext())
@@ -321,7 +322,8 @@ class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
                             .setAction(NFCIntent.ACTION_UNLOCK_UNIT)
                     )
                     dialog.dismiss()
-                }.show()
+                }
+                .show()
         }
         onBottomSheetChanged(SHEET.LOCKED)
     }
@@ -912,7 +914,7 @@ class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
             requireView().findViewById<TextView>(R.id.hardware_info).text = getString(
                 R.string.elite_signature, extras.getString(NFCIntent.EXTRA_SIGNATURE)
             )
-            eliteBankCount.setValue(bankCount)
+            eliteBankCount.value = bankCount
             setRefreshListener(object : RefreshListener {
                 override fun onListRefreshed(amiibos: ArrayList<EliteTag?>) {
                     amiibos[activeBank]?.id?.let {

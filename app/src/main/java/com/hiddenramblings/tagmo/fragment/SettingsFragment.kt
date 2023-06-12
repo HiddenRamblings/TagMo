@@ -2,6 +2,7 @@ package com.hiddenramblings.tagmo.fragment
 
 import android.app.Dialog
 import android.content.ActivityNotFoundException
+import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -64,8 +65,36 @@ class SettingsFragment : PreferenceFragmentCompat() {
     private var importKeys: Preference? = null
     var imageNetworkSetting: ListPreference? = null
 
+    private val onLoadKeys = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) { result: ActivityResult ->
+        if (result.resultCode != AppCompatActivity.RESULT_OK || null == result.data) {
+            return@registerForActivityResult
+        } else if (null != result.data?.clipData) {
+            result.data?.clipData?.let {
+                for (i in 0 until it.itemCount) { validateKeys(it.getItemAt(i).uri) }
+            }
+        } else {
+            result.data?.let { validateKeys(it.data) }
+        }
+    }
+
+    private val onImportAmiiboDatabase = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) { result: ActivityResult ->
+        if (result.resultCode != AppCompatActivity.RESULT_OK) return@registerForActivityResult
+        result.data?.let { intent -> updateAmiiboDatabase(intent.data) }
+    }
+
+    private var browserActivity: BrowserActivity? = null
+
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         setPreferencesFromResource(R.xml.preference_screen, rootKey)
+    }
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        if (context is BrowserActivity) browserActivity = context
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -88,8 +117,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
         updateKeySummary()
         findPreference<Preference>(getString(R.string.settings_menu_return))?.apply {
             onPreferenceClickListener = Preference.OnPreferenceClickListener {
-                if (activity is BrowserActivity)
-                    (activity as BrowserActivity).restoreMenuLayout()
+                browserActivity?.restoreMenuLayout()
                 super@SettingsFragment.onPreferenceTreeClick(it)
             }
         }
@@ -129,9 +157,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
             isChecked = prefs.foomiiboDisabled()
             onPreferenceClickListener = Preference.OnPreferenceClickListener {
                 prefs.foomiiboDisabled((it as CheckBoxPreference).isChecked)
-                if (activity is BrowserActivity) {
-                    (activity as BrowserActivity).setFoomiiboVisibility()
-                }
+                browserActivity?.setFoomiiboVisibility()
                 super@SettingsFragment.onPreferenceTreeClick(it)
             }
         }
@@ -140,9 +166,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
             onPreferenceClickListener = Preference.OnPreferenceClickListener {
                 val isEnabled = isChecked
                 prefs.powerTagEnabled(isEnabled)
-                if (isEnabled && activity is BrowserActivity) {
-                    (requireActivity() as BrowserActivity).loadPTagKeyManager()
-                }
+                if (isEnabled) browserActivity?.loadPTagKeyManager()
                 super@SettingsFragment.onPreferenceTreeClick(it)
             }
         }
@@ -159,9 +183,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
                     getString(R.string.elite_signature, prefs.eliteSignature())
                 else
                     getString(R.string.elite_details)
-                if (activity is BrowserActivity) {
-                    (requireActivity() as BrowserActivity).reloadTabCollection = true
-                }
+                browserActivity?.reloadTabCollection = true
                 super@SettingsFragment.onPreferenceTreeClick(it)
             }
         }
@@ -214,9 +236,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
                     val index = (preference as ListPreference).findIndexOfValue(newValue.toString())
                     prefs.applicationTheme(index)
                     (requireActivity().application as TagMo).setThemePreference()
-                    if (activity is BrowserActivity) {
-                        (requireActivity() as BrowserActivity).onApplicationRecreate()
-                    }
+                    browserActivity?.onApplicationRecreate()
                     super@SettingsFragment.onPreferenceTreeClick(preference)
                 }
         }
@@ -267,9 +287,10 @@ class SettingsFragment : PreferenceFragmentCompat() {
             prefs.imageNetwork(newValue)
             imageNetworkSetting?.value = newValue
             imageNetworkSetting?.summary = imageNetworkSetting?.entry
-            val activity = requireActivity() as BrowserActivity
-            CoroutineScope(Dispatchers.Main).launch {
-                activity.settings?.notifyChanges()
+            browserActivity?.let { activity ->
+                CoroutineScope(Dispatchers.Main).launch {
+                    activity.settings?.notifyChanges()
+                }
             }
         }
     }
@@ -281,7 +302,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
                     requireContext().contentResolver.openInputStream(it)?.use { strm ->
                         keyManager.evaluateKey(strm)
                         withContext(Dispatchers.Main) {
-                            (requireActivity() as BrowserActivity).onKeysLoaded(true)
+                            browserActivity?.onKeysLoaded(true)
                             updateKeySummary()
                         }
                     }
@@ -304,7 +325,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
                 keyManager.evaluateKey(ByteArrayInputStream(TagArray.hexToByteArray(
                     input.text.toString().filter { !it.isWhitespace() }
                 )))
-                (requireActivity() as BrowserActivity).onKeysLoaded(true)
+                browserActivity?.onKeysLoaded(true)
                 updateKeySummary()
             } catch (e: Exception) { Toasty(requireActivity()).Short(e.message) }
         }
@@ -415,9 +436,10 @@ class SettingsFragment : PreferenceFragmentCompat() {
                 return@launch
             }
             withContext(Dispatchers.Main) {
-                val activity = requireActivity() as BrowserActivity
-                buildSnackbar(activity, R.string.amiibo_info_updated, Snackbar.LENGTH_SHORT).show()
-                activity.settings?.notifyChanges()
+                browserActivity?.let { activity ->
+                    buildSnackbar(activity, R.string.amiibo_info_updated, Snackbar.LENGTH_SHORT).show()
+                    activity.settings?.notifyChanges()
+                }
             }
         }
     }
@@ -425,66 +447,69 @@ class SettingsFragment : PreferenceFragmentCompat() {
     private fun resetAmiiboDatabase(notify: Boolean) {
         CoroutineScope(Dispatchers.IO).launch {
             requireContext().deleteFile(AmiiboManager.AMIIBO_DATABASE_FILE)
-            val activity = requireActivity() as BrowserActivity
-            if (notify) {
-                withContext(Dispatchers.Main) {
-                    activity.settings?.run {
-                        lastUpdatedAPI = null
-                        notifyChanges()
+            browserActivity?.let { activity ->
+                if (notify) {
+                    withContext(Dispatchers.Main) {
+                        activity.settings?.run {
+                            lastUpdatedAPI = null
+                            notifyChanges()
+                        }
                     }
                 }
-            }
-            try {
-                withContext(Dispatchers.IO) { GlideApp.get(activity).clearDiskCache() }
-                withContext(Dispatchers.Main) { GlideApp.get(activity).clearMemory() }
-            } catch (ignored: IllegalStateException) { }
-            if (notify) withContext(Dispatchers.Main) {
-                buildSnackbar(
-                    activity, R.string.removing_amiibo_info, Snackbar.LENGTH_SHORT
-                ).show()
+                try {
+                    withContext(Dispatchers.IO) { GlideApp.get(activity).clearDiskCache() }
+                    withContext(Dispatchers.Main) { GlideApp.get(activity).clearMemory() }
+                } catch (ignored: IllegalStateException) { }
+                if (notify) withContext(Dispatchers.Main) {
+                    buildSnackbar(
+                        activity, R.string.removing_amiibo_info, Snackbar.LENGTH_SHORT
+                    ).show()
+                }
             }
         }
     }
 
     private fun downloadAmiiboAPIData(lastUpdated: String) {
-        val activity = requireActivity() as BrowserActivity
-        val syncMessage = buildSnackbar(
-            activity, R.string.sync_amiibo_process, Snackbar.LENGTH_INDEFINITE
-        )
-        CoroutineScope(Dispatchers.IO).launch {
-            withContext(Dispatchers.Main) {
-                syncMessage.show()
-            }
-            JSONExecutor(
-                activity, if (prefs.databaseSource() == 0)
-                    "${AmiiboManager.RENDER_RAW}/database/amiibo.json"
-                else "${AmiiboManager.AMIIBO_API}/amiibo/"
-            ).setDatabaseListener(object : JSONExecutor.DatabaseListener {
-                override fun onResults(result: String?, isRawJSON: Boolean) {
-                    result?.let {
-                        val amiiboManager = if (isRawJSON) parse(it) else parseAmiiboAPI(it)
-                        saveDatabase(amiiboManager, requireContext().applicationContext)
-                        CoroutineScope(Dispatchers.Main).launch {
-                            if (syncMessage.isShown) syncMessage.dismiss()
-                            buildSnackbar(
-                                activity, R.string.sync_amiibo_complete, Snackbar.LENGTH_SHORT
-                            ).show()
-                            activity.settings?.run {
-                                lastUpdatedAPI = lastUpdated
-                                notifyChanges()
+        browserActivity?.let { activity ->
+            val syncMessage = buildSnackbar(
+                activity, R.string.sync_amiibo_process, Snackbar.LENGTH_INDEFINITE
+            )
+            CoroutineScope(Dispatchers.IO).launch {
+                withContext(Dispatchers.Main) {
+                    syncMessage.show()
+                }
+                JSONExecutor(
+                    activity, if (prefs.databaseSource() == 0)
+                        "${AmiiboManager.RENDER_RAW}/database/amiibo.json"
+                    else "${AmiiboManager.AMIIBO_API}/amiibo/"
+                ).setDatabaseListener(object : JSONExecutor.DatabaseListener {
+                    override fun onResults(result: String?, isRawJSON: Boolean) {
+                        result?.let {
+                            val amiiboManager = if (isRawJSON) parse(it) else parseAmiiboAPI(it)
+                            saveDatabase(amiiboManager, requireContext().applicationContext)
+                            CoroutineScope(Dispatchers.Main).launch {
+                                if (syncMessage.isShown) syncMessage.dismiss()
+                                buildSnackbar(
+                                    activity, R.string.sync_amiibo_complete, Snackbar.LENGTH_SHORT
+                                ).show()
+                                activity.settings?.run {
+                                    lastUpdatedAPI = lastUpdated
+                                    notifyChanges()
+                                }
                             }
                         }
                     }
-                }
-                override fun onException(e: Exception) {
-                    CoroutineScope(Dispatchers.Main).launch {
-                        if (syncMessage.isShown) syncMessage.dismiss()
-                        buildSnackbar(
-                            activity, R.string.amiibo_failure_server, Snackbar.LENGTH_SHORT
-                        ).show()
+
+                    override fun onException(e: Exception) {
+                        CoroutineScope(Dispatchers.Main).launch {
+                            if (syncMessage.isShown) syncMessage.dismiss()
+                            buildSnackbar(
+                                activity, R.string.amiibo_failure_server, Snackbar.LENGTH_SHORT
+                            ).show()
+                        }
                     }
-                }
-            })
+                })
+            }
         }
     }
 
@@ -503,26 +528,6 @@ class SettingsFragment : PreferenceFragmentCompat() {
                 Toasty(requireContext()).Short(R.string.fail_ssl_update)
             }
         })
-    }
-
-    private val onLoadKeys = registerForActivityResult(
-        ActivityResultContracts.StartActivityForResult()
-    ) { result: ActivityResult ->
-        if (result.resultCode != AppCompatActivity.RESULT_OK || null == result.data) {
-            return@registerForActivityResult
-        } else if (null != result.data?.clipData) {
-            result.data?.clipData?.let {
-                for (i in 0 until it.itemCount) { validateKeys(it.getItemAt(i).uri) }
-            }
-        } else {
-            result.data?.let { validateKeys(it.data) }
-        }
-    }
-    private val onImportAmiiboDatabase = registerForActivityResult(
-        ActivityResultContracts.StartActivityForResult()
-    ) { result: ActivityResult ->
-        if (result.resultCode != AppCompatActivity.RESULT_OK) return@registerForActivityResult
-        result.data?.let { intent -> updateAmiiboDatabase(intent.data) }
     }
 
     private fun showFileChooser(title: String, resultCode: Int) {
@@ -576,18 +581,19 @@ class SettingsFragment : PreferenceFragmentCompat() {
                 // JSONObject author = (JSONObject) commit.get("committer");
                 val author = commit["author"] as JSONObject
                 val lastUpdated = author["date"] as String
-                val activity = requireActivity() as BrowserActivity
-                if (isMenuClicked) {
-                    onDownloadRequested(lastUpdated)
-                } else if (null == activity.settings?.lastUpdatedAPI
-                    || activity.settings?.lastUpdatedAPI != lastUpdated
-                ) {
-                    withContext(Dispatchers.Main) {
-                        try {
-                            buildSnackbar(
-                                activity, R.string.update_amiibo_api, Snackbar.LENGTH_LONG
-                            ).setAction(R.string.sync) { onDownloadRequested(lastUpdated) }.show()
-                        } catch (ignored: IllegalStateException) { }
+                browserActivity?.let { activity ->
+                    if (isMenuClicked) {
+                        onDownloadRequested(lastUpdated)
+                    } else if (null == activity.settings?.lastUpdatedAPI
+                        || activity.settings?.lastUpdatedAPI != lastUpdated
+                    ) {
+                        withContext(Dispatchers.Main) {
+                            try {
+                                buildSnackbar(
+                                    activity, R.string.update_amiibo_api, Snackbar.LENGTH_LONG
+                                ).setAction(R.string.sync) { onDownloadRequested(lastUpdated) }.show()
+                            } catch (ignored: IllegalStateException) { }
+                        }
                     }
                 }
             } catch (e: Exception) { Debug.warn(e) }
@@ -596,60 +602,63 @@ class SettingsFragment : PreferenceFragmentCompat() {
 
     private fun parseUpdateJSON(result: String, isMenuClicked: Boolean) {
         CoroutineScope(Dispatchers.IO).launch {
-            if (activity !is BrowserActivity) return@launch
-            try {
-                val jsonObject = JSONObject(result)
-                val lastUpdatedAPI = jsonObject["lastUpdated"] as String
-                val lastUpdated = lastUpdatedAPI.substringBeforeLast(".") + "Z"
-                val activity = requireActivity() as BrowserActivity
-                if (isMenuClicked) {
-                    onDownloadRequested(lastUpdated)
-                } else if (activity.settings?.lastUpdatedAPI != lastUpdated) {
-                    withContext(Dispatchers.Main) {
-                        buildSnackbar(
-                            activity, R.string.update_amiibo_api, Snackbar.LENGTH_LONG
-                        ).setAction(R.string.sync) { onDownloadRequested(lastUpdated) }.show()
+            browserActivity?.let { activity ->
+                try {
+                    val jsonObject = JSONObject(result)
+                    val lastUpdatedAPI = jsonObject["lastUpdated"] as String
+                    val lastUpdated = lastUpdatedAPI.substringBeforeLast(".") + "Z"
+                    val activity = requireActivity() as BrowserActivity
+                    if (isMenuClicked) {
+                        onDownloadRequested(lastUpdated)
+                    } else if (activity.settings?.lastUpdatedAPI != lastUpdated) {
+                        withContext(Dispatchers.Main) {
+                            buildSnackbar(
+                                activity, R.string.update_amiibo_api, Snackbar.LENGTH_LONG
+                            ).setAction(R.string.sync) { onDownloadRequested(lastUpdated) }.show()
+                        }
                     }
-                }
-            } catch (e: Exception) { Debug.warn(e) }
+                } catch (e: Exception) { Debug.warn(e) }
+            }
         }
     }
 
     private fun onSyncRequested(isMenuClicked: Boolean) {
-        val activity = requireActivity() as BrowserActivity
-        if (prefs.databaseSource() == 0) {
-            JSONExecutor(
-                activity,
-                "https://api.github.com/repos/8bitDream/AmiiboAPI",
-                "branches/render?path=database/amiibo.json"
-            ).setResultListener(object : JSONExecutor.ResultListener {
-                override fun onResults(result: String?) {
-                    result?.let { parseCommitDate(it, isMenuClicked) }
-                }
-                override fun onException(e: Exception) {
-                    CoroutineScope(Dispatchers.Main).launch {
-                        buildSnackbar(
-                            activity, R.string.amiibo_failure_server, Snackbar.LENGTH_SHORT
-                        ).show()
+        browserActivity?.let { activity ->
+            if (prefs.databaseSource() == 0) {
+                JSONExecutor(
+                    activity,
+                    "https://api.github.com/repos/8bitDream/AmiiboAPI",
+                    "branches/render?path=database/amiibo.json"
+                ).setResultListener(object : JSONExecutor.ResultListener {
+                    override fun onResults(result: String?) {
+                        result?.let { parseCommitDate(it, isMenuClicked) }
                     }
-                }
-            })
-        } else {
-            JSONExecutor(
-                activity, AmiiboManager.AMIIBO_API, "lastupdated/"
-            ).setResultListener(object : JSONExecutor.ResultListener {
-                override fun onResults(result: String?) {
-                    result?.let { parseUpdateJSON(it, isMenuClicked) }
-                }
 
-                override fun onException(e: Exception) {
-                    CoroutineScope(Dispatchers.Main).launch {
-                        buildSnackbar(
-                            activity, R.string.amiibo_failure_server, Snackbar.LENGTH_SHORT
-                        ).show()
+                    override fun onException(e: Exception) {
+                        CoroutineScope(Dispatchers.Main).launch {
+                            buildSnackbar(
+                                activity, R.string.amiibo_failure_server, Snackbar.LENGTH_SHORT
+                            ).show()
+                        }
                     }
-                }
-            })
+                })
+            } else {
+                JSONExecutor(
+                    activity, AmiiboManager.AMIIBO_API, "lastupdated/"
+                ).setResultListener(object : JSONExecutor.ResultListener {
+                    override fun onResults(result: String?) {
+                        result?.let { parseUpdateJSON(it, isMenuClicked) }
+                    }
+
+                    override fun onException(e: Exception) {
+                        CoroutineScope(Dispatchers.Main).launch {
+                            buildSnackbar(
+                                activity, R.string.amiibo_failure_server, Snackbar.LENGTH_SHORT
+                            ).show()
+                        }
+                    }
+                })
+            }
         }
     }
 

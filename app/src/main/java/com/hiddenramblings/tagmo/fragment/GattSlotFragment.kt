@@ -390,6 +390,13 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
         }
     }
 
+    private var browserActivity: BrowserActivity? = null
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        if (context is BrowserActivity) browserActivity = context
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -402,8 +409,6 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
         super.onViewCreated(view, savedInstanceState)
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR2) return
 
-        val activity = requireActivity() as BrowserActivity
-
         amiiboTile = view.findViewById(R.id.active_tile_layout)
         amiiboCard = view.findViewById<CardView>(R.id.active_card_layout).apply {
             findViewById<View>(R.id.txtError)?.isGone = true
@@ -412,153 +417,156 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
 
         toolbar = view.findViewById(R.id.toolbar)
 
-        settings = activity.settings ?: BrowserSettings().initialize()
+        browserActivity?.let { activity ->
+            settings = activity.settings ?: BrowserSettings().initialize()
 
-        bluupContent = view.findViewById<RecyclerView>(R.id.bluup_content).apply {
-            setItemViewCacheSize(40)
-            layoutManager = if (settings.amiiboView == BrowserSettings.VIEW.IMAGE.value)
-                GridLayoutManager(activity, activity.columnCount).apply {
-                    initialPrefetchItemCount = 10
-                }
-            else
-                LinearLayoutManager(activity).apply {
-                    initialPrefetchItemCount = 10
-                }
-        }
-
-        bluupStats = view.findViewById(R.id.bluup_stats)
-        switchMenuOptions = view.findViewById(R.id.switch_menu_btn)
-        slotOptionsMenu = view.findViewById(R.id.slot_options_menu)
-
-        createBlank = view.findViewById<AppCompatButton>(R.id.create_blank).apply {
-            setOnClickListener { serviceBluup?.createBlankTag() }
-        }
-
-        screenOptions = view.findViewById(R.id.screen_options)
-
-        val searchView = view.findViewById<SearchView>(R.id.amiibo_search)
-        if (BuildConfig.WEAR_OS) {
-            searchView.isGone = true
-        } else {
-            with (activity.getSystemService(Context.SEARCH_SERVICE) as SearchManager) {
-                searchView.setSearchableInfo(getSearchableInfo(activity.componentName))
+            bluupContent = view.findViewById<RecyclerView>(R.id.bluup_content).apply {
+                setItemViewCacheSize(40)
+                layoutManager = if (settings.amiiboView == BrowserSettings.VIEW.IMAGE.value)
+                    GridLayoutManager(activity, activity.columnCount).apply {
+                        initialPrefetchItemCount = 10
+                    }
+                else
+                    LinearLayoutManager(activity).apply {
+                        initialPrefetchItemCount = 10
+                    }
             }
-            searchView.isSubmitButtonEnabled = false
-            searchView.setIconifiedByDefault(false)
-            val searchBar = searchView.findViewById<LinearLayout>(R.id.search_bar)
-            searchBar.layoutParams.height = resources
-                .getDimension(R.dimen.button_height_min).toInt()
-            searchBar.gravity = Gravity.CENTER_VERTICAL
-            searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
-                override fun onQueryTextSubmit(query: String): Boolean {
-                    settings.query = query
-                    settings.notifyChanges()
-                    return false
-                }
 
-                override fun onQueryTextChange(query: String): Boolean {
-                    settings.query = query
-                    settings.notifyChanges()
-                    return true
-                }
-            })
-        }
+            bluupStats = view.findViewById(R.id.bluup_stats)
+            switchMenuOptions = view.findViewById(R.id.switch_menu_btn)
+            slotOptionsMenu = view.findViewById(R.id.slot_options_menu)
 
-        view.findViewById<AppCompatButton>(R.id.write_slot_file).apply {
-            setOnClickListener {
-                settings.addChangeListener(writeTagAdapter)
-                onBottomSheetChanged(SHEET.WRITE)
-                searchView.setQuery(settings.query, true)
-                searchView.clearFocus()
-                writeTagAdapter?.setListener(object : WriteTagAdapter.OnAmiiboClickListener {
-                    override fun onAmiiboClicked(amiiboFile: AmiiboFile?) {
-                        onBottomSheetChanged(SHEET.AMIIBO)
-                        showProcessingNotice(true)
-                        uploadAmiiboFile(amiiboFile)
-                        settings.removeChangeListener(writeTagAdapter)
+            createBlank = view.findViewById<AppCompatButton>(R.id.create_blank).apply {
+                setOnClickListener { serviceBluup?.createBlankTag() }
+            }
+
+            screenOptions = view.findViewById(R.id.screen_options)
+
+            val searchView = view.findViewById<SearchView>(R.id.amiibo_search)
+            if (BuildConfig.WEAR_OS) {
+                searchView.isGone = true
+            } else {
+                with(activity.getSystemService(Context.SEARCH_SERVICE) as SearchManager) {
+                    searchView.setSearchableInfo(getSearchableInfo(activity.componentName))
+                }
+                searchView.isSubmitButtonEnabled = false
+                searchView.setIconifiedByDefault(false)
+                val searchBar = searchView.findViewById<LinearLayout>(R.id.search_bar)
+                searchBar.layoutParams.height = resources
+                    .getDimension(R.dimen.button_height_min).toInt()
+                searchBar.gravity = Gravity.CENTER_VERTICAL
+                searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+                    override fun onQueryTextSubmit(query: String): Boolean {
+                        settings.query = query
+                        settings.notifyChanges()
+                        return false
                     }
 
-                    override fun onAmiiboImageClicked(amiiboFile: AmiiboFile?) {
-                        handleImageClicked(amiiboFile)
+                    override fun onQueryTextChange(query: String): Boolean {
+                        settings.query = query
+                        settings.notifyChanges()
+                        return true
                     }
-
-                    override fun onAmiiboListClicked(amiiboList: ArrayList<AmiiboFile?>?) {}
-                    override fun onAmiiboDataClicked(amiiboFile: AmiiboFile?, count: Int) {}
                 })
-                bottomSheet?.setState(BottomSheetBehavior.STATE_EXPANDED)
             }
-        }
 
-        writeRandom = view.findViewById(R.id.write_fill_random)
-
-        writeSlots = view.findViewById<AppCompatButton>(R.id.write_slot_count).apply {
-            text = getString(R.string.write_slots, 1)
-            setOnClickListener {
-                settings.addChangeListener(writeTagAdapter)
-                onBottomSheetChanged(SHEET.WRITE)
-                searchView.setQuery(settings.query, true)
-                searchView.clearFocus()
-                gattSlotCount.value.let { count ->
+            view.findViewById<AppCompatButton>(R.id.write_slot_file).apply {
+                setOnClickListener {
+                    settings.addChangeListener(writeTagAdapter)
+                    onBottomSheetChanged(SHEET.WRITE)
+                    searchView.setQuery(settings.query, true)
+                    searchView.clearFocus()
                     writeTagAdapter?.setListener(object : WriteTagAdapter.OnAmiiboClickListener {
-                        override fun onAmiiboClicked(amiiboFile: AmiiboFile?) {}
-                        override fun onAmiiboImageClicked(amiiboFile: AmiiboFile?) {}
-                        override fun onAmiiboListClicked(amiiboList: ArrayList<AmiiboFile?>?) {
-                            if (!amiiboList.isNullOrEmpty()) writeAmiiboFileCollection(amiiboList)
+                        override fun onAmiiboClicked(amiiboFile: AmiiboFile?) {
+                            onBottomSheetChanged(SHEET.AMIIBO)
+                            showProcessingNotice(true)
+                            uploadAmiiboFile(amiiboFile)
+                            settings.removeChangeListener(writeTagAdapter)
                         }
-                        override fun onAmiiboDataClicked(amiiboFile: AmiiboFile?, count: Int) {
-                            CoroutineScope(Dispatchers.IO).launch {
-                                amiiboFile?.let {
-                                    val amiiboData = it.withRandomSerials(keyManager, count)
-                                    withContext(Dispatchers.Main) {
-                                        writeAmiiboDataCollection(amiiboData)
+
+                        override fun onAmiiboImageClicked(amiiboFile: AmiiboFile?) {
+                            handleImageClicked(amiiboFile)
+                        }
+
+                        override fun onAmiiboListClicked(amiiboList: ArrayList<AmiiboFile?>?) {}
+                        override fun onAmiiboDataClicked(amiiboFile: AmiiboFile?, count: Int) {}
+                    })
+                    bottomSheet?.setState(BottomSheetBehavior.STATE_EXPANDED)
+                }
+            }
+
+            writeRandom = view.findViewById(R.id.write_fill_random)
+
+            writeSlots = view.findViewById<AppCompatButton>(R.id.write_slot_count).apply {
+                text = getString(R.string.write_slots, 1)
+                setOnClickListener {
+                    settings.addChangeListener(writeTagAdapter)
+                    onBottomSheetChanged(SHEET.WRITE)
+                    searchView.setQuery(settings.query, true)
+                    searchView.clearFocus()
+                    gattSlotCount.value.let { count ->
+                        writeTagAdapter?.setListener(object : WriteTagAdapter.OnAmiiboClickListener {
+                            override fun onAmiiboClicked(amiiboFile: AmiiboFile?) {}
+                            override fun onAmiiboImageClicked(amiiboFile: AmiiboFile?) {}
+                            override fun onAmiiboListClicked(amiiboList: ArrayList<AmiiboFile?>?) {
+                                if (!amiiboList.isNullOrEmpty()) writeAmiiboFileCollection(amiiboList)
+                            }
+
+                            override fun onAmiiboDataClicked(amiiboFile: AmiiboFile?, count: Int) {
+                                CoroutineScope(Dispatchers.IO).launch {
+                                    amiiboFile?.let {
+                                        val amiiboData = it.withRandomSerials(keyManager, count)
+                                        withContext(Dispatchers.Main) {
+                                            writeAmiiboDataCollection(amiiboData)
+                                        }
                                     }
                                 }
                             }
+                        }, count, writeRandom?.isChecked ?: false)
+                    }
+                    bottomSheet?.setState(BottomSheetBehavior.STATE_EXPANDED)
+                }
+            }
+
+            eraseSlots = view.findViewById<AppCompatButton>(R.id.erase_slot_count).apply {
+                text = getString(R.string.erase_slots, 0)
+                setOnClickListener {
+                    AlertDialog.Builder(requireContext())
+                        .setMessage(R.string.gatt_erase_confirm)
+                        .setPositiveButton(R.string.cancel) { dialog: DialogInterface, _: Int ->
+                            dialog.dismiss()
                         }
-                    }, count, writeRandom?.isChecked ?: false)
+                        .setNegativeButton(R.string.proceed) { _: DialogInterface?, _: Int ->
+                            showProcessingNotice(false)
+                            serviceBluup?.clearStorage(currentCount)
+                        }
+                        .show()
                 }
-                bottomSheet?.setState(BottomSheetBehavior.STATE_EXPANDED)
             }
-        }
 
-        eraseSlots = view.findViewById<AppCompatButton>(R.id.erase_slot_count).apply {
-            text = getString(R.string.erase_slots, 0)
-            setOnClickListener {
-                AlertDialog.Builder(requireContext())
-                    .setMessage(R.string.gatt_erase_confirm)
-                    .setPositiveButton(R.string.cancel) { dialog: DialogInterface, _: Int ->
-                        dialog.dismiss()
+            gattSlotCount = view.findViewById<NumberPicker>(R.id.number_picker_slot).apply {
+                if (TagMo.isUserInputEnabled) setLayerType(View.LAYER_TYPE_SOFTWARE, null)
+                setOnValueChangedListener { _, _, newVal ->
+                    if (maxSlotCount - currentCount > 0)
+                        writeSlots?.text = getString(R.string.write_slots, newVal)
+                }
+            }
+
+            writeSlotsLayout = view.findViewById(R.id.write_list_slots)
+
+            view.findViewById<RecyclerView>(R.id.amiibo_files_list).apply {
+                setHasFixedSize(true)
+                setItemViewCacheSize(40)
+                layoutManager = if (settings.amiiboView == BrowserSettings.VIEW.IMAGE.value)
+                    GridLayoutManager(activity, activity.columnCount).apply {
+                        initialPrefetchItemCount = 10
                     }
-                    .setNegativeButton(R.string.proceed) { _: DialogInterface?, _: Int ->
-                        showProcessingNotice(false)
-                        serviceBluup?.clearStorage(currentCount)
+                else
+                    LinearLayoutManager(activity).apply {
+                        initialPrefetchItemCount = 10
                     }
-                    .show()
+                writeTagAdapter = WriteTagAdapter(settings).also { adapter = it }
             }
-        }
-
-        gattSlotCount = view.findViewById<NumberPicker>(R.id.number_picker_slot).apply {
-            if (TagMo.isUserInputEnabled) setLayerType(View.LAYER_TYPE_SOFTWARE, null)
-            setOnValueChangedListener { _, _, newVal ->
-                if (maxSlotCount - currentCount > 0)
-                    writeSlots?.text = getString(R.string.write_slots, newVal)
-            }
-        }
-
-        writeSlotsLayout = view.findViewById(R.id.write_list_slots)
-
-        view.findViewById<RecyclerView>(R.id.amiibo_files_list).apply {
-            setHasFixedSize(true)
-            setItemViewCacheSize(40)
-            layoutManager = if (settings.amiiboView == BrowserSettings.VIEW.IMAGE.value)
-                GridLayoutManager(activity, activity.columnCount).apply {
-                    initialPrefetchItemCount = 10
-                }
-            else
-                LinearLayoutManager(activity).apply {
-                    initialPrefetchItemCount = 10
-                }
-            writeTagAdapter = WriteTagAdapter(settings).also { adapter = it }
         }
 
         val toggle = view.findViewById<AppCompatImageView>(R.id.toggle)
@@ -887,7 +895,7 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
                 showConnectionNotice()
                 startBluupService()
             }
-           isEnabled = detectedType != DEVICE.PUCK
+            isEnabled = detectedType != DEVICE.PUCK
         }
 
         item.findViewById<View>(R.id.connect_puck).run {

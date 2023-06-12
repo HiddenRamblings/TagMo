@@ -212,8 +212,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
         }
 
         nfcFab = findViewById<FABulous>(R.id.nfc_fab).apply {
-            x = prefs.fabulousX(this)
-            y = prefs.fabulousY(this)
+            loadSavedPosition(prefs)
             setOnMoveListener(object : FABulous.OnViewMovedListener {
                 override fun onActionMove(x: Float, y: Float) {
                     prefs.fabulousX(x)
@@ -1736,8 +1735,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
             override fun onSnackbarHidden(fakeSnackbar: AnimatedLinearLayout) {
                 viewPager.postDelayed({
                     setFoomiiboVisibility()
-                    nfcFab.x = prefs.fabulousX(nfcFab)
-                    nfcFab.y = prefs.fabulousY(nfcFab)
+                    nfcFab.loadSavedPosition(prefs)
                 }, TagMo.uiDelay.toLong())
                 snackbarListener = null
             }
@@ -1772,8 +1770,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
             override fun onSnackbarHidden(fakeSnackbar: AnimatedLinearLayout) {
                 viewPager.postDelayed({
                     setFoomiiboVisibility()
-                    nfcFab.x = prefs.fabulousX(nfcFab)
-                    nfcFab.y = prefs.fabulousY(nfcFab)
+                    nfcFab.loadSavedPosition(prefs)
                 }, TagMo.uiDelay.toLong())
                 snackbarListener = null
             }

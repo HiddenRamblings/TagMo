@@ -2,6 +2,7 @@ package com.hiddenramblings.tagmo.fragment
 
 import android.annotation.SuppressLint
 import android.content.ActivityNotFoundException
+import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
 import android.content.res.Configuration
@@ -109,6 +110,13 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
         }
     }
 
+    private var browserActivity: BrowserActivity? = null
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        if (context is BrowserActivity) browserActivity = context
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -120,126 +128,127 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val activity = requireActivity() as BrowserActivity
-        settings = activity.settings ?: BrowserSettings().initialize()
+        browserActivity?.let { activity ->
+            settings = activity.settings ?: BrowserSettings().initialize()
 
-        chipList = view.findViewById(R.id.chip_list)
-        chipList?.isGone = true
+            chipList = view.findViewById(R.id.chip_list)
+            chipList?.isGone = true
 
-        browserWrapper = view.findViewById<SwipeRefreshLayout>(R.id.browser_wrapper).apply {
-            setOnRefreshListener {
-                if (!activity.isRefreshing) activity.onRefresh(true)
-                isRefreshing = false
-            }
-        }
-        browserContent = view.findViewById<RecyclerView>(R.id.browser_content).apply {
-            setItemViewCacheSize(40)
-            layoutManager = if (settings.amiiboView == BrowserSettings.VIEW.IMAGE.value)
-                GridLayoutManager(activity, activity.columnCount).apply {
-                    initialPrefetchItemCount = 10
+            browserWrapper = view.findViewById<SwipeRefreshLayout>(R.id.browser_wrapper).apply {
+                setOnRefreshListener {
+                    if (!activity.isRefreshing) activity.onRefresh(true)
+                    isRefreshing = false
                 }
-            else
-                LinearLayoutManager(activity).apply {
-                    initialPrefetchItemCount = 10
-                }
-            adapter = BrowserAdapter(settings, activity).also {
-                settings.addChangeListener(it)
             }
-            FastScrollerBuilder(this).build().setPadding(0, (-2).toPx,0,0)
-        }
-
-        foomiiboContent = view.findViewById<RecyclerView>(R.id.foomiibo_list).apply {
-            setItemViewCacheSize(40)
-            layoutManager = if (settings.amiiboView == BrowserSettings.VIEW.IMAGE.value)
-                GridLayoutManager(activity, activity.columnCount).apply {
-                    initialPrefetchItemCount = 10
-                }
-            else
-                LinearLayoutManager(activity).apply {
-                    initialPrefetchItemCount = 10
-                }
-            adapter = FoomiiboAdapter(settings, this@BrowserFragment).also {
-                settings.addChangeListener(it)
-            }
-            FastScrollerBuilder(this).build()
-        }
-
-        currentFolderView = view.findViewById(R.id.current_folder)
-        view.findViewById<RecyclerView>(R.id.folders_list).apply {
-            // setItemViewCacheSize(40)
-            layoutManager = LinearLayoutManager(requireContext()).apply {
-                // initialPrefetchItemCount = 5
-            }
-            adapter = FoldersAdapter(settings)
-            settings.addChangeListener(adapter as? BrowserSettingsListener)
-        }
-
-        val toggle = view.findViewById<AppCompatImageView>(R.id.toggle)
-        bottomSheet = BottomSheetBehavior.from(view.findViewById(R.id.bottom_sheet)).apply {
-            state = BottomSheetBehavior.STATE_COLLAPSED
-            addBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback() {
-                override fun onStateChanged(bottomSheet: View, newState: Int) {
-                    if (newState == BottomSheetBehavior.STATE_COLLAPSED) {
-                        toggle.setImageResource(R.drawable.ic_expand_less_white_24dp)
-                    } else if (newState == BottomSheetBehavior.STATE_EXPANDED) {
-                        setFolderText(settings)
-                        setStorageButtons()
-                        toggle.setImageResource(R.drawable.ic_expand_more_white_24dp)
+            browserContent = view.findViewById<RecyclerView>(R.id.browser_content).apply {
+                setItemViewCacheSize(40)
+                layoutManager = if (settings.amiiboView == BrowserSettings.VIEW.IMAGE.value)
+                    GridLayoutManager(activity, activity.columnCount).apply {
+                        initialPrefetchItemCount = 10
                     }
+                else
+                    LinearLayoutManager(activity).apply {
+                        initialPrefetchItemCount = 10
+                    }
+                adapter = BrowserAdapter(settings, activity).also {
+                    settings.addChangeListener(it)
                 }
+                FastScrollerBuilder(this).build().setPadding(0, (-2).toPx,0,0)
+            }
 
-                override fun onSlide(bottomSheet: View, slideOffset: Float) {}
-            })
-        }.also { bottomSheet ->
-            toggle.setOnClickListener {
-                if (bottomSheet.state == BottomSheetBehavior.STATE_COLLAPSED) {
-                    bottomSheet.setState(BottomSheetBehavior.STATE_EXPANDED)
-                } else {
-                    bottomSheet.setState(BottomSheetBehavior.STATE_COLLAPSED)
+            foomiiboContent = view.findViewById<RecyclerView>(R.id.foomiibo_list).apply {
+                setItemViewCacheSize(40)
+                layoutManager = if (settings.amiiboView == BrowserSettings.VIEW.IMAGE.value)
+                    GridLayoutManager(activity, activity.columnCount).apply {
+                        initialPrefetchItemCount = 10
+                    }
+                else
+                    LinearLayoutManager(activity).apply {
+                        initialPrefetchItemCount = 10
+                    }
+                adapter = FoomiiboAdapter(settings, this@BrowserFragment).also {
+                    settings.addChangeListener(it)
                 }
+                FastScrollerBuilder(this).build()
             }
-        }
 
-        val foomiiboOptions = view.findViewById<LinearLayout>(R.id.foomiibo_options)
-        foomiiboOptions.findViewById<View>(R.id.clear_foomiibo_set).setOnClickListener {
-            clearFoomiiboSet(activity)
-        }
-        foomiiboOptions.findViewById<View>(R.id.build_foomiibo_set).setOnClickListener {
-            buildFoomiiboSet(activity)
-        }
-
-        view.findViewById<View>(R.id.list_divider).apply {
-            isGone = true
-            browserWrapper?.layoutParams?.let { layoutParams ->
-                if (BuildConfig.WEAR_OS) layoutParams.height = layoutParams.height / 3
+            currentFolderView = view.findViewById(R.id.current_folder)
+            view.findViewById<RecyclerView>(R.id.folders_list).apply {
+                // setItemViewCacheSize(40)
+                layoutManager = LinearLayoutManager(requireContext()).apply {
+                    // initialPrefetchItemCount = 5
+                }
+                adapter = FoldersAdapter(settings)
+                settings.addChangeListener(adapter as? BrowserSettingsListener)
             }
-            setOnTouchListener { v: View, event: MotionEvent ->
-                browserWrapper?.let {
-                    it.layoutParams?.let { layoutParams ->
-                        val srcHeight = layoutParams.height
-                        val y = event.y.toInt()
-                        if (layoutParams.height + y < -0.5f) return@setOnTouchListener true
-                        if (event.action == MotionEvent.ACTION_MOVE) {
-                            layoutParams.height += y
-                        } else if (event.action == MotionEvent.ACTION_UP) {
-                            if (layoutParams.height + y < 0f) {
-                                layoutParams.height = 0
-                            } else {
-                                val peekHeight = bottomSheet?.peekHeight ?: 0
-                                val minHeight = peekHeight + v.height + requireContext().resources
-                                    .getDimension(R.dimen.sliding_bar_margin)
-                                if (layoutParams.height > view.height - minHeight.toInt())
-                                    layoutParams.height = view.height - minHeight.toInt()
-                            }
+
+            val toggle = view.findViewById<AppCompatImageView>(R.id.toggle)
+            bottomSheet = BottomSheetBehavior.from(view.findViewById(R.id.bottom_sheet)).apply {
+                state = BottomSheetBehavior.STATE_COLLAPSED
+                addBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback() {
+                    override fun onStateChanged(bottomSheet: View, newState: Int) {
+                        if (newState == BottomSheetBehavior.STATE_COLLAPSED) {
+                            toggle.setImageResource(R.drawable.ic_expand_less_white_24dp)
+                        } else if (newState == BottomSheetBehavior.STATE_EXPANDED) {
+                            setFolderText(settings)
+                            setStorageButtons()
+                            toggle.setImageResource(R.drawable.ic_expand_more_white_24dp)
                         }
-                        if (srcHeight != layoutParams.height) it.requestLayout()
-                        prefs.foomiiboOffset(it.layoutParams.height)
+                    }
+
+                    override fun onSlide(bottomSheet: View, slideOffset: Float) {}
+                })
+            }.also { bottomSheet ->
+                toggle.setOnClickListener {
+                    if (bottomSheet.state == BottomSheetBehavior.STATE_COLLAPSED) {
+                        bottomSheet.setState(BottomSheetBehavior.STATE_EXPANDED)
+                    } else {
+                        bottomSheet.setState(BottomSheetBehavior.STATE_COLLAPSED)
                     }
                 }
-                true
             }
+
+            val foomiiboOptions = view.findViewById<LinearLayout>(R.id.foomiibo_options)
+            foomiiboOptions.findViewById<View>(R.id.clear_foomiibo_set).setOnClickListener {
+                clearFoomiiboSet(activity)
+            }
+            foomiiboOptions.findViewById<View>(R.id.build_foomiibo_set).setOnClickListener {
+                buildFoomiiboSet(activity)
+            }
+
+            view.findViewById<View>(R.id.list_divider).apply {
+                isGone = true
+                browserWrapper?.layoutParams?.let { layoutParams ->
+                    if (BuildConfig.WEAR_OS) layoutParams.height = layoutParams.height / 3
+                }
+                setOnTouchListener { v: View, event: MotionEvent ->
+                    browserWrapper?.let {
+                        it.layoutParams?.let { layoutParams ->
+                            val srcHeight = layoutParams.height
+                            val y = event.y.toInt()
+                            if (layoutParams.height + y < -0.5f) return@setOnTouchListener true
+                            if (event.action == MotionEvent.ACTION_MOVE) {
+                                layoutParams.height += y
+                            } else if (event.action == MotionEvent.ACTION_UP) {
+                                if (layoutParams.height + y < 0f) {
+                                    layoutParams.height = 0
+                                } else {
+                                    val peekHeight = bottomSheet?.peekHeight ?: 0
+                                    val minHeight = peekHeight + v.height + requireContext().resources
+                                        .getDimension(R.dimen.sliding_bar_margin)
+                                    if (layoutParams.height > view.height - minHeight.toInt())
+                                        layoutParams.height = view.height - minHeight.toInt()
+                                }
+                            }
+                            if (srcHeight != layoutParams.height) it.requestLayout()
+                            prefs.foomiiboOffset(it.layoutParams.height)
+                        }
+                    }
+                    true
+                }
+            }
+            activity.onFilterContentsLoaded()
         }
-        activity.onFilterContentsLoaded()
     }
 
     @SuppressLint("InflateParams")
@@ -366,39 +375,39 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
 
     fun setAmiiboStats() {
         statsHandler.removeCallbacksAndMessages(null)
-        if (!isAdded || null == activity) return
-        val activity = requireActivity() as BrowserActivity
-        currentFolderView?.run {
-            val size = settings.amiiboFiles.size
-            if (size <= 0) return@run
-            gravity = Gravity.CENTER
-            settings.amiiboManager?.let {
-                var count = 0
-                if (!settings.query.isNullOrEmpty()) {
-                    val stats = getAdapterStats(it)
-                    text = getString(
-                        R.string.amiibo_collected,
-                        stats[0], stats[1], activity.getQueryCount(settings.query)
-                    )
-                } else if (!settings.isFilterEmpty) {
-                    val stats = getAdapterStats(it)
-                    text = getString(
-                        R.string.amiibo_collected,
-                        stats[0], stats[1], activity.filteredCount
-                    )
-                } else {
-                    it.amiibos.values.forEach { amiibo ->
-                        settings.amiiboFiles.forEach { amiiboFile ->
-                            if (amiibo.id == amiiboFile?.id) count += 1
+        browserActivity?.let { activity ->
+            currentFolderView?.run {
+                val size = settings.amiiboFiles.size
+                if (size <= 0) return@run
+                gravity = Gravity.CENTER
+                settings.amiiboManager?.let {
+                    var count = 0
+                    if (!settings.query.isNullOrEmpty()) {
+                        val stats = getAdapterStats(it)
+                        text = getString(
+                            R.string.amiibo_collected,
+                            stats[0], stats[1], activity.getQueryCount(settings.query)
+                        )
+                    } else if (!settings.isFilterEmpty) {
+                        val stats = getAdapterStats(it)
+                        text = getString(
+                            R.string.amiibo_collected,
+                            stats[0], stats[1], activity.filteredCount
+                        )
+                    } else {
+                        it.amiibos.values.forEach { amiibo ->
+                            settings.amiiboFiles.forEach { amiiboFile ->
+                                if (amiibo.id == amiiboFile?.id) count += 1
+                            }
                         }
+                        text = getString(
+                            R.string.amiibo_collected,
+                            size, count, it.amiibos.size
+                        )
                     }
-                    text = getString(
-                        R.string.amiibo_collected,
-                        size, count, it.amiibos.size
-                    )
+                } ?: size.let {
+                    text = getString(R.string.files_displayed, it)
                 }
-            } ?: size.let {
-                text = getString(R.string.files_displayed, it)
             }
         }
     }
@@ -450,72 +459,13 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
 
     fun setStorageButtons() {
         if (BuildConfig.WEAR_OS) return
-        if (activity !is BrowserActivity) return
-        val activity = requireActivity() as BrowserActivity
-        val switchStorageRoot = requireView().findViewById<AppCompatButton>(R.id.switch_storage_root)
-        val switchStorageType = requireView().findViewById<AppCompatButton>(R.id.switch_storage_type)
-        if (prefs.isDocumentStorage) {
-            switchStorageRoot?.let { button ->
-                button.isVisible = true
-                button.setText(R.string.document_storage_root)
-                button.setOnClickListener {
-                    bottomSheet?.state = BottomSheetBehavior.STATE_COLLAPSED
-                    try {
-                        activity.onDocumentRequested()
-                    } catch (anf: ActivityNotFoundException) {
-                        Toasty(activity).Long(R.string.storage_unavailable)
-                    }
-                }
-            }
-            switchStorageType?.let { button ->
-                if (Version.isRedVelvet && !BuildConfig.GOOGLE_PLAY) {
-                    button.isVisible = true
-                    button.setText(R.string.grant_file_permission)
-                    button.setOnClickListener {
-                        bottomSheet?.state = BottomSheetBehavior.STATE_COLLAPSED
-                        if (Environment.isExternalStorageManager()) {
-                            settings.browserRootDocument = null
-                            settings.notifyChanges()
-                            activity.onStorageEnabled()
-                        } else {
-                            activity.requestScopedStorage()
-                        }
-                    }
-                } else {
-                    button.isGone = true
-                }
-            }
-        } else {
-            val internal = prefs.preferEmulated()
-            val storage = Storage.getFile(internal)
-            if (storage?.exists() == true && Storage.hasPhysicalStorage()) {
+        browserActivity?.let { activity ->
+            val switchStorageRoot = requireView().findViewById<AppCompatButton>(R.id.switch_storage_root)
+            val switchStorageType = requireView().findViewById<AppCompatButton>(R.id.switch_storage_type)
+            if (prefs.isDocumentStorage) {
                 switchStorageRoot?.let { button ->
                     button.isVisible = true
-                    button.setText(if (internal)
-                        R.string.emulated_storage_root
-                    else
-                        R.string.physical_storage_root
-                    )
-                    button.setOnClickListener {
-                        val external = !prefs.preferEmulated()
-                        button.setText(if (external)
-                            R.string.emulated_storage_root
-                        else
-                            R.string.physical_storage_root
-                        )
-                        settings.browserRootFolder = Storage.getFile(external)
-                        settings.notifyChanges()
-                        prefs.preferEmulated(external)
-                    }
-                }
-
-            } else {
-                switchStorageRoot?.isGone = true
-            }
-            switchStorageType?.let { button ->
-                if (Version.isRedVelvet) {
-                    button.isVisible = true
-                    button.setText(R.string.force_document_storage)
+                    button.setText(R.string.document_storage_root)
                     button.setOnClickListener {
                         bottomSheet?.state = BottomSheetBehavior.STATE_COLLAPSED
                         try {
@@ -524,8 +474,67 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
                             Toasty(activity).Long(R.string.storage_unavailable)
                         }
                     }
+                }
+                switchStorageType?.let { button ->
+                    if (Version.isRedVelvet && !BuildConfig.GOOGLE_PLAY) {
+                        button.isVisible = true
+                        button.setText(R.string.grant_file_permission)
+                        button.setOnClickListener {
+                            bottomSheet?.state = BottomSheetBehavior.STATE_COLLAPSED
+                            if (Environment.isExternalStorageManager()) {
+                                settings.browserRootDocument = null
+                                settings.notifyChanges()
+                                activity.onStorageEnabled()
+                            } else {
+                                activity.requestScopedStorage()
+                            }
+                        }
+                    } else {
+                        button.isGone = true
+                    }
+                }
+            } else {
+                val internal = prefs.preferEmulated()
+                val storage = Storage.getFile(internal)
+                if (storage?.exists() == true && Storage.hasPhysicalStorage()) {
+                    switchStorageRoot?.let { button ->
+                        button.isVisible = true
+                        button.setText(if (internal)
+                            R.string.emulated_storage_root
+                        else
+                            R.string.physical_storage_root
+                        )
+                        button.setOnClickListener {
+                            val external = !prefs.preferEmulated()
+                            button.setText(if (external)
+                                R.string.emulated_storage_root
+                            else
+                                R.string.physical_storage_root
+                            )
+                            settings.browserRootFolder = Storage.getFile(external)
+                            settings.notifyChanges()
+                            prefs.preferEmulated(external)
+                        }
+                    }
+
                 } else {
-                    button.isGone = true
+                    switchStorageRoot?.isGone = true
+                }
+                switchStorageType?.let { button ->
+                    if (Version.isRedVelvet) {
+                        button.isVisible = true
+                        button.setText(R.string.force_document_storage)
+                        button.setOnClickListener {
+                            bottomSheet?.state = BottomSheetBehavior.STATE_COLLAPSED
+                            try {
+                                activity.onDocumentRequested()
+                            } catch (anf: ActivityNotFoundException) {
+                                Toasty(activity).Long(R.string.storage_unavailable)
+                            }
+                        }
+                    } else {
+                        button.isGone = true
+                    }
                 }
             }
         }
@@ -642,37 +651,36 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
     }
 
     override fun onFoomiiboClicked(itemView: View?, amiibo: Amiibo?) {
-        if (activity !is BrowserActivity) return
-        val activity = requireActivity() as BrowserActivity
-
-        var tagData = byteArrayOf()
-        for (data in resultData) {
+        browserActivity?.let { activity ->
+            var tagData = byteArrayOf()
+            for (data in resultData) {
+                try {
+                    if (data.isNotEmpty() && Amiibo.dataToId(data) == amiibo?.id) {
+                        tagData = data
+                        break
+                    }
+                } catch (ignored: Exception) { }
+            }
+            if (tagData.isEmpty() && null != amiibo)
+                tagData = Foomiibo.getSignedData(Amiibo.idToHex(amiibo.id))
             try {
-                if (data.isNotEmpty() && Amiibo.dataToId(data) == amiibo?.id) {
-                    tagData = data
-                    break
-                }
+                tagData = TagArray.getValidatedData(keyManager, tagData)!!
             } catch (ignored: Exception) { }
-        }
-        if (tagData.isEmpty() && null != amiibo)
-            tagData = Foomiibo.getSignedData(Amiibo.idToHex(amiibo.id))
-        try {
-            tagData = TagArray.getValidatedData(keyManager, tagData)!!
-        } catch (ignored: Exception) { }
 
-        val menuOptions = itemView?.findViewById<LinearLayout>(R.id.menu_options)
-        menuOptions?.let {
-            val toolbar = it.findViewById<Toolbar>(R.id.toolbar)
-            if (settings.amiiboView != BrowserSettings.VIEW.IMAGE.value) {
-                if (!it.isVisible)
+            val menuOptions = itemView?.findViewById<LinearLayout>(R.id.menu_options)
+            menuOptions?.let {
+                val toolbar = it.findViewById<Toolbar>(R.id.toolbar)
+                if (settings.amiiboView != BrowserSettings.VIEW.IMAGE.value) {
+                    if (!it.isVisible)
+                        activity.onCreateToolbarMenu(this, toolbar, tagData, itemView)
+                    it.isGone = it.isVisible
+                    val txtUsage = itemView.findViewById<TextView>(R.id.txtUsage)
+                    if (!txtUsage.isVisible) getGameCompatibility(txtUsage, tagData)
+                    txtUsage.isGone = txtUsage.isVisible
+                } else {
                     activity.onCreateToolbarMenu(this, toolbar, tagData, itemView)
-                it.isGone = it.isVisible
-                val txtUsage = itemView.findViewById<TextView>(R.id.txtUsage)
-                if (!txtUsage.isVisible) getGameCompatibility(txtUsage, tagData)
-                txtUsage.isGone = txtUsage.isVisible
-            } else {
-                activity.onCreateToolbarMenu(this, toolbar, tagData, itemView)
-                activity.updateAmiiboView(tagData, null)
+                    activity.updateAmiiboView(tagData, null)
+                }
             }
         }
     }
@@ -693,12 +701,13 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
             tagData = TagArray.getValidatedData(keyManager, tagData)!!
         } catch (ignored: Exception) { }
         if (settings.amiiboView != BrowserSettings.VIEW.IMAGE.value) {
-            val activity = requireActivity() as BrowserActivity
-            itemView?.let { view ->
-                view.findViewById<View>(R.id.menu_options).findViewById<Toolbar>(R.id.toolbar).also {
-                    activity.onCreateToolbarMenu(this, it, tagData, view)
+            browserActivity?.let { activity ->
+                itemView?.let { view ->
+                    view.findViewById<View>(R.id.menu_options).findViewById<Toolbar>(R.id.toolbar).also {
+                        activity.onCreateToolbarMenu(this, it, tagData, view)
+                    }
+                    getGameCompatibility(view.findViewById(R.id.txtUsage), tagData)
                 }
-                getGameCompatibility(view.findViewById(R.id.txtUsage), tagData)
             }
         }
     }

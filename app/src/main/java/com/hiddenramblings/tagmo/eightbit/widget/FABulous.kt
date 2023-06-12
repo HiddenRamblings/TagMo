@@ -25,6 +25,7 @@ import android.view.View
 import android.view.View.OnTouchListener
 import android.view.ViewGroup.MarginLayoutParams
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.hiddenramblings.tagmo.Preferences
 import kotlin.math.abs
 
 class FABulous : FloatingActionButton, OnTouchListener {
@@ -73,7 +74,7 @@ class FABulous : FloatingActionButton, OnTouchListener {
         newY = layoutParams.topMargin.toFloat().coerceAtLeast(newY)
         // Don't allow the FAB past the bottom of the parent
         newY = (parentHeight - viewHeight - layoutParams.bottomMargin).toFloat().coerceAtMost(newY)
-        
+
         return floatArrayOf(newX, newY)
     }
 
@@ -86,10 +87,10 @@ class FABulous : FloatingActionButton, OnTouchListener {
             dY = view.y - downRawY
             true // Consumed
         } else if (action == MotionEvent.ACTION_MOVE) {
-            val coords = verifyBounds(view, motionEvent.rawX + dX, motionEvent.rawY + dY)
+            val bounds = verifyBounds(view, motionEvent.rawX + dX, motionEvent.rawY + dY)
             view.animate()
-                .x(coords[0])
-                .y(coords[1])
+                .x(bounds[0])
+                .y(bounds[1])
                 .setDuration(0)
                 .setListener(object : AnimatorListener{
                     override fun onAnimationStart(p0: Animator) { }
@@ -129,8 +130,12 @@ class FABulous : FloatingActionButton, OnTouchListener {
 
     override fun onConfigurationChanged(newConfig: Configuration?) {
         super.onConfigurationChanged(newConfig)
-        val coords = verifyBounds(this, x, y)
-        animate().x(coords[0]).y(coords[1]).setDuration(0).start()
+        val bounds = verifyBounds(this, x, y)
+        animate().x(bounds[0]).y(bounds[1]).setDuration(0).start()
+    }
+
+    fun loadSavedPosition(prefs: Preferences) {
+        animate().x(prefs.fabulousX(this)).y(prefs.fabulousY(this)).setDuration(0).start()
     }
 
     companion object {

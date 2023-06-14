@@ -53,7 +53,7 @@ class FABulous : FloatingActionButton, OnTouchListener {
         setOnTouchListener(this)
     }
 
-    private fun verifyBounds(view: View, x: Float, y: Float) : FloatArray {
+    private fun getViewCoordinates(view: View, x: Float, y: Float) : FloatArray {
         val layoutParams = view.layoutParams as MarginLayoutParams
         val viewParent = view.parent as View
 
@@ -87,7 +87,7 @@ class FABulous : FloatingActionButton, OnTouchListener {
             dY = view.y - downRawY
             true // Consumed
         } else if (action == MotionEvent.ACTION_MOVE) {
-            val bounds = verifyBounds(view, motionEvent.rawX + dX, motionEvent.rawY + dY)
+            val bounds = getViewCoordinates(view, motionEvent.rawX + dX, motionEvent.rawY + dY)
             view.animate()
                 .x(bounds[0])
                 .y(bounds[1])
@@ -130,7 +130,7 @@ class FABulous : FloatingActionButton, OnTouchListener {
 
     override fun onConfigurationChanged(newConfig: Configuration?) {
         super.onConfigurationChanged(newConfig)
-        val bounds = verifyBounds(this, x, y)
+        val bounds = getViewCoordinates(this, x, y)
         animate().x(bounds[0]).y(bounds[1]).setDuration(0).start()
     }
 

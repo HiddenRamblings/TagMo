@@ -334,8 +334,10 @@ class NTAG215 : TagTechnology {
 
         @Throws(IOException::class)
         operator fun get(tag: Tag?): NTAG215? {
-            return getMifareUltralight(tag)?.apply { connect() }
-                ?: getNfcA(tag)?.apply { connect() }
+            val mifare = try {
+                getMifareUltralight(tag)?.apply { connect() }
+            } catch (ex: IOException) { null }
+            return mifare ?: getNfcA(tag)?.apply { connect() }
         }
     }
 }

@@ -1005,14 +1005,16 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
         }
         deviceDialog = AlertDialog.Builder(requireActivity()).setView(view).show().apply {
             mBluetoothAdapter?.bondedDevices?.forEach { device ->
-                deviceType = when {
-                    device.name.lowercase().startsWith("flask") -> DEVICE.FLASK
-                    device.name.lowercase().startsWith("slide") -> DEVICE.SLIDE
-                    else -> DEVICE.GATT
+                if (null != device.name) {
+                    deviceType = when {
+                        device.name.lowercase().startsWith("flask") -> DEVICE.FLASK
+                        device.name.lowercase().startsWith("slide") -> DEVICE.SLIDE
+                        else -> DEVICE.GATT
+                    }
+                    view.findViewById<LinearLayout>(R.id.bluetooth_paired)?.addView(
+                        displayScanResult(this, device, deviceType)
+                    )
                 }
-                view.findViewById<LinearLayout>(R.id.bluetooth_paired)?.addView(
-                    displayScanResult(this, device, deviceType)
-                )
             }
             scanBluetoothServices(this)
         }

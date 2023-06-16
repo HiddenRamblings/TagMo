@@ -24,7 +24,6 @@ import androidx.preference.ListPreference
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
 import androidx.preference.SwitchPreferenceCompat
-import com.android.billingclient.api.BillingFlowParams
 import com.google.android.material.snackbar.Snackbar
 import com.hiddenramblings.tagmo.BrowserActivity
 import com.hiddenramblings.tagmo.GlideApp
@@ -79,12 +78,22 @@ class SettingsFragment : PreferenceFragmentCompat() {
         }
     }
 
-    private val onImportAmiiboDatabase = registerForActivityResult(
+    private val onLoadKeyDocuments = registerForActivityResult(
+        ActivityResultContracts.OpenMultipleDocuments()
+    ) { documents: List<Uri> ->
+        if (documents.isNotEmpty()) { documents.forEach { validateKeys(it) } }
+    }
+
+    private val onImportAmiiboDB = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
     ) { result: ActivityResult ->
         if (result.resultCode != AppCompatActivity.RESULT_OK) return@registerForActivityResult
         result.data?.let { intent -> updateAmiiboDatabase(intent.data) }
     }
+
+    private val onImportAmiiboDBDocument = registerForActivityResult(
+        ActivityResultContracts.OpenDocument()
+    ) { document: Uri? -> document?.let { updateAmiiboDatabase(it) } }
 
     private var browserActivity: BrowserActivity? = null
 
@@ -531,34 +540,33 @@ class SettingsFragment : PreferenceFragmentCompat() {
     }
 
     private fun showFileChooser(title: String, resultCode: Int) {
-        Intent(
-            if (Version.isKitKat)
-                Intent.ACTION_OPEN_DOCUMENT
-            else
-                Intent.ACTION_GET_CONTENT
-        ).apply {
-            putExtra("android.content.extra.SHOW_ADVANCED", true)
-            putExtra("android.content.extra.FANCY", true)
-            when (resultCode) {
-                RESULT_KEYS -> {
-                    if (Version.isJellyBeanMR2)
-                        putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true)
-                    try {
-                        if (Version.isKitKat) {
-                            putExtra(Intent.EXTRA_MIME_TYPES, resources.getStringArray(R.array.mimetype_bin))
-                        }
-                        onLoadKeys.launch(Intent.createChooser(getIntent(this), title))
-                    } catch (ex: ActivityNotFoundException) {
-                        Debug.info(ex)
+        if (Version.isKitKat) {
+            try {
+                when (resultCode) {
+                    RESULT_KEYS -> {
+                        onLoadKeyDocuments.launch(resources.getStringArray(R.array.mimetype_bin))
+                    }
+                    RESULT_IMPORT_AMIIBO_DATABASE -> {
+                        onImportAmiiboDBDocument.launch(resources.getStringArray(R.array.mimetype_json))
                     }
                 }
-                RESULT_IMPORT_AMIIBO_DATABASE -> try {
-                    if (Version.isKitKat) {
-                        putExtra(Intent.EXTRA_MIME_TYPES,
-                            resources.getStringArray(R.array.mimetype_json)
-                        )
+            } catch (ex: ActivityNotFoundException) {
+                Debug.info(ex)
+            }
+        } else {
+            Intent(Intent.ACTION_GET_CONTENT).apply {
+                putExtra("android.content.extra.SHOW_ADVANCED", true)
+                putExtra("android.content.extra.FANCY", true)
+                try {
+                    when (resultCode) {
+                        RESULT_KEYS -> {
+                            if (Version.isJellyBeanMR2) putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true)
+                            onLoadKeys.launch(Intent.createChooser(getIntent(this), title))
+                        }
+                        RESULT_IMPORT_AMIIBO_DATABASE -> {
+                            onImportAmiiboDB.launch(Intent.createChooser(getIntent(this), title))
+                        }
                     }
-                    onImportAmiiboDatabase.launch(Intent.createChooser(getIntent(this), title))
                 } catch (ex: ActivityNotFoundException) {
                     Debug.info(ex)
                 }
@@ -607,7 +615,6 @@ class SettingsFragment : PreferenceFragmentCompat() {
                     val jsonObject = JSONObject(result)
                     val lastUpdatedAPI = jsonObject["lastUpdated"] as String
                     val lastUpdated = lastUpdatedAPI.substringBeforeLast(".") + "Z"
-                    val activity = requireActivity() as BrowserActivity
                     if (isMenuClicked) {
                         onDownloadRequested(lastUpdated)
                     } else if (activity.settings?.lastUpdatedAPI != lastUpdated) {

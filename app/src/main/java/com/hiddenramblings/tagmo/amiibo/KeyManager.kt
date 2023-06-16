@@ -57,6 +57,21 @@ class KeyManager(var context: Context) {
     }
 
     @Throws(IOException::class, NoSuchAlgorithmException::class)
+    private fun readKey(data: ByteArray) {
+        val md5 = MessageDigest.getInstance("MD5")
+        val hex = TagArray.bytesToHex(md5.digest(data)).uppercase()
+        if (FIXED_KEY_MD5 == hex) {
+            saveKeyFile(FIXED_KEY_MD5, data)
+            fixedKey = loadKeyFromStorage(FIXED_KEY_MD5)
+        } else if (UNFIXED_KEY_MD5 == hex) {
+            saveKeyFile(UNFIXED_KEY_MD5, data)
+            unfixedKey = loadKeyFromStorage(UNFIXED_KEY_MD5)
+        } else {
+            throw IOException(context.getString(R.string.key_signature_error))
+        }
+    }
+
+    @Throws(IOException::class, NoSuchAlgorithmException::class)
     fun evaluateKey(strm: InputStream) {
         val length = strm.available()
         when {
@@ -79,21 +94,6 @@ class KeyManager(var context: Context) {
             else -> {
                 throw IOException(context.getString(R.string.key_size_error))
             }
-        }
-    }
-
-    @Throws(IOException::class, NoSuchAlgorithmException::class)
-    private fun readKey(data: ByteArray) {
-        val md5 = MessageDigest.getInstance("MD5")
-        val hex = TagArray.bytesToHex(md5.digest(data)).uppercase()
-        if (FIXED_KEY_MD5 == hex) {
-            saveKeyFile(FIXED_KEY_MD5, data)
-            fixedKey = loadKeyFromStorage(FIXED_KEY_MD5)
-        } else if (UNFIXED_KEY_MD5 == hex) {
-            saveKeyFile(UNFIXED_KEY_MD5, data)
-            unfixedKey = loadKeyFromStorage(UNFIXED_KEY_MD5)
-        } else {
-            throw IOException(context.getString(R.string.key_signature_error))
         }
     }
 

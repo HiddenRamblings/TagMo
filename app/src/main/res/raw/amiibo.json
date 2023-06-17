@@ -722,6 +722,28 @@
 				"na": "2023-05-12"
 			}
 		},
+		"0x0100000004190902":
+		{
+			"name": "Zelda - Tears of the Kingdom",
+			"release":
+			{
+				"au": null,
+				"eu": null,
+				"jp": null,
+				"na": null
+			}
+		},
+		"0x01000000041a0902":
+		{
+			"name": "Ganon - Tears of the Kingdom",
+			"release":
+			{
+				"au": null,
+				"eu": null,
+				"jp": null,
+				"na": null
+			}
+		},
 		"0x0100010000160002":
 		{
 			"name": "Toon Link",

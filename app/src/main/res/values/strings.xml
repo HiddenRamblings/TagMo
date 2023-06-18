@@ -60,6 +60,7 @@
     <string name="browser">Browser</string>
     <string name="retry">Retry</string>
     <string name="save">Save</string>
+    <string name="export">Export</string>
     <string name="cache">Cache</string>
     <string name="write">Write</string>
     <string name="erase">Erase</string>

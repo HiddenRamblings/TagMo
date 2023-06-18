@@ -15,8 +15,8 @@ import com.hiddenramblings.tagmo.adapter.FoldersAdapter.FolderViewHolder
 import com.hiddenramblings.tagmo.eightbit.os.Storage
 import java.io.File
 
-class FoldersAdapter(var settings: BrowserSettings?) : RecyclerView.Adapter<FolderViewHolder>(),
-    BrowserSettingsListener {
+class FoldersAdapter(var settings: BrowserSettings?) :
+    RecyclerView.Adapter<FolderViewHolder>(), BrowserSettingsListener {
     private var mPrefs = Preferences(TagMo.appContext)
     var data: ArrayList<File?> = arrayListOf()
     private var rootFolder: File? = null

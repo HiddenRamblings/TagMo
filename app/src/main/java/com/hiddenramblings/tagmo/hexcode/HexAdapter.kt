@@ -3,15 +3,19 @@ package com.hiddenramblings.tagmo.hexcode
 import android.annotation.SuppressLint
 import android.graphics.Color
 import android.graphics.Typeface
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
+import android.widget.EditText
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import com.hiddenramblings.tagmo.R
 
+
 class HexAdapter(tagData: ByteArray) : RecyclerView.Adapter<HexAdapter.ViewHolder>() {
+    private var recyclerView: RecyclerView? = null
     private val data: Array<Array<HexItem?>>
 
     init {
@@ -63,6 +67,11 @@ class HexAdapter(tagData: ByteArray) : RecyclerView.Adapter<HexAdapter.ViewHolde
         return data[i]
     }
 
+    override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
+        super.onAttachedToRecyclerView(recyclerView)
+        this.recyclerView = recyclerView
+    }
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         return ViewHolder(
             LayoutInflater
@@ -75,22 +84,44 @@ class HexAdapter(tagData: ByteArray) : RecyclerView.Adapter<HexAdapter.ViewHolde
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val row = getItem(position)
         holder.textView.forEachIndexed { i, view ->
-            val hexItem = row[i]
-            if (hexItem == null) {
-                view!!.setTextColor(Color.TRANSPARENT)
-                view.setBackgroundColor(Color.TRANSPARENT)
-            } else {
-                view!!.text = hexItem.text
-                if (hexItem !is HexHeader) view.setTextColor(Color.BLACK)
-                view.setTypeface(Typeface.MONOSPACE, hexItem.textStyle)
-                view.setBackgroundColor(hexItem.backgroundColor)
-                view.isVisible = true
+            view?.let {
+                val hexItem = row[i]
+                if (hexItem == null) {
+                    it.isEnabled = false
+                    it.setTextColor(Color.TRANSPARENT)
+                    it.setBackgroundColor(Color.TRANSPARENT)
+                } else {
+                    it.setText(hexItem.text)
+                    if (hexItem is HexHeader) {
+                        it.isEnabled = false
+                        it.isLongClickable = false
+                    } else {
+                        it.setTextColor(Color.BLACK)
+                        it.addTextChangedListener(object : TextWatcher {
+                            override fun beforeTextChanged(
+                                s: CharSequence, start: Int, count: Int, after: Int
+                            ) { }
+
+                            override fun onTextChanged(
+                                s: CharSequence, start: Int, before: Int, count: Int
+                            ) {
+                                hexItem.text = s.toString()
+                                data[holder.absoluteAdapterPosition][i] = hexItem
+                            }
+
+                            override fun afterTextChanged(s: Editable?) { }
+                        })
+                    }
+                    it.setTypeface(Typeface.MONOSPACE, hexItem.textStyle)
+                    it.setBackgroundColor(hexItem.backgroundColor)
+                    it.isVisible = true
+                }
             }
         }
     }
 
     class ViewHolder internal constructor(var view: View) : RecyclerView.ViewHolder(view) {
-        var textView = arrayOfNulls<TextView>(16 + 1)
+        var textView = arrayOfNulls<EditText>(16 + 1)
 
         init {
             textView[0] = view.findViewById(R.id.textViewRow)

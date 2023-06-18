@@ -555,7 +555,6 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
             writeSlotsLayout = view.findViewById(R.id.write_list_slots)
 
             view.findViewById<RecyclerView>(R.id.amiibo_files_list).apply {
-                setHasFixedSize(true)
                 setItemViewCacheSize(40)
                 layoutManager = if (settings.amiiboView == BrowserSettings.VIEW.IMAGE.value)
                     GridLayoutManager(activity, activity.columnCount).apply {

@@ -1188,7 +1188,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                     return@setOnMenuItemClickListener true
                 }
                 R.id.mnu_view_hex -> {
-                    startActivity(Intent(this, HexCodeViewer::class.java)
+                    onUpdateTagResult.launch(Intent(this, HexCodeViewer::class.java)
                         .putExtra(NFCIntent.EXTRA_TAG_DATA, tagData)
                     )
                     return@setOnMenuItemClickListener true
@@ -1280,7 +1280,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                     return@setOnMenuItemClickListener true
                 }
                 R.id.mnu_view_hex -> {
-                    startActivity(Intent(this, HexCodeViewer::class.java)
+                    onUpdateTagResult.launch(Intent(this, HexCodeViewer::class.java)
                         .putExtra(NFCIntent.EXTRA_TAG_DATA, tagData)
                     )
                     return@setOnMenuItemClickListener true
@@ -1554,11 +1554,11 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
         onRecursiveFilesChanged()
         menuUpdate.isVisible = updateManager?.hasPendingUpdate() == true
         val searchView = menuSearch.actionView as? SearchView
-        searchView?.let {
+        searchView?.let { search ->
             with (getSystemService(SEARCH_SERVICE) as SearchManager) {
-                it.setSearchableInfo(getSearchableInfo(componentName))
+                search.setSearchableInfo(getSearchableInfo(componentName))
             }
-            it.isSubmitButtonEnabled = false
+            search.isSubmitButtonEnabled = false
             menuSearch.setOnActionExpandListener(object : MenuItem.OnActionExpandListener {
                 override fun onMenuItemActionExpand(menuItem: MenuItem): Boolean {
                     return true
@@ -1576,7 +1576,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                     }
                 }
             })
-            it.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            search.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
                 override fun onQueryTextSubmit(query: String): Boolean {
                     settings?.let {
                         it.query = query
@@ -1596,11 +1596,12 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                     return true
                 }
             })
-            val query = settings?.query
-            if (!query.isNullOrEmpty()) {
-                menuSearch.expandActionView()
-                it.setQuery(query, true)
-                it.clearFocus()
+            settings?.query?.let {
+                if (it.isNotBlank()) {
+                    menuSearch.expandActionView()
+                    search.setQuery(it, true)
+                    search.clearFocus()
+                }
             }
         }
         return super.onCreateOptionsMenu(menu)
@@ -2383,17 +2384,15 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                     uris.map { uri ->
                         async(Dispatchers.IO) {
                             try {
-                                try {
-                                    contentResolver.openInputStream(uri)?.use { inputStream ->
-                                        try {
-                                            keyManager.evaluateKey(inputStream)
-                                        } catch (ex: Exception) {
-                                            onShowSettingsFragment()
-                                        }
-                                        hideFakeSnackbar()
+                                contentResolver.openInputStream(uri)?.use { inputStream ->
+                                    try {
+                                        keyManager.evaluateKey(inputStream)
+                                    } catch (ex: Exception) {
+                                        onShowSettingsFragment()
                                     }
-                                } catch (e: Exception) { Debug.warn(e) }
-                            } catch (e: Exception) { Debug.info(e) }
+                                    hideFakeSnackbar()
+                                }
+                            } catch (e: Exception) { Debug.warn(e) }
                         }
                     }.awaitAll()
                 }

@@ -7,6 +7,5 @@ open class HexItem internal constructor(
     var textStyle: Int,
     var backgroundColor: Int
 ) {
-
-    constructor(text: String, backgroundColor: Int) : this(text, Typeface.BOLD, backgroundColor) {}
+    constructor(text: String, backgroundColor: Int) : this(text, Typeface.BOLD, backgroundColor)
 }

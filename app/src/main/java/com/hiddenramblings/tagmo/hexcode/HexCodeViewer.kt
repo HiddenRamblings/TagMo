@@ -1,5 +1,6 @@
 package com.hiddenramblings.tagmo.hexcode
 
+import android.annotation.SuppressLint
 import android.content.DialogInterface
 import android.content.Intent
 import android.graphics.Bitmap
@@ -47,40 +48,83 @@ class HexCodeViewer : AppCompatActivity() {
             return
         }
         val tagData = intent.getByteArrayExtra(NFCIntent.EXTRA_TAG_DATA)
-        val listView = findViewById<RecyclerView>(R.id.gridView)
-        var adapter: HexAdapter
-        try {
-            adapter = HexAdapter(keyManager.decrypt(tagData))
-            listView.layoutManager = LinearLayoutManager(this)
-            listView.adapter = adapter
-        } catch (e: Exception) {
+        val listView = findViewById<RecyclerView>(R.id.gridView).apply {
             try {
-                adapter = HexAdapter(TagArray.getValidatedData(keyManager, tagData)!!)
-                listView.layoutManager = LinearLayoutManager(this)
-                listView.adapter = adapter
-            } catch (ex: Exception) {
-                Debug.warn(e)
-                showErrorDialog(R.string.fail_display)
+                layoutManager = LinearLayoutManager(this@HexCodeViewer)
+                adapter = HexAdapter(keyManager.decrypt(tagData)).apply {
+                    recycledViewPool.setMaxRecycledViews(0, itemCount * 18)
+                }
+            } catch (e: Exception) {
+                try {
+                    TagArray.getValidatedData(keyManager, tagData)?.let {
+                        layoutManager = LinearLayoutManager(this@HexCodeViewer)
+                        adapter = HexAdapter(keyManager.decrypt(it)).apply {
+                            recycledViewPool.setMaxRecycledViews(0, itemCount * 18)
+                        }
+                    } ?: throw Exception("Tag data could not be decrypted")
+                } catch (ex: Exception) {
+                    Debug.warn(e)
+                    showErrorDialog(R.string.fail_display)
+                }
             }
         }
         val toolbar = findViewById<Toolbar>(R.id.toolbar)
         toolbar.setTitle(R.string.hex_code)
-        toolbar.inflateMenu(R.menu.save_menu)
+        toolbar.inflateMenu(R.menu.hex_menu)
         toolbar.setNavigationIcon(android.R.drawable.ic_menu_revert)
         toolbar.setNavigationOnClickListener { finish() }
         toolbar.setOnMenuItemClickListener { item: MenuItem ->
             if (item.itemId == R.id.mnu_save) {
+                saveHexViewToData(keyManager, listView)
+                return@setOnMenuItemClickListener true
+            }
+            if (item.itemId == R.id.mnu_export) {
                 try {
                     saveHexViewToFile(prefs, listView, Amiibo.idToHex(Amiibo.dataToId(tagData)))
                 } catch (e: IOException) {
-                    saveHexViewToFile(
-                        prefs, listView, TagArray.bytesToHex(tagData!!.copyOfRange(0, 9))
-                    )
+                    tagData?.let {
+                        saveHexViewToFile(
+                            prefs, listView, TagArray.bytesToHex(tagData.copyOfRange(0, 9))
+                        )
+                    }
                 }
                 return@setOnMenuItemClickListener true
             }
             false
         }
+    }
+
+    @SuppressLint("NotifyDataSetChanged")
+    private fun saveHexViewToData(keyManager: KeyManager, view: RecyclerView) {
+        val hex = StringBuilder()
+        (view.adapter as HexAdapter).let { adapter ->
+            val size = adapter.itemCount
+            for (i in 1 until size) {
+                val holder = adapter.createViewHolder(
+                    view, adapter.getItemViewType(i)
+                )
+                adapter.onBindViewHolder(holder, i)
+                holder.textView.forEach { view ->
+                    view?.let {
+                        if (it.text.length == 2) {
+                            hex.append(it.text)
+                            Debug.warn(javaClass, it.text.toString())
+                        }
+                    }
+                }
+            }
+        }
+        if (hex.isNotBlank()) {
+            val data = hex.toString()
+            val hexData = keyManager.encrypt(
+                TagArray.hexToByteArray(data.substring(0, data.length - 24))
+            )
+            setResult(
+                RESULT_OK, Intent(NFCIntent.ACTION_UPDATE_TAG)
+                    .putExtra(NFCIntent.EXTRA_TAG_DATA, hexData)
+            )
+        }
+        finish()
     }
 
     private fun saveHexViewToFile(prefs: Preferences, view: RecyclerView, filename: String?) {

@@ -17,8 +17,27 @@ import java.util.*
 open class AmiiboData : Parcelable {
     private val context = TagMo.appContext
     private val tagData: ByteBuffer
+    private val u0: ByteArray
+
     val array: ByteArray
         get() = tagData.array()
+
+    init {
+        var p0 = 0xEDB88320 or 0x80000000
+        p0 = p0 shr 0
+        u0 = ByteArray(0x100)
+        var i = 0x1
+        while (i and 0xFF != 0) {
+            var t0 = i
+            for (x in 0..0x7) {
+                val b = t0 and 0x1 shr 0
+                t0 = t0 shr 0x1 shr 0
+                if (b == 0x1) t0 = t0 xor p0.toInt() shr 0
+            }
+            u0[i] = (t0 shr 0).toByte()
+            i += 0x1
+        }
+    }
 
     constructor(tagData: ByteArray) {
         if (tagData.size < NfcByte.TAG_DATA_SIZE) throw IOException(
@@ -105,21 +124,6 @@ open class AmiiboData : Parcelable {
         }
 
     private val checksum: ByteArray get() = run {
-        var p0 = 0xEDB88320 or 0x80000000
-        p0 = p0 shr 0
-        val u0 = ByteArray(0x100)
-        var i = 0x1
-        while (i and 0xFF != 0) {
-            var t0 = i
-            for (x in 0..0x7) {
-                val b = t0 and 0x1 shr 0
-                t0 = t0 shr 0x1 shr 0
-                if (b == 0x1) t0 = t0 xor p0.toInt() shr 0
-            }
-            u0[i] = (t0 shr 0).toByte()
-            i += 0x1
-        }
-
         var t = 0xFFFFFFFF.toInt()
         array.copyOfRange(0x134, 0x208).forEach { // 0xE0 + 0xD4
             t = ((t shr 0x8) xor u0[(it.toInt() xor t) and 0xFF].toInt()) shr 0
@@ -128,6 +132,23 @@ open class AmiiboData : Parcelable {
             order(ByteOrder.LITTLE_ENDIAN)
             putInt((t xor 0xFFFFFFFF.toInt()) shr 0)
         }.array()
+    }
+
+    val miiChecksum get() = run {
+        var crc = 0x0000
+        array.copyOfRange(0xA0, 0xFE).forEach {
+            val byte = ByteBuffer.allocate(4).apply {
+                order(ByteOrder.BIG_ENDIAN)
+                putInt(it.toInt())
+            }
+            crc = crc xor (byte.int shr 8)
+            for (i in 0 until 8) {
+                crc = crc shr 1
+                if ((crc and 0x10000) > 0) crc = crc xor 0x1021
+            }
+        }
+        val crc16 = String.format("%04X", crc and 0xFFFF)
+        TagArray.hexToByteArray(crc16).forEachIndexed { x, byte -> tagData.put(0xFE + x, byte) }
     }
 
     fun writeCrc32() {
@@ -140,24 +161,6 @@ open class AmiiboData : Parcelable {
         }
         writeCrc32()
     }
-
-    val miiChecksum
-        get() = run {
-            var crc = 0x0000
-            array.copyOfRange(0xA0, 0xFE).forEach {
-                val byte = ByteBuffer.allocate(4).apply {
-                    order(ByteOrder.BIG_ENDIAN)
-                    putInt(it.toInt())
-                }
-                crc = crc xor (byte.int shr 8)
-                for (i in 0 until 8) {
-                    crc = crc shr 1
-                    if ((crc and 0x10000) > 0) crc = crc xor 0x1021
-                }
-            }
-            val crc16 = String.format("%04X", crc and 0xFFFF)
-            TagArray.hexToByteArray(crc16).forEachIndexed { x, byte -> tagData.put(0xFE + x, byte) }
-        }
 
     @get:Throws(UnsupportedEncodingException::class)
     var nickname: String

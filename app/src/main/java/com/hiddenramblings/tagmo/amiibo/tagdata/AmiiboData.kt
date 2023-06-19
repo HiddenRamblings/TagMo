@@ -40,12 +40,10 @@ open class AmiiboData : Parcelable {
     }
 
     constructor(tagData: ByteArray) {
-        if (tagData.size < NfcByte.TAG_DATA_SIZE) throw IOException(
-            context.getString(
-                R.string.invalid_data_size,
-                tagData.size, NfcByte.TAG_DATA_SIZE
-            )
-        )
+        if (tagData.size < NfcByte.TAG_DATA_SIZE)
+            throw IOException(context.getString(
+                R.string.invalid_data_size, tagData.size, NfcByte.TAG_DATA_SIZE
+            ))
         this.tagData = ByteBuffer.wrap(tagData)
     }
 
@@ -212,7 +210,8 @@ open class AmiiboData : Parcelable {
     var appData: ByteArray
         get() = getBytes(tagData, APP_DATA_OFFSET, APP_DATA_LENGTH)
         set(value) {
-            if (value.size != APP_DATA_LENGTH) throw IOException(context.getString(R.string.invalid_app_data))
+            if (value.size != APP_DATA_LENGTH)
+                throw IOException(context.getString(R.string.invalid_app_data))
             putBytes(tagData, APP_DATA_OFFSET, value)
         }
 

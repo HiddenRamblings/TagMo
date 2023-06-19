@@ -213,7 +213,6 @@
     <string name="menu_gatt">連接Bluetooth</string>
     <string name="menu_qr_code">QR Code工具箱</string>
     <string name="menu_dimensions">樂高次元</string>
-    <string name="menu_joystick">Joystick測試</string>
     <string name="menu_guides">使用手冊與協助</string>
     <string name="menu_settings">TagMo設定</string>
 

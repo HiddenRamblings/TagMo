@@ -158,11 +158,8 @@ object TagWriter {
     fun writeEliteAuto(
         mifare: NTAG215, tagData: ByteArray?, keyManager: KeyManager, bankNumber: Int
     ) {
-        var writeData = TagArray.getValidatedData(keyManager, tagData)
+        val writeData = TagArray.getValidatedData(keyManager, tagData)
         if (doEliteAuth(mifare, mifare.fastRead(0, 0))) {
-            writeData = keyManager.decrypt(writeData)
-            // tagData = patchUid(mifare.readPages(0), tagData);
-            writeData = keyManager.encrypt(writeData)
             var write = mifare.amiiboFastWrite(0, bankNumber, writeData)
             if (!write) write = mifare.amiiboWrite(0, bankNumber, writeData)
             if (!write) throw IOException(appContext.getString(R.string.error_elite_write))

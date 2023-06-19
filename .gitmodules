@@ -2,6 +2,3 @@
 	path = app/libs/amiitool
 	url = git@github.com:8bitDream/amiitool.git
 	branch = tagmo
-[submodule "app/libs/libjoycon"]
-	path = app/libs/libjoycon
-	url = git@github.com:8bitDream/libjoycon.git

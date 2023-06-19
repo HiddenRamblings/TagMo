@@ -24,6 +24,7 @@ import com.hiddenramblings.tagmo.BuildConfig
 import com.hiddenramblings.tagmo.Preferences
 import com.hiddenramblings.tagmo.R
 import com.hiddenramblings.tagmo.TagMo
+import com.hiddenramblings.tagmo.amiibo.KeyManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -242,6 +243,8 @@ object Debug {
         log.append(" (")
         log.append(Build.VERSION.RELEASE)
         log.append(") - ").append(getDeviceRAM(context)).append(" RAM")
+        if (KeyManager(context).isKeyMissing)
+            log.append(separator).append("KeyManager: Key(s) Missing")
         return log
     }
 
@@ -316,6 +319,7 @@ object Debug {
                 log.append(line).append(separator)
             }
             reader.close()
+            log.append(separator)
             val logText = log.toString()
             log.setLength(0)
             withContext(Dispatchers.Main) {

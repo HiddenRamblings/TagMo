@@ -319,7 +319,7 @@ object AmiiboManager {
     }
 
     suspend fun listAmiiboFiles(
-        keyManager: KeyManager?, rootFolder: File?, recursiveFiles: Boolean
+        keyManager: KeyManager, rootFolder: File?, recursiveFiles: Boolean
     ): ArrayList<AmiiboFile?> {
         val amiiboFiles = ArrayList<AmiiboFile?>()
         val files = rootFolder?.listFiles { _: File?, name: String -> binFileMatches(name) }
@@ -329,7 +329,7 @@ object AmiiboManager {
                     async(Dispatchers.IO) {
                         try {
                             TagArray.getValidatedFile(keyManager, file).also { data ->
-                                data?.let { amiiboFiles.add(AmiiboFile(file, Amiibo.dataToId(it), it)) }
+                                amiiboFiles.add(AmiiboFile(file, Amiibo.dataToId(data), data))
                             }
                         } catch (e: Exception) { Debug.info(e) }
                     }
@@ -350,8 +350,7 @@ object AmiiboManager {
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     suspend fun listAmiiboDocuments(
-        context: Context?, keyManager: KeyManager?,
-        rootFolder: DocumentFile, recursiveFiles: Boolean
+        context: Context?, keyManager: KeyManager, rootFolder: DocumentFile, recursiveFiles: Boolean
     ): ArrayList<AmiiboFile?> {
         return arrayListOf<AmiiboFile?>().apply {
             val uris = context?.let { AmiiboDocument(it).listFiles(rootFolder.uri, recursiveFiles) }

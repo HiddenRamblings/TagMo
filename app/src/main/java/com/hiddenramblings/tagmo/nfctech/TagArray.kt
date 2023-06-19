@@ -176,7 +176,7 @@ object TagArray {
 
     @JvmStatic
     @Throws(Exception::class)
-    fun validateData(data: ByteArray?) {
+    fun validateData(data: ByteArray?): ByteArray {
         with (TagMo.appContext) {
             if (null == data) throw IOException(getString(R.string.invalid_data_null))
             /* TagWriter.splitPages(data) */
@@ -222,6 +222,7 @@ object TagArray {
 
                 else -> {}
             }
+            return data
         }
     }
 
@@ -295,15 +296,12 @@ object TagArray {
 
     @JvmStatic
     @Throws(Exception::class)
-    fun getValidatedData(keyManager: KeyManager?, data: ByteArray?): ByteArray? {
-        if (null == keyManager || null == data) return null
+    fun getValidatedData(keyManager: KeyManager, data: ByteArray?): ByteArray {
+        if (null == data) throw Exception(TagMo.appContext.getString(R.string.no_source_data))
         var validated = try {
             validateData(data)
-            data
         } catch (e: Exception) {
-            val encrypted = keyManager.encrypt(data)
-            validateData(encrypted)
-            encrypted
+            validateData(keyManager.encrypt(data))
         }
         validated = keyManager.decrypt(validated)
         return keyManager.encrypt(validated)
@@ -311,25 +309,23 @@ object TagArray {
 
     @JvmStatic
     @Throws(Exception::class)
-    fun getValidatedFile(keyManager: KeyManager?, file: File?): ByteArray? {
+    fun getValidatedFile(keyManager: KeyManager, file: File): ByteArray {
         return getValidatedData(keyManager, TagReader.readTagFile(file))
     }
 
     @Throws(Exception::class)
-    fun getValidatedDocument(keyManager: KeyManager?, fileUri: Uri): ByteArray? {
+    fun getValidatedDocument(keyManager: KeyManager, fileUri: Uri): ByteArray {
         return getValidatedData(keyManager, TagReader.readTagDocument(fileUri))
     }
 
     @Throws(Exception::class)
-    fun getValidatedDocument(
-        keyManager: KeyManager?, file: DocumentFile
-    ): ByteArray? {
+    fun getValidatedDocument(keyManager: KeyManager, file: DocumentFile): ByteArray {
         return getValidatedData(keyManager, TagReader.readTagDocument(file.uri))
     }
 
     @JvmStatic
     @Throws(Exception::class)
-    fun getValidatedAmiibo(keyManager: KeyManager?, file: AmiiboFile): ByteArray? {
+    fun getValidatedAmiibo(keyManager: KeyManager, file: AmiiboFile): ByteArray? {
         return file.data?.let { getValidatedData(keyManager, it) }
             ?: file.docUri?.let { getValidatedDocument(keyManager, it) }
             ?: file.filePath?.let { getValidatedFile(keyManager, it) }

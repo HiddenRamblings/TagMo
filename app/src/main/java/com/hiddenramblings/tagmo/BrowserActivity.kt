@@ -72,7 +72,6 @@ import com.hiddenramblings.tagmo.eightbit.request.ImageTarget
 import com.hiddenramblings.tagmo.eightbit.view.AnimatedLinearLayout
 import com.hiddenramblings.tagmo.eightbit.widget.FABulous
 import com.hiddenramblings.tagmo.fragment.BrowserFragment
-import com.hiddenramblings.tagmo.fragment.JoyConFragment.Companion.newInstance
 import com.hiddenramblings.tagmo.fragment.SettingsFragment
 import com.hiddenramblings.tagmo.hexcode.HexCodeViewer
 import com.hiddenramblings.tagmo.nfctech.Foomiibo
@@ -112,7 +111,6 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
     private var prefsDrawer: DrawerLayout? = null
     private var settingsPage: CoordinatorLayout? = null
     private var animationArray: ArrayList<ValueAnimator>? = null
-    private var joyConDialog: Dialog? = null
     private var fakeSnackbar: AnimatedLinearLayout? = null
     private var fakeSnackbarText: TextView? = null
     private var fakeSnackbarItem: AppCompatButton? = null
@@ -427,12 +425,13 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                             ))
                         }
                     }
-                } else if (null != intent.data) {
-                    val uri = intent.data
-                    val data = TagReader.readTagDocument(uri)
-                    updateAmiiboView(data, AmiiboFile(
-                        uri?.path?.let { File(it) }, Amiibo.dataToId(data), data
-                    ))
+                } else {
+                    intent.data?.let { uri ->
+                        val data = TagReader.readTagDocument(uri)
+                        updateAmiiboView(data, AmiiboFile(
+                            uri.path?.let { File(it) }, Amiibo.dataToId(data), data
+                        ))
+                    }
                 }
             } catch (ignored: Exception) { }
         }
@@ -527,19 +526,6 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                 Toasty(this).Short(R.string.feature_unavailable)
             else
                 onReturnableIntent.launch(Intent(this, DimensionActivity::class.java))
-        }
-
-        findViewById<CardView>(R.id.menu_joystick).apply {
-            setOnClickListener {
-                closePrefsDrawer()
-                if (Version.isJellyBeanMR2) {
-                    if (joyConDialog?.isShowing == true) return@setOnClickListener
-                    val fragmentJoyCon = newInstance()
-                    fragmentJoyCon.show(supportFragmentManager, "dialog")
-                    joyConDialog = fragmentJoyCon.dialog
-                }
-            }
-            isVisible = Version.isJellyBeanMR2
         }
 
         findViewById<CardView>(R.id.menu_guides).setOnClickListener {
@@ -1638,8 +1624,9 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
     override fun onAmiiboRebind(itemView: View, amiiboFile: AmiiboFile?) {
         if (amiiboFile?.filePath == null) return
         try {
-            val tagData = amiiboFile.data
-                ?: TagArray.getValidatedFile(keyManager, amiiboFile.filePath)
+            val tagData = amiiboFile.data ?: amiiboFile.filePath?.let {
+                TagArray.getValidatedFile(keyManager, it)
+            }
             if (settings?.amiiboView != VIEW.IMAGE.value) {
                 onCreateToolbarMenu(itemView, tagData, amiiboFile)
                 getGameCompatibility(itemView.findViewById(R.id.txtUsage), tagData)

@@ -661,11 +661,15 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
                     }
                 } catch (ignored: Exception) { }
             }
-            if (tagData.isEmpty() && null != amiibo)
-                tagData = Foomiibo.getSignedData(Amiibo.idToHex(amiibo.id))
-            try {
-                tagData = TagArray.getValidatedData(keyManager, tagData)!!
-            } catch (ignored: Exception) { }
+            tagData = try {
+                TagArray.getValidatedData(
+                    keyManager,
+                    if (tagData.isEmpty() && null != amiibo)
+                        Foomiibo.getSignedData(Amiibo.idToHex(amiibo.id))
+                    else
+                        tagData
+                )
+            } catch (ignored: Exception) { byteArrayOf() }
 
             val menuOptions = itemView?.findViewById<LinearLayout>(R.id.menu_options)
             menuOptions?.let {
@@ -695,11 +699,16 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
                 }
             } catch (ignored: Exception) { }
         }
-        if (tagData.isEmpty() && null != amiibo)
-            tagData = Foomiibo.getSignedData(Amiibo.idToHex(amiibo.id))
-        try {
-            tagData = TagArray.getValidatedData(keyManager, tagData)!!
-        } catch (ignored: Exception) { }
+        tagData = try {
+            TagArray.getValidatedData(
+                keyManager,
+                if (tagData.isEmpty() && null != amiibo)
+                    Foomiibo.getSignedData(Amiibo.idToHex(amiibo.id))
+                else
+                    tagData
+            )
+        } catch (ignored: Exception) { byteArrayOf() }
+
         if (settings.amiiboView != BrowserSettings.VIEW.IMAGE.value) {
             browserActivity?.let { activity ->
                 itemView?.let { view ->

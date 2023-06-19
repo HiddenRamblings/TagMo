@@ -50,8 +50,8 @@ object TagReader {
     }
 
     @Throws(Exception::class)
-    fun readTagDocument(uri: Uri?): ByteArray? {
-        return uri?.let { stream ->
+    fun readTagDocument(uri: Uri): ByteArray? {
+        return uri.let { stream ->
             appContext.contentResolver.openInputStream(stream).use { inputStream ->
                 inputStream?.let { getTagData(stream.path, it) }
             }

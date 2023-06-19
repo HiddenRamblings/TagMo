@@ -214,7 +214,6 @@
     <string name="menu_gatt">Bluetooth Connect</string>
     <string name="menu_qr_code">QR Code Toolkit</string>
     <string name="menu_dimensions">Dimensions 213</string>
-    <string name="menu_joystick">Joystick Testing</string>
     <string name="menu_guides">Guides and Help</string>
     <string name="menu_settings">TagMo Settings</string>
 

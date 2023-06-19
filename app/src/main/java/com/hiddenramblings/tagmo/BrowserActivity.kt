@@ -1744,11 +1744,10 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
         CoroutineScope(Dispatchers.IO).launch {
             val amiiboFiles = listAmiiboFiles(keyManager, rootFolder, recursiveFiles)
             listAmiiboFiles(keyManager, TagMo.downloadDir, true).also { files ->
+                amiiboFiles.removeAll(files.toSet())
                 coroutineScope {
                     files.map { file ->
-                        async(Dispatchers.IO) {
-                            if (!amiiboFiles.contains(file)) amiiboFiles.add(file)
-                        }
+                        async(Dispatchers.IO) { amiiboFiles.add(file) }
                     }.awaitAll()
                 }
             }

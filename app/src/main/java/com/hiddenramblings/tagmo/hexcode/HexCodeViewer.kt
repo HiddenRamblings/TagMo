@@ -146,9 +146,7 @@ class HexCodeViewer : AppCompatActivity() {
                 )
                 adapter.onBindViewHolder(holder, i)
                 holder.itemView.measure(
-                    View.MeasureSpec.makeMeasureSpec(
-                        view.width, View.MeasureSpec.EXACTLY
-                    ),
+                    View.MeasureSpec.makeMeasureSpec(view.width, View.MeasureSpec.EXACTLY),
                     View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED)
                 )
                 holder.itemView.layout(
@@ -162,8 +160,7 @@ class HexCodeViewer : AppCompatActivity() {
                     holder.itemView.isDrawingCacheEnabled = true
                     holder.itemView.buildDrawingCache()
                     val drawingCache = holder.itemView.drawingCache
-                    if (drawingCache != null)
-                        bitmapCache.put(i.toString(), drawingCache)
+                    if (drawingCache != null) bitmapCache.put(i.toString(), drawingCache)
                 }
                 height += holder.itemView.measuredHeight
             }
@@ -188,9 +185,7 @@ class HexCodeViewer : AppCompatActivity() {
         }
         val dir = File(TagMo.downloadDir, "HexCode")
         if (!dir.exists() && !dir.mkdirs()) {
-            Toasty(this@HexCodeViewer).Short(
-                getString(R.string.mkdir_failed, dir.name)
-            )
+            Toasty(this@HexCodeViewer).Short(getString(R.string.mkdir_failed, dir.name))
             return
         }
         val file = File(dir, filename + "-" + System.currentTimeMillis() + ".png")
@@ -198,7 +193,7 @@ class HexCodeViewer : AppCompatActivity() {
             FileOutputStream(file).use { fos ->
                 viewBitmap?.compress(Bitmap.CompressFormat.PNG, 100, fos)
                 Toasty(this@HexCodeViewer).Short(getString(
-                        R.string.wrote_file, Storage.getRelativePath(file, prefs.preferEmulated())
+                    R.string.wrote_file, Storage.getRelativePath(file, prefs.preferEmulated())
                 ))
             }
         } catch (e: IOException) {

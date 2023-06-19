@@ -11,7 +11,7 @@ android {
         applicationId 'com.hiddenramblings.tagmo'
         minSdkVersion 16
         targetSdkVersion 33
-        versionName "3.9.5"
+        versionName "3.9.6"
         versionCode = versionName.replace(".","").toInteger() * 10
 
         vectorDrawables {
@@ -159,5 +159,5 @@ dependencies {
 
     implementation 'org.lsposed.hiddenapibypass:hiddenapibypass:4.3'
 
-    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.4'
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.1'
 }

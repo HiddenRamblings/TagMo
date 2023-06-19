@@ -65,8 +65,9 @@ object Debug {
     }
 
     fun hasException(e: Exception, className: String, methodName: String): Boolean {
-        return !e.stackTrace.isNullOrEmpty()
-                && e.stackTrace.any { it.className == className && it.methodName == methodName }
+        return !e.stackTrace.isNullOrEmpty() && e.stackTrace.any {
+            it.className == className && it.methodName == methodName
+        }
     }
 
     @JvmStatic

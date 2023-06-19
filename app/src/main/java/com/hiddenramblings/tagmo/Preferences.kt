@@ -336,8 +336,8 @@ class Preferences(context: Context) {
         putLong(lastUpdatedGit, value)
     }
 
-    val isDocumentStorage : Boolean
-        get() = Version.isLollipop && browserRootDocument()?.let {
+    val isDocumentStorage : Boolean get() = run {
+        Version.isLollipop && browserRootDocument()?.let {
             try {
                 DocumentFile.fromTreeUri(TagMo.appContext, Uri.parse(it))
                 true
@@ -345,6 +345,7 @@ class Preferences(context: Context) {
                 false
             }
         } ?: false
+    }
 
     init {
         prefs = PreferenceManager.getDefaultSharedPreferences(context)

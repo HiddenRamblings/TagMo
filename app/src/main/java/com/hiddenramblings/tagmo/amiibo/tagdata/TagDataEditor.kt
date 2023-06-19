@@ -138,6 +138,8 @@ class TagDataEditor : AppCompatActivity() {
     private var txtStatSpeedU: EditText? = null
     private var appDataSSBU: AppDataSSBU? = null
 
+    private var isAppDataSSBU = false
+
     private fun getDateString(date: Date): String {
         return SimpleDateFormat("dd/MM/yyyy", Locale.US).format(date)
     }
@@ -587,6 +589,7 @@ class TagDataEditor : AppCompatActivity() {
             if (appDataSwitch.isChecked && null != appDataSSBU) {
                 try {
                     onAppDataSSBUSaved()?.let { newAmiiboData.appData = it }
+                    newAmiiboData.writeCrc32()
                     newAmiiboData.miiChecksum
                 } catch (e: Exception) {
                     Debug.verbose(e)
@@ -772,6 +775,7 @@ class TagDataEditor : AppCompatActivity() {
 
     private fun loadAppId() {
         appId = if (initialUserDataInitialized) amiiboData.appId else null
+        isAppDataSSBU = appId == AppId.SSBU
         updateAppIdView(appId)
         updateAppNameView()
         updateAppDataView(appId)
@@ -921,6 +925,10 @@ class TagDataEditor : AppCompatActivity() {
                 }
                 AppId.SSBU -> {
                     appDataViewSSBU.isVisible = true
+                    if (!isAppDataSSBU) {
+                        isAppDataSSBU = true
+                        amiiboData.initializeSSBU()
+                    }
                     enableAppDataSSBU(amiiboData.appData)
                 }
             }
@@ -1452,7 +1460,6 @@ class TagDataEditor : AppCompatActivity() {
         onAppDataSSBChecked(isAppDataInitialized)
     }
 
-    @Suppress("unused")
     private fun enableAppDataSSBU(appData: ByteArray) {
         try {
             appDataSSBU = AppDataSSBU(appData)
@@ -1799,7 +1806,6 @@ class TagDataEditor : AppCompatActivity() {
                 txtStatDefenseU?.requestFocus()
                 throw e
             }
-            checksum
         }?.array
     }
 

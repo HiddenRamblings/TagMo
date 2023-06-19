@@ -9,29 +9,7 @@
  */
 package com.hiddenramblings.tagmo.amiibo.tagdata
 
-import java.nio.ByteBuffer
-import java.nio.ByteOrder
-
 class AppDataSSBU(appData: ByteArray?) : AppData(appData!!) {
-
-    private val u0: ByteArray
-    init {
-        var p0 = 0xEDB88320 or 0x80000000
-        p0 = p0 shr 0
-        u0 = ByteArray(0x100)
-        var i = 0x1
-        while (i and 0xFF != 0) {
-            var t0 = i
-            for (x in 0..0x7) {
-                val b = t0 and 0x1 shr 0
-                t0 = t0 shr 0x1 shr 0
-                if (b == 0x1) t0 = t0 xor p0.toInt() shr 0
-            }
-            u0[i] = (t0 shr 0).toByte()
-            i += 0x1
-        }
-    }
-
     @Throws(NumberFormatException::class)
     fun checkAppearence(value: Int) {
         if (value < APPEARANCE_MIN_VALUE || value > APPEARANCE_MAX_VALUE) throw NumberFormatException()
@@ -246,21 +224,7 @@ class AppDataSSBU(appData: ByteArray?) : AppData(appData!!) {
     val levelCPU: Int
         get() = experienceToLevel(experienceCPU, LEVEL_THRESHOLDS_CPU)
 
-    val checksum
-        get() = run {
-            var t = 0xFFFFFFFF.toInt()
-            appData.array().copyOfRange(0x04, 0xD8).forEach { // 0xE0 + 0xD4
-                t = t shr 0x8 xor u0[it.toInt() xor t and 0xFF].toInt()
-            }
-            val crc32 = ByteBuffer.allocate(4).apply {
-                order(ByteOrder.LITTLE_ENDIAN)
-                putInt(t xor 0xFFFFFFFF.toInt() shr 0)
-            }.array()
-            crc32.forEachIndexed { x, byte -> appData.put(GAME_CRC32_OFFSET + x, byte) }
-        }
-
     companion object {
-        const val GAME_CRC32_OFFSET = 0x0 // 0xDC
         const val APPEARANCE_OFFSET = 0xC7
         const val APPEARANCE_MIN_VALUE = 0
         const val APPEARANCE_MAX_VALUE = 7

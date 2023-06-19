@@ -10,6 +10,7 @@ import com.hiddenramblings.tagmo.nfctech.TagArray
 import java.io.IOException
 import java.io.UnsupportedEncodingException
 import java.nio.ByteBuffer
+import java.nio.ByteOrder
 import java.nio.charset.Charset
 import java.util.*
 
@@ -103,24 +104,59 @@ open class AmiiboData : Parcelable {
             putDate(tagData, MODIFIED_DATA_OFFSET, value)
         }
 
+    private val checksum: ByteArray get() = run {
+        var p0 = 0xEDB88320 or 0x80000000
+        p0 = p0 shr 0
+        val u0 = ByteArray(0x100)
+        var i = 0x1
+        while (i and 0xFF != 0) {
+            var t0 = i
+            for (x in 0..0x7) {
+                val b = t0 and 0x1 shr 0
+                t0 = t0 shr 0x1 shr 0
+                if (b == 0x1) t0 = t0 xor p0.toInt() shr 0
+            }
+            u0[i] = (t0 shr 0).toByte()
+            i += 0x1
+        }
+
+        var t = 0xFFFFFFFF.toInt()
+        array.copyOfRange(0x134, 0x208).forEach { // 0xE0 + 0xD4
+            t = ((t shr 0x8) xor u0[(it.toInt() xor t) and 0xFF].toInt()) shr 0
+        }
+        ByteBuffer.allocate(4).apply {
+            order(ByteOrder.LITTLE_ENDIAN)
+            putInt((t xor 0xFFFFFFFF.toInt()) shr 0)
+        }.array()
+    }
+
+    fun writeCrc32() {
+        checksum.forEachIndexed { x, byte -> tagData.put(0x130 + x, byte) }
+    }
+
+    fun initializeSSBU() {
+        TagArray.hexToByteArray("01006A803016E000").forEachIndexed {
+                x, byte -> tagData.put(0x100 + x, byte)
+        }
+        writeCrc32()
+    }
+
     val miiChecksum
         get() = run {
-            var crc16 = 0x0000
+            var crc = 0x0000
             array.copyOfRange(0xA0, 0xFE).forEach {
-//                for (x in 0x7 downTo 0x0) {
-//                    crc16 = crc16 shl 0x1 or (it.toInt() shr x and 0x1) xor 0x1021
-//                }
-                crc16 = crc16 xor Integer.reverseBytes(it.toInt()) shl 8
-                for (x in 0..0x7) {
-                    crc16 = crc16 shl 1
-                    if (crc16 and 0x10000 > 0) crc16 = crc16 xor 0x1021
+                val byte = ByteBuffer.allocate(4).apply {
+                    order(ByteOrder.BIG_ENDIAN)
+                    putInt(it.toInt())
+                }
+                crc = crc xor (byte.int shr 8)
+                for (i in 0 until 8) {
+                    crc = crc shr 1
+                    if ((crc and 0x10000) > 0) crc = crc xor 0x1021
                 }
             }
-//            for (x in 0x16 downTo 0x1) {
-//                crc16 = crc16 shl 0x1 xor if (crc16 and 0x8000 != 0) 0x1021 else 0
-//            }
-            val crcHex = TagArray.hexToByteArray(String.format("%04X", crc16 and 0xFFFF))
-            crcHex.forEachIndexed { x, byte ->  tagData.put(0xFE + x, byte) }
+            val crc16 = String.format("%04X", crc and 0xFFFF)
+            TagArray.hexToByteArray(crc16).forEachIndexed { x, byte -> tagData.put(0xFE + x, byte) }
         }
 
     @get:Throws(UnsupportedEncodingException::class)

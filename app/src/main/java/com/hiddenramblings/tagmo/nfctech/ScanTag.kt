@@ -93,29 +93,32 @@ class ScanTag {
                 when {
                     activity.getString(R.string.error_tag_rewrite) == error -> {
                         withContext(Dispatchers.Main) {
-                            getErrorDialog(activity, R.string.error_tag_rewrite, R.string.tag_update_only)
-                                .setPositiveButton(R.string.proceed) { dialog: DialogInterface, _: Int ->
-                                    closeTagSilently(mifare)
-                                    dialog.dismiss()
-                                }.show()
+                            getErrorDialog(
+                                activity, R.string.error_tag_rewrite, R.string.tag_update_only
+                            ).setPositiveButton(R.string.proceed) { dialog: DialogInterface, _: Int ->
+                                closeTagSilently(mifare)
+                                dialog.dismiss()
+                            }.show()
                         }
                     }
                     activity.getString(R.string.uid_key_missing) == error -> {
                         withContext(Dispatchers.Main) {
-                            getErrorDialog(activity, R.string.uid_key_missing, R.string.power_tag_reset)
-                                .setPositiveButton(R.string.proceed) { dialog: DialogInterface, _: Int ->
-                                    closeTagSilently(mifare)
-                                    dialog.dismiss()
-                                }.show()
+                            getErrorDialog(
+                                activity, R.string.uid_key_missing, R.string.power_tag_reset
+                            ).setPositiveButton(R.string.proceed) { dialog: DialogInterface, _: Int ->
+                                closeTagSilently(mifare)
+                                dialog.dismiss()
+                            }.show()
                         }
                     }
                     activity.getString(R.string.fail_encrypt) == error -> {
                         withContext(Dispatchers.Main) {
-                            getErrorDialog(activity, R.string.fail_encrypt, R.string.encryption_fault)
-                                .setPositiveButton(R.string.proceed) { dialog: DialogInterface, _: Int ->
-                                    closeTagSilently(mifare)
-                                    dialog.dismiss()
-                                }.show()
+                            getErrorDialog(
+                                activity, R.string.fail_encrypt, R.string.encryption_fault
+                            ).setPositiveButton(R.string.proceed) { dialog: DialogInterface, _: Int ->
+                                closeTagSilently(mifare)
+                                dialog.dismiss()
+                            }.show()
                         }
                     }
                     prefs.eliteEnabled() -> {
@@ -135,15 +138,17 @@ class ScanTag {
 
                             isEliteLockedCause(activity, error) -> {
                                 withContext(Dispatchers.Main) {
-                                    getErrorDialog(activity, R.string.possible_lock, R.string.prepare_unlock)
-                                        .setPositiveButton(R.string.unlock) { dialog: DialogInterface, _: Int ->
-                                            closeTagSilently(mifare)
-                                            dialog.dismiss()
-                                            activity.onNFCActivity.launch(Intent(activity, NfcActivity::class.java).setAction(NFCIntent.ACTION_UNLOCK_UNIT))
-                                        }.setNegativeButton(R.string.cancel) { dialog: DialogInterface, _: Int ->
-                                            closeTagSilently(mifare)
-                                            dialog.dismiss()
-                                        }.show()
+                                    getErrorDialog(
+                                        activity, R.string.possible_lock, R.string.prepare_unlock
+                                    ).setPositiveButton(R.string.unlock) { dialog: DialogInterface, _: Int ->
+                                        closeTagSilently(mifare)
+                                        dialog.dismiss()
+                                        activity.onNFCActivity.launch(Intent(activity, NfcActivity::class.java)
+                                            .setAction(NFCIntent.ACTION_UNLOCK_UNIT))
+                                    }.setNegativeButton(R.string.cancel) { dialog: DialogInterface, _: Int ->
+                                        closeTagSilently(mifare)
+                                        dialog.dismiss()
+                                    }.show()
                                 }
                             }
 
@@ -193,15 +198,16 @@ class ScanTag {
     }
 
     private fun onEliteVerificationFailed(activity: BrowserActivity) {
-        getErrorDialog(activity, R.string.possible_blank, R.string.prepare_blank)
-            .setPositiveButton(R.string.scan) { dialog: DialogInterface, _: Int ->
-                dialog.dismiss()
-                activity.onNFCActivity.launch(Intent(
-                    activity, NfcActivity::class.java
-                ).setAction(NFCIntent.ACTION_BLIND_SCAN))
-            }.setNegativeButton(R.string.cancel) { dialog: DialogInterface, _: Int ->
-                dialog.dismiss()
-            }.show()
+        getErrorDialog(
+            activity, R.string.possible_blank, R.string.prepare_blank
+        ).setPositiveButton(R.string.scan) { dialog: DialogInterface, _: Int ->
+            dialog.dismiss()
+            activity.onNFCActivity.launch(Intent(
+                activity, NfcActivity::class.java
+            ).setAction(NFCIntent.ACTION_BLIND_SCAN))
+        }.setNegativeButton(R.string.cancel) { dialog: DialogInterface, _: Int ->
+            dialog.dismiss()
+        }.show()
     }
 
     private fun getErrorDialog(

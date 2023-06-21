@@ -1214,12 +1214,22 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
     }
 
     fun onCreateToolbarMenu(
-        fragment: BrowserFragment, toolbar: Toolbar, tagData: ByteArray?, itemView: View
+        fragment: BrowserFragment, toolbar: Toolbar, tagData: ByteArray, itemView: View
     ) {
         if (!toolbar.menu.hasVisibleItems()) toolbar.inflateMenu(R.menu.amiibo_menu)
         toolbar.menu.findItem(R.id.mnu_save).setTitle(R.string.cache)
         toolbar.menu.findItem(R.id.mnu_scan).isVisible = false
         toolbar.menu.findItem(R.id.mnu_random).isVisible = false
+
+        val available = tagData.isNotEmpty()
+        toolbar.menu.findItem(R.id.mnu_write).isEnabled = available
+        toolbar.menu.findItem(R.id.mnu_update).isEnabled = available
+        toolbar.menu.findItem(R.id.mnu_edit).isEnabled = available
+        toolbar.menu.findItem(R.id.mnu_view_hex).isEnabled = available
+        toolbar.menu.findItem(R.id.mnu_share_qr).isEnabled = available
+        toolbar.menu.findItem(R.id.mnu_validate).isEnabled = available
+        toolbar.menu.findItem(R.id.mnu_delete).isEnabled = available
+
         toolbar.setOnMenuItemClickListener {
             val args = Bundle()
             val scan = Intent(this, NfcActivity::class.java)
@@ -1246,7 +1256,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                     return@setOnMenuItemClickListener true
                 }
                 R.id.mnu_save -> {
-                    if (tagData != null) {
+                    if (tagData.isNotEmpty()) {
                         fragment.buildFoomiiboFile(tagData)
                         itemView.callOnClick()
                         onRootFolderChanged(true)
@@ -1626,6 +1636,8 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
         try {
             val tagData = amiiboFile.data ?: amiiboFile.filePath?.let {
                 TagArray.getValidatedFile(keyManager, it)
+            } ?: amiiboFile.docUri?.let {
+                TagArray.getValidatedDocument(keyManager, it)
             }
             if (settings?.amiiboView != VIEW.IMAGE.value) {
                 onCreateToolbarMenu(itemView, tagData, amiiboFile)
@@ -2448,7 +2460,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                     _: File?, name: String -> keyNameMatcher(name)
             }.also { files ->
                 if (files.isNullOrEmpty()) {
-                    if (prefs.isDocumentStorage)
+                    if (Version.isLollipop && prefs.isDocumentStorage)
                         locateKeyDocumentsRecursive()
                     else
                         locateKeyFilesRecursive(Storage.getFile(prefs.preferEmulated()), true)

@@ -194,35 +194,6 @@ object Debug {
     private const val issueUrl = ("https://github.com/HiddenRamblings/TagMo/issues/new?"
             + "labels=logcat&template=bug_report.yml&title=[Bug]%3A+")
 
-    private val Long.floatForm : String
-        get() = String.format(Locale.ROOT, "%.2f", this.toDouble())
-
-    private const val Kb: Long = 1024
-    private const val Mb = Kb * 1024
-    private const val Gb = Mb * 1024
-    private const val Tb = Gb * 1024
-    private const val Pb = Tb * 1024
-    private const val Eb = Pb * 1024
-    private fun bytesToSizeUnit(size: Long): String {
-        return when {
-            size < Kb -> size.floatForm + " byte"
-            size < Mb -> (size / Kb).floatForm + " KB"
-            size < Gb -> (size / Mb).floatForm + " MB"
-            size < Tb -> (size / Gb).floatForm + " GB"
-            size < Pb -> (size / Tb).floatForm + " TB"
-            size < Eb -> (size / Pb).floatForm + " Pb"
-            else -> (size / Eb).floatForm + " Eb"
-        }
-    }
-
-    private fun getDeviceRAM(context: Context): String {
-        with (context.getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager) {
-            val memInfo = ActivityManager.MemoryInfo()
-            getMemoryInfo(memInfo)
-            return bytesToSizeUnit(memInfo.totalMem)
-        }
-    }
-
     private fun getDeviceProfile(context: Context): StringBuilder {
         val separator = System.getProperty("line.separator") ?: "\n"
         val log = StringBuilder(separator)
@@ -242,7 +213,7 @@ object Debug {
         log.append(codeName)
         log.append(" (")
         log.append(Build.VERSION.RELEASE)
-        log.append(") - ").append(getDeviceRAM(context)).append(" RAM")
+        log.append(") - ").append(Memory(context).getDeviceRAM()).append(" RAM")
         if (KeyManager(context).isKeyMissing)
             log.append(separator).append("KeyManager: Key(s) Missing")
         return log

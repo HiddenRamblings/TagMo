@@ -71,6 +71,14 @@
     <string name="ndef" translatable="false">Ndef</string>
     <string name="ndef_formatable" translatable="false">NdefFormatable</string>
 
+    <string name="memory_byte">Byte</string>
+    <string name="memory_kilobyte">KB</string>
+    <string name="memory_megabyte">MB</string>
+    <string name="memory_gigabyte">GB</string>
+    <string name="memory_terabyte">TB</string>
+    <string name="memory_petabyte">PB</string>
+    <string name="memory_exabyte">EB</string>
+
     <string name="nfc_null_array" translatable="false">Attempt to read from null array</string>
     <string name="nfc_read_result" translatable="false">Invalid read result size</string>
 

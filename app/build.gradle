@@ -11,7 +11,7 @@ android {
         applicationId 'com.hiddenramblings.tagmo'
         minSdkVersion 16
         targetSdkVersion 33
-        versionName "3.9.6"
+        versionName "3.9.7"
         versionCode = versionName.replace(".","").toInteger() * 10
 
         vectorDrawables {
@@ -136,7 +136,7 @@ dependencies {
     implementation 'androidx.webkit:webkit:1.7.0'
     wearosImplementation "androidx.wear:wear:1.2.0"
 
-    implementation 'com.android.billingclient:billing:6.0.0'
+    implementation 'com.android.billingclient:billing:6.0.1'
 
     implementation 'com.github.bumptech.glide:glide:4.15.1'
     kapt 'com.github.bumptech.glide:compiler:4.15.1'

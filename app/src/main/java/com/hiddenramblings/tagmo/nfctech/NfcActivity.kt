@@ -499,15 +499,19 @@ class NfcActivity : AppCompatActivity() {
             Debug.getExceptionCause(e)?.let { error ->
                 when {
                     getString(R.string.error_tag_rewrite) == error -> {
-                        setResult(RESULT_OK, Intent(NFCIntent.ACTION_UPDATE_TAG).apply {
-                            putExtras(Bundle().apply {
-                                putByteArray(NFCIntent.EXTRA_TAG_DATA, update)
-                            })
-                        })
                         withContext(Dispatchers.Main) {
                             getErrorDialog(
                                 this@NfcActivity, R.string.error_tag_rewrite, R.string.tag_update_only
-                            ).setPositiveButton(R.string.proceed) { dialog: DialogInterface, _: Int ->
+                            ).setPositiveButton(R.string.update) { dialog: DialogInterface, _: Int ->
+                                closeTagSilently(mifare)
+                                setResult(RESULT_OK, Intent(NFCIntent.ACTION_UPDATE_TAG).apply {
+                                    putExtras(Bundle().apply {
+                                        putByteArray(NFCIntent.EXTRA_TAG_DATA, update)
+                                    })
+                                })
+                                dialog.dismiss()
+                                finish()
+                            }.setNegativeButton(R.string.cancel) { dialog: DialogInterface, _: Int ->
                                 closeTagSilently(mifare)
                                 dialog.dismiss()
                                 finish()

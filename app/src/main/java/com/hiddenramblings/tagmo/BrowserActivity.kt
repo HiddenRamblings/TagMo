@@ -1712,9 +1712,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
         val folders: ArrayList<File?> = arrayListOf()
         rootFolder?.listFiles().also { files ->
             if (files.isNullOrEmpty()) return folders
-            files.forEach { file ->
-                if (file.isDirectory) folders.add(file)
-            }
+            files.forEach { file -> if (file.isDirectory) folders.add(file) }
         }
         return folders
     }

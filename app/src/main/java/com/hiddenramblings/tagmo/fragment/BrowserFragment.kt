@@ -582,7 +582,7 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
 
     private fun buildFoomiiboFile(amiibo: Amiibo) {
         try {
-            val tagData = Foomiibo.getSignedData(Amiibo.idToHex(amiibo.id))
+            val tagData = Foomiibo.getSignedData(amiibo.id)
             val directory = File(Foomiibo.directory, amiibo.amiiboSeries!!.name)
             directory.mkdirs()
             TagArray.writeBytesToFile(
@@ -662,13 +662,10 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
                 } catch (ignored: Exception) { }
             }
             tagData = try {
-                TagArray.getValidatedData(
-                    keyManager,
-                    if (tagData.isEmpty() && null != amiibo)
-                        Foomiibo.getSignedData(Amiibo.idToHex(amiibo.id))
-                    else
-                        tagData
-                )
+                if (tagData.isEmpty() && null != amiibo)
+                    Foomiibo.getSignedData(amiibo.id)
+                else
+                    TagArray.getValidatedData(keyManager,tagData)
             } catch (ignored: Exception) { byteArrayOf() }
 
             val menuOptions = itemView?.findViewById<LinearLayout>(R.id.menu_options)
@@ -701,13 +698,10 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
             } catch (ignored: Exception) { }
         }
         tagData = try {
-            TagArray.getValidatedData(
-                keyManager,
-                if (tagData.isEmpty() && null != amiibo)
-                    Foomiibo.getSignedData(Amiibo.idToHex(amiibo.id))
-                else
-                    tagData
-            )
+            if (tagData.isEmpty() && null != amiibo)
+                Foomiibo.getSignedData(Amiibo.idToHex(amiibo.id))
+            else
+                TagArray.getValidatedData(keyManager,tagData)
         } catch (ignored: Exception) { byteArrayOf() }
 
         if (settings.amiiboView != BrowserSettings.VIEW.IMAGE.value) {

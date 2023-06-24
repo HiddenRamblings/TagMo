@@ -93,13 +93,12 @@ object TagWriter {
     fun writeToTagAuto(
         mifare: NTAG215, tagData: ByteArray, keyManager: KeyManager, validateNtag: Boolean
     ) {
-        var writeData = TagArray.getValidatedData(keyManager, tagData)
         val idPages = mifare.readPages(0)
         if (null == idPages || idPages.size != NfcByte.PAGE_SIZE * 4)
             throw IOException(TagMo.appContext.getString(R.string.fail_read_size))
         val isPowerTag = TagArray.isPowerTag(mifare)
         Debug.info(TagWriter::class.java, R.string.power_tag_verify, isPowerTag.toString())
-        writeData = keyManager.decrypt(writeData)
+        var writeData = keyManager.decrypt(tagData)
         writeData = if (isPowerTag) {
             // use a pre-determined static id for Power Tag
             patchUid(NfcByte.POWERTAG_IDPAGES, writeData)
@@ -153,12 +152,11 @@ object TagWriter {
 
     @Throws(Exception::class)
     fun writeEliteAuto(
-        mifare: NTAG215, tagData: ByteArray?, keyManager: KeyManager, bankNumber: Int
+        mifare: NTAG215, tagData: ByteArray?, bankNumber: Int
     ) {
-        val writeData = TagArray.getValidatedData(keyManager, tagData)
         if (doEliteAuth(mifare, mifare.fastRead(0, 0))) {
-            var write = mifare.amiiboFastWrite(0, bankNumber, writeData)
-            if (!write) write = mifare.amiiboWrite(0, bankNumber, writeData)
+            var write = mifare.amiiboFastWrite(0, bankNumber, tagData)
+            if (!write) write = mifare.amiiboWrite(0, bankNumber, tagData)
             if (!write) throw IOException(TagMo.appContext.getString(R.string.error_elite_write))
         } else {
             throw Exception(TagMo.appContext.getString(R.string.error_elite_auth))

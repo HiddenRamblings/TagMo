@@ -9,6 +9,7 @@ package com.hiddenramblings.tagmo.nfctech
 
 import com.hiddenramblings.tagmo.R
 import com.hiddenramblings.tagmo.TagMo
+import com.hiddenramblings.tagmo.amiibo.Amiibo
 import com.hiddenramblings.tagmo.eightbit.io.Debug
 import java.io.File
 import java.text.DecimalFormat
@@ -100,6 +101,10 @@ object Foomiibo {
 
     fun getSignedData(id: String): ByteArray {
         return getSignedData(generateData(id))
+    }
+
+    fun getSignedData(id: Long): ByteArray {
+        return getSignedData(generateData(Amiibo.idToHex(id)))
     }
 
     fun getDataSignature(tagData: ByteArray): String? {

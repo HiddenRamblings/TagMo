@@ -154,10 +154,8 @@ class QRGEncoder(data: String?, bundle: Bundle?, type: Int, private var dimensio
                     newDisplayContents.append('\n').append(address)
                 }
                 val uniquePhones: MutableCollection<String> = HashSet(keysPhone.size)
-                run {
-                    keysPhone.forEach { number ->
-                        trim(bundle.getString(number))?.let { uniquePhones.add(it) }
-                    }
+                keysPhone.forEach { number ->
+                    trim(bundle.getString(number))?.let { uniquePhones.add(it) }
                 }
                 uniquePhones.forEach {
                     newContents.append("TEL:").append(escapeVCard(it)) //.append(';')

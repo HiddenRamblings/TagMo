@@ -1728,6 +1728,18 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
         }
     }
 
+    private suspend fun ArrayList<AmiiboFile?>.appendStorageFiles(): ArrayList<AmiiboFile?> {
+        listAmiiboFiles(keyManager, TagMo.downloadDir, true).forEach { file ->
+            file?.let { amiiboFile ->
+                if (!any { it?.id == amiiboFile.id }) add(amiiboFile)
+            }
+        }
+        listAmiiboFiles(keyManager, File(filesDir, "Foomiibo"), true).also {
+            addAll(it)
+        }
+        return this
+    }
+
     private fun loadAmiiboFiles(rootFolder: File?, recursiveFiles: Boolean) {
         setSnackbarListener(object: SnackbarListener {
             override fun onSnackbarHidden(fakeSnackbar: AnimatedLinearLayout) {
@@ -1739,22 +1751,9 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
             }
         })
         CoroutineScope(Dispatchers.IO).launch {
-            val amiiboFiles = listAmiiboFiles(keyManager, rootFolder, recursiveFiles)
-            listAmiiboFiles(keyManager, TagMo.downloadDir, true).also { files ->
-                coroutineScope {
-                    files.map { file ->
-                        async(Dispatchers.IO) {
-                            file?.let { amiiboFile ->
-                                if (!amiiboFiles.any { it?.id == amiiboFile.id })
-                                    amiiboFiles.add(amiiboFile)
-                            }
-                        }
-                    }.awaitAll()
-                }
-            }
-            listAmiiboFiles(keyManager, File(filesDir, "Foomiibo"), true).also {
-                amiiboFiles.addAll(it)
-            }
+            val amiiboFiles = listAmiiboFiles(
+                keyManager, rootFolder, recursiveFiles
+            ).appendStorageFiles()
             withContext(Dispatchers.Main) {
                 hideFakeSnackbar()
                 settings?.let {
@@ -1787,14 +1786,10 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
             if (amiiboFiles.isEmpty() && null == settings?.browserRootDocument) {
                 onDocumentRequested()
             }
-            val foomiibo = File(filesDir, "Foomiibo")
-            amiiboFiles.addAll(listAmiiboFiles(keyManager, foomiibo, true))
+            settings?.amiiboFiles = amiiboFiles.appendStorageFiles()
             withContext(Dispatchers.Main) {
                 hideFakeSnackbar()
-                settings?.let {
-                    it.amiiboFiles = amiiboFiles
-                    it.notifyChanges()
-                }
+                settings?.notifyChanges()
             }
         }
     }

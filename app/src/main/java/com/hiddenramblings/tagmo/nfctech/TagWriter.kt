@@ -20,11 +20,9 @@ object TagWriter {
         )
         val pages = arrayOfNulls<ByteArray>(data.size / NfcByte.PAGE_SIZE)
         var i = 0
-        var j = 0
-        while (i < data.size) {
-            pages[j] = data.copyOfRange(i, i + NfcByte.PAGE_SIZE)
+        pages.indices.forEach {
+            pages[it] = data.copyOfRange(i, i + NfcByte.PAGE_SIZE)
             i += NfcByte.PAGE_SIZE
-            j++
         }
         return pages
     }
@@ -196,31 +194,31 @@ object TagWriter {
      */
     private fun uidFromPages(pages0_1: ByteArray): ByteArray? {
         if (pages0_1.size < 8) return null
-        val key = ByteArray(7)
-        key[0] = pages0_1[0]
-        key[1] = pages0_1[1]
-        key[2] = pages0_1[2]
-        key[3] = pages0_1[4]
-        key[4] = pages0_1[5]
-        key[5] = pages0_1[6]
-        key[6] = pages0_1[7]
-        return key
+        return byteArrayOf(
+            pages0_1[0],
+            pages0_1[1],
+            pages0_1[2],
+            pages0_1[4],
+            pages0_1[5],
+            pages0_1[6],
+            pages0_1[7]
+        )
     }
 
     private fun keygen(uuid: ByteArray?): ByteArray? {
         // from AmiiManage (GPL)
         if (null == uuid) return null
-        val key = ByteArray(4)
         val uuidIntArray = IntArray(uuid.size)
         uuid.forEachIndexed { i, byte ->
             uuidIntArray[i] = 0xFF and byte.toInt()
         }
         if (uuid.size == 7) {
-            key[0] = (0xFF and (0xAA xor (uuidIntArray[1] xor uuidIntArray[3]))).toByte()
-            key[1] = (0xFF and (0x55 xor (uuidIntArray[2] xor uuidIntArray[4]))).toByte()
-            key[2] = (0xFF and (0xAA xor (uuidIntArray[3] xor uuidIntArray[5]))).toByte()
-            key[3] = (0xFF and (0x55 xor (uuidIntArray[4] xor uuidIntArray[6]))).toByte()
-            return key
+            return byteArrayOf(
+                (0xFF and (0xAA xor (uuidIntArray[1] xor uuidIntArray[3]))).toByte(),
+                (0xFF and (0x55 xor (uuidIntArray[2] xor uuidIntArray[4]))).toByte(),
+                (0xFF and (0xAA xor (uuidIntArray[3] xor uuidIntArray[5]))).toByte(),
+                (0xFF and (0x55 xor (uuidIntArray[4] xor uuidIntArray[6]))).toByte()
+            )
         }
         return null
     }

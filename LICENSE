@@ -673,6 +673,11 @@ the library.  If this is what you want to do, use the GNU Lesser General
 Public License instead of this License.  But first, please read
 <https://www.gnu.org/licenses/why-not-lgpl.html>.
 
+
+Additional licenses or copyrights, as noted, may apply to individual files
+including, but not limited to, the following Apache License 2.0 derivative
+
+
 /*
  * ====================================================================
  * Copyright (c) 2012-2023 AbandonedCart.  All rights reserved.
@@ -727,5 +732,3 @@ Public License instead of this License.  But first, please read
  * [including the GNU Public License.] Content not subject to these terms is
  * subject to to the terms and conditions of the Apache License, Version 2.0.
  */
-
-Additional licenses and copyrights, as noted, may apply to individual files.

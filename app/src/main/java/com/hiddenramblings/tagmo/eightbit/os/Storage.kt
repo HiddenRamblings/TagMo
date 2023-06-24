@@ -22,7 +22,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.core.net.toUri
 import com.hiddenramblings.tagmo.BuildConfig
-import com.hiddenramblings.tagmo.TagMo.Companion.appContext
+import com.hiddenramblings.tagmo.TagMo
 import java.io.File
 
 object Storage : Environment() {
@@ -106,7 +106,7 @@ object Storage : Environment() {
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     private fun setFileLollipop(internal: Boolean): File? {
-        val storage = ContextCompat.getExternalFilesDirs(appContext, null)
+        val storage = ContextCompat.getExternalFilesDirs(TagMo.appContext, null)
         val emulated: File? = try {
             if (null != storage[0] && storage[0]!!.canRead())
                 getRootPath(storage[0])
@@ -177,7 +177,7 @@ object Storage : Environment() {
 
     fun getFileUri(file: File): Uri {
         return if (Version.isNougat)
-            FileProvider.getUriForFile(appContext, PROVIDER, file)
+            FileProvider.getUriForFile(TagMo.appContext, PROVIDER, file)
         else
             file.toUri()
     }
@@ -186,7 +186,7 @@ object Storage : Environment() {
         val filePath = file?.absolutePath
         val storagePath =
             if (filePath?.contains("/Foomiibo/") == true)
-                appContext.filesDir.absolutePath
+                TagMo.appContext.filesDir.absolutePath
             else getPath(internal)
         return if (!storagePath.isNullOrEmpty() && filePath?.startsWith(storagePath) == true)
             filePath.substring(storagePath.length)

@@ -9,6 +9,8 @@ import android.nfc.Tag
 import android.nfc.tech.MifareClassic
 import android.nfc.tech.NfcA
 import android.nfc.tech.TagTechnology
+import com.hiddenramblings.tagmo.R
+import com.hiddenramblings.tagmo.TagMo
 import com.hiddenramblings.tagmo.eightbit.io.Debug
 import java.io.IOException
 import java.math.BigInteger
@@ -84,13 +86,14 @@ class Infinity : TagTechnology {
         )
 
         private fun calc_keya (uid: String) : ByteArray {
-            if (!uidre.matches(uid)) throw NumberFormatException("invalid UID (seven hex bytes)")
+            if (!uidre.matches(uid))
+                throw NumberFormatException(TagMo.appContext.getString(R.string.fail_uid_invalid))
 
             val sha1 = MessageDigest.getInstance("SHA-1")
-            val textBytes: ByteArray = TagArray.hexToByteArray("${String.format("%032X",
-                magic_nums[0] * magic_nums[1] * magic_nums[3] * magic_nums[5]
-            )}$uid${String.format("%030X", 
-                magic_nums[0] * magic_nums[2] * magic_nums[4]
+            val textBytes: ByteArray = TagArray.hexToByteArray("${String.format(
+                "%032X", magic_nums[0] * magic_nums[1] * magic_nums[3] * magic_nums[5]
+            )}$uid${String.format(
+                "%030X", magic_nums[0] * magic_nums[2] * magic_nums[4]
             )}")
             sha1.update(textBytes, 0, textBytes.size)
             val key = sha1.digest()

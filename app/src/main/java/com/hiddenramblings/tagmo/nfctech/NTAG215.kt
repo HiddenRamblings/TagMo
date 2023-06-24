@@ -328,16 +328,23 @@ class NTAG215 : TagTechnology {
 
         @Throws(IOException::class)
         fun getBlind(tag: Tag?): NTAG215 {
-            return NfcA.get(tag)?.let { NTAG215(it) }?.apply { connect() }
-                ?: throw IOException(TagMo.appContext.getString(R.string.error_tag_unavailable))
+            val nTag = try {
+                NfcA.get(tag)?.apply { connect() }
+            } catch (ex: IOException) {
+                Debug.warn(ex)
+                null
+            } ?: throw IOException(TagMo.appContext.getString(R.string.error_tag_unavailable))
+            return NTAG215(nTag)
         }
 
         @Throws(IOException::class)
         operator fun get(tag: Tag?): NTAG215? {
-            val mifare = try {
+            return try {
                 getMifareUltralight(tag)?.apply { connect() }
-            } catch (ex: IOException) { null }
-            return mifare ?: getNfcA(tag)?.apply { connect() }
+            } catch (ex: IOException) {
+                Debug.warn(ex)
+                null
+            } ?: getNfcA(tag)?.apply { connect() }
         }
     }
 }

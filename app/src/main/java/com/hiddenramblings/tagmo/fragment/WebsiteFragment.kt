@@ -181,9 +181,8 @@ class WebsiteFragment : Fragment() {
                     val dir = File(
                         outputDir, finalEntry.name.replace("/", "")
                     )
-                    if (!dir.exists() && !dir.mkdirs()) throw RuntimeException(
-                        getString(R.string.mkdir_failed, dir.name)
-                    )
+                    if (!dir.exists() && !dir.mkdirs())
+                        throw RuntimeException(getString(R.string.mkdir_failed, dir.name))
                 } else {
                     val zipInStream = zipFile.getInputStream(finalEntry)
                     if (Version.isOreo) {

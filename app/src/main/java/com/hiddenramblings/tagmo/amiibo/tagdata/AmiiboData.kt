@@ -57,7 +57,8 @@ open class AmiiboData : Parcelable {
             return bytes
         }
         set(value) {
-            if (value.size != UID_LENGTH) throw NumberFormatException(context.getString(R.string.invalid_uid_length))
+            if (value.size != UID_LENGTH)
+                throw NumberFormatException(context.getString(R.string.invalid_uid_length))
             tagData.put(0x0, value[0x8])
             tagData.position(UID_OFFSET)
             tagData.put(value, 0x0, UID_LENGTH - 1)

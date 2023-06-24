@@ -27,7 +27,8 @@ class KeyManager(var context: Context) {
         try {
             context.openFileInput(file).use { fs ->
                 val key = ByteArray(NfcByte.KEY_FILE_SIZE)
-                if (fs.read(key) != NfcByte.KEY_FILE_SIZE) throw IOException(context.getString(R.string.key_size_invalid))
+                if (fs.read(key) != NfcByte.KEY_FILE_SIZE)
+                    throw IOException(context.getString(R.string.key_size_invalid))
                 return key
             }
         } catch (e: Exception) { Debug.warn(R.string.key_read_error, e) }
@@ -97,7 +98,8 @@ class KeyManager(var context: Context) {
     @Throws(Exception::class)
     fun decrypt(tagData: ByteArray?): ByteArray {
         if (null == tagData) throw Exception(context.getString(R.string.fail_decrypt))
-        if (!hasFixedKey() || !hasUnFixedKey()) throw Exception(context.getString(R.string.key_not_present))
+        if (!hasFixedKey() || !hasUnFixedKey())
+            throw Exception(context.getString(R.string.key_not_present))
         val tool = AmiiTool()
         if ((fixedKey?.let { tool.setKeysFixed(it, it.size) } ?: 0) == 0)
                 throw Exception(context.getString(R.string.error_amiitool_init))
@@ -111,7 +113,8 @@ class KeyManager(var context: Context) {
 
     @Throws(RuntimeException::class)
     fun encrypt(tagData: ByteArray): ByteArray {
-        if (!hasFixedKey() || !hasUnFixedKey()) throw RuntimeException(context.getString(R.string.key_not_present))
+        if (!hasFixedKey() || !hasUnFixedKey())
+            throw RuntimeException(context.getString(R.string.key_not_present))
         val tool = AmiiTool()
         if ((fixedKey?.let { tool.setKeysFixed(it, it.size) } ?: 0) == 0)
             throw Exception(context.getString(R.string.error_amiitool_init))

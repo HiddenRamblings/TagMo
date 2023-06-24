@@ -257,7 +257,8 @@ class NfcActivity : AppCompatActivity() {
                         && NFCIntent.ACTION_SET_BANK_COUNT != mode
                     ) {
                         bankNumber = bankPicker.getPositionByValue(bankPicker.value)
-                        if (bankNumber > banksCount) throw Exception(getString(R.string.fail_bank_oob))
+                        if (bankNumber > banksCount)
+                            throw Exception(getString(R.string.fail_bank_oob))
                     }
                 }
                 try {

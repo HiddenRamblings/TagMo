@@ -114,12 +114,11 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        if (context is BrowserActivity) browserActivity = context
+        if (activity is BrowserActivity) browserActivity = activity as BrowserActivity
     }
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View? {
         return inflater.inflate(R.layout.fragment_browser, container, false)
     }
@@ -640,6 +639,7 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
     }
 
     private fun getGameCompatibility(txtUsage: TextView, tagData: ByteArray) {
+        if (tagData.isEmpty()) return
         settings.gamesManager?.let {
             try {
                 val amiiboId = Amiibo.dataToId(tagData)
@@ -678,9 +678,10 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
                     if (!it.isVisible)
                         activity.onCreateToolbarMenu(this, toolbar, tagData, itemView)
                     it.isGone = it.isVisible
-                    val txtUsage = itemView.findViewById<TextView>(R.id.txtUsage)
-                    if (!txtUsage.isVisible) getGameCompatibility(txtUsage, tagData)
-                    txtUsage.isGone = txtUsage.isVisible
+                    itemView.findViewById<TextView>(R.id.txtUsage).apply {
+                        if (isGone) getGameCompatibility(this, tagData)
+                        isGone = isVisible
+                    }
                 } else {
                     activity.onCreateToolbarMenu(this, toolbar, tagData, itemView)
                     activity.updateAmiiboView(tagData, null)

@@ -394,7 +394,7 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        if (context is BrowserActivity) browserActivity = context
+        if (activity is BrowserActivity) browserActivity = activity as BrowserActivity
     }
 
     override fun onCreateView(

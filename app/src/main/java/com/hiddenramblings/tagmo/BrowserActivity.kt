@@ -1068,12 +1068,13 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                 Debug.info(e)
             }
         }
-        toolbar.menu.findItem(R.id.mnu_write).isEnabled = available
-        toolbar.menu.findItem(R.id.mnu_update).isEnabled = available
-        toolbar.menu.findItem(R.id.mnu_edit).isEnabled = available
-        toolbar.menu.findItem(R.id.mnu_view_hex).isEnabled = available
-        toolbar.menu.findItem(R.id.mnu_share_qr).isEnabled = available
-        toolbar.menu.findItem(R.id.mnu_validate).isEnabled = available
+        toolbar.menu.findItem(R.id.mnu_write).isVisible = available
+        toolbar.menu.findItem(R.id.mnu_update).isVisible = available
+        toolbar.menu.findItem(R.id.mnu_edit).isVisible = available
+        toolbar.menu.findItem(R.id.mnu_view_hex).isVisible = available
+        toolbar.menu.findItem(R.id.mnu_share_qr).isVisible = available
+        toolbar.menu.findItem(R.id.mnu_validate).isVisible = available
+        toolbar.menu.findItem(R.id.mnu_ignore_tag_id).isVisible = available
         toolbar.menu.findItem(R.id.mnu_random).apply {
             isVisible = null != amiiboFile
         }
@@ -1081,7 +1082,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
             isVisible = null != amiiboFile
         }
         val backup = toolbar.menu.findItem(R.id.mnu_save).apply {
-            isEnabled = available
+            isVisible = available
         }
         val cached = amiiboFile?.let {
             it.docUri?.let { doc ->
@@ -1222,13 +1223,14 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
         toolbar.menu.findItem(R.id.mnu_random).isVisible = false
 
         val available = tagData.isNotEmpty()
-        toolbar.menu.findItem(R.id.mnu_write).isEnabled = available
-        toolbar.menu.findItem(R.id.mnu_update).isEnabled = available
-        toolbar.menu.findItem(R.id.mnu_edit).isEnabled = available
-        toolbar.menu.findItem(R.id.mnu_view_hex).isEnabled = available
-        toolbar.menu.findItem(R.id.mnu_share_qr).isEnabled = available
-        toolbar.menu.findItem(R.id.mnu_validate).isEnabled = available
-        toolbar.menu.findItem(R.id.mnu_delete).isEnabled = available
+        toolbar.menu.findItem(R.id.mnu_write).isVisible = available
+        toolbar.menu.findItem(R.id.mnu_update).isVisible = available
+        toolbar.menu.findItem(R.id.mnu_edit).isVisible = available
+        toolbar.menu.findItem(R.id.mnu_view_hex).isVisible = available
+        toolbar.menu.findItem(R.id.mnu_share_qr).isVisible = available
+        toolbar.menu.findItem(R.id.mnu_validate).isVisible = available
+        toolbar.menu.findItem(R.id.mnu_delete).isVisible = available
+        toolbar.menu.findItem(R.id.mnu_ignore_tag_id).isVisible = available
 
         toolbar.setOnMenuItemClickListener {
             val args = Bundle()

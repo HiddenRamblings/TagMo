@@ -129,7 +129,7 @@
     </item>
     <item
         android:id="@+id/report_problem"
-        android:icon="@drawable/ic_support_required_24dp"
+        android:icon="@drawable/ic_report_required_24dp"
         android:title="@string/report_problem"
         app:showAsAction="never"/>
     <item

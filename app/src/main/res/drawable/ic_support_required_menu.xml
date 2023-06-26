@@ -5,7 +5,7 @@
         android:drawable="@drawable/menu_icon_circle" />
     <item
         android:gravity="center"
-        android:drawable="@drawable/ic_help_outline_24dp"
+        android:drawable="@drawable/ic_support_required_24dp"
         android:top="5dp"
         android:bottom="5dp"
         android:left="5dp"

@@ -333,7 +333,7 @@
                             android:scaleType="fitCenter"
                             android:layout_weight="0"
                             android:layout_gravity="center_vertical"
-                            app:srcCompat="@drawable/ic_help_outline_menu"
+                            app:srcCompat="@drawable/ic_support_required_menu"
                             android:foreground="@drawable/card_foreground"
                             tools:ignore="UnusedAttribute" />
 

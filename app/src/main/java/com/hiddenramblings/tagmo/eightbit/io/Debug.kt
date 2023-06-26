@@ -215,7 +215,7 @@ object Debug {
         log.append(Build.VERSION.RELEASE)
         log.append(") - ").append(Memory(context).getDeviceRAM()).append(" RAM")
         if (KeyManager(context).isKeyMissing)
-            log.append(separator).append("KeyManager: Key(s) Missing")
+            log.append(separator).append(context.getString(R.string.log_keymanager))
         return log
     }
 

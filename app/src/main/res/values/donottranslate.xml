@@ -6,6 +6,7 @@
     <string name="app_name" translatable="false">@string/tagmo</string>
 
     <string name="git_issue_title" translatable="false">[Logcat]: TagMo #%1$s</string>
+    <string name="log_keymanager"  translatable="false">"KeyManager Status: Key(s) Missing"</string>
 
     <string name="tag_data" translatable="false">tagData</string>
     <string name="hex_ff" translatable="false">FF</string>

@@ -182,12 +182,12 @@ class TagDataEditor : AppCompatActivity() {
         appDataViewSSBU = findViewById(R.id.appDataSSBU)
 
         tagData = intent.getByteArrayExtra(NFCIntent.EXTRA_TAG_DATA)
-        try {
-            amiiboData = AmiiboData(keyManager.decrypt(tagData))
+        amiiboData = try {
+            AmiiboData(keyManager.decrypt(tagData))
         } catch (e: Exception) {
             try {
                 tagData = TagArray.getValidatedData(keyManager, tagData)
-                amiiboData = AmiiboData(tagData as ByteArray)
+                AmiiboData(keyManager.decrypt(tagData))
             } catch (ex: Exception) {
                 Debug.warn(e)
                 showErrorDialog(R.string.fail_display)

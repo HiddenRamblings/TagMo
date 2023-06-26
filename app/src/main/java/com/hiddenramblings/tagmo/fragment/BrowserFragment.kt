@@ -582,7 +582,7 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
 
     private fun buildFoomiiboFile(amiibo: Amiibo) {
         try {
-            val tagData = Foomiibo.getSignedData(amiibo.id)
+            val tagData = Foomiibo.getSignedData(keyManager, amiibo.id)
             val directory = File(Foomiibo.directory, amiibo.amiiboSeries!!.name)
             directory.mkdirs()
             TagArray.writeBytesToFile(
@@ -598,7 +598,7 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
                 File(Foomiibo.directory, it.name)
             } ?: Foomiibo.directory
             directory.mkdirs()
-            val foomiiboData = Foomiibo.getSignedData(tagData)
+            val foomiiboData = Foomiibo.getSignedData(keyManager, tagData)
             TagArray.writeBytesToFile(
                 directory, TagArray.decipherFilename(
                     amiibo, foomiiboData, false
@@ -663,9 +663,9 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
             }
             tagData = try {
                 if (tagData.isEmpty() && null != amiibo)
-                    Foomiibo.getSignedData(amiibo.id)
+                    Foomiibo.getSignedData(keyManager, amiibo.id)
                 else
-                    TagArray.getValidatedData(keyManager,tagData)
+                    TagArray.getValidatedData(keyManager, tagData)
             } catch (ignored: Exception) { byteArrayOf() }
 
             val menuOptions = itemView?.findViewById<LinearLayout>(R.id.menu_options)
@@ -699,9 +699,9 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
         }
         tagData = try {
             if (tagData.isEmpty() && null != amiibo)
-                Foomiibo.getSignedData(Amiibo.idToHex(amiibo.id))
+                Foomiibo.getSignedData(keyManager, Amiibo.idToHex(amiibo.id))
             else
-                TagArray.getValidatedData(keyManager,tagData)
+                TagArray.getValidatedData(keyManager, tagData)
         } catch (ignored: Exception) { byteArrayOf() }
 
         if (settings.amiiboView != BrowserSettings.VIEW.IMAGE.value) {

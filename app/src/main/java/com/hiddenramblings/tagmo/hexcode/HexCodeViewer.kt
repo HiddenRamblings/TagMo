@@ -24,6 +24,7 @@ import com.hiddenramblings.tagmo.R
 import com.hiddenramblings.tagmo.TagMo
 import com.hiddenramblings.tagmo.amiibo.Amiibo
 import com.hiddenramblings.tagmo.amiibo.KeyManager
+import com.hiddenramblings.tagmo.amiibo.tagdata.AmiiboData
 import com.hiddenramblings.tagmo.eightbit.io.Debug
 import com.hiddenramblings.tagmo.eightbit.os.Storage
 import com.hiddenramblings.tagmo.eightbit.os.Version
@@ -48,24 +49,21 @@ class HexCodeViewer : AppCompatActivity() {
             return
         }
         val tagData = intent.getByteArrayExtra(NFCIntent.EXTRA_TAG_DATA)
-        val listView = findViewById<RecyclerView>(R.id.gridView).apply {
+        val amiiboData = try {
+            keyManager.decrypt(tagData)
+        } catch (e: Exception) {
             try {
-                layoutManager = LinearLayoutManager(this@HexCodeViewer)
-                adapter = HexAdapter(keyManager.decrypt(tagData)).apply {
-                    recycledViewPool.setMaxRecycledViews(0, itemCount * 18)
-                }
-            } catch (e: Exception) {
-                try {
-                    TagArray.getValidatedData(keyManager, tagData)?.let {
-                        layoutManager = LinearLayoutManager(this@HexCodeViewer)
-                        adapter = HexAdapter(keyManager.decrypt(it)).apply {
-                            recycledViewPool.setMaxRecycledViews(0, itemCount * 18)
-                        }
-                    } ?: throw Exception("Tag data could not be decrypted")
-                } catch (ex: Exception) {
-                    Debug.warn(e)
-                    showErrorDialog(R.string.fail_display)
-                }
+                keyManager.decrypt(TagArray.getValidatedData(keyManager, tagData))
+            } catch (ex: Exception) {
+                Debug.warn(e)
+                showErrorDialog(R.string.fail_display)
+                return
+            }
+        }
+        val listView = findViewById<RecyclerView>(R.id.gridView).apply {
+            layoutManager = LinearLayoutManager(this@HexCodeViewer)
+            adapter = HexAdapter(amiiboData).apply {
+                recycledViewPool.setMaxRecycledViews(0, itemCount * 18)
             }
         }
         val toolbar = findViewById<Toolbar>(R.id.toolbar)

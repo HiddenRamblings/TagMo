@@ -4,6 +4,7 @@ import android.content.Context
 import com.hiddenramblings.tagmo.AmiiTool
 import com.hiddenramblings.tagmo.R
 import com.hiddenramblings.tagmo.eightbit.io.Debug
+import com.hiddenramblings.tagmo.nfctech.Foomiibo
 import com.hiddenramblings.tagmo.nfctech.NfcByte
 import com.hiddenramblings.tagmo.nfctech.TagArray
 import java.io.DataInputStream
@@ -106,9 +107,17 @@ class KeyManager(var context: Context) {
         if ((unfixedKey?.let { tool.setKeysUnfixed(it, it.size) } ?: 0) == 0)
                 throw Exception(context.getString(R.string.error_amiitool_init))
         val decrypted = ByteArray(NfcByte.TAG_DATA_SIZE)
-        if (tool.unpack(tagData, tagData.size, decrypted, decrypted.size) == 0)
+        if (tool.unpack(tagData, NfcByte.TAG_DATA_SIZE, decrypted, decrypted.size) == 0)
             throw Exception(context.getString(R.string.fail_decrypt))
-        return decrypted
+        return if (tagData.size ==  NfcByte.TAG_FILE_SIZE) {
+            return ByteArray(NfcByte.TAG_FILE_SIZE).apply {
+                System.arraycopy(decrypted, 0, this, 0x0, decrypted.size)
+                val signature = tagData.copyOfRange(NfcByte.SIGNATURE, tagData.size)
+                System.arraycopy(signature, 0, this, NfcByte.SIGNATURE, signature.size)
+            }
+        } else {
+            decrypted
+        }
     }
 
     @Throws(RuntimeException::class)
@@ -121,9 +130,17 @@ class KeyManager(var context: Context) {
         if ((unfixedKey?.let { tool.setKeysUnfixed(it, it.size) } ?: 0) == 0)
             throw Exception(context.getString(R.string.error_amiitool_init))
         val encrypted = ByteArray(NfcByte.TAG_DATA_SIZE)
-        if (tool.pack(tagData, tagData.size, encrypted, encrypted.size) == 0)
+        if (tool.pack(tagData, NfcByte.TAG_DATA_SIZE, encrypted, encrypted.size) == 0)
             throw RuntimeException(context.getString(R.string.fail_encrypt))
-        return encrypted
+        return if (tagData.size ==  NfcByte.TAG_FILE_SIZE) {
+            return ByteArray(NfcByte.TAG_FILE_SIZE).apply {
+                System.arraycopy(encrypted, 0, this, 0x0, encrypted.size)
+                val signature = tagData.copyOfRange(NfcByte.SIGNATURE, tagData.size)
+                System.arraycopy(signature, 0, this, NfcByte.SIGNATURE, signature.size)
+            }
+        } else {
+            encrypted
+        }
     }
 
     companion object {

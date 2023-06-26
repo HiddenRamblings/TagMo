@@ -10,6 +10,7 @@ package com.hiddenramblings.tagmo.nfctech
 import com.hiddenramblings.tagmo.R
 import com.hiddenramblings.tagmo.TagMo
 import com.hiddenramblings.tagmo.amiibo.Amiibo
+import com.hiddenramblings.tagmo.amiibo.KeyManager
 import com.hiddenramblings.tagmo.eightbit.io.Debug
 import java.io.File
 import java.text.DecimalFormat
@@ -91,26 +92,26 @@ object Foomiibo {
 
     private const val hexSignature = "5461674d6f20382d426974204e544147"
 
-    fun getSignedData(tagData: ByteArray): ByteArray {
-        val signedData = ByteArray(NfcByte.TAG_FILE_SIZE)
-        System.arraycopy(tagData, 0, signedData, 0x0, tagData.size)
-        val signature = TagArray.hexToByteArray(hexSignature)
-        System.arraycopy(signature, 0, signedData, 0x21C, signature.size)
-        return signedData
+    fun getSignedData(keyManager: KeyManager, tagData: ByteArray): ByteArray {
+        return ByteArray(NfcByte.TAG_FILE_SIZE).apply {
+            System.arraycopy(keyManager.encrypt(tagData), 0, this, 0x0, tagData.size)
+            val signature = TagArray.hexToByteArray(hexSignature)
+            System.arraycopy(signature, 0, this, NfcByte.SIGNATURE, signature.size)
+        }
     }
 
-    fun getSignedData(id: String): ByteArray {
-        return getSignedData(generateData(id))
+    fun getSignedData(keyManager: KeyManager, id: String): ByteArray {
+        return getSignedData(keyManager, generateData(id))
     }
 
-    fun getSignedData(id: Long): ByteArray {
-        return getSignedData(generateData(Amiibo.idToHex(id)))
+    fun getSignedData(keyManager: KeyManager, id: Long): ByteArray {
+        return getSignedData(keyManager, generateData(Amiibo.idToHex(id)))
     }
 
     fun getDataSignature(tagData: ByteArray): String? {
         if (tagData.size == NfcByte.TAG_FILE_SIZE) {
             val signature = TagArray.bytesToHex(
-                tagData.copyOfRange(540, NfcByte.TAG_FILE_SIZE)
+                tagData.copyOfRange(NfcByte.SIGNATURE, NfcByte.TAG_FILE_SIZE)
             ).substring(0, 32).lowercase()
             Debug.info(TagMo::class.java, TagArray.hexToString(signature))
             if (hexSignature == signature) return signature

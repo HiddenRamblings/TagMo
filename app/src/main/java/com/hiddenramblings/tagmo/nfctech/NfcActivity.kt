@@ -335,7 +335,8 @@ class NfcActivity : AppCompatActivity() {
                                         NFCIntent.EXTRA_AMIIBO_BYTES
                                     )
                                     amiiboList?.forEachIndexed { x, amiiboFile ->
-                                        val tagData = amiiboFile.data ?: Foomiibo.getSignedData(amiiboFile.id)
+                                        val tagData = amiiboFile.data
+                                            ?: Foomiibo.getSignedData(keyManager, amiiboFile.id)
                                         showMessage(R.string.bank_writing, x + 1, amiiboList.size)
                                         TagWriter.writeEliteAuto(ntag, tagData, x)
                                     }
@@ -345,7 +346,8 @@ class NfcActivity : AppCompatActivity() {
                                         NFCIntent.EXTRA_AMIIBO_LIST
                                     )
                                     amiiboList?.forEachIndexed { x, eliteTag ->
-                                        val tagData = eliteTag.data ?: Foomiibo.getSignedData(eliteTag.id)
+                                        val tagData = eliteTag.data
+                                            ?: Foomiibo.getSignedData(keyManager, eliteTag.id)
                                         showMessage(R.string.bank_writing, x + 1, amiiboList.size)
                                         TagWriter.writeEliteAuto(ntag, tagData, x)
                                     }

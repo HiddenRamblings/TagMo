@@ -3,9 +3,10 @@ package com.hiddenramblings.tagmo.nfctech
 @Suppress("unused")
 object NfcByte {
     const val KEY_FILE_SIZE = 80 // Each key read separately
-    const val KEY_RETAIL_SZ = 160 // Each key read separately
+    const val KEY_RETAIL_SZ = 160 // Both keys read together
     const val TAG_DATA_SIZE = 532 // 540, 572 with signature
     const val TAG_FILE_SIZE = 572 // 540 + 32 byte signature
+    const val SIGNATURE = 0x21C // 540
     const val PAGE_SIZE = 4
     const val CMD_GET_VERSION = 0x60
     const val CMD_READ = 0x30

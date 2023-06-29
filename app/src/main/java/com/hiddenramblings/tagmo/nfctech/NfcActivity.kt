@@ -217,6 +217,40 @@ class NfcActivity : AppCompatActivity() {
         } catch (ignored: Exception) { }
     }
 
+    private fun writeCollection(ntag: NTAG215, commandIntent: Intent) {
+        when {
+            commandIntent.hasExtra(NFCIntent.EXTRA_AMIIBO_DATA) -> {
+                val amiiboList = commandIntent.parcelableArrayList<AmiiboData>(
+                    NFCIntent.EXTRA_AMIIBO_DATA
+                )
+                amiiboList?.forEachIndexed { x, amiiboData ->
+                    showMessage(R.string.bank_writing, x + 1, amiiboList.size)
+                    TagWriter.writeEliteAuto(ntag, amiiboData.array, x)
+                }
+            }
+            commandIntent.hasExtra(NFCIntent.EXTRA_AMIIBO_BYTES) -> {
+                val amiiboList = commandIntent.parcelableArrayList<AmiiboFile>(
+                    NFCIntent.EXTRA_AMIIBO_BYTES
+                )
+                amiiboList?.forEachIndexed { x, amiiboFile ->
+                    val tagData = amiiboFile.data ?: Foomiibo.getSignedData(amiiboFile.id)
+                    showMessage(R.string.bank_writing, x + 1, amiiboList.size)
+                    TagWriter.writeEliteAuto(ntag, tagData, x)
+                }
+            }
+            commandIntent.hasExtra(NFCIntent.EXTRA_AMIIBO_LIST) -> {
+                val amiiboList = commandIntent.parcelableArrayList<EliteTag>(
+                    NFCIntent.EXTRA_AMIIBO_LIST
+                )
+                amiiboList?.forEachIndexed { x, eliteTag ->
+                    val tagData = eliteTag.data ?: Foomiibo.getSignedData(eliteTag.id)
+                    showMessage(R.string.bank_writing, x + 1, amiiboList.size)
+                    TagWriter.writeEliteAuto(ntag, tagData, x)
+                }
+            }
+        }
+    }
+
     private suspend fun onTagDiscovered(intent: Intent) = withContext(Dispatchers.IO) {
         val commandIntent = getIntent()
         val mode = commandIntent.action
@@ -241,7 +275,7 @@ class NfcActivity : AppCompatActivity() {
                     }
                 }
                 var bankNumber = 0
-                var banksCount = -1
+                var bankCount = -1
                 var activeBank = -1
                 if (isEliteDevice && NFCIntent.ACTION_UNLOCK_UNIT != mode) {
                     if (TagReader.needsFirmware(ntag)) {
@@ -250,14 +284,14 @@ class NfcActivity : AppCompatActivity() {
                         finish()
                     }
                     val bankParams = TagReader.getBankParams(ntag)
-                    banksCount = bankParams?.get(1)?.toInt()?.and(0xFF) ?: banksCount
+                    bankCount = bankParams?.get(1)?.toInt()?.and(0xFF) ?: bankCount
                     activeBank = bankParams?.get(0)?.toInt()?.and(0xFF) ?: activeBank
                     if (NFCIntent.ACTION_WRITE_ALL_TAGS != mode
                         && NFCIntent.ACTION_ERASE_ALL_TAGS != mode
                         && NFCIntent.ACTION_SET_BANK_COUNT != mode
                     ) {
                         bankNumber = bankPicker.getPositionByValue(bankPicker.value)
-                        if (bankNumber > banksCount)
+                        if (bankNumber > bankCount)
                             throw Exception(getString(R.string.fail_bank_oob))
                     }
                 }
@@ -289,14 +323,17 @@ class NfcActivity : AppCompatActivity() {
                                 }
                                 TagWriter.writeEliteAuto(ntag, data, bankNumber)
                                 setResult(RESULT_OK, Intent(NFCIntent.ACTION_NFC_SCANNED).apply {
-                                    putExtra(NFCIntent.EXTRA_SIGNATURE, TagReader.getBankSignature(ntag))
-                                    putExtra(NFCIntent.EXTRA_BANK_COUNT, banksCount)
-                                    putExtra(NFCIntent.EXTRA_ACTIVE_BANK, activeBank)
-                                    putExtra(NFCIntent.EXTRA_CURRENT_BANK, bankNumber)
                                     putExtras(Bundle().apply {
+                                        putString(
+                                            NFCIntent.EXTRA_SIGNATURE,
+                                            TagReader.getBankSignature(ntag)
+                                        )
+                                        putInt(NFCIntent.EXTRA_BANK_COUNT, bankCount)
+                                        putInt(NFCIntent.EXTRA_ACTIVE_BANK, activeBank)
+                                        putInt(NFCIntent.EXTRA_CURRENT_BANK, bankNumber)
                                         putStringArrayList(
                                             NFCIntent.EXTRA_AMIIBO_LIST,
-                                            TagReader.readTagTitles(ntag, banksCount)
+                                            TagReader.readTagTitles(ntag, bankCount)
                                         )
                                         putByteArray(NFCIntent.EXTRA_TAG_DATA, data)
                                     })
@@ -319,46 +356,13 @@ class NfcActivity : AppCompatActivity() {
                         NFCIntent.ACTION_WRITE_ALL_TAGS -> {
                             ntag.setBankCount(writeCount)
                             if (activeBank <= writeCount) ntag.activateBank(activeBank)
-
-                            when {
-                                commandIntent.hasExtra(NFCIntent.EXTRA_AMIIBO_DATA) -> {
-                                    val amiiboList = commandIntent.parcelableArrayList<AmiiboData>(
-                                        NFCIntent.EXTRA_AMIIBO_DATA
-                                    )
-                                    amiiboList?.forEachIndexed { x, amiiboData ->
-                                        showMessage(R.string.bank_writing, x + 1, amiiboList.size)
-                                        TagWriter.writeEliteAuto(ntag, amiiboData.array, x)
-                                    }
-                                }
-                                commandIntent.hasExtra(NFCIntent.EXTRA_AMIIBO_BYTES) -> {
-                                    val amiiboList = commandIntent.parcelableArrayList<AmiiboFile>(
-                                        NFCIntent.EXTRA_AMIIBO_BYTES
-                                    )
-                                    amiiboList?.forEachIndexed { x, amiiboFile ->
-                                        val tagData = amiiboFile.data
-                                            ?: Foomiibo.getSignedData(keyManager, amiiboFile.id)
-                                        showMessage(R.string.bank_writing, x + 1, amiiboList.size)
-                                        TagWriter.writeEliteAuto(ntag, tagData, x)
-                                    }
-                                }
-                                commandIntent.hasExtra(NFCIntent.EXTRA_AMIIBO_LIST) -> {
-                                    val amiiboList = commandIntent.parcelableArrayList<EliteTag>(
-                                        NFCIntent.EXTRA_AMIIBO_LIST
-                                    )
-                                    amiiboList?.forEachIndexed { x, eliteTag ->
-                                        val tagData = eliteTag.data
-                                            ?: Foomiibo.getSignedData(keyManager, eliteTag.id)
-                                        showMessage(R.string.bank_writing, x + 1, amiiboList.size)
-                                        TagWriter.writeEliteAuto(ntag, tagData, x)
-                                    }
-                                }
-                            }
+                            writeCollection(ntag, commandIntent)
                             setResult(RESULT_OK, Intent(NFCIntent.ACTION_NFC_SCANNED).apply {
-                                putExtra(NFCIntent.EXTRA_BANK_COUNT, writeCount)
                                 putExtras(Bundle().apply {
+                                    putInt(NFCIntent.EXTRA_BANK_COUNT, writeCount)
                                     putStringArrayList(
                                         NFCIntent.EXTRA_AMIIBO_LIST,
-                                        TagReader.readTagTitles(ntag, banksCount)
+                                        TagReader.readTagTitles(ntag, bankCount)
                                     )
                                 })
                             })
@@ -371,8 +375,8 @@ class NfcActivity : AppCompatActivity() {
                                             NFCIntent.EXTRA_TAG_DATA,
                                             TagReader.scanTagToBytes(ntag, bankNumber)
                                         )
+                                        putInt(NFCIntent.EXTRA_CURRENT_BANK, bankNumber)
                                     })
-                                    putExtra(NFCIntent.EXTRA_CURRENT_BANK, bankNumber)
                                 } else {
                                     putExtras(Bundle().apply {
                                         putByteArray(
@@ -389,7 +393,7 @@ class NfcActivity : AppCompatActivity() {
                                 putExtras(Bundle().apply {
                                     putStringArrayList(
                                         NFCIntent.EXTRA_AMIIBO_LIST,
-                                        TagReader.readTagTitles(ntag, banksCount)
+                                        TagReader.readTagTitles(ntag, bankCount)
                                     )
                                 })
                             })
@@ -404,13 +408,13 @@ class NfcActivity : AppCompatActivity() {
                                 x++
                             }
                             setResult(RESULT_OK, Intent(NFCIntent.ACTION_NFC_SCANNED).apply {
-                                putExtra(NFCIntent.EXTRA_BANK_COUNT, writeCount)
-                                putExtra(NFCIntent.EXTRA_ACTIVE_BANK, 0)
-                                putExtra(NFCIntent.EXTRA_CURRENT_BANK, 0)
                                 putExtras(Bundle().apply {
+                                    putInt(NFCIntent.EXTRA_BANK_COUNT, writeCount)
+                                    putInt(NFCIntent.EXTRA_ACTIVE_BANK, 0)
+                                    putInt(NFCIntent.EXTRA_CURRENT_BANK, 0)
                                     putStringArrayList(
                                         NFCIntent.EXTRA_AMIIBO_LIST,
-                                        TagReader.readTagTitles(ntag, banksCount)
+                                        TagReader.readTagTitles(ntag, bankCount)
                                     )
                                 })
                             })
@@ -425,14 +429,17 @@ class NfcActivity : AppCompatActivity() {
                                         )
                                         putExtras(Bundle().apply {
                                             putByteArray(NFCIntent.EXTRA_TAG_DATA, data)
+                                            putInt(NFCIntent.EXTRA_CURRENT_BANK, bankNumber)
                                         })
-                                        putExtra(NFCIntent.EXTRA_CURRENT_BANK, bankNumber)
                                     } else {
-                                        val titles = TagReader.readTagTitles(ntag, banksCount)
-                                        putExtra(NFCIntent.EXTRA_SIGNATURE, TagReader.getBankSignature(ntag))
-                                        putExtra(NFCIntent.EXTRA_BANK_COUNT, banksCount)
-                                        putExtra(NFCIntent.EXTRA_ACTIVE_BANK, activeBank)
+                                        val titles = TagReader.readTagTitles(ntag, bankCount)
                                         putExtras(Bundle().apply {
+                                            putString(
+                                                NFCIntent.EXTRA_SIGNATURE,
+                                                TagReader.getBankSignature(ntag)
+                                            )
+                                            putInt(NFCIntent.EXTRA_BANK_COUNT, bankCount)
+                                            putInt(NFCIntent.EXTRA_ACTIVE_BANK, activeBank)
                                             putStringArrayList(NFCIntent.EXTRA_AMIIBO_LIST, titles)
                                         })
                                     }
@@ -457,8 +464,8 @@ class NfcActivity : AppCompatActivity() {
                             ntag.activateBank(activeBank)
                             val list = TagReader.readTagTitles(ntag, writeCount)
                             setResult(RESULT_OK, Intent(NFCIntent.ACTION_NFC_SCANNED).apply {
-                                putExtra(NFCIntent.EXTRA_BANK_COUNT, writeCount)
                                 putExtras(Bundle().apply {
+                                    putInt(NFCIntent.EXTRA_BANK_COUNT, writeCount)
                                     putStringArrayList(NFCIntent.EXTRA_AMIIBO_LIST, list)
                                 })
                             })
@@ -765,7 +772,8 @@ class NfcActivity : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (item.itemId == android.R.id.home)
             cancelAction()
-        else return super.onOptionsItemSelected(item)
+        else
+            return super.onOptionsItemSelected(item)
         return true
     }
 }

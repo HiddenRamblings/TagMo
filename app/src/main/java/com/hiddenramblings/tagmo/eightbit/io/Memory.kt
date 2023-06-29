@@ -16,12 +16,28 @@ package com.hiddenramblings.tagmo.eightbit.io
 import android.app.ActivityManager
 import android.content.Context
 import com.hiddenramblings.tagmo.R
+import com.hiddenramblings.tagmo.TagMo
 import java.util.Locale
 
-class Memory(val context: Context) {
+object Memory {
+    const val Kb: Long = 1024
+    const val Mb = Kb * 1024
+    const val Gb = Mb * 1024
+    const val Tb = Gb * 1024
+    const val Pb = Tb * 1024
+    const val Eb = Pb * 1024
 
     private val Long.floatForm: String
         get() = String.format(Locale.ROOT, "%.2f", this.toDouble())
+    private val context: Context
+        get() = TagMo.appContext
+
+    private val totalMemory =
+        with(context.getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager) {
+            val memInfo = ActivityManager.MemoryInfo()
+            getMemoryInfo(memInfo)
+            memInfo.totalMem
+        }
 
     private fun bytesToSizeUnit(size: Long): String {
         return when {
@@ -34,13 +50,6 @@ class Memory(val context: Context) {
             else -> "${(size / Eb).floatForm} ${context.getString(R.string.memory_exabyte)}"
         }
     }
-
-    private val totalMemory =
-        with(context.getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager) {
-            val memInfo = ActivityManager.MemoryInfo()
-            getMemoryInfo(memInfo)
-            memInfo.totalMem
-        }
 
     @Suppress("unused")
     fun isLessThan(minimum: Int, size: Long): Boolean {
@@ -57,14 +66,5 @@ class Memory(val context: Context) {
 
     fun getDeviceRAM(): String {
         return bytesToSizeUnit(totalMemory)
-    }
-
-    companion object {
-        const val Kb: Long = 1024
-        const val Mb = Kb * 1024
-        const val Gb = Mb * 1024
-        const val Tb = Gb * 1024
-        const val Pb = Tb * 1024
-        const val Eb = Pb * 1024
     }
 }

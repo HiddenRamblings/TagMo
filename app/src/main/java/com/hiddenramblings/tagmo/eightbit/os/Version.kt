@@ -125,4 +125,12 @@ object Version {
     val isTiramisu: Boolean get() {
         return Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU
     }
+
+    /**
+     * Android 14, API 33
+     */
+    @JvmStatic
+    val isUpsideDownCake: Boolean get() {
+        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE
+    }
 }

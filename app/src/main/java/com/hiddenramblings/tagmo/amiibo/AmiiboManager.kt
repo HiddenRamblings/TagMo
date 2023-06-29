@@ -359,10 +359,10 @@ object AmiiboManager {
                 uris.map { uri ->
                     async(Dispatchers.IO) {
                         try {
-                            TagArray.getValidatedDocument(keyManager, uri)?.also { data ->
-                                add(AmiiboFile(
-                                    DocumentFile.fromSingleUri(context, uri), Amiibo.dataToId(data), data
-                                ))
+                            TagArray.getValidatedDocument(keyManager, uri).also { data ->
+                                DocumentFile.fromSingleUri(context, uri).also {
+                                    add(AmiiboFile(it, Amiibo.dataToId(data), data))
+                                }
                             }
                         } catch (e: Exception) { Debug.info(e) }
                     }

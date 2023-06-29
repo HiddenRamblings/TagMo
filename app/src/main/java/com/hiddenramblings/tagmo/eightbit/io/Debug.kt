@@ -14,7 +14,6 @@
 package com.hiddenramblings.tagmo.eightbit.io
 
 import android.annotation.SuppressLint
-import android.app.ActivityManager
 import android.content.*
 import android.net.Uri
 import android.os.Build
@@ -213,7 +212,7 @@ object Debug {
         log.append(codeName)
         log.append(" (")
         log.append(Build.VERSION.RELEASE)
-        log.append(") - ").append(Memory(context).getDeviceRAM()).append(" RAM")
+        log.append(") - ").append(Memory.getDeviceRAM()).append(" RAM")
         if (KeyManager(context).isKeyMissing)
             log.append(separator).append(context.getString(R.string.log_keymanager))
         return log

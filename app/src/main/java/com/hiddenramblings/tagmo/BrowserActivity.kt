@@ -609,9 +609,14 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                                 val rootDocument = settings?.browserRootDocument?.let {
                                     DocumentFile.fromTreeUri(this@BrowserActivity, it)
                                 } ?: throw NullPointerException()
-                                TagArray.writeBytesToDocument(this@BrowserActivity, rootDocument, file, outputData)
+                                TagArray.writeBytesToDocument(
+                                    this@BrowserActivity, rootDocument, file, outputData
+                                )
                             } else {
-                                TagArray.writeBytesToFile(Storage.getDownloadDir("TagMo", "Backups"), file, outputData)
+                                TagArray.writeBytesToFile(
+                                    Storage.getDownloadDir("TagMo", "Backups"),
+                                    file, outputData
+                                )
                             }
                         }
                         IconifiedSnackbar(this@BrowserActivity, viewPager).buildSnackbar(
@@ -1155,8 +1160,8 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                 R.id.mnu_update -> {
                     onUpdateTagResult.launch(scan.apply {
                         action = NFCIntent.ACTION_WRITE_TAG_DATA
-                        putExtra(NFCIntent.EXTRA_IGNORE_TAG_ID, ignoreTagId)
                         putExtras(Bundle().apply {
+                            putBoolean(NFCIntent.EXTRA_IGNORE_TAG_ID, ignoreTagId)
                             putByteArray(NFCIntent.EXTRA_TAG_DATA, tagData)
                         })
                     })

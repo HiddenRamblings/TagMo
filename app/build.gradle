@@ -5,13 +5,13 @@ plugins {
 }
 
 android {
-    compileSdkVersion 33
+    compileSdkVersion 34
 
     defaultConfig {
         applicationId 'com.hiddenramblings.tagmo'
         minSdkVersion 16
-        targetSdkVersion 33
-        versionName "3.9.9"
+        targetSdkVersion 34
+        versionName "4.0.0"
         versionCode = versionName.replace(".","").toInteger() * 10
 
         vectorDrawables {

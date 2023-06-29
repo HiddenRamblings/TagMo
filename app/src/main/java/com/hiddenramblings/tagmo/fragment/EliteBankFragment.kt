@@ -476,10 +476,10 @@ class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
             }
             setRefreshListener(object : RefreshListener {
                 override fun onListRefreshed(amiibos: ArrayList<EliteTag?>) {
+                    refreshListener = null
                     amiibos[activeBank]?.let {
                         updateAmiiboView(amiiboTile, null, it.id, activeBank)
                     }
-                    removeRefreshListener()
                 }
             })
             if (intent.hasExtra(NFCIntent.EXTRA_AMIIBO_LIST)) {
@@ -509,9 +509,9 @@ class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
             CLICKED.NOTHING -> {}
             CLICKED.WRITE_DATA -> {
                 onUpdateTagResult.launch(Intent(requireContext(), NfcActivity::class.java).apply {
-                    putExtra(NFCIntent.EXTRA_SIGNATURE, prefs.eliteSignature())
                     action = NFCIntent.ACTION_WRITE_TAG_FULL
-                    putExtra(NFCIntent.EXTRA_CURRENT_BANK, clickedPosition)
+                    args.putString(NFCIntent.EXTRA_SIGNATURE, prefs.eliteSignature())
+                    args.putInt(NFCIntent.EXTRA_CURRENT_BANK, clickedPosition)
                     putExtras(args)
                 })
             }
@@ -567,9 +567,9 @@ class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
             } catch (e: Exception) { Debug.warn(e) }
         }
         onUpdateTagResult.launch(Intent(requireContext(), NfcActivity::class.java).apply {
-            putExtra(NFCIntent.EXTRA_SIGNATURE, prefs.eliteSignature())
             action = NFCIntent.ACTION_WRITE_TAG_FULL
-            putExtra(NFCIntent.EXTRA_CURRENT_BANK, position)
+            args.putString(NFCIntent.EXTRA_SIGNATURE, prefs.eliteSignature())
+            args.putInt(NFCIntent.EXTRA_CURRENT_BANK, position)
             putExtras(args)
         })
     }
@@ -838,10 +838,10 @@ class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
             val activeBank = prefs.eliteActiveBank()
             setRefreshListener(object : RefreshListener {
                 override fun onListRefreshed(amiibos: ArrayList<EliteTag?>) {
+                    refreshListener = null
                     amiibos[activeBank]?.let {
                         updateAmiiboView(amiiboTile, null, it.id, activeBank)
                     }
-                    removeRefreshListener()
                 }
             })
             updateEliteAdapter(intent.getStringArrayListExtra(NFCIntent.EXTRA_AMIIBO_LIST))
@@ -924,6 +924,7 @@ class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
             eliteBankCount.value = bankCount
             setRefreshListener(object : RefreshListener {
                 override fun onListRefreshed(amiibos: ArrayList<EliteTag?>) {
+                    refreshListener = null
                     amiibos[activeBank]?.id?.let {
                         onBottomSheetChanged(SHEET.AMIIBO)
                         updateAmiiboView(amiiboTile, null, it, activeBank)
@@ -932,7 +933,6 @@ class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
                             bottomSheet?.state = BottomSheetBehavior.STATE_EXPANDED
                         }, 125)
                     } ?: onBottomSheetChanged(SHEET.MENU)
-                    removeRefreshListener()
                 }
             })
             updateEliteAdapter(extras.getStringArrayList(NFCIntent.EXTRA_AMIIBO_LIST))
@@ -996,10 +996,6 @@ class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
 
     private fun setRefreshListener(listener: RefreshListener?) {
         this.refreshListener = listener
-    }
-
-    private fun removeRefreshListener() {
-        this.refreshListener = null
     }
 
     interface RefreshListener {

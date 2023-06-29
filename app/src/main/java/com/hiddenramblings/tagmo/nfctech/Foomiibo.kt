@@ -10,7 +10,6 @@ package com.hiddenramblings.tagmo.nfctech
 import com.hiddenramblings.tagmo.R
 import com.hiddenramblings.tagmo.TagMo
 import com.hiddenramblings.tagmo.amiibo.Amiibo
-import com.hiddenramblings.tagmo.amiibo.KeyManager
 import com.hiddenramblings.tagmo.eightbit.io.Debug
 import java.io.File
 import java.text.DecimalFormat
@@ -92,20 +91,20 @@ object Foomiibo {
 
     private const val hexSignature = "5461674d6f20382d426974204e544147"
 
-    fun getSignedData(keyManager: KeyManager, tagData: ByteArray): ByteArray {
+    fun getSignedData(tagData: ByteArray): ByteArray {
         return ByteArray(NfcByte.TAG_FILE_SIZE).apply {
-            System.arraycopy(keyManager.encrypt(tagData), 0, this, 0x0, tagData.size)
+            System.arraycopy(tagData, 0, this, 0x0, tagData.size)
             val signature = TagArray.hexToByteArray(hexSignature)
             System.arraycopy(signature, 0, this, NfcByte.SIGNATURE, signature.size)
         }
     }
 
-    fun getSignedData(keyManager: KeyManager, id: String): ByteArray {
-        return getSignedData(keyManager, generateData(id))
+    fun getSignedData(id: String): ByteArray {
+        return getSignedData(generateData(id))
     }
 
-    fun getSignedData(keyManager: KeyManager, id: Long): ByteArray {
-        return getSignedData(keyManager, generateData(Amiibo.idToHex(id)))
+    fun getSignedData(id: Long): ByteArray {
+        return getSignedData(generateData(Amiibo.idToHex(id)))
     }
 
     fun getDataSignature(tagData: ByteArray): String? {

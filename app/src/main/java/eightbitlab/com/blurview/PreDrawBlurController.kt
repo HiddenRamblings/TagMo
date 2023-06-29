@@ -23,7 +23,7 @@ import androidx.annotation.ColorInt
  *
  */
 internal class PreDrawBlurController(
-    val blurView: BlurView,
+    private val blurView: BlurView,
     private val rootView: ViewGroup,
     @param:ColorInt private var overlayColor: Int,
     private val blurAlgorithm: BlurAlgorithm
@@ -96,10 +96,12 @@ internal class PreDrawBlurController(
         } else {
             frameClearDrawable!!.draw(internalCanvas!!)
         }
-        internalCanvas!!.save()
-        setupInternalCanvasMatrix()
-        rootView.draw(internalCanvas)
-        internalCanvas!!.restore()
+        internalCanvas?.let {
+            it.save()
+            setupInternalCanvasMatrix()
+            rootView.draw(it)
+            it.restore()
+        }
         blurAndSave()
     }
 

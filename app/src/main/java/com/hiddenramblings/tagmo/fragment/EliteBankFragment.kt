@@ -510,9 +510,10 @@ class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
             CLICKED.WRITE_DATA -> {
                 onUpdateTagResult.launch(Intent(requireContext(), NfcActivity::class.java).apply {
                     action = NFCIntent.ACTION_WRITE_TAG_FULL
-                    args.putString(NFCIntent.EXTRA_SIGNATURE, prefs.eliteSignature())
-                    args.putInt(NFCIntent.EXTRA_CURRENT_BANK, clickedPosition)
-                    putExtras(args)
+                    putExtras(args.apply {
+                        putString(NFCIntent.EXTRA_SIGNATURE, prefs.eliteSignature())
+                        putInt(NFCIntent.EXTRA_CURRENT_BANK, clickedPosition)
+                    })
                 })
             }
             CLICKED.EDIT_DATA -> onUpdateTagResult.launch(
@@ -568,9 +569,10 @@ class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
         }
         onUpdateTagResult.launch(Intent(requireContext(), NfcActivity::class.java).apply {
             action = NFCIntent.ACTION_WRITE_TAG_FULL
-            args.putString(NFCIntent.EXTRA_SIGNATURE, prefs.eliteSignature())
-            args.putInt(NFCIntent.EXTRA_CURRENT_BANK, position)
-            putExtras(args)
+            putExtras(args.apply {
+                putString(NFCIntent.EXTRA_SIGNATURE, prefs.eliteSignature())
+                putInt(NFCIntent.EXTRA_CURRENT_BANK, position)
+            })
         })
     }
 
@@ -862,10 +864,12 @@ class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
                 onBottomSheetChanged(SHEET.MENU)
                 onOpenBanksActivity.launch(Intent(requireContext(), NfcActivity::class.java).apply {
                     addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-                    putExtra(NFCIntent.EXTRA_SIGNATURE, prefs.eliteSignature())
                     action = NFCIntent.ACTION_WRITE_ALL_TAGS
-                    putExtra(NFCIntent.EXTRA_BANK_COUNT, eliteBankCount.value)
-                    putExtra(NFCIntent.EXTRA_AMIIBO_DATA, bytesList)
+                    putExtras(Bundle().apply {
+                        putString(NFCIntent.EXTRA_SIGNATURE, prefs.eliteSignature())
+                        putInt(NFCIntent.EXTRA_BANK_COUNT, eliteBankCount.value)
+                        putParcelableArrayList(NFCIntent.EXTRA_AMIIBO_DATA, bytesList)
+                    })
                 })
                 dialog.dismiss()
             }
@@ -896,10 +900,12 @@ class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
                 onBottomSheetChanged(SHEET.MENU)
                 onOpenBanksActivity.launch(Intent(requireContext(), NfcActivity::class.java).apply {
                     addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-                    putExtra(NFCIntent.EXTRA_SIGNATURE, prefs.eliteSignature())
                     action = NFCIntent.ACTION_WRITE_ALL_TAGS
-                    putExtra(NFCIntent.EXTRA_BANK_COUNT, eliteBankCount.value)
-                    putExtra(NFCIntent.EXTRA_AMIIBO_BYTES, bytesList)
+                    putExtras(Bundle().apply {
+                        putString(NFCIntent.EXTRA_SIGNATURE, prefs.eliteSignature())
+                        putInt(NFCIntent.EXTRA_BANK_COUNT, eliteBankCount.value)
+                        putParcelableArrayList(NFCIntent.EXTRA_AMIIBO_BYTES, bytesList)
+                    })
                 })
                 dialog.dismiss()
             }

@@ -19,9 +19,11 @@ object TagWriter {
             ))
         val pages = arrayOfNulls<ByteArray>(data.size / NfcByte.PAGE_SIZE)
         var i = 0
-        pages.indices.forEach {
-            pages[it] = data.copyOfRange(i, i + NfcByte.PAGE_SIZE)
+        var j = 0
+        while (i < data.size) {
+            pages[j] = data.copyOfRange(i, i + NfcByte.PAGE_SIZE)
             i += NfcByte.PAGE_SIZE
+            j++
         }
         return pages
     }

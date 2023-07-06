@@ -13,13 +13,16 @@ permissions:
 
 jobs:
   build:
-    if: ${{ github.event.workflow_run.conclusion != 'cancelled' }}
     runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion != 'cancelled' }}
 
     steps:
     - name: Pause for 2 minutes
       run: sleep 120s
       shell: bash
+    - name: Dismiss if cancelled
+      if: ${{ github.event.workflow_run.conclusion == 'cancelled' }}
+      uses: andymckay/cancel-action@0.2
     - uses: actions/checkout@v3
       with:
         repository: HiddenRamblings/TagMo

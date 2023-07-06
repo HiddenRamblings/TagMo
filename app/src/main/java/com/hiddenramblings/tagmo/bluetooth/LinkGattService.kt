@@ -22,7 +22,7 @@ import java.util.*
  */
 @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
 @SuppressLint("MissingPermission")
-class PuckGattService : Service() {
+class LinkGattService : Service() {
     private var listener: BluetoothGattListener? = null
     private var mBluetoothManager: BluetoothManager? = null
     private var mBluetoothAdapter: BluetoothAdapter? = null
@@ -38,7 +38,7 @@ class PuckGattService : Service() {
 
     // Command, Slot, Parameters
     @Suppress("unused")
-    private enum class PUCK(bytes: Int) {
+    private enum class LINK(bytes: Int) {
         INFO(0x01),
         READ(0x02),
         WRITE(0x03),
@@ -59,20 +59,20 @@ class PuckGattService : Service() {
         this.listener = listener
     }
     private val commandCallbacks = ArrayList<Runnable>()
-    private val puckHandler = Handler(Looper.getMainLooper())
+    private val linkHandler = Handler(Looper.getMainLooper())
 
     interface BluetoothGattListener {
-        fun onPuckServicesDiscovered()
-        fun onPuckActiveChanged(slot: Int)
+        fun onLinkServicesDiscovered()
+        fun onLinkActiveChanged(slot: Int)
 
-        fun onPuckDeviceProfile(slotCount: Int)
-        fun onPuckListRetrieved(slotData: ArrayList<ByteArray>, active: Int)
-        fun onPuckFilesDownload(tagData: ByteArray)
-        fun onPuckProcessFinish()
-        fun onPuckConnectionLost()
+        fun onLinkDeviceProfile(slotCount: Int)
+        fun onLinkListRetrieved(slotData: ArrayList<ByteArray>, active: Int)
+        fun onLinkFilesDownload(tagData: ByteArray)
+        fun onLinkProcessFinish()
+        fun onLinkConnectionLost()
     }
 
-    private var puckArray = ArrayList<ByteArray>(slotsCount)
+    private var linkArray = ArrayList<ByteArray>(slotsCount)
     private var readResponse = ByteArray(NfcByte.TAG_FILE_SIZE)
 
     private fun getCharacteristicValue(characteristic: BluetoothGattCharacteristic, data: ByteArray?) {
@@ -80,21 +80,21 @@ class PuckGattService : Service() {
             Debug.verbose(
                 this.javaClass, "${getLogTag(characteristic.uuid)} ${Arrays.toString(data)}"
             )
-            if (characteristic.uuid.compareTo(PuckRX) == 0) {
+            if (characteristic.uuid.compareTo(LinkRX) == 0) {
                 when {
-                    data[0] == PUCK.INFO.bytes -> {
+                    data[0] == LINK.INFO.bytes -> {
                         if (data.size == 3) {
                             activeSlot = data[1].toInt()
                             slotsCount = data[2].toInt()
-                            listener?.onPuckDeviceProfile(slotsCount)
+                            listener?.onLinkDeviceProfile(slotsCount)
                         } else {
-                            puckArray.add(data.copyOfRange(2, data.size))
-                            if (puckArray.size == slotsCount) {
-                                listener?.onPuckListRetrieved(puckArray, activeSlot)
+                            linkArray.add(data.copyOfRange(2, data.size))
+                            if (linkArray.size == slotsCount) {
+                                listener?.onLinkListRetrieved(linkArray, activeSlot)
                             }
                         }
                     }
-                    data[0] == PUCK.READ.bytes -> {
+                    data[0] == LINK.READ.bytes -> {
                         when {
                             data[2].toInt() == 0 -> {
                                 System.arraycopy(data, 4, readResponse, 0, data.size)
@@ -106,13 +106,13 @@ class PuckGattService : Service() {
 
                             else -> {
                                 System.arraycopy(data, 4, readResponse, 504, data.size)
-                                listener?.onPuckFilesDownload(readResponse)
+                                listener?.onLinkFilesDownload(readResponse)
                                 readResponse = ByteArray(NfcByte.TAG_FILE_SIZE)
                             }
                         }
                     }
-                    data[0] == PUCK.SAVE.bytes -> {
-                        listener?.onPuckProcessFinish()
+                    data[0] == LINK.SAVE.bytes -> {
+                        listener?.onLinkProcessFinish()
                         deviceDetails
                     }
                 }
@@ -136,7 +136,7 @@ class PuckGattService : Service() {
             if (newState == BluetoothProfile.STATE_CONNECTED) {
                 mBluetoothGatt?.discoverServices()
             } else if (newState == BluetoothProfile.STATE_DISCONNECTED) {
-                listener?.onPuckConnectionLost()
+                listener?.onLinkConnectionLost()
             }
         }
 
@@ -144,7 +144,7 @@ class PuckGattService : Service() {
             if (status == BluetoothGatt.GATT_SUCCESS) {
                 if (Version.isLollipop)
                     gatt.requestMtu(512) // Maximum: 517
-                else listener?.onPuckServicesDiscovered()
+                else listener?.onLinkServicesDiscovered()
             } else {
                 Debug.warn(this.javaClass, "onServicesDiscovered received: $status")
             }
@@ -196,13 +196,13 @@ class PuckGattService : Service() {
             } else {
                 Debug.warn(this.javaClass, "onMtuChange received: $status")
             }
-            listener?.onPuckServicesDiscovered()
+            listener?.onLinkServicesDiscovered()
         }
     }
 
     inner class LocalBinder : Binder() {
-        val service: PuckGattService
-            get() = this@PuckGattService
+        val service: LinkGattService
+            get() = this@LinkGattService
     }
 
     override fun onBind(intent: Intent): IBinder {
@@ -325,12 +325,12 @@ class PuckGattService : Service() {
         get() = mBluetoothGatt?.services
 
     private fun getCharacteristicRX(mCustomService: BluetoothGattService): BluetoothGattCharacteristic {
-        var mReadCharacteristic = mCustomService.getCharacteristic(PuckRX)
+        var mReadCharacteristic = mCustomService.getCharacteristic(LinkRX)
         if (mBluetoothGatt?.readCharacteristic(mReadCharacteristic) != true) {
             for (characteristic in mCustomService.characteristics) {
                 val customUUID = characteristic.uuid
                 /*get the read characteristic from the service*/
-                if (customUUID.compareTo(PuckRX) == 0) {
+                if (customUUID.compareTo(LinkRX) == 0) {
                     Debug.verbose(this.javaClass, "GattReadCharacteristic: $customUUID")
                     mReadCharacteristic = mCustomService.getCharacteristic(customUUID)
                     break
@@ -341,11 +341,11 @@ class PuckGattService : Service() {
     }
 
     @Throws(UnsupportedOperationException::class)
-    fun setPuckCharacteristicRX() {
+    fun setLinkCharacteristicRX() {
         if (mBluetoothAdapter == null || mBluetoothGatt == null) {
             throw UnsupportedOperationException()
         }
-        val mCustomService = mBluetoothGatt!!.getService(PuckNUS)
+        val mCustomService = mBluetoothGatt!!.getService(LinkNUS)
         if (null == mCustomService) {
             val services = supportedGattServices
             if (services.isNullOrEmpty()) throw UnsupportedOperationException()
@@ -361,11 +361,11 @@ class PuckGattService : Service() {
     }
 
     private fun getCharacteristicTX(mCustomService: BluetoothGattService): BluetoothGattCharacteristic {
-        var mWriteCharacteristic = mCustomService.getCharacteristic(PuckTX)
+        var mWriteCharacteristic = mCustomService.getCharacteristic(LinkTX)
         if (!mCustomService.characteristics.contains(mWriteCharacteristic)) {
             for (characteristic in mCustomService.characteristics) {
                 val customUUID = characteristic.uuid
-                if (customUUID.compareTo(PuckTX) == 0) {
+                if (customUUID.compareTo(LinkTX) == 0) {
                     Debug.verbose(this.javaClass, "GattWriteCharacteristic: $customUUID")
                     mWriteCharacteristic = mCustomService.getCharacteristic(customUUID)
                     break
@@ -376,11 +376,11 @@ class PuckGattService : Service() {
     }
 
     @Throws(UnsupportedOperationException::class)
-    fun setPuckCharacteristicTX() {
+    fun setLinkCharacteristicTX() {
         if (mBluetoothAdapter == null || mBluetoothGatt == null) {
             throw UnsupportedOperationException()
         }
-        val mCustomService = mBluetoothGatt!!.getService(PuckNUS)
+        val mCustomService = mBluetoothGatt!!.getService(LinkNUS)
         if (null == mCustomService) {
             val services = supportedGattServices
             if (services.isNullOrEmpty()) throw UnsupportedOperationException()
@@ -397,12 +397,12 @@ class PuckGattService : Service() {
     private fun delayedWriteCharacteristic(value: ByteArray) {
         val chunks = GattArray.byteToPortions(value, commandLength)
         val commandQueue = commandCallbacks.size + chunks.size
-        puckHandler.postDelayed({
+        linkHandler.postDelayed({
             var i = 0
             while (i < chunks.size) {
                 val chunk = chunks[i]
                 if (null == mCharacteristicTX) continue
-                puckHandler.postDelayed({
+                linkHandler.postDelayed({
                     mCharacteristicTX!!.writeType =
                         BluetoothGattCharacteristic.WRITE_TYPE_NO_RESPONSE
                     if (Version.isTiramisu) {
@@ -423,7 +423,7 @@ class PuckGattService : Service() {
     private fun queueByteCharacteristic(value: ByteArray, index: Int) {
         if (null == mCharacteristicTX) {
             try {
-                setPuckCharacteristicTX()
+                setLinkCharacteristicTX()
             } catch (e: UnsupportedOperationException) {
                 Debug.warn(e)
             }
@@ -444,13 +444,13 @@ class PuckGattService : Service() {
     }
 
     val deviceDetails: Unit
-        get() { sendCommand(ByteArray(2).apply { this[0] = PUCK.INFO.bytes }, null) }
+        get() { sendCommand(ByteArray(2).apply { this[0] = LINK.INFO.bytes }, null) }
 
     val deviceAmiibo: Unit
         get() {
-            puckArray = ArrayList<ByteArray>(slotsCount)
+            linkArray = ArrayList<ByteArray>(slotsCount)
             for (i in 0 until slotsCount) {
-                sendCommand(byteArrayOf(PUCK.INFO.bytes, i.toByte()), null)
+                sendCommand(byteArrayOf(LINK.INFO.bytes, i.toByte()), null)
             }
         }
 
@@ -459,44 +459,41 @@ class PuckGattService : Service() {
         val trail = tagData.size % 16
         for (i in 0 until count) {
             sendCommand(byteArrayOf(
-                PUCK.WRITE.bytes, slot.toByte(), (i * 4).toByte()
+                LINK.WRITE.bytes, slot.toByte(), (i * 4).toByte()
             ), tagData.copyOfRange(i * 16, (i * 16) + 16))
         }
         sendCommand(byteArrayOf(
-            PUCK.WRITE.bytes, slot.toByte(), (count * 4).toByte()
+            LINK.WRITE.bytes, slot.toByte(), (count * 4).toByte()
         ), tagData.copyOfRange(count * 16, (count * 16) + trail))
         sendCommand(
-            byteArrayOf(PUCK.SAVE.bytes, slot.toByte()),
-            if (activeSlot == slot) byteArrayOf(PUCK.NFC.bytes) else null
+            byteArrayOf(LINK.SAVE.bytes, slot.toByte()),
+            if (activeSlot == slot) byteArrayOf(LINK.NFC.bytes) else null
         )
     }
 
     @Suppress("unused")
     fun downloadSlotData(slot: Int) {
-        sendCommand(byteArrayOf(PUCK.READ.bytes, slot.toByte(), 0x00, 0x3F), null)
-        sendCommand(byteArrayOf(PUCK.READ.bytes, slot.toByte(), 0x3F, 0x3F), null)
-        sendCommand(byteArrayOf(PUCK.READ.bytes, slot.toByte(), 0x7E, 0x11), null)
+        sendCommand(byteArrayOf(LINK.READ.bytes, slot.toByte(), 0x00, 0x3F), null)
+        sendCommand(byteArrayOf(LINK.READ.bytes, slot.toByte(), 0x3F, 0x3F), null)
+        sendCommand(byteArrayOf(LINK.READ.bytes, slot.toByte(), 0x7E, 0x11), null)
     }
 
     fun setActiveSlot(slot: Int) {
-        sendCommand(byteArrayOf(PUCK.NFC.bytes, slot.toByte()), null)
+        sendCommand(byteArrayOf(LINK.NFC.bytes, slot.toByte()), null)
         activeSlot = slot
-        listener?.onPuckActiveChanged(activeSlot)
+        listener?.onLinkActiveChanged(activeSlot)
     }
 
     private fun getLogTag(uuid: UUID): String {
         return when {
-            uuid.compareTo(PuckTX) == 0 -> {
-                "PuckTX"
+            uuid.compareTo(LinkTX) == 0 -> {
+                "LinkTX"
             }
-            uuid.compareTo(PuckRX) == 0 -> {
-                "PuckRX"
+            uuid.compareTo(LinkRX) == 0 -> {
+                "LinkRX"
             }
-            uuid.compareTo(PuckID) == 0 -> {
-                "PuckID"
-            }
-            uuid.compareTo(PuckNUS) == 0 -> {
-                "PuckNUS"
+            uuid.compareTo(LinkNUS) == 0 -> {
+                "LinkNUS"
             }
             else -> {
                 uuid.toString()
@@ -505,9 +502,8 @@ class PuckGattService : Service() {
     }
 
     companion object {
-        val PuckNUS: UUID = UUID.fromString("78290001-d52e-473f-a9f4-f03da7c67dd1")
-        private val PuckTX = UUID.fromString("78290002-d52e-473f-a9f4-f03da7c67dd1")
-        private val PuckRX = UUID.fromString("78290003-d52e-473f-a9f4-f03da7c67dd1")
-        private val PuckID = UUID.fromString("78290004-d52e-473f-a9f4-f03da7c67dd1")
+        val LinkNUS: UUID = UUID.fromString("6e400001-b5a3-f393-e0a9-e50e24dcca9e")
+        private val LinkTX = UUID.fromString("6e400002-b5a3-f393-e0a9-e50e24dcca9e")
+        private val LinkRX = UUID.fromString("6e400003-b5a3-f393-e0a9-e50e24dcca9e")
     }
 }

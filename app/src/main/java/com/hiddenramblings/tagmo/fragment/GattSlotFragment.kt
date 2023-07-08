@@ -42,6 +42,7 @@ import com.hiddenramblings.tagmo.amiibo.tagdata.AmiiboData
 import com.hiddenramblings.tagmo.bluetooth.BluetoothHandler
 import com.hiddenramblings.tagmo.bluetooth.BluetoothHandler.BluetoothListener
 import com.hiddenramblings.tagmo.bluetooth.BluupGattService
+import com.hiddenramblings.tagmo.bluetooth.LinkGattService
 import com.hiddenramblings.tagmo.bluetooth.PuckGattService
 import com.hiddenramblings.tagmo.eightbit.io.Debug
 import com.hiddenramblings.tagmo.eightbit.material.IconifiedSnackbar
@@ -97,6 +98,9 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
     private var scanCallbackPuckLP: ScanCallback? = null
     private var scanCallbackPuck: LeScanCallback? = null
     private var servicePuck: PuckGattService? = null
+    private var scanCallbackLinkLP: ScanCallback? = null
+    private var scanCallbackLink: LeScanCallback? = null
+    private var serviceLink: LinkGattService? = null
     private var deviceProfile: String? = null
     private var deviceAddress: String? = null
     private var maxSlotCount = 85
@@ -104,7 +108,7 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
     private var deviceDialog: AlertDialog? = null
 
     private enum class DEVICE {
-        FLASK, SLIDE, BLUUP, PUCK, GATT
+        FLASK, SLIDE, BLUUP, PUCK, LINK, GATT
     }
 
     private var deviceType = DEVICE.GATT
@@ -119,278 +123,8 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
         LOCKED, AMIIBO, MENU, WRITE
     }
 
-    private val fragmentHandler = Handler(Looper.getMainLooper())
-    private var bluupServerConn: ServiceConnection = object : ServiceConnection {
-        var isServiceDiscovered = false
-        override fun onServiceConnected(component: ComponentName, binder: IBinder) {
-            val localBinder = binder as BluupGattService.LocalBinder
-            serviceBluup = localBinder.service.apply {
-                if (initialize() && connect(deviceAddress)) {
-                    setListener(object : BluupGattService.BluupBluetoothListener {
-                        override fun onBluupServicesDiscovered() {
-                            isServiceDiscovered = true
-                            onBottomSheetChanged(SHEET.MENU)
-                            maxSlotCount = if (deviceType == DEVICE.SLIDE) 40 else 85
-                            requireView().post {
-                                gattSlotCount.maxValue = maxSlotCount
-                                screenOptions?.isVisible = true
-                                createBlank?.isVisible = true
-                                requireView().findViewById<TextView>(R.id.hardware_info).text = deviceProfile
-                            }
-                            try {
-                                setBluupCharacteristicRX()
-                                deviceAmiibo
-                            } catch (uoe: UnsupportedOperationException) {
-                                disconnectService()
-                                Toasty(requireContext()).Short(R.string.device_invalid)
-                            }
-                        }
-
-                        override fun onBluupStatusChanged(jsonObject: JSONObject?) {
-                            processDialog?.let {
-                                if (it.isShowing) it.dismiss()
-                            }
-                            deviceAmiibo
-                        }
-
-                        override fun onBluupListRetrieved(jsonArray: JSONArray) {
-                            currentCount = jsonArray.length()
-                            val bluupAmiibos: ArrayList<Amiibo?> = arrayListOf()
-                            for (i in 0 until currentCount) {
-                                try {
-                                    val amiibo = getAmiiboFromTail(
-                                        jsonArray.getString(i).split("|")
-                                    )
-                                    bluupAmiibos.add(amiibo)
-                                } catch (ex: JSONException) {
-                                    Debug.warn(ex)
-                                } catch (ex: NullPointerException) {
-                                    Debug.warn(ex)
-                                }
-                            }
-                            settings.removeChangeListener(gattAdapter)
-                            gattAdapter = GattSlotAdapter(
-                                settings, this@GattSlotFragment
-                            ).also {
-                                it.setGattAmiibo(bluupAmiibos)
-                                dismissSnackbarNotice(true)
-                                requireView().post {
-                                    bluupContent?.adapter = it
-                                    settings.addChangeListener(it)
-                                }
-                                if (currentCount > 0) {
-                                    activeAmiibo
-                                    requireView().post {
-                                        it.notifyItemRangeInserted(0, currentCount)
-                                    }
-                                } else {
-                                    amiiboTile?.isInvisible = true
-                                    bluupButtonState
-                                }
-                            }
-                        }
-
-                        override fun onBluupRangeRetrieved(jsonArray: JSONArray) {
-                            val bluupAmiibos: ArrayList<Amiibo?> = arrayListOf()
-                            for (i in 0 until jsonArray.length()) {
-                                try {
-                                    val amiibo = getAmiiboFromTail(
-                                        jsonArray.getString(i).split("|")
-                                    )
-                                    bluupAmiibos.add(amiibo)
-                                } catch (ex: JSONException) {
-                                    Debug.warn(ex)
-                                } catch (ex: NullPointerException) {
-                                    Debug.warn(ex)
-                                }
-                            }
-                            gattAdapter?.run {
-                                addBluupAmiibo(bluupAmiibos)
-                                requireView().post {
-                                    notifyItemRangeInserted(currentCount, bluupAmiibos.size)
-                                }
-                                currentCount = itemCount
-                            }
-                        }
-
-                        override fun onBluupActiveChanged(jsonObject: JSONObject?) {
-                            if (null == jsonObject) return
-                            try {
-                                val name = jsonObject.getString("name")
-                                if ("undefined" == name) {
-                                    resetActiveSlot()
-                                    return
-                                }
-                                val amiibo = getAmiiboFromTail(name.split("|"))
-                                val index = jsonObject.getString("index")
-                                getActiveAmiibo(amiibo, amiiboTile)
-                                if (bottomSheet?.state == BottomSheetBehavior.STATE_COLLAPSED)
-                                    getActiveAmiibo(amiibo, amiiboCard)
-                                prefs.bluupActiveSlot(index.toInt())
-                                bluupButtonState
-                                requireView().post {
-                                    bluupStats?.text =
-                                        getString(R.string.gatt_count, index, currentCount)
-                                }
-                            } catch (ex: JSONException) {
-                                Debug.warn(ex)
-                            } catch (ex: NullPointerException) {
-                                Debug.warn(ex)
-                            }
-                        }
-
-                        override fun onBluupFilesDownload(dataString: String) {
-                            Debug.info(this.javaClass, dataString)
-                            try {
-                                val tagData = dataString.toByteArray()
-                            } catch (e: Exception) { e.printStackTrace() }
-                            Toasty(requireActivity()).Short(R.string.fail_firmware_api)
-                        }
-
-                        override fun onBluupProcessFinish() {
-                            processDialog?.let {
-                                if (it.isShowing) it.dismiss()
-                            }
-                        }
-
-                        override fun onBluupConnectionLost() {
-                            fragmentHandler.postDelayed(
-                                { showDisconnectNotice() }, TagMo.uiDelay.toLong()
-                            )
-                            bottomSheet?.state = BottomSheetBehavior.STATE_COLLAPSED
-                            stopGattService()
-                        }
-                    })
-                } else {
-                    stopGattService()
-                    Toasty(requireContext()).Short(R.string.device_invalid)
-                }
-            }
-        }
-
-        override fun onServiceDisconnected(name: ComponentName) {
-            stopGattService()
-            if (!isServiceDiscovered) {
-                showTimeoutNotice()
-            }
-        }
-    }
-    private var puckServerConn: ServiceConnection = object : ServiceConnection {
-        var isServiceDiscovered = false
-        override fun onServiceConnected(name: ComponentName, binder: IBinder) {
-            val localBinder = binder as PuckGattService.LocalBinder
-            servicePuck = localBinder.service.apply {
-                if (initialize() && connect(deviceAddress)) {
-                    setListener(object : PuckGattService.BluetoothGattListener {
-                        override fun onPuckServicesDiscovered() {
-                            isServiceDiscovered = true
-                            onBottomSheetChanged(SHEET.MENU)
-                            maxSlotCount = 50
-                            requireView().post {
-                                gattSlotCount.maxValue = maxSlotCount
-                                screenOptions?.isGone = true
-                                createBlank?.isGone = true
-                                requireView().findViewById<TextView>(R.id.hardware_info).text = deviceProfile
-                            }
-                            try {
-                                setPuckCharacteristicRX()
-                                deviceDetails
-                            } catch (uoe: UnsupportedOperationException) {
-                                disconnectService()
-                                Toasty(requireContext()).Short(R.string.device_invalid)
-                            }
-                        }
-
-                        override fun onPuckDeviceProfile(slotCount: Int) {
-                            maxSlotCount = slotCount
-                            requireView().post {
-                                gattSlotCount.maxValue = slotCount
-                            }
-                            deviceAmiibo
-                        }
-
-                        override fun onPuckActiveChanged(slot: Int) {
-                            gattAdapter?.run {
-                                val amiibo = getItem(slot)
-                                getActiveAmiibo(amiibo, amiiboTile)
-                                if (bottomSheet?.state == BottomSheetBehavior.STATE_COLLAPSED)
-                                    getActiveAmiibo(amiibo, amiiboCard)
-                                prefs.bluupActiveSlot(slot)
-                                bluupButtonState
-                                requireView().post {
-                                    bluupStats?.text = getString(
-                                        R.string.gatt_count, slot.toString(), currentCount
-                                    )
-                                }
-                            }
-                        }
-
-                        override fun onPuckListRetrieved(
-                            slotData: ArrayList<ByteArray>, active: Int
-                        ) {
-                            currentCount = slotData.size
-                            val puckAmiibos: ArrayList<Amiibo?> = arrayListOf()
-                            slotData.forEach { bytes ->
-                                if (bytes.size == 80) {
-                                    val amiibo = getAmiiboFromSlice(bytes.copyOfRange(40, 48))
-                                    puckAmiibos.add(amiibo)
-                                } else {
-                                    puckAmiibos.add(null)
-                                }
-                            }
-                            settings.removeChangeListener(gattAdapter)
-                            gattAdapter = GattSlotAdapter(
-                                settings, this@GattSlotFragment
-                            ).also {
-                                it.setGattAmiibo(puckAmiibos)
-                                dismissSnackbarNotice(true)
-                                requireView().post {
-                                    bluupContent?.adapter = it
-                                    settings.addChangeListener(it)
-                                }
-                                if (currentCount > 0) {
-                                    requireView().post {
-                                        it.notifyItemRangeInserted(0, currentCount)
-                                    }
-                                    onPuckActiveChanged(active)
-                                } else {
-                                    amiiboTile?.isInvisible = true
-                                    bluupButtonState
-                                }
-                            }
-                        }
-
-                        override fun onPuckFilesDownload(tagData: ByteArray) {}
-                        override fun onPuckProcessFinish() {
-                            processDialog?.let {
-                                if (it.isShowing) it.dismiss()
-                            }
-                        }
-
-                        override fun onPuckConnectionLost() {
-                            fragmentHandler.postDelayed(
-                                { showDisconnectNotice() }, TagMo.uiDelay.toLong()
-                            )
-                            bottomSheet?.state = BottomSheetBehavior.STATE_COLLAPSED
-                            stopGattService()
-                        }
-                    })
-                } else {
-                    stopGattService()
-                    Toasty(requireActivity()).Short(R.string.device_invalid)
-                }
-            }
-        }
-
-        override fun onServiceDisconnected(name: ComponentName) {
-            stopGattService()
-            if (!isServiceDiscovered) {
-                showTimeoutNotice()
-            }
-        }
-    }
-
     private var browserActivity: BrowserActivity? = null
+    private val fragmentHandler = Handler(Looper.getMainLooper())
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -881,7 +615,7 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
                 showConnectionNotice()
                 startBluupService()
             }
-            isEnabled = detectedType != DEVICE.PUCK
+            isEnabled = detectedType != DEVICE.PUCK && detectedType != DEVICE.LINK
         }
 
         item.findViewById<View>(R.id.connect_slide).run {
@@ -894,7 +628,7 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
                 showConnectionNotice()
                 startBluupService()
             }
-            isEnabled = detectedType != DEVICE.PUCK
+            isEnabled = detectedType != DEVICE.PUCK && detectedType != DEVICE.LINK
         }
 
         item.findViewById<View>(R.id.connect_puck).run {
@@ -908,6 +642,19 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
                 startPuckService()
             }
             isEnabled = detectedType == DEVICE.PUCK || detectedType == DEVICE.GATT
+        }
+
+        item.findViewById<View>(R.id.connect_link).run {
+            setOnClickListener {
+                deviceDialog.dismiss()
+                deviceProfile = device.name
+                deviceAddress = device.address
+                deviceType = DEVICE.LINK
+                dismissGattDiscovery()
+                showConnectionNotice()
+                startBluupService()
+            }
+            isEnabled = detectedType == DEVICE.LINK || detectedType == DEVICE.GATT
         }
         return item
     }
@@ -944,6 +691,7 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
                 }
             }
             scanner?.startScan(listOf(filterBluup), settings, scanCallbackBluupLP)
+
             val filterPuck = ScanFilter.Builder().setServiceUuid(
                 ParcelUuid(PuckGattService.PuckNUS)
             ).build()
@@ -959,6 +707,22 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
                 }
             }
             scanner?.startScan(listOf(filterPuck), settings, scanCallbackPuckLP)
+
+            val filterLink = ScanFilter.Builder().setServiceUuid(
+                ParcelUuid(LinkGattService.LinkNUS)
+            ).build()
+            scanCallbackLinkLP = object : ScanCallback() {
+                override fun onScanResult(callbackType: Int, result: ScanResult) {
+                    super.onScanResult(callbackType, result)
+                    if (!devices.contains(result.device)) {
+                        devices.add(result.device)
+                        deviceDialog.findViewById<LinearLayout>(R.id.bluetooth_result)?.addView(
+                            displayScanResult(deviceDialog, result.device, DEVICE.PUCK)
+                        )
+                    }
+                }
+            }
+            scanner?.startScan(listOf(filterLink), settings, scanCallbackLinkLP)
         } else @Suppress("DEPRECATION") {
             scanCallbackBluup =
                 LeScanCallback { bluetoothDevice: BluetoothDevice, _: Int, _: ByteArray? ->
@@ -970,6 +734,7 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
                     }
                 }
             mBluetoothAdapter?.startLeScan(arrayOf(BluupGattService.BluupNUS), scanCallbackBluup)
+
             scanCallbackPuck =
                 LeScanCallback { bluetoothDevice: BluetoothDevice, _: Int, _: ByteArray? ->
                     if (!devices.contains(bluetoothDevice)) {
@@ -980,6 +745,17 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
                     }
                 }
             mBluetoothAdapter?.startLeScan(arrayOf(PuckGattService.PuckNUS), scanCallbackPuck)
+
+            scanCallbackLink =
+                LeScanCallback { bluetoothDevice: BluetoothDevice, _: Int, _: ByteArray? ->
+                    if (!devices.contains(bluetoothDevice)) {
+                        devices.add(bluetoothDevice)
+                        deviceDialog.findViewById<LinearLayout>(R.id.bluetooth_result)?.addView(
+                            displayScanResult(deviceDialog, bluetoothDevice, DEVICE.PUCK)
+                        )
+                    }
+                }
+            mBluetoothAdapter?.startLeScan(arrayOf(LinkGattService.LinkNUS), scanCallbackLink)
         }
         fragmentHandler.postDelayed({
             if (null == deviceProfile) {
@@ -1008,6 +784,7 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
                     deviceType = when {
                         device.name.lowercase().startsWith("flask") -> DEVICE.FLASK
                         device.name.lowercase().startsWith("slide") -> DEVICE.SLIDE
+                        device.name.lowercase().startsWith("amiibolink") -> DEVICE.LINK
                         else -> DEVICE.GATT
                     }
                     view.findViewById<LinearLayout>(R.id.bluetooth_paired)?.addView(
@@ -1383,5 +1160,391 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
         this.mBluetoothAdapter = adapter
         setBottomSheetHidden(false)
         selectBluetoothDevice()
+    }
+
+    private var bluupServerConn: ServiceConnection = object : ServiceConnection {
+        var isServiceDiscovered = false
+        override fun onServiceConnected(component: ComponentName, binder: IBinder) {
+            val localBinder = binder as BluupGattService.LocalBinder
+            serviceBluup = localBinder.service.apply {
+                if (initialize() && connect(deviceAddress)) {
+                    setListener(object : BluupGattService.BluupBluetoothListener {
+                        override fun onBluupServicesDiscovered() {
+                            isServiceDiscovered = true
+                            onBottomSheetChanged(SHEET.MENU)
+                            maxSlotCount = if (deviceType == DEVICE.SLIDE) 40 else 85
+                            requireView().post {
+                                gattSlotCount.maxValue = maxSlotCount
+                                screenOptions?.isVisible = true
+                                createBlank?.isVisible = true
+                                requireView().findViewById<TextView>(R.id.hardware_info).text = deviceProfile
+                            }
+                            try {
+                                setBluupCharacteristicRX()
+                                deviceAmiibo
+                            } catch (uoe: UnsupportedOperationException) {
+                                disconnectService()
+                                Toasty(requireContext()).Short(R.string.device_invalid)
+                            }
+                        }
+
+                        override fun onBluupStatusChanged(jsonObject: JSONObject?) {
+                            processDialog?.let {
+                                if (it.isShowing) it.dismiss()
+                            }
+                            deviceAmiibo
+                        }
+
+                        override fun onBluupListRetrieved(jsonArray: JSONArray) {
+                            currentCount = jsonArray.length()
+                            val bluupAmiibos: ArrayList<Amiibo?> = arrayListOf()
+                            for (i in 0 until currentCount) {
+                                try {
+                                    val amiibo = getAmiiboFromTail(
+                                        jsonArray.getString(i).split("|")
+                                    )
+                                    bluupAmiibos.add(amiibo)
+                                } catch (ex: JSONException) {
+                                    Debug.warn(ex)
+                                } catch (ex: NullPointerException) {
+                                    Debug.warn(ex)
+                                }
+                            }
+                            settings.removeChangeListener(gattAdapter)
+                            gattAdapter = GattSlotAdapter(
+                                settings, this@GattSlotFragment
+                            ).also {
+                                it.setGattAmiibo(bluupAmiibos)
+                                dismissSnackbarNotice(true)
+                                requireView().post {
+                                    bluupContent?.adapter = it
+                                    settings.addChangeListener(it)
+                                }
+                                if (currentCount > 0) {
+                                    activeAmiibo
+                                    requireView().post {
+                                        it.notifyItemRangeInserted(0, currentCount)
+                                    }
+                                } else {
+                                    amiiboTile?.isInvisible = true
+                                    bluupButtonState
+                                }
+                            }
+                        }
+
+                        override fun onBluupRangeRetrieved(jsonArray: JSONArray) {
+                            val bluupAmiibos: ArrayList<Amiibo?> = arrayListOf()
+                            for (i in 0 until jsonArray.length()) {
+                                try {
+                                    val amiibo = getAmiiboFromTail(
+                                        jsonArray.getString(i).split("|")
+                                    )
+                                    bluupAmiibos.add(amiibo)
+                                } catch (ex: JSONException) {
+                                    Debug.warn(ex)
+                                } catch (ex: NullPointerException) {
+                                    Debug.warn(ex)
+                                }
+                            }
+                            gattAdapter?.run {
+                                addBluupAmiibo(bluupAmiibos)
+                                requireView().post {
+                                    notifyItemRangeInserted(currentCount, bluupAmiibos.size)
+                                }
+                                currentCount = itemCount
+                            }
+                        }
+
+                        override fun onBluupActiveChanged(jsonObject: JSONObject?) {
+                            if (null == jsonObject) return
+                            try {
+                                val name = jsonObject.getString("name")
+                                if ("undefined" == name) {
+                                    resetActiveSlot()
+                                    return
+                                }
+                                val amiibo = getAmiiboFromTail(name.split("|"))
+                                val index = jsonObject.getString("index")
+                                getActiveAmiibo(amiibo, amiiboTile)
+                                if (bottomSheet?.state == BottomSheetBehavior.STATE_COLLAPSED)
+                                    getActiveAmiibo(amiibo, amiiboCard)
+                                prefs.bluupActiveSlot(index.toInt())
+                                bluupButtonState
+                                requireView().post {
+                                    bluupStats?.text =
+                                        getString(R.string.gatt_count, index, currentCount)
+                                }
+                            } catch (ex: JSONException) {
+                                Debug.warn(ex)
+                            } catch (ex: NullPointerException) {
+                                Debug.warn(ex)
+                            }
+                        }
+
+                        override fun onBluupFilesDownload(dataString: String) {
+                            Debug.info(this.javaClass, dataString)
+                            try {
+                                val tagData = dataString.toByteArray()
+                            } catch (e: Exception) { e.printStackTrace() }
+                            Toasty(requireActivity()).Short(R.string.fail_firmware_api)
+                        }
+
+                        override fun onBluupProcessFinish() {
+                            processDialog?.let {
+                                if (it.isShowing) it.dismiss()
+                            }
+                        }
+
+                        override fun onBluupConnectionLost() {
+                            fragmentHandler.postDelayed(
+                                { showDisconnectNotice() }, TagMo.uiDelay.toLong()
+                            )
+                            bottomSheet?.state = BottomSheetBehavior.STATE_COLLAPSED
+                            stopGattService()
+                        }
+                    })
+                } else {
+                    stopGattService()
+                    Toasty(requireContext()).Short(R.string.device_invalid)
+                }
+            }
+        }
+
+        override fun onServiceDisconnected(name: ComponentName) {
+            stopGattService()
+            if (!isServiceDiscovered) {
+                showTimeoutNotice()
+            }
+        }
+    }
+
+    private var puckServerConn: ServiceConnection = object : ServiceConnection {
+        var isServiceDiscovered = false
+        override fun onServiceConnected(name: ComponentName, binder: IBinder) {
+            val localBinder = binder as PuckGattService.LocalBinder
+            servicePuck = localBinder.service.apply {
+                if (initialize() && connect(deviceAddress)) {
+                    setListener(object : PuckGattService.BluetoothGattListener {
+                        override fun onPuckServicesDiscovered() {
+                            isServiceDiscovered = true
+                            onBottomSheetChanged(SHEET.MENU)
+                            maxSlotCount = 50
+                            requireView().post {
+                                gattSlotCount.maxValue = maxSlotCount
+                                screenOptions?.isGone = true
+                                createBlank?.isGone = true
+                                requireView().findViewById<TextView>(R.id.hardware_info).text = deviceProfile
+                            }
+                            try {
+                                setPuckCharacteristicRX()
+                                deviceDetails
+                            } catch (uoe: UnsupportedOperationException) {
+                                disconnectService()
+                                Toasty(requireContext()).Short(R.string.device_invalid)
+                            }
+                        }
+
+                        override fun onPuckDeviceProfile(slotCount: Int) {
+                            maxSlotCount = slotCount
+                            requireView().post {
+                                gattSlotCount.maxValue = slotCount
+                            }
+                            deviceAmiibo
+                        }
+
+                        override fun onPuckActiveChanged(slot: Int) {
+                            gattAdapter?.run {
+                                val amiibo = getItem(slot)
+                                getActiveAmiibo(amiibo, amiiboTile)
+                                if (bottomSheet?.state == BottomSheetBehavior.STATE_COLLAPSED)
+                                    getActiveAmiibo(amiibo, amiiboCard)
+                                prefs.bluupActiveSlot(slot)
+                                bluupButtonState
+                                requireView().post {
+                                    bluupStats?.text = getString(
+                                        R.string.gatt_count, slot.toString(), currentCount
+                                    )
+                                }
+                            }
+                        }
+
+                        override fun onPuckListRetrieved(
+                            slotData: ArrayList<ByteArray>, active: Int
+                        ) {
+                            currentCount = slotData.size
+                            val puckAmiibos: ArrayList<Amiibo?> = arrayListOf()
+                            slotData.forEach { bytes ->
+                                if (bytes.size == 80) {
+                                    val amiibo = getAmiiboFromSlice(bytes.copyOfRange(40, 48))
+                                    puckAmiibos.add(amiibo)
+                                } else {
+                                    puckAmiibos.add(null)
+                                }
+                            }
+                            settings.removeChangeListener(gattAdapter)
+                            gattAdapter = GattSlotAdapter(
+                                settings, this@GattSlotFragment
+                            ).also {
+                                it.setGattAmiibo(puckAmiibos)
+                                dismissSnackbarNotice(true)
+                                requireView().post {
+                                    bluupContent?.adapter = it
+                                    settings.addChangeListener(it)
+                                }
+                                if (currentCount > 0) {
+                                    requireView().post {
+                                        it.notifyItemRangeInserted(0, currentCount)
+                                    }
+                                    onPuckActiveChanged(active)
+                                } else {
+                                    amiiboTile?.isInvisible = true
+                                    bluupButtonState
+                                }
+                            }
+                        }
+
+                        override fun onPuckFilesDownload(tagData: ByteArray) {}
+                        override fun onPuckProcessFinish() {
+                            processDialog?.let {
+                                if (it.isShowing) it.dismiss()
+                            }
+                        }
+
+                        override fun onPuckConnectionLost() {
+                            fragmentHandler.postDelayed(
+                                { showDisconnectNotice() }, TagMo.uiDelay.toLong()
+                            )
+                            bottomSheet?.state = BottomSheetBehavior.STATE_COLLAPSED
+                            stopGattService()
+                        }
+                    })
+                } else {
+                    stopGattService()
+                    Toasty(requireActivity()).Short(R.string.device_invalid)
+                }
+            }
+        }
+
+        override fun onServiceDisconnected(name: ComponentName) {
+            stopGattService()
+            if (!isServiceDiscovered) {
+                showTimeoutNotice()
+            }
+        }
+    }
+
+    private var linkServerConn: ServiceConnection = object : ServiceConnection {
+        var isServiceDiscovered = false
+        override fun onServiceConnected(name: ComponentName, binder: IBinder) {
+            val localBinder = binder as LinkGattService.LocalBinder
+            serviceLink = localBinder.service.apply {
+                if (initialize() && connect(deviceAddress)) {
+                    setListener(object : LinkGattService.BluetoothGattListener {
+                        override fun onLinkServicesDiscovered() {
+                            isServiceDiscovered = true
+                            onBottomSheetChanged(SHEET.MENU)
+                            maxSlotCount = 50
+                            requireView().post {
+                                gattSlotCount.maxValue = maxSlotCount
+                                screenOptions?.isGone = true
+                                createBlank?.isGone = true
+                                requireView().findViewById<TextView>(R.id.hardware_info).text = deviceProfile
+                            }
+                            try {
+                                setLinkCharacteristicRX()
+                                deviceDetails
+                            } catch (uoe: UnsupportedOperationException) {
+                                disconnectService()
+                                Toasty(requireContext()).Short(R.string.device_invalid)
+                            }
+                        }
+
+                        override fun onLinkDeviceProfile(slotCount: Int) {
+                            maxSlotCount = slotCount
+                            requireView().post {
+                                gattSlotCount.maxValue = slotCount
+                            }
+                            deviceAmiibo
+                        }
+
+                        override fun onLinkActiveChanged(slot: Int) {
+                            gattAdapter?.run {
+                                val amiibo = getItem(slot)
+                                getActiveAmiibo(amiibo, amiiboTile)
+                                if (bottomSheet?.state == BottomSheetBehavior.STATE_COLLAPSED)
+                                    getActiveAmiibo(amiibo, amiiboCard)
+                                prefs.bluupActiveSlot(slot)
+                                bluupButtonState
+                                requireView().post {
+                                    bluupStats?.text = getString(
+                                        R.string.gatt_count, slot.toString(), currentCount
+                                    )
+                                }
+                            }
+                        }
+
+                        override fun onLinkListRetrieved(
+                            slotData: ArrayList<ByteArray>, active: Int
+                        ) {
+                            currentCount = slotData.size
+                            val linkAmiibos: ArrayList<Amiibo?> = arrayListOf()
+                            slotData.forEach { bytes ->
+                                if (bytes.size == 80) {
+                                    val amiibo = getAmiiboFromSlice(bytes.copyOfRange(40, 48))
+                                    linkAmiibos.add(amiibo)
+                                } else {
+                                    linkAmiibos.add(null)
+                                }
+                            }
+                            settings.removeChangeListener(gattAdapter)
+                            gattAdapter = GattSlotAdapter(
+                                settings, this@GattSlotFragment
+                            ).also {
+                                it.setGattAmiibo(linkAmiibos)
+                                dismissSnackbarNotice(true)
+                                requireView().post {
+                                    bluupContent?.adapter = it
+                                    settings.addChangeListener(it)
+                                }
+                                if (currentCount > 0) {
+                                    requireView().post {
+                                        it.notifyItemRangeInserted(0, currentCount)
+                                    }
+                                    onLinkActiveChanged(active)
+                                } else {
+                                    amiiboTile?.isInvisible = true
+                                    bluupButtonState
+                                }
+                            }
+                        }
+
+                        override fun onLinkFilesDownload(tagData: ByteArray) {}
+                        override fun onLinkProcessFinish() {
+                            processDialog?.let {
+                                if (it.isShowing) it.dismiss()
+                            }
+                        }
+
+                        override fun onLinkConnectionLost() {
+                            fragmentHandler.postDelayed(
+                                { showDisconnectNotice() }, TagMo.uiDelay.toLong()
+                            )
+                            bottomSheet?.state = BottomSheetBehavior.STATE_COLLAPSED
+                            stopGattService()
+                        }
+                    })
+                } else {
+                    stopGattService()
+                    Toasty(requireActivity()).Short(R.string.device_invalid)
+                }
+            }
+        }
+
+        override fun onServiceDisconnected(name: ComponentName) {
+            stopGattService()
+            if (!isServiceDiscovered) {
+                showTimeoutNotice()
+            }
+        }
     }
 }

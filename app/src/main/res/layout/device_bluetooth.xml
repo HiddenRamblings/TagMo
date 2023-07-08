@@ -52,11 +52,13 @@
                 android:layout_marginStart="8dp"
                 android:textColor="@color/tag_text"
                 android:textSize="14sp" />
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:layout_marginTop="2dp">
+
                 <androidx.appcompat.widget.AppCompatButton
                     android:id="@+id/connect_flask"
                     android:layout_width="match_parent"
@@ -64,6 +66,7 @@
                     android:layout_weight="1"
                     android:textSize="14sp"
                     android:text="@string/device_flask" />
+
                 <androidx.appcompat.widget.AppCompatButton
                     android:id="@+id/connect_slide"
                     android:layout_width="match_parent"
@@ -71,6 +74,14 @@
                     android:layout_weight="1"
                     android:textSize="14sp"
                     android:text="@string/device_slide" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginTop="2dp">
+
                 <androidx.appcompat.widget.AppCompatButton
                     android:id="@+id/connect_puck"
                     android:layout_width="match_parent"
@@ -78,6 +89,14 @@
                     android:layout_weight="1"
                     android:textSize="14sp"
                     android:text="@string/device_puck" />
+
+                <androidx.appcompat.widget.AppCompatButton
+                    android:id="@+id/connect_link"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:textSize="14sp"
+                    android:text="@string/device_link" />
             </LinearLayout>
         </LinearLayout>
     </LinearLayout>

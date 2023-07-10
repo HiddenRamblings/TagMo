@@ -374,6 +374,7 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
 
     fun setAmiiboStats() {
         statsHandler.removeCallbacksAndMessages(null)
+        if (isDetached) return
         browserActivity?.let { activity ->
             currentFolderView?.run {
                 val size = settings.amiiboFiles.size

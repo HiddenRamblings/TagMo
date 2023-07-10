@@ -77,10 +77,9 @@ class JSONExecutor(activity: Activity, server: String, path: String? = null) {
         CoroutineScope(Dispatchers.IO).launch(Dispatchers.IO) {
             val url = path?.let { "$server/$path" } ?: server
             try {
-                URL(url).readText().also {
-                    dbListener?.onResults(it, isRawJSON(url)) ?: jsonListener?.onResults(it)
-                    return@launch
-                }
+                val result = URL(url).readText()
+                dbListener?.onResults(result, isRawJSON(url)) ?: jsonListener?.onResults(result)
+                return@launch
             } catch (fnf: FileNotFoundException) {
                 Debug.warn(fnf)
                 return@launch

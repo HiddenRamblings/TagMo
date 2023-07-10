@@ -45,6 +45,7 @@ import kotlinx.coroutines.withContext
 import java.io.IOException
 import java.io.PrintWriter
 import java.io.StringWriter
+import kotlin.math.abs
 
 class NfcActivity : AppCompatActivity() {
 
@@ -131,7 +132,7 @@ class NfcActivity : AppCompatActivity() {
                     bankPicker.isEnabled = false
                     bankTextView.isGone = true
                 }
-                bankPicker.maxValue = prefs.eliteBankCount()
+                bankPicker.maxValue = abs(prefs.eliteBankCount())
             }
             NFCIntent.ACTION_WRITE_ALL_TAGS,
             NFCIntent.ACTION_ERASE_ALL_TAGS,

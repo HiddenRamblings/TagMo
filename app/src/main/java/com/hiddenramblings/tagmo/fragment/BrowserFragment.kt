@@ -152,7 +152,7 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
                 adapter = BrowserAdapter(settings, activity).also {
                     settings.addChangeListener(it)
                 }
-                FastScrollerBuilder(this).build().setPadding(0, (-2).toPx,0,0)
+                FastScrollerBuilder(this).build().setPadding(0, (-2).toPx, 0, 0)
             }
 
             foomiiboContent = view.findViewById<RecyclerView>(R.id.foomiibo_list).apply {

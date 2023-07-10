@@ -126,14 +126,15 @@ class FoomiiboAdapter(
     override fun getPopupText(position: Int) : CharSequence {
         if (position >= filteredData.size) return "?"
         val item = filteredData[position]
-        return when (SORT.valueOf(settings.sort)) {
-            SORT.NAME -> item.name ?: "?"
-            SORT.CHARACTER -> item.character?.name ?: "?"
-            SORT.GAME_SERIES -> item.gameSeries?.name ?: "?"
-            SORT.AMIIBO_SERIES -> item.amiiboSeries?.name ?: "?"
-            SORT.AMIIBO_TYPE -> item.amiiboType?.name ?: "?"
-            else -> { "?" }
-        }[0].uppercase()
+        val sort = when (SORT.valueOf(settings.sort)) {
+            SORT.NAME -> item.name
+            SORT.CHARACTER -> item.character?.name
+            SORT.GAME_SERIES -> item.gameSeries?.name
+            SORT.AMIIBO_SERIES -> item.amiiboSeries?.name
+            SORT.AMIIBO_TYPE -> item.amiiboType?.name
+            else -> { null }
+        }
+        return if (sort.isNullOrEmpty()) "?" else sort[0].uppercase()
     }
 
     fun refresh() { getFilter().filter(settings.query) }

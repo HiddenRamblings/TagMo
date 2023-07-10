@@ -55,6 +55,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import me.zhanghai.android.fastscroll.FastScrollerBuilder
 import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
@@ -299,6 +300,7 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
                         initialPrefetchItemCount = 10
                     }
                 writeTagAdapter = WriteTagAdapter(settings).also { adapter = it }
+                FastScrollerBuilder(this).build()
             }
         }
 

@@ -64,6 +64,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import me.zhanghai.android.fastscroll.FastScrollerBuilder
 import org.json.JSONException
 import java.io.IOException
 import java.text.ParseException
@@ -161,6 +162,7 @@ class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
                         initialPrefetchItemCount = 10
                     }
                 writeTagAdapter = WriteTagAdapter(settings).also { adapter = it }
+                FastScrollerBuilder(this).build()
             }
 
             securityOptions = view.findViewById(R.id.security_options)

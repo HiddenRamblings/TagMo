@@ -24,10 +24,12 @@ import com.hiddenramblings.tagmo.eightbit.os.Storage
 import com.hiddenramblings.tagmo.eightbit.os.Version
 import com.hiddenramblings.tagmo.eightbit.request.ImageTarget
 import com.hiddenramblings.tagmo.widget.BoldSpannable
+import me.zhanghai.android.fastscroll.PopupTextProvider
 import java.util.*
 
 class WriteTagAdapter(private val settings: BrowserSettings?) :
-    RecyclerView.Adapter<WriteTagAdapter.AmiiboViewHolder>(), Filterable, BrowserSettingsListener {
+    RecyclerView.Adapter<WriteTagAdapter.AmiiboViewHolder>(),
+    PopupTextProvider, Filterable, BrowserSettingsListener {
     private var listener: OnAmiiboClickListener? = null
     private var listSize = 1
     private var isFillEnabled = false
@@ -164,6 +166,26 @@ class WriteTagAdapter(private val settings: BrowserSettings?) :
     override fun onBindViewHolder(holder: AmiiboViewHolder, position: Int) {
         holder.bind(getItem(holder.bindingAdapterPosition))
         setIsHighlighted(holder, amiiboList.contains(holder.amiiboFile))
+    }
+
+    override fun getPopupText(position: Int) : CharSequence {
+        if (null == settings || position >= filteredData.size) return "?"
+        val amiibo: Amiibo? = filteredData[position]?.let { file ->
+            settings.amiiboManager?.let {
+                it.amiibos[file.id] ?: Amiibo(it, file.id, null, null)
+            }
+        }
+        val sort = amiibo?.let {
+            when (BrowserSettings.SORT.valueOf(settings.sort)) {
+                BrowserSettings.SORT.NAME -> it.name
+                BrowserSettings.SORT.CHARACTER -> it.character?.name
+                BrowserSettings.SORT.GAME_SERIES -> it.gameSeries?.name
+                BrowserSettings.SORT.AMIIBO_SERIES -> it.amiiboSeries?.name
+                BrowserSettings.SORT.AMIIBO_TYPE -> it.amiiboType?.name
+                else -> null
+            }
+        }
+        return if (sort.isNullOrEmpty()) "?" else sort[0].uppercase()
     }
 
     fun refresh() { getFilter().filter(settings?.query) }

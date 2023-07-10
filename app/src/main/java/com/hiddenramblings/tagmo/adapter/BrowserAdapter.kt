@@ -143,16 +143,17 @@ class BrowserAdapter(
                 it.amiibos[file.id] ?: Amiibo(it, file.id, null, null)
             }
         }
-        return amiibo?.let {
+        val sort = amiibo?.let {
             when (SORT.valueOf(settings.sort)) {
-                SORT.NAME -> it.name ?: "?"
-                SORT.CHARACTER -> it.character?.name ?: "?"
-                SORT.GAME_SERIES -> it.gameSeries?.name ?: "?"
-                SORT.AMIIBO_SERIES -> it.amiiboSeries?.name ?: "?"
-                SORT.AMIIBO_TYPE -> it.amiiboType?.name ?: "?"
-                else -> "?"
-            }[0].uppercase()
-        } ?: "?"
+                SORT.NAME -> it.name
+                SORT.CHARACTER -> it.character?.name
+                SORT.GAME_SERIES -> it.gameSeries?.name
+                SORT.AMIIBO_SERIES -> it.amiiboSeries?.name
+                SORT.AMIIBO_TYPE -> it.amiiboType?.name
+                else -> null
+            }
+        }
+        return if (sort.isNullOrEmpty()) "?" else sort[0].uppercase()
     }
 
     fun refresh() { getFilter().filter(settings.query) }

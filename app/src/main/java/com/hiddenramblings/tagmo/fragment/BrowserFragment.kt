@@ -140,15 +140,10 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
                 }
             }
             browserContent = view.findViewById<RecyclerView>(R.id.browser_content).apply {
-                setItemViewCacheSize(40)
                 layoutManager = if (settings.amiiboView == BrowserSettings.VIEW.IMAGE.value)
-                    GridLayoutManager(activity, activity.columnCount).apply {
-                        initialPrefetchItemCount = 10
-                    }
+                    GridLayoutManager(activity, activity.columnCount)
                 else
-                    LinearLayoutManager(activity).apply {
-                        initialPrefetchItemCount = 10
-                    }
+                    LinearLayoutManager(activity)
                 adapter = BrowserAdapter(settings, activity).also {
                     settings.addChangeListener(it)
                 }
@@ -156,15 +151,10 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
             }
 
             foomiiboContent = view.findViewById<RecyclerView>(R.id.foomiibo_list).apply {
-                setItemViewCacheSize(40)
                 layoutManager = if (settings.amiiboView == BrowserSettings.VIEW.IMAGE.value)
-                    GridLayoutManager(activity, activity.columnCount).apply {
-                        initialPrefetchItemCount = 10
-                    }
+                    GridLayoutManager(activity, activity.columnCount)
                 else
-                    LinearLayoutManager(activity).apply {
-                        initialPrefetchItemCount = 10
-                    }
+                    LinearLayoutManager(activity)
                 adapter = FoomiiboAdapter(settings, this@BrowserFragment).also {
                     settings.addChangeListener(it)
                 }
@@ -173,10 +163,7 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
 
             currentFolderView = view.findViewById(R.id.current_folder)
             view.findViewById<RecyclerView>(R.id.folders_list).apply {
-                // setItemViewCacheSize(40)
-                layoutManager = LinearLayoutManager(requireContext()).apply {
-                    // initialPrefetchItemCount = 5
-                }
+                layoutManager = LinearLayoutManager(requireContext())
                 adapter = FoldersAdapter(settings)
                 settings.addChangeListener(adapter as? BrowserSettingsListener)
             }

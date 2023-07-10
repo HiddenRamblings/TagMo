@@ -130,15 +130,10 @@ class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
             settings = activity.settings ?: BrowserSettings().initialize()
 
             eliteContent = view.findViewById<RecyclerView>(R.id.elite_content).apply {
-                setItemViewCacheSize(40)
                 layoutManager = if (settings.amiiboView == BrowserSettings.VIEW.IMAGE.value)
-                    GridLayoutManager(activity, activity.columnCount).apply {
-                        initialPrefetchItemCount = 10
-                    }
+                    GridLayoutManager(activity, activity.columnCount)
                 else
-                    LinearLayoutManager(activity).apply {
-                        initialPrefetchItemCount = 10
-                    }
+                    LinearLayoutManager(activity)
                 settings.removeChangeListener(bankAdapter)
                 bankAdapter = EliteBankAdapter(settings, this@EliteBankFragment).also {
                     adapter = it
@@ -152,15 +147,10 @@ class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
             writeBankLayout = view.findViewById(R.id.write_list_banks)
 
             amiiboFilesView = view.findViewById<RecyclerView>(R.id.amiibo_files_list).apply {
-                setItemViewCacheSize(40)
                 layoutManager = if (settings.amiiboView == BrowserSettings.VIEW.IMAGE.value)
-                    GridLayoutManager(activity, activity.columnCount).apply {
-                        initialPrefetchItemCount = 10
-                    }
+                    GridLayoutManager(activity, activity.columnCount)
                 else
-                    LinearLayoutManager(activity).apply {
-                        initialPrefetchItemCount = 10
-                    }
+                    LinearLayoutManager(activity)
                 writeTagAdapter = WriteTagAdapter(settings).also { adapter = it }
                 FastScrollerBuilder(this).build()
             }
@@ -382,12 +372,12 @@ class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
             if (null != amiiboList && amiibos.size > amiiboList.size) {
                 val count = amiibos.size
                 val size = amiiboList.size
-                val shortList: ArrayList<EliteTag?> = arrayListOf()
-                for (x in 0 until size) {
-                    shortList.add(amiibos[x])
-                }
-                amiibos = shortList
-                bankAdapter?.notifyItemRangeChanged(0, size)
+//                val shortList: ArrayList<EliteTag?> = arrayListOf()
+//                for (x in 0 until size) {
+//                    shortList.add(amiibos[x])
+//                }
+//                amiibos = shortList
+//                bankAdapter?.notifyItemRangeChanged(0, size)
                 bankAdapter?.notifyItemRangeRemoved(size, count - size)
             }
         }

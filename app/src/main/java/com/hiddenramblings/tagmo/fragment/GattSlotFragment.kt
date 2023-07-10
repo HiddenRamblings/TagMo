@@ -156,15 +156,10 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
             settings = activity.settings ?: BrowserSettings().initialize()
 
             bluupContent = view.findViewById<RecyclerView>(R.id.bluup_content).apply {
-                setItemViewCacheSize(40)
                 layoutManager = if (settings.amiiboView == BrowserSettings.VIEW.IMAGE.value)
-                    GridLayoutManager(activity, activity.columnCount).apply {
-                        initialPrefetchItemCount = 10
-                    }
+                    GridLayoutManager(activity, activity.columnCount)
                 else
-                    LinearLayoutManager(activity).apply {
-                        initialPrefetchItemCount = 10
-                    }
+                    LinearLayoutManager(activity)
             }
 
             bluupStats = view.findViewById(R.id.bluup_stats)
@@ -290,15 +285,10 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
             writeSlotsLayout = view.findViewById(R.id.write_list_slots)
 
             view.findViewById<RecyclerView>(R.id.amiibo_files_list).apply {
-                setItemViewCacheSize(40)
                 layoutManager = if (settings.amiiboView == BrowserSettings.VIEW.IMAGE.value)
-                    GridLayoutManager(activity, activity.columnCount).apply {
-                        initialPrefetchItemCount = 10
-                    }
+                    GridLayoutManager(activity, activity.columnCount)
                 else
-                    LinearLayoutManager(activity).apply {
-                        initialPrefetchItemCount = 10
-                    }
+                    LinearLayoutManager(activity)
                 writeTagAdapter = WriteTagAdapter(settings).also { adapter = it }
                 FastScrollerBuilder(this).build()
             }

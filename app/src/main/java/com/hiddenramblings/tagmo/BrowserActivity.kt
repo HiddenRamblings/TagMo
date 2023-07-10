@@ -449,13 +449,9 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
 
     private fun getFileLayoutManager() : RecyclerView.LayoutManager {
         return if (settings?.amiiboView == VIEW.IMAGE.value)
-            GridLayoutManager(this@BrowserActivity, columnCount).apply {
-                initialPrefetchItemCount = 10
-            }
+            GridLayoutManager(this@BrowserActivity, columnCount)
         else
-            LinearLayoutManager(this@BrowserActivity).apply {
-                initialPrefetchItemCount = 10
-            }
+            LinearLayoutManager(this@BrowserActivity)
     }
 
     private fun onTextColorAnimation(textView: TextView?, index: Int) {
@@ -1452,12 +1448,8 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                 }
             }
             R.id.view_image -> {
-                amiibosView?.layoutManager = GridLayoutManager(this, columnCount).apply {
-                    initialPrefetchItemCount = 10
-                }
-                foomiiboView?.layoutManager = GridLayoutManager(this, columnCount).apply {
-                    initialPrefetchItemCount = 10
-                }
+                amiibosView?.layoutManager = GridLayoutManager(this, columnCount)
+                foomiiboView?.layoutManager = GridLayoutManager(this, columnCount)
                 settings?.let {
                     it.amiiboView = VIEW.IMAGE.value
                     it.notifyChanges()

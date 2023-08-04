@@ -328,13 +328,12 @@ class NTAG215 : TagTechnology {
 
         @Throws(IOException::class)
         fun getBlind(tag: Tag?): NTAG215 {
-            val nTag = try {
-                NfcA.get(tag)?.apply { connect() }
+            return try {
+                NTAG215(NfcA.get(tag)).apply { connect() }
             } catch (ex: IOException) {
                 Debug.warn(ex)
                 null
             } ?: throw IOException(TagMo.appContext.getString(R.string.error_tag_unavailable))
-            return NTAG215(nTag)
         }
 
         @Throws(IOException::class)

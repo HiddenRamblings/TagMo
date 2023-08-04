@@ -372,12 +372,7 @@ class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
             if (null != amiiboList && amiibos.size > amiiboList.size) {
                 val count = amiibos.size
                 val size = amiiboList.size
-//                val shortList: ArrayList<EliteTag?> = arrayListOf()
-//                for (x in 0 until size) {
-//                    shortList.add(amiibos[x])
-//                }
-//                amiibos = shortList
-//                bankAdapter?.notifyItemRangeChanged(0, size)
+                amiibos.subList(0, count - size).clear()
                 bankAdapter?.notifyItemRangeRemoved(size, count - size)
             }
         }

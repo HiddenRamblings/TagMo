@@ -42,6 +42,7 @@ class ScanTag {
         val mifare = NTAG215[tag]
         try {
             mifare?.let { ntag ->
+                // ntag.connect()
                 if (!hasTestedElite) {
                     hasTestedElite = true
                     if (!isPowerTag(ntag) && prefs.eliteEnabled()) isEliteDevice = isElite(ntag)

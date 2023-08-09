@@ -1442,7 +1442,9 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
             }
             R.id.view_image -> {
                 amiibosView?.layoutManager = GridLayoutManager(this, columnCount)
+                amiibosView?.invalidate()
                 foomiiboView?.layoutManager = GridLayoutManager(this, columnCount)
+                foomiiboView?.invalidate()
                 settings?.let {
                     it.amiiboView = VIEW.IMAGE.value
                     it.notifyChanges()

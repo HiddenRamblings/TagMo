@@ -331,9 +331,9 @@ class SettingsFragment : PreferenceFragmentCompat() {
             scannerDialog.dismiss()
             if (input.text.isNullOrEmpty()) return@setOnClickListener
             try {
-                keyManager.evaluateKey(ByteArrayInputStream(TagArray.hexToByteArray(
-                    input.text.toString().filter { !it.isWhitespace() }
-                )))
+                keyManager.evaluateKey(ByteArrayInputStream(
+                    TagArray.stringToByteArray(input.text.toString())
+                ))
                 browserActivity?.onKeysLoaded(true)
                 updateKeySummary()
             } catch (e: Exception) { Toasty(requireActivity()).Short(e.message) }

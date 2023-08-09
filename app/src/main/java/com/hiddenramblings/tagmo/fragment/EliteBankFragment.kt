@@ -596,13 +596,9 @@ class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
         view.findViewById<View>(R.id.button_save).setOnClickListener {
             try {
                 val activity = requireActivity() as BrowserActivity
-                val fileName = TagArray.writeBytesWithName(
-                    activity, input.text, tagData
-                )
+                val fileName = TagArray.writeBytesWithName(activity, input.text, tagData)
                 fileName?.let { name ->
-                    Toasty(requireContext()).Long(
-                        getString(R.string.wrote_file, name)
-                    )
+                    Toasty(requireContext()).Long(getString(R.string.wrote_file, name))
                     activity.loadAmiiboBackground()
                 } ?: Toasty(requireContext()).Long(getString(R.string.fail_save_file))
             } catch (e: Exception) { Toasty(requireActivity()).Short(e.message) }

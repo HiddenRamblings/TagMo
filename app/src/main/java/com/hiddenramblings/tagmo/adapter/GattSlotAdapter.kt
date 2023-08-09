@@ -31,7 +31,7 @@ class GattSlotAdapter(
         gattAmiibo = amiibo
     }
 
-    fun addBluupAmiibo(amiibo: ArrayList<Amiibo?>) {
+    fun addGattAmiibo(amiibo: ArrayList<Amiibo?>) {
         gattAmiibo.addAll(amiibo)
     }
 

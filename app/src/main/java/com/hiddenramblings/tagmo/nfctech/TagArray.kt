@@ -123,6 +123,10 @@ object TagArray {
         return data
     }
 
+    fun stringToByteArray(value: String) : ByteArray {
+        return hexToByteArray(value.filter { !it.isWhitespace() })
+    }
+
     fun longToBytes(x: Long): ByteArray {
         return ByteBuffer.allocate(
             if (Version.isNougat) java.lang.Long.BYTES else 8

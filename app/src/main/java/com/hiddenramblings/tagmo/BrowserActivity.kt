@@ -341,7 +341,6 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
         } else {
             requestStoragePermission()
             try {
-                @Suppress("DEPRECATION")
                 packageManager.getPackageInfo("com.hiddenramblings.tagmo", PackageManager.GET_META_DATA)
                 AlertDialog.Builder(this)
                     .setTitle(R.string.conversion_title)
@@ -992,7 +991,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
             val directory = File(Foomiibo.directory, "Duplicates")
             if (cached) directory.mkdirs()
 
-            val outputFiles: ArrayList<AmiiboFile> = arrayListOf()
+            var needsReload = false
 
             val fileName = TagArray.decipherFilename(settings?.amiiboManager, tagData, true)
             val amiiboList = amiiboFile?.withRandomSerials(keyManager, count)
@@ -1013,19 +1012,13 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                                 AmiiboFile(File(it), amiiboData.amiiboID, amiiboData.array)
                         }
                     }
-                    outputFile?.let { file ->
-                        outputFiles.add(file)
-                    }
+                    if (!needsReload) needsReload = null != outputFile
                 } catch (ex: Exception) {
                     Debug.warn(ex)
                 }
             }
-            if (outputFiles.isNotEmpty()) {
+            if (needsReload) {
                 withContext(Dispatchers.Main) {
-//                    settings?.let {
-//                        it.amiiboFiles.addAll(outputFiles)
-//                        it.notifyChanges()
-//                    } ?: onRootFolderChanged(true)
                     onRootFolderChanged(true)
                 }
             } else {

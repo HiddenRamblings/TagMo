@@ -11,122 +11,64 @@ import android.bluetooth.*
 import android.content.Intent
 import android.os.*
 import androidx.annotation.RequiresApi
+import com.hiddenramblings.tagmo.amiibo.Amiibo
 import com.hiddenramblings.tagmo.eightbit.io.Debug
 import com.hiddenramblings.tagmo.eightbit.os.Version
-import com.hiddenramblings.tagmo.nfctech.NfcByte
+import com.hiddenramblings.tagmo.nfctech.TagArray
+import org.json.JSONArray
+import org.json.JSONObject
 import java.util.*
+import kotlin.math.floor
 
-/**
- * Service for managing connection and data communication with a GATT server hosted on a
- * given Bluetooth LE device.
- */
 @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
 @SuppressLint("MissingPermission")
 class LinkGattService : Service() {
-    private var listener: BluetoothGattListener? = null
+    private var listener: LinkBluetoothListener? = null
     private var mBluetoothManager: BluetoothManager? = null
     private var mBluetoothAdapter: BluetoothAdapter? = null
     private var mBluetoothDeviceAddress: String? = null
     private var mBluetoothGatt: BluetoothGatt? = null
     private var mCharacteristicRX: BluetoothGattCharacteristic? = null
     private var mCharacteristicTX: BluetoothGattCharacteristic? = null
-    private var maxTransmissionUnit = 53
+    private var nameCompat: String? = null
+    private var tailCompat: String? = null
+    private var wipeDeviceCount = 0
+    private var maxTransmissionUnit = 23
     private val chunkTimeout = 25L
-
-    private var commandLength = 20
-    private var returnLength = 260
-
-    // Command, Slot, Parameters
-    @Suppress("unused")
-    private enum class LINK(bytes: Int) {
-        INFO(0x01),
-        READ(0x02),
-        WRITE(0x03),
-        SAVE(0x04),
-        MOVE(0xFD),
-        UART(0xFE),
-        NFC(0xFF);
-
-        // RESTART
-        val bytes: Byte
-
-        init { this.bytes = bytes.toByte() }
-    }
-
-    private var activeSlot = 0
-    private var slotsCount = 50
-    fun setListener(listener: BluetoothGattListener?) {
+    fun setListener(listener: LinkBluetoothListener?) {
         this.listener = listener
     }
+
     private val commandCallbacks = ArrayList<Runnable>()
     private val linkHandler = Handler(Looper.getMainLooper())
+    private val listCount = 10
 
-    interface BluetoothGattListener {
+    interface LinkBluetoothListener {
         fun onLinkServicesDiscovered()
-        fun onLinkActiveChanged(slot: Int)
-
-        fun onLinkDeviceProfile(slotCount: Int)
-        fun onLinkListRetrieved(slotData: ArrayList<ByteArray>, active: Int)
-        fun onLinkFilesDownload(tagData: ByteArray)
+        fun onLinkActiveChanged(jsonObject: JSONObject?)
+        fun onLinkStatusChanged(jsonObject: JSONObject?)
+        fun onLinkListRetrieved(jsonArray: JSONArray)
+        fun onLinkRangeRetrieved(jsonArray: JSONArray)
+        fun onLinkFilesDownload(dataString: String)
         fun onLinkProcessFinish()
         fun onLinkConnectionLost()
     }
 
-    private var linkArray = ArrayList<ByteArray>(slotsCount)
-    private var readResponse = ByteArray(NfcByte.TAG_FILE_SIZE)
+    private var response = StringBuilder()
+    private var rangeIndex = 0
 
-    private fun getCharacteristicValue(characteristic: BluetoothGattCharacteristic, data: ByteArray?) {
-        if (data?.isNotEmpty() == true) {
-            Debug.verbose(
-                this.javaClass, "${getLogTag(characteristic.uuid)} ${Arrays.toString(data)}"
-            )
+    private fun getCharacteristicValue(characteristic: BluetoothGattCharacteristic, output: String?) {
+        if (!output.isNullOrEmpty()) {
+            Debug.verbose(this.javaClass, "${getLogTag(characteristic.uuid)} $output")
             if (characteristic.uuid.compareTo(LinkRX) == 0) {
-                when {
-                    data[0] == LINK.INFO.bytes -> {
-                        if (data.size == 3) {
-                            activeSlot = data[1].toInt()
-                            slotsCount = data[2].toInt()
-                            listener?.onLinkDeviceProfile(slotsCount)
-                        } else {
-                            linkArray.add(data.copyOfRange(2, data.size))
-                            if (linkArray.size == slotsCount) {
-                                listener?.onLinkListRetrieved(linkArray, activeSlot)
-                            }
-                        }
-                    }
-                    data[0] == LINK.READ.bytes -> {
-                        when {
-                            data[2].toInt() == 0 -> {
-                                System.arraycopy(data, 4, readResponse, 0, data.size)
-                            }
 
-                            data[2] in 63..125 -> {
-                                System.arraycopy(data, 4, readResponse, 252, data.size)
-                            }
-
-                            else -> {
-                                System.arraycopy(data, 4, readResponse, 504, data.size)
-                                listener?.onLinkFilesDownload(readResponse)
-                                readResponse = ByteArray(NfcByte.TAG_FILE_SIZE)
-                            }
-                        }
-                    }
-                    data[0] == LINK.SAVE.bytes -> {
-                        listener?.onLinkProcessFinish()
-                        deviceDetails
-                    }
-                }
-                if (commandCallbacks.size > 0) {
-                    commandCallbacks[0].run()
-                    commandCallbacks.removeAt(0)
-                }
             }
         }
     }
 
     fun getCharacteristicValue(characteristic: BluetoothGattCharacteristic) {
         @Suppress("DEPRECATION")
-        getCharacteristicValue(characteristic, characteristic.value)
+        getCharacteristicValue(characteristic, characteristic.getStringValue(0x0))
     }
 
     // Implements callback methods for GATT events that the app cares about.  For example,
@@ -154,7 +96,7 @@ class LinkGattService : Service() {
             gatt: BluetoothGatt, characteristic: BluetoothGattCharacteristic, value: ByteArray, status: Int
         ) {
             if (status == BluetoothGatt.GATT_SUCCESS)
-                getCharacteristicValue(characteristic, value)
+                getCharacteristicValue(characteristic, value.decodeToString())
         }
 
         @Deprecated("Deprecated in Java", ReplaceWith(
@@ -169,15 +111,15 @@ class LinkGattService : Service() {
         override fun onCharacteristicWrite(
             gatt: BluetoothGatt, characteristic: BluetoothGattCharacteristic, status: Int
         ) {
-            Debug.verbose(this.javaClass,
-                "${getLogTag(characteristic.uuid)} onCharacteristicWrite $status"
+            Debug.verbose(
+                this.javaClass, getLogTag(characteristic.uuid) + " onCharacteristicWrite " + status
             )
         }
 
         override fun onCharacteristicChanged(
             gatt: BluetoothGatt, characteristic: BluetoothGattCharacteristic, value: ByteArray
         ) {
-            getCharacteristicValue(characteristic, value)
+            getCharacteristicValue(characteristic, value.decodeToString())
         }
 
         @Deprecated("Deprecated in Java", ReplaceWith(
@@ -192,7 +134,7 @@ class LinkGattService : Service() {
         override fun onMtuChanged(gatt: BluetoothGatt, mtu: Int, status: Int) {
             if (status == BluetoothGatt.GATT_SUCCESS) {
                 Debug.verbose(this.javaClass, "onMtuChange complete: $mtu")
-                maxTransmissionUnit = mtu
+                maxTransmissionUnit = mtu - 3
             } else {
                 Debug.warn(this.javaClass, "onMtuChange received: $status")
             }
@@ -216,7 +158,7 @@ class LinkGattService : Service() {
         if (mBluetoothGatt == null) {
             return super.onUnbind(intent)
         }
-        mBluetoothGatt?.close()
+        mBluetoothGatt!!.close()
         mBluetoothGatt = null
         return super.onUnbind(intent)
     }
@@ -308,9 +250,7 @@ class LinkGattService : Service() {
     private fun setCharacteristicNotification(
         characteristic: BluetoothGattCharacteristic, enabled: Boolean
     ) {
-        if (mBluetoothAdapter == null || mBluetoothGatt == null) {
-            return
-        }
+        if (mBluetoothAdapter == null || mBluetoothGatt == null) return
         mBluetoothGatt?.setCharacteristicNotification(characteristic, enabled)
         setResponseDescriptors(characteristic)
     }
@@ -326,14 +266,14 @@ class LinkGattService : Service() {
 
     private fun getCharacteristicRX(mCustomService: BluetoothGattService): BluetoothGattCharacteristic {
         var mReadCharacteristic = mCustomService.getCharacteristic(LinkRX)
-        if (mBluetoothGatt?.readCharacteristic(mReadCharacteristic) != true) {
-            for (characteristic in mCustomService.characteristics) {
-                val customUUID = characteristic.uuid
+        if (mBluetoothGatt?.readCharacteristic(mReadCharacteristic) != true) run breaking@{
+            mCustomService.characteristics.forEach {
+                val customUUID = it.uuid
                 /*get the read characteristic from the service*/
                 if (customUUID.compareTo(LinkRX) == 0) {
                     Debug.verbose(this.javaClass, "GattReadCharacteristic: $customUUID")
                     mReadCharacteristic = mCustomService.getCharacteristic(customUUID)
-                    break
+                    return@breaking
                 }
             }
         }
@@ -370,6 +310,7 @@ class LinkGattService : Service() {
                     mWriteCharacteristic = mCustomService.getCharacteristic(customUUID)
                     break
                 }
+
             }
         }
         return mWriteCharacteristic
@@ -395,27 +336,27 @@ class LinkGattService : Service() {
     }
 
     private fun delayedWriteCharacteristic(value: ByteArray) {
-        val chunks = GattArray.byteToPortions(value, commandLength)
+        val chunks = GattArray.byteToPortions(value, maxTransmissionUnit)
         val commandQueue = commandCallbacks.size + chunks.size
         linkHandler.postDelayed({
-            var i = 0
-            while (i < chunks.size) {
-                val chunk = chunks[i]
-                if (null == mCharacteristicTX) continue
+            chunks.forEachIndexed { i, chunk ->
                 linkHandler.postDelayed({
-                    mCharacteristicTX!!.writeType =
-                        BluetoothGattCharacteristic.WRITE_TYPE_NO_RESPONSE
-                    if (Version.isTiramisu) {
-                        mBluetoothGatt!!.writeCharacteristic(
-                            mCharacteristicTX!!, chunk,
+                    try {
+                        mCharacteristicTX!!.writeType =
                             BluetoothGattCharacteristic.WRITE_TYPE_NO_RESPONSE
-                        )
-                    } else @Suppress("DEPRECATION") {
-                        mCharacteristicTX!!.value = chunk
-                        mBluetoothGatt!!.writeCharacteristic(mCharacteristicTX)
+                        if (Version.isTiramisu) {
+                            mBluetoothGatt!!.writeCharacteristic(
+                                mCharacteristicTX!!, chunk,
+                                BluetoothGattCharacteristic.WRITE_TYPE_NO_RESPONSE
+                            )
+                        } else @Suppress("DEPRECATION") {
+                            mCharacteristicTX!!.value = chunk
+                            mBluetoothGatt!!.writeCharacteristic(mCharacteristicTX)
+                        }
+                    } catch (ex: NullPointerException) {
+                        listener?.onLinkServicesDiscovered()
                     }
                 }, (i + 1) * chunkTimeout)
-                i += 1
             }
         }, commandQueue * chunkTimeout)
     }
@@ -439,50 +380,41 @@ class LinkGattService : Service() {
         queueByteCharacteristic(value, commandCallbacks.size)
     }
 
-    private fun sendCommand(params: ByteArray, data: ByteArray?) {
-        delayedByteCharacteric(data?.let { params.plus(data) } ?: params)
+    fun uploadAmiiboFile(tagData: ByteArray, amiibo: Amiibo, index: Int, complete: Boolean) {
+        delayedByteCharacteric(byteArrayOf(0xA0.toByte(), 0xB0.toByte()))
+        delayedByteCharacteric(byteArrayOf(
+            0xAC.toByte(), 0xAC.toByte(), 0x00, 0x04, 0x00, 0x00, 0x02, 0x1C
+        ))
+        delayedByteCharacteric(byteArrayOf(0xAB.toByte(), 0xAB.toByte(), 0x02, 0x1C))
+
+        val parameters: ArrayList<ByteArray> = arrayListOf()
+        GattArray.byteToPortions(tagData, 20).forEachIndexed { i, chunk ->
+            val iteration = floor(i / 20F) + 1
+            val bytes: ByteArray = byteArrayOf(0xDD.toByte(), 0xAA.toByte(), 0x00, 0x14)
+            bytes.plus(chunk)
+            bytes.plus(0).plus(iteration.toInt().toByte())
+            parameters.add(bytes)
+        }
+
+        if (complete) {
+            parameters.add(byteArrayOf(0xBC.toByte(), 0xBC.toByte()))
+            parameters.add(byteArrayOf(0xCC.toByte(), 0xDD.toByte()))
+        }
+        parameters.forEach {
+            commandCallbacks.add(commandCallbacks.size, Runnable {
+                delayedByteCharacteric(it)
+            })
+        }
     }
 
-    val deviceDetails: Unit
-        get() { sendCommand(ByteArray(2).apply { this[0] = LINK.INFO.bytes }, null) }
+    val activeAmiibo: Unit
+        get() {
 
+        }
     val deviceAmiibo: Unit
         get() {
-            linkArray = ArrayList<ByteArray>(slotsCount)
-            for (i in 0 until slotsCount) {
-                sendCommand(byteArrayOf(LINK.INFO.bytes, i.toByte()), null)
-            }
+
         }
-
-    fun uploadSlotAmiibo(tagData: ByteArray, slot: Int) {
-        val count = tagData.size / 16
-        val trail = tagData.size % 16
-        for (i in 0 until count) {
-            sendCommand(byteArrayOf(
-                LINK.WRITE.bytes, slot.toByte(), (i * 4).toByte()
-            ), tagData.copyOfRange(i * 16, (i * 16) + 16))
-        }
-        sendCommand(byteArrayOf(
-            LINK.WRITE.bytes, slot.toByte(), (count * 4).toByte()
-        ), tagData.copyOfRange(count * 16, (count * 16) + trail))
-        sendCommand(
-            byteArrayOf(LINK.SAVE.bytes, slot.toByte()),
-            if (activeSlot == slot) byteArrayOf(LINK.NFC.bytes) else null
-        )
-    }
-
-    @Suppress("unused")
-    fun downloadSlotData(slot: Int) {
-        sendCommand(byteArrayOf(LINK.READ.bytes, slot.toByte(), 0x00, 0x3F), null)
-        sendCommand(byteArrayOf(LINK.READ.bytes, slot.toByte(), 0x3F, 0x3F), null)
-        sendCommand(byteArrayOf(LINK.READ.bytes, slot.toByte(), 0x7E, 0x11), null)
-    }
-
-    fun setActiveSlot(slot: Int) {
-        sendCommand(byteArrayOf(LINK.NFC.bytes, slot.toByte()), null)
-        activeSlot = slot
-        listener?.onLinkActiveChanged(activeSlot)
-    }
 
     private fun getLogTag(uuid: UUID): String {
         return when {

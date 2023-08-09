@@ -12,7 +12,7 @@ import com.hiddenramblings.tagmo.nfctech.TagArray
 class AppDataMLPaperJam(appData: ByteArray?) : AppData(appData!!) {
 
     private val sparkleCardHex = "FF FF FF FF FF FF FF"
-    private val sparkleCardBytes = TagArray.hexToByteArray(sparkleCardHex.filter { !it.isWhitespace() })
+    private val sparkleCardBytes = TagArray.stringToByteArray(sparkleCardHex)
 
     fun checkSparkleCards(): Boolean {
         val sparkleCardData = appData.array().copyOfRange(SPARKLE_CARD_OFFSET, sparkleCardBytes.size)

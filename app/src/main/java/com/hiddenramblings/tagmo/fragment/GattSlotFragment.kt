@@ -76,7 +76,7 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
     var bluupContent: RecyclerView? = null
         private set
     var gattAdapter: GattSlotAdapter? = null
-    private var bluupStats: TextView? = null
+    private var gattStats: TextView? = null
     private lateinit var gattSlotCount: NumberPicker
     private var screenOptions: LinearLayout? = null
     private var writeSlots: AppCompatButton? = null
@@ -162,7 +162,7 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
                     LinearLayoutManager(activity)
             }
 
-            bluupStats = view.findViewById(R.id.bluup_stats)
+            gattStats = view.findViewById(R.id.bluup_stats)
             switchMenuOptions = view.findViewById(R.id.switch_menu_btn)
             slotOptionsMenu = view.findViewById(R.id.slot_options_menu)
 
@@ -350,7 +350,7 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
             .setOnClickListener { serviceBluup?.setFlaskFace(false) }
         view.findViewById<View>(R.id.screen_stacked)
             .setOnClickListener { serviceBluup?.setFlaskFace(true) }
-        bluupButtonState
+        gattButtonState
     }
 
     private fun onBottomSheetChanged(sheet: SHEET) {
@@ -398,7 +398,7 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
         }
     }
 
-    private val bluupButtonState: Unit
+    private val gattButtonState: Unit
         get() {
             bluupContent?.post {
                 val openSlots = maxSlotCount - currentCount
@@ -1219,7 +1219,7 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
                                     }
                                 } else {
                                     amiiboTile?.isInvisible = true
-                                    bluupButtonState
+                                    gattButtonState
                                 }
                             }
                         }
@@ -1239,7 +1239,7 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
                                 }
                             }
                             gattAdapter?.run {
-                                addBluupAmiibo(bluupAmiibos)
+                                addGattAmiibo(bluupAmiibos)
                                 requireView().post {
                                     notifyItemRangeInserted(currentCount, bluupAmiibos.size)
                                 }
@@ -1260,10 +1260,10 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
                                 getActiveAmiibo(amiibo, amiiboTile)
                                 if (bottomSheet?.state == BottomSheetBehavior.STATE_COLLAPSED)
                                     getActiveAmiibo(amiibo, amiiboCard)
-                                prefs.bluupActiveSlot(index.toInt())
-                                bluupButtonState
+                                prefs.gattActiveSlot(index.toInt())
+                                gattButtonState
                                 requireView().post {
-                                    bluupStats?.text =
+                                    gattStats?.text =
                                         getString(R.string.gatt_count, index, currentCount)
                                 }
                             } catch (ex: JSONException) {
@@ -1350,10 +1350,10 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
                                 getActiveAmiibo(amiibo, amiiboTile)
                                 if (bottomSheet?.state == BottomSheetBehavior.STATE_COLLAPSED)
                                     getActiveAmiibo(amiibo, amiiboCard)
-                                prefs.bluupActiveSlot(slot)
-                                bluupButtonState
+                                prefs.gattActiveSlot(slot)
+                                gattButtonState
                                 requireView().post {
-                                    bluupStats?.text = getString(
+                                    gattStats?.text = getString(
                                         R.string.gatt_count, slot.toString(), currentCount
                                     )
                                 }
@@ -1390,7 +1390,7 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
                                     onPuckActiveChanged(active)
                                 } else {
                                     amiiboTile?.isInvisible = true
-                                    bluupButtonState
+                                    gattButtonState
                                 }
                             }
                         }
@@ -1427,65 +1427,50 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
 
     private var linkServerConn: ServiceConnection = object : ServiceConnection {
         var isServiceDiscovered = false
-        override fun onServiceConnected(name: ComponentName, binder: IBinder) {
+        override fun onServiceConnected(component: ComponentName, binder: IBinder) {
             val localBinder = binder as LinkGattService.LocalBinder
             serviceLink = localBinder.service.apply {
                 if (initialize() && connect(deviceAddress)) {
-                    setListener(object : LinkGattService.BluetoothGattListener {
+                    setListener(object : LinkGattService.LinkBluetoothListener {
                         override fun onLinkServicesDiscovered() {
                             isServiceDiscovered = true
                             onBottomSheetChanged(SHEET.MENU)
-                            maxSlotCount = 50
+                            maxSlotCount = if (deviceType == DEVICE.SLIDE) 40 else 85
                             requireView().post {
                                 gattSlotCount.maxValue = maxSlotCount
-                                screenOptions?.isGone = true
-                                createBlank?.isGone = true
+                                screenOptions?.isVisible = true
+                                createBlank?.isVisible = true
                                 requireView().findViewById<TextView>(R.id.hardware_info).text = deviceProfile
                             }
                             try {
                                 setLinkCharacteristicRX()
-                                deviceDetails
+                                deviceAmiibo
                             } catch (uoe: UnsupportedOperationException) {
                                 disconnectService()
                                 Toasty(requireContext()).Short(R.string.device_invalid)
                             }
                         }
 
-                        override fun onLinkDeviceProfile(slotCount: Int) {
-                            maxSlotCount = slotCount
-                            requireView().post {
-                                gattSlotCount.maxValue = slotCount
+                        override fun onLinkStatusChanged(jsonObject: JSONObject?) {
+                            processDialog?.let {
+                                if (it.isShowing) it.dismiss()
                             }
                             deviceAmiibo
                         }
 
-                        override fun onLinkActiveChanged(slot: Int) {
-                            gattAdapter?.run {
-                                val amiibo = getItem(slot)
-                                getActiveAmiibo(amiibo, amiiboTile)
-                                if (bottomSheet?.state == BottomSheetBehavior.STATE_COLLAPSED)
-                                    getActiveAmiibo(amiibo, amiiboCard)
-                                prefs.bluupActiveSlot(slot)
-                                bluupButtonState
-                                requireView().post {
-                                    bluupStats?.text = getString(
-                                        R.string.gatt_count, slot.toString(), currentCount
-                                    )
-                                }
-                            }
-                        }
-
-                        override fun onLinkListRetrieved(
-                            slotData: ArrayList<ByteArray>, active: Int
-                        ) {
-                            currentCount = slotData.size
+                        override fun onLinkListRetrieved(jsonArray: JSONArray) {
+                            currentCount = jsonArray.length()
                             val linkAmiibos: ArrayList<Amiibo?> = arrayListOf()
-                            slotData.forEach { bytes ->
-                                if (bytes.size == 80) {
-                                    val amiibo = getAmiiboFromSlice(bytes.copyOfRange(40, 48))
+                            for (i in 0 until currentCount) {
+                                try {
+                                    val amiibo = getAmiiboFromTail(
+                                        jsonArray.getString(i).split("|")
+                                    )
                                     linkAmiibos.add(amiibo)
-                                } else {
-                                    linkAmiibos.add(null)
+                                } catch (ex: JSONException) {
+                                    Debug.warn(ex)
+                                } catch (ex: NullPointerException) {
+                                    Debug.warn(ex)
                                 }
                             }
                             settings.removeChangeListener(gattAdapter)
@@ -1499,18 +1484,74 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
                                     settings.addChangeListener(it)
                                 }
                                 if (currentCount > 0) {
+                                    activeAmiibo
                                     requireView().post {
                                         it.notifyItemRangeInserted(0, currentCount)
                                     }
-                                    onLinkActiveChanged(active)
                                 } else {
                                     amiiboTile?.isInvisible = true
-                                    bluupButtonState
+                                    gattButtonState
                                 }
                             }
                         }
 
-                        override fun onLinkFilesDownload(tagData: ByteArray) {}
+                        override fun onLinkRangeRetrieved(jsonArray: JSONArray) {
+                            val linkAmiibos: ArrayList<Amiibo?> = arrayListOf()
+                            for (i in 0 until jsonArray.length()) {
+                                try {
+                                    val amiibo = getAmiiboFromTail(
+                                        jsonArray.getString(i).split("|")
+                                    )
+                                    linkAmiibos.add(amiibo)
+                                } catch (ex: JSONException) {
+                                    Debug.warn(ex)
+                                } catch (ex: NullPointerException) {
+                                    Debug.warn(ex)
+                                }
+                            }
+                            gattAdapter?.run {
+                                addGattAmiibo(linkAmiibos)
+                                requireView().post {
+                                    notifyItemRangeInserted(currentCount, linkAmiibos.size)
+                                }
+                                currentCount = itemCount
+                            }
+                        }
+
+                        override fun onLinkActiveChanged(jsonObject: JSONObject?) {
+                            if (null == jsonObject) return
+                            try {
+                                val name = jsonObject.getString("name")
+                                if ("undefined" == name) {
+                                    resetActiveSlot()
+                                    return
+                                }
+                                val amiibo = getAmiiboFromTail(name.split("|"))
+                                val index = jsonObject.getString("index")
+                                getActiveAmiibo(amiibo, amiiboTile)
+                                if (bottomSheet?.state == BottomSheetBehavior.STATE_COLLAPSED)
+                                    getActiveAmiibo(amiibo, amiiboCard)
+                                prefs.gattActiveSlot(index.toInt())
+                                gattButtonState
+                                requireView().post {
+                                    gattStats?.text =
+                                        getString(R.string.gatt_count, index, currentCount)
+                                }
+                            } catch (ex: JSONException) {
+                                Debug.warn(ex)
+                            } catch (ex: NullPointerException) {
+                                Debug.warn(ex)
+                            }
+                        }
+
+                        override fun onLinkFilesDownload(dataString: String) {
+                            Debug.info(this.javaClass, dataString)
+                            try {
+                                val tagData = dataString.toByteArray()
+                            } catch (e: Exception) { e.printStackTrace() }
+                            Toasty(requireActivity()).Short(R.string.fail_firmware_api)
+                        }
+
                         override fun onLinkProcessFinish() {
                             processDialog?.let {
                                 if (it.isShowing) it.dismiss()
@@ -1527,7 +1568,7 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
                     })
                 } else {
                     stopGattService()
-                    Toasty(requireActivity()).Short(R.string.device_invalid)
+                    Toasty(requireContext()).Short(R.string.device_invalid)
                 }
             }
         }

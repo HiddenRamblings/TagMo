@@ -272,13 +272,13 @@ class Preferences(context: Context) {
         putInt(eliteActiveBank, value)
     }
 
-    private val bluupActiveSlot = "bluupActiveSlot"
-    fun bluupActiveSlot(): Int {
-        return getInt(bluupActiveSlot, 0)
+    private val gattActiveSlot = "gattActiveSlot"
+    fun gattActiveSlot(): Int {
+        return getInt(gattActiveSlot, 0)
     }
 
-    fun bluupActiveSlot(value: Int) {
-        putInt(bluupActiveSlot, value)
+    fun gattActiveSlot(value: Int) {
+        putInt(gattActiveSlot, value)
     }
 
     private val recursiveFolders = "recursiveFolders"

@@ -525,7 +525,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
 
         findViewById<CardView>(R.id.menu_guides).setOnClickListener {
             closePrefsDrawer()
-            if (viewPager.currentItem != 3) viewPager.setCurrentItem(1, false)
+            if (viewPager.currentItem != 1) viewPager.setCurrentItem(1, false)
         }
 
         settingsPage = findViewById(R.id.preferences)

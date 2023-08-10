@@ -183,9 +183,15 @@ class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
                             override fun onAmiiboDataClicked(amiiboFile: AmiiboFile?, count: Int) {
                                 CoroutineScope(Dispatchers.IO).launch {
                                     amiiboFile?.let {
-                                        val amiiboData = it.withRandomSerials(keyManager, count)
+                                        val amiiboData = it.withRandomSerials(count)
                                         withContext(Dispatchers.Main) {
-                                            writeAmiiboDataCollection(amiiboData)
+                                            if (amiiboData.isEmpty()) {
+                                                Toasty(requireActivity()).Short(
+                                                        R.string.fail_randomize
+                                                )
+                                            } else {
+                                                writeAmiiboDataCollection(amiiboData)
+                                            }
                                         }
                                     }
                                 }

@@ -76,6 +76,28 @@ open class AmiiboFile : Parcelable {
         return dataList
     }
 
+    suspend fun withRandomSerials(count: Int) : ArrayList<AmiiboData> {
+        val dataList: ArrayList<AmiiboData> = arrayListOf()
+        this@AmiiboFile.data?.let { tagData ->
+            coroutineScope {
+                (0 until count).map {
+                    async(Dispatchers.IO) {
+                        try {
+                            AmiiboData(tagData).apply {
+                                uID = Foomiibo.generateRandomUID()
+                            }.also {
+                                dataList.add(it)
+                            }
+                        } catch (e: Exception) {
+                            Debug.warn(e)
+                        }
+                    }
+                }.awaitAll()
+            }
+        }
+        return dataList
+    }
+
     companion object {
         @JvmField
         val CREATOR: Parcelable.Creator<AmiiboFile?> = object : Parcelable.Creator<AmiiboFile?> {

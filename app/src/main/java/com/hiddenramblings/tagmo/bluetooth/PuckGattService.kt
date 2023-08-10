@@ -88,7 +88,7 @@ class PuckGattService : Service() {
                             slotsCount = data[2].toInt()
                             listener?.onPuckDeviceProfile(slotsCount)
                         } else {
-                            puckArray.add(data.copyOfRange(2, data.size))
+                            puckArray.add(data[1].toInt(), data.copyOfRange(2, data.size))
                             if (puckArray.size == slotsCount) {
                                 listener?.onPuckListRetrieved(puckArray, activeSlot)
                             }
@@ -444,7 +444,9 @@ class PuckGattService : Service() {
     }
 
     val deviceDetails: Unit
-        get() { sendCommand(ByteArray(2).apply { this[0] = PUCK.INFO.bytes }, null) }
+        get() {
+            sendCommand(ByteArray(2).apply { this[0] = PUCK.INFO.bytes }, null)
+        }
 
     val deviceAmiibo: Unit
         get() {

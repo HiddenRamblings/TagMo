@@ -39,6 +39,7 @@ class PuckGattService : Service() {
     // Command, Slot, Parameters
     @Suppress("unused")
     private enum class PUCK(bytes: Int) {
+        TEST(0x00),
         INFO(0x01),
         READ(0x02),
         WRITE(0x03),
@@ -54,7 +55,7 @@ class PuckGattService : Service() {
     }
 
     private var activeSlot = 0
-    private var slotsCount = 50
+    private var slotsCount = 32
     fun setListener(listener: BluetoothGattListener?) {
         this.listener = listener
     }
@@ -82,6 +83,9 @@ class PuckGattService : Service() {
             )
             if (characteristic.uuid.compareTo(PuckRX) == 0) {
                 when {
+                    data.toString() == "DTM_PUCK_FAST" -> {
+
+                    }
                     data[0] == PUCK.INFO.bytes -> {
                         if (data.size == 3) {
                             activeSlot = data[1].toInt()
@@ -324,6 +328,31 @@ class PuckGattService : Service() {
     private val supportedGattServices: List<BluetoothGattService>?
         get() = mBluetoothGatt?.services
 
+    @Throws(UnsupportedOperationException::class)
+    fun setPuckServicesUUID()  {
+        if (mBluetoothAdapter == null || mBluetoothGatt == null) {
+            throw UnsupportedOperationException()
+        }
+        val services = supportedGattServices
+        if (services.isNullOrEmpty()) throw UnsupportedOperationException()
+        for (customService in services) {
+            when (customService.uuid) {
+                ModernNUS -> {
+                    legacyInterface = false
+                    break
+                }
+                LegacyNUS -> {
+                    legacyInterface = true
+                    break
+                }
+                else -> {
+                    continue
+                }
+            }
+        }
+        setPuckCharacteristicRX()
+    }
+
     private fun getCharacteristicRX(mCustomService: BluetoothGattService): BluetoothGattCharacteristic {
         var mReadCharacteristic = mCustomService.getCharacteristic(PuckRX)
         if (mBluetoothGatt?.readCharacteristic(mReadCharacteristic) != true) {
@@ -445,7 +474,12 @@ class PuckGattService : Service() {
 
     val deviceDetails: Unit
         get() {
-            sendCommand(ByteArray(2).apply { this[0] = PUCK.INFO.bytes }, null)
+            if (!legacyInterface) {
+                sendCommand(byteArrayOf(
+                        0x66, 0x61, 0x73, 0x74, 0x4D, 0x6F, 0x64, 0x65, 0x28, 0x29, 0x0A // fastMode()\n
+                ), null)
+            }
+            sendCommand(byteArrayOf(PUCK.INFO.bytes), null)
         }
 
     val deviceAmiibo: Unit
@@ -494,9 +528,6 @@ class PuckGattService : Service() {
             uuid.compareTo(PuckRX) == 0 -> {
                 "PuckRX"
             }
-            uuid.compareTo(PuckID) == 0 -> {
-                "PuckID"
-            }
             uuid.compareTo(PuckNUS) == 0 -> {
                 "PuckNUS"
             }
@@ -507,9 +538,19 @@ class PuckGattService : Service() {
     }
 
     companion object {
-        val PuckNUS: UUID = UUID.fromString("78290001-d52e-473f-a9f4-f03da7c67dd1")
-        private val PuckTX = UUID.fromString("78290002-d52e-473f-a9f4-f03da7c67dd1")
-        private val PuckRX = UUID.fromString("78290003-d52e-473f-a9f4-f03da7c67dd1")
-        private val PuckID = UUID.fromString("78290004-d52e-473f-a9f4-f03da7c67dd1")
+        private var legacyInterface = false
+        val LegacyNUS: UUID = UUID.fromString("78290001-d52e-473f-a9f4-f03da7c67dd1")
+        val ModernNUS: UUID = UUID.fromString("6e400001-b5a3-f393-e0a9-e50e24dcca9e")
+        private val PuckNUS: UUID = if (legacyInterface) LegacyNUS else ModernNUS
+        private val PuckTX = if (legacyInterface)
+            UUID.fromString("78290002-d52e-473f-a9f4-f03da7c67dd1")
+        else
+            UUID.fromString("6e400002-b5a3-f393-e0a9-e50e24dcca9e")
+        private val PuckRX = if (legacyInterface)
+            UUID.fromString("78290003-d52e-473f-a9f4-f03da7c67dd1")
+        else
+            UUID.fromString("6e400003-b5a3-f393-e0a9-e50e24dcca9e")
+
+
     }
 }

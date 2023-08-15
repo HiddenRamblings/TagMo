@@ -42,7 +42,7 @@ import com.hiddenramblings.tagmo.amiibo.tagdata.AmiiboData
 import com.hiddenramblings.tagmo.bluetooth.BluetoothHandler
 import com.hiddenramblings.tagmo.bluetooth.BluetoothHandler.BluetoothListener
 import com.hiddenramblings.tagmo.bluetooth.BluupGattService
-import com.hiddenramblings.tagmo.bluetooth.LinkGattService
+import com.hiddenramblings.tagmo.bluetooth.PixlGattService
 import com.hiddenramblings.tagmo.bluetooth.PuckGattService
 import com.hiddenramblings.tagmo.eightbit.io.Debug
 import com.hiddenramblings.tagmo.eightbit.material.IconifiedSnackbar
@@ -101,9 +101,9 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
     private var scanCallbackPuck: LeScanCallback? = null
     private var scanCallbackLegacy: LeScanCallback? = null
     private var servicePuck: PuckGattService? = null
-    private var scanCallbackLinkLP: ScanCallback? = null
-    private var scanCallbackLink: LeScanCallback? = null
-    private var serviceLink: LinkGattService? = null
+    private var scanCallbackPixlLP: ScanCallback? = null
+    private var scanCallbackPixl: LeScanCallback? = null
+    private var servicePixl: PixlGattService? = null
     private var deviceProfile: String? = null
     private var deviceAddress: String? = null
     private var maxSlotCount = 85
@@ -111,7 +111,7 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
     private var deviceDialog: AlertDialog? = null
 
     private enum class DEVICE {
-        FLASK, SLIDE, BLUUP, PUCK, LINK, GATT
+        FLASK, SLIDE, BLUUP, PIXL, PUCK, GATT
     }
 
     private var deviceType = DEVICE.GATT
@@ -596,6 +596,14 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
     ) : View {
         val item = this.layoutInflater.inflate(R.layout.device_bluetooth, null)
         item.findViewById<TextView>(R.id.device_name).text = device.name
+        item.findViewById<TextView>(R.id.device_type).text = when(detectedType) {
+            DEVICE.FLASK -> getString(R.string.device_flask)
+            DEVICE.SLIDE -> getString(R.string.device_slide)
+            DEVICE.BLUUP -> getString(R.string.device_espruino)
+            DEVICE.PIXL -> getString(R.string.device_pixl)
+            DEVICE.PUCK -> getString(R.string.device_puck)
+            DEVICE.GATT -> getString(R.string.unknown)
+        }
         item.findViewById<TextView>(R.id.device_address).text =
             requireActivity().getString(R.string.device_address, device.address)
 
@@ -623,6 +631,18 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
             }
         }
 
+        item.findViewById<View>(R.id.connect_pixl).run {
+            setOnClickListener {
+                deviceDialog.dismiss()
+                deviceProfile = device.name
+                deviceAddress = device.address
+                deviceType = DEVICE.PIXL
+                dismissGattDiscovery()
+                showConnectionNotice()
+                startBluupService()
+            }
+        }
+
         item.findViewById<View>(R.id.connect_puck).run {
             setOnClickListener {
                 deviceDialog.dismiss()
@@ -632,18 +652,6 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
                 dismissGattDiscovery()
                 showConnectionNotice()
                 startPuckService()
-            }
-        }
-
-        item.findViewById<View>(R.id.connect_link).run {
-            setOnClickListener {
-                deviceDialog.dismiss()
-                deviceProfile = device.name
-                deviceAddress = device.address
-                deviceType = DEVICE.LINK
-                dismissGattDiscovery()
-                showConnectionNotice()
-                startBluupService()
             }
         }
         return item
@@ -682,6 +690,22 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
             }
             scanner?.startScan(listOf(filterBluup), settings, scanCallbackBluupLP)
 
+            val filterPixl = ScanFilter.Builder().setServiceUuid(
+                    ParcelUuid(PixlGattService.PixlNUS)
+            ).build()
+            scanCallbackPixlLP = object : ScanCallback() {
+                override fun onScanResult(callbackType: Int, result: ScanResult) {
+                    super.onScanResult(callbackType, result)
+                    if (!devices.contains(result.device)) {
+                        devices.add(result.device)
+                        deviceDialog.findViewById<LinearLayout>(R.id.bluetooth_result)?.addView(
+                                displayScanResult(deviceDialog, result.device, DEVICE.PIXL)
+                        )
+                    }
+                }
+            }
+            scanner?.startScan(listOf(filterPixl), settings, scanCallbackPixlLP)
+
             val filterPuck = ScanFilter.Builder().setServiceUuid(
                 ParcelUuid(PuckGattService.ModernNUS)
             ).build()
@@ -713,22 +737,6 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
                 }
             }
             scanner?.startScan(listOf(filterLegacy), settings, scanCallbackLegacyLP)
-
-            val filterLink = ScanFilter.Builder().setServiceUuid(
-                ParcelUuid(LinkGattService.LinkNUS)
-            ).build()
-            scanCallbackLinkLP = object : ScanCallback() {
-                override fun onScanResult(callbackType: Int, result: ScanResult) {
-                    super.onScanResult(callbackType, result)
-                    if (!devices.contains(result.device)) {
-                        devices.add(result.device)
-                        deviceDialog.findViewById<LinearLayout>(R.id.bluetooth_result)?.addView(
-                            displayScanResult(deviceDialog, result.device, DEVICE.LINK)
-                        )
-                    }
-                }
-            }
-            scanner?.startScan(listOf(filterLink), settings, scanCallbackLinkLP)
         } else @Suppress("DEPRECATION") {
             scanCallbackBluup =
                 LeScanCallback { bluetoothDevice: BluetoothDevice, _: Int, _: ByteArray? ->
@@ -740,6 +748,17 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
                     }
                 }
             mBluetoothAdapter?.startLeScan(arrayOf(BluupGattService.BluupNUS), scanCallbackBluup)
+
+            scanCallbackPixl =
+                    LeScanCallback { bluetoothDevice: BluetoothDevice, _: Int, _: ByteArray? ->
+                        if (!devices.contains(bluetoothDevice)) {
+                            devices.add(bluetoothDevice)
+                            deviceDialog.findViewById<LinearLayout>(R.id.bluetooth_result)?.addView(
+                                    displayScanResult(deviceDialog, bluetoothDevice, DEVICE.PIXL)
+                            )
+                        }
+                    }
+            mBluetoothAdapter?.startLeScan(arrayOf(PixlGattService.PixlNUS), scanCallbackPixl)
 
             scanCallbackPuck =
                 LeScanCallback { bluetoothDevice: BluetoothDevice, _: Int, _: ByteArray? ->
@@ -762,17 +781,6 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
                         }
                     }
             mBluetoothAdapter?.startLeScan(arrayOf(PuckGattService.LegacyNUS), scanCallbackLegacy)
-
-            scanCallbackLink =
-                LeScanCallback { bluetoothDevice: BluetoothDevice, _: Int, _: ByteArray? ->
-                    if (!devices.contains(bluetoothDevice)) {
-                        devices.add(bluetoothDevice)
-                        deviceDialog.findViewById<LinearLayout>(R.id.bluetooth_result)?.addView(
-                            displayScanResult(deviceDialog, bluetoothDevice, DEVICE.LINK)
-                        )
-                    }
-                }
-            mBluetoothAdapter?.startLeScan(arrayOf(LinkGattService.LinkNUS), scanCallbackLink)
         }
         fragmentHandler.postDelayed({
             if (null == deviceProfile) {
@@ -802,7 +810,8 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
                         device.name.lowercase().startsWith("flask") -> DEVICE.FLASK
                         device.name.lowercase().startsWith("slide") -> DEVICE.SLIDE
                         device.name.lowercase().startsWith("puck.js") -> DEVICE.PUCK
-                        device.name.lowercase().startsWith("amiibolink") -> DEVICE.LINK
+                        device.name.lowercase().startsWith("amiibolink")
+                                || device.name.lowercase().startsWith("pixl.js")-> DEVICE.PIXL
                         else -> DEVICE.GATT
                     }
                     view.findViewById<LinearLayout>(R.id.bluetooth_paired)?.addView(
@@ -1451,14 +1460,14 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
         }
     }
 
-    private var linkServerConn: ServiceConnection = object : ServiceConnection {
+    private var pixlServerConn: ServiceConnection = object : ServiceConnection {
         var isServiceDiscovered = false
         override fun onServiceConnected(component: ComponentName, binder: IBinder) {
-            val localBinder = binder as LinkGattService.LocalBinder
-            serviceLink = localBinder.service.apply {
+            val localBinder = binder as PixlGattService.LocalBinder
+            servicePixl = localBinder.service.apply {
                 if (initialize() && connect(deviceAddress)) {
-                    setListener(object : LinkGattService.LinkBluetoothListener {
-                        override fun onLinkServicesDiscovered() {
+                    setListener(object : PixlGattService.PixlBluetoothListener {
+                        override fun onPixlServicesDiscovered() {
                             isServiceDiscovered = true
                             onBottomSheetChanged(SHEET.MENU)
                             maxSlotCount = if (deviceType == DEVICE.SLIDE) 40 else 85
@@ -1469,7 +1478,7 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
                                 requireView().findViewById<TextView>(R.id.hardware_info).text = deviceProfile
                             }
                             try {
-                                setLinkCharacteristicRX()
+                                setPixlCharacteristicRX()
                                 deviceAmiibo
                             } catch (uoe: UnsupportedOperationException) {
                                 disconnectService()
@@ -1477,22 +1486,22 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
                             }
                         }
 
-                        override fun onLinkStatusChanged(jsonObject: JSONObject?) {
+                        override fun onPixlStatusChanged(jsonObject: JSONObject?) {
                             processDialog?.let {
                                 if (it.isShowing) it.dismiss()
                             }
                             deviceAmiibo
                         }
 
-                        override fun onLinkListRetrieved(jsonArray: JSONArray) {
+                        override fun onPixlListRetrieved(jsonArray: JSONArray) {
                             currentCount = jsonArray.length()
-                            val linkAmiibos: ArrayList<Amiibo?> = arrayListOf()
+                            val pixlAmiibos: ArrayList<Amiibo?> = arrayListOf()
                             for (i in 0 until currentCount) {
                                 try {
                                     val amiibo = getAmiiboFromTail(
                                         jsonArray.getString(i).split("|")
                                     )
-                                    linkAmiibos.add(amiibo)
+                                    pixlAmiibos.add(amiibo)
                                 } catch (ex: JSONException) {
                                     Debug.warn(ex)
                                 } catch (ex: NullPointerException) {
@@ -1503,7 +1512,7 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
                             gattAdapter = GattSlotAdapter(
                                 settings, this@GattSlotFragment
                             ).also {
-                                it.setGattAmiibo(linkAmiibos)
+                                it.setGattAmiibo(pixlAmiibos)
                                 dismissSnackbarNotice(true)
                                 requireView().post {
                                     bluupContent?.adapter = it
@@ -1521,14 +1530,14 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
                             }
                         }
 
-                        override fun onLinkRangeRetrieved(jsonArray: JSONArray) {
-                            val linkAmiibos: ArrayList<Amiibo?> = arrayListOf()
+                        override fun onPixlRangeRetrieved(jsonArray: JSONArray) {
+                            val pixlAmiibos: ArrayList<Amiibo?> = arrayListOf()
                             for (i in 0 until jsonArray.length()) {
                                 try {
                                     val amiibo = getAmiiboFromTail(
                                         jsonArray.getString(i).split("|")
                                     )
-                                    linkAmiibos.add(amiibo)
+                                    pixlAmiibos.add(amiibo)
                                 } catch (ex: JSONException) {
                                     Debug.warn(ex)
                                 } catch (ex: NullPointerException) {
@@ -1536,15 +1545,15 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
                                 }
                             }
                             gattAdapter?.run {
-                                addGattAmiibo(linkAmiibos)
+                                addGattAmiibo(pixlAmiibos)
                                 requireView().post {
-                                    notifyItemRangeInserted(currentCount, linkAmiibos.size)
+                                    notifyItemRangeInserted(currentCount, pixlAmiibos.size)
                                 }
                                 currentCount = itemCount
                             }
                         }
 
-                        override fun onLinkActiveChanged(jsonObject: JSONObject?) {
+                        override fun onPixlActiveChanged(jsonObject: JSONObject?) {
                             if (null == jsonObject) return
                             try {
                                 val name = jsonObject.getString("name")
@@ -1570,7 +1579,7 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
                             }
                         }
 
-                        override fun onLinkFilesDownload(dataString: String) {
+                        override fun onPixlFilesDownload(dataString: String) {
                             Debug.info(this.javaClass, dataString)
                             try {
                                 val tagData = dataString.toByteArray()
@@ -1578,13 +1587,13 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
                             Toasty(requireActivity()).Short(R.string.fail_firmware_api)
                         }
 
-                        override fun onLinkProcessFinish() {
+                        override fun onPixlProcessFinish() {
                             processDialog?.let {
                                 if (it.isShowing) it.dismiss()
                             }
                         }
 
-                        override fun onLinkConnectionLost() {
+                        override fun onPixlConnectionLost() {
                             fragmentHandler.postDelayed(
                                 { showDisconnectNotice() }, TagMo.uiDelay.toLong()
                             )

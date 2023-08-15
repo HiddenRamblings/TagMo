@@ -14,7 +14,6 @@ import androidx.annotation.RequiresApi
 import com.hiddenramblings.tagmo.amiibo.Amiibo
 import com.hiddenramblings.tagmo.eightbit.io.Debug
 import com.hiddenramblings.tagmo.eightbit.os.Version
-import com.hiddenramblings.tagmo.nfctech.TagArray
 import org.json.JSONArray
 import org.json.JSONObject
 import java.util.*
@@ -22,8 +21,8 @@ import kotlin.math.floor
 
 @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
 @SuppressLint("MissingPermission")
-class LinkGattService : Service() {
-    private var listener: LinkBluetoothListener? = null
+class PixlGattService : Service() {
+    private var listener: PixlBluetoothListener? = null
     private var mBluetoothManager: BluetoothManager? = null
     private var mBluetoothAdapter: BluetoothAdapter? = null
     private var mBluetoothDeviceAddress: String? = null
@@ -35,23 +34,23 @@ class LinkGattService : Service() {
     private var wipeDeviceCount = 0
     private var maxTransmissionUnit = 23
     private val chunkTimeout = 25L
-    fun setListener(listener: LinkBluetoothListener?) {
+    fun setListener(listener: PixlBluetoothListener?) {
         this.listener = listener
     }
 
     private val commandCallbacks = ArrayList<Runnable>()
-    private val linkHandler = Handler(Looper.getMainLooper())
+    private val pixlHandler = Handler(Looper.getMainLooper())
     private val listCount = 10
 
-    interface LinkBluetoothListener {
-        fun onLinkServicesDiscovered()
-        fun onLinkActiveChanged(jsonObject: JSONObject?)
-        fun onLinkStatusChanged(jsonObject: JSONObject?)
-        fun onLinkListRetrieved(jsonArray: JSONArray)
-        fun onLinkRangeRetrieved(jsonArray: JSONArray)
-        fun onLinkFilesDownload(dataString: String)
-        fun onLinkProcessFinish()
-        fun onLinkConnectionLost()
+    interface PixlBluetoothListener {
+        fun onPixlServicesDiscovered()
+        fun onPixlActiveChanged(jsonObject: JSONObject?)
+        fun onPixlStatusChanged(jsonObject: JSONObject?)
+        fun onPixlListRetrieved(jsonArray: JSONArray)
+        fun onPixlRangeRetrieved(jsonArray: JSONArray)
+        fun onPixlFilesDownload(dataString: String)
+        fun onPixlProcessFinish()
+        fun onPixlConnectionLost()
     }
 
     private var response = StringBuilder()
@@ -60,7 +59,7 @@ class LinkGattService : Service() {
     private fun getCharacteristicValue(characteristic: BluetoothGattCharacteristic, output: String?) {
         if (!output.isNullOrEmpty()) {
             Debug.verbose(this.javaClass, "${getLogTag(characteristic.uuid)} $output")
-            if (characteristic.uuid.compareTo(LinkRX) == 0) {
+            if (characteristic.uuid.compareTo(PixlRX) == 0) {
 
             }
         }
@@ -78,7 +77,7 @@ class LinkGattService : Service() {
             if (newState == BluetoothProfile.STATE_CONNECTED) {
                 mBluetoothGatt?.discoverServices()
             } else if (newState == BluetoothProfile.STATE_DISCONNECTED) {
-                listener?.onLinkConnectionLost()
+                listener?.onPixlConnectionLost()
             }
         }
 
@@ -86,7 +85,7 @@ class LinkGattService : Service() {
             if (status == BluetoothGatt.GATT_SUCCESS) {
                 if (Version.isLollipop)
                     gatt.requestMtu(512) // Maximum: 517
-                else listener?.onLinkServicesDiscovered()
+                else listener?.onPixlServicesDiscovered()
             } else {
                 Debug.warn(this.javaClass, "onServicesDiscovered received: $status")
             }
@@ -138,13 +137,13 @@ class LinkGattService : Service() {
             } else {
                 Debug.warn(this.javaClass, "onMtuChange received: $status")
             }
-            listener?.onLinkServicesDiscovered()
+            listener?.onPixlServicesDiscovered()
         }
     }
 
     inner class LocalBinder : Binder() {
-        val service: LinkGattService
-            get() = this@LinkGattService
+        val service: PixlGattService
+            get() = this@PixlGattService
     }
 
     override fun onBind(intent: Intent): IBinder {
@@ -265,12 +264,12 @@ class LinkGattService : Service() {
         get() = mBluetoothGatt?.services
 
     private fun getCharacteristicRX(mCustomService: BluetoothGattService): BluetoothGattCharacteristic {
-        var mReadCharacteristic = mCustomService.getCharacteristic(LinkRX)
+        var mReadCharacteristic = mCustomService.getCharacteristic(PixlRX)
         if (mBluetoothGatt?.readCharacteristic(mReadCharacteristic) != true) run breaking@{
             mCustomService.characteristics.forEach {
                 val customUUID = it.uuid
                 /*get the read characteristic from the service*/
-                if (customUUID.compareTo(LinkRX) == 0) {
+                if (customUUID.compareTo(PixlRX) == 0) {
                     Debug.verbose(this.javaClass, "GattReadCharacteristic: $customUUID")
                     mReadCharacteristic = mCustomService.getCharacteristic(customUUID)
                     return@breaking
@@ -281,11 +280,11 @@ class LinkGattService : Service() {
     }
 
     @Throws(UnsupportedOperationException::class)
-    fun setLinkCharacteristicRX() {
+    fun setPixlCharacteristicRX() {
         if (mBluetoothAdapter == null || mBluetoothGatt == null) {
             throw UnsupportedOperationException()
         }
-        val mCustomService = mBluetoothGatt!!.getService(LinkNUS)
+        val mCustomService = mBluetoothGatt!!.getService(PixlNUS)
         if (null == mCustomService) {
             val services = supportedGattServices
             if (services.isNullOrEmpty()) throw UnsupportedOperationException()
@@ -301,11 +300,11 @@ class LinkGattService : Service() {
     }
 
     private fun getCharacteristicTX(mCustomService: BluetoothGattService): BluetoothGattCharacteristic {
-        var mWriteCharacteristic = mCustomService.getCharacteristic(LinkTX)
+        var mWriteCharacteristic = mCustomService.getCharacteristic(PixlTX)
         if (!mCustomService.characteristics.contains(mWriteCharacteristic)) {
             for (characteristic in mCustomService.characteristics) {
                 val customUUID = characteristic.uuid
-                if (customUUID.compareTo(LinkTX) == 0) {
+                if (customUUID.compareTo(PixlTX) == 0) {
                     Debug.verbose(this.javaClass, "GattWriteCharacteristic: $customUUID")
                     mWriteCharacteristic = mCustomService.getCharacteristic(customUUID)
                     break
@@ -317,11 +316,11 @@ class LinkGattService : Service() {
     }
 
     @Throws(UnsupportedOperationException::class)
-    fun setLinkCharacteristicTX() {
+    fun setPixlCharacteristicTX() {
         if (mBluetoothAdapter == null || mBluetoothGatt == null) {
             throw UnsupportedOperationException()
         }
-        val mCustomService = mBluetoothGatt!!.getService(LinkNUS)
+        val mCustomService = mBluetoothGatt!!.getService(PixlNUS)
         if (null == mCustomService) {
             val services = supportedGattServices
             if (services.isNullOrEmpty()) throw UnsupportedOperationException()
@@ -338,9 +337,9 @@ class LinkGattService : Service() {
     private fun delayedWriteCharacteristic(value: ByteArray) {
         val chunks = GattArray.byteToPortions(value, maxTransmissionUnit)
         val commandQueue = commandCallbacks.size + chunks.size
-        linkHandler.postDelayed({
+        pixlHandler.postDelayed({
             chunks.forEachIndexed { i, chunk ->
-                linkHandler.postDelayed({
+                pixlHandler.postDelayed({
                     try {
                         mCharacteristicTX!!.writeType =
                             BluetoothGattCharacteristic.WRITE_TYPE_NO_RESPONSE
@@ -354,7 +353,7 @@ class LinkGattService : Service() {
                             mBluetoothGatt!!.writeCharacteristic(mCharacteristicTX)
                         }
                     } catch (ex: NullPointerException) {
-                        listener?.onLinkServicesDiscovered()
+                        listener?.onPixlServicesDiscovered()
                     }
                 }, (i + 1) * chunkTimeout)
             }
@@ -364,7 +363,7 @@ class LinkGattService : Service() {
     private fun queueByteCharacteristic(value: ByteArray, index: Int) {
         if (null == mCharacteristicTX) {
             try {
-                setLinkCharacteristicTX()
+                setPixlCharacteristicTX()
             } catch (e: UnsupportedOperationException) {
                 Debug.warn(e)
             }
@@ -418,14 +417,14 @@ class LinkGattService : Service() {
 
     private fun getLogTag(uuid: UUID): String {
         return when {
-            uuid.compareTo(LinkTX) == 0 -> {
-                "LinkTX"
+            uuid.compareTo(PixlTX) == 0 -> {
+                "PixlTX"
             }
-            uuid.compareTo(LinkRX) == 0 -> {
-                "LinkRX"
+            uuid.compareTo(PixlRX) == 0 -> {
+                "PixlRX"
             }
-            uuid.compareTo(LinkNUS) == 0 -> {
-                "LinkNUS"
+            uuid.compareTo(PixlNUS) == 0 -> {
+                "PixlNUS"
             }
             else -> {
                 uuid.toString()
@@ -434,8 +433,8 @@ class LinkGattService : Service() {
     }
 
     companion object {
-        val LinkNUS: UUID = UUID.fromString("6e400001-b5a3-f393-e0a9-e50e24dcca9e")
-        private val LinkTX = UUID.fromString("6e400002-b5a3-f393-e0a9-e50e24dcca9e")
-        private val LinkRX = UUID.fromString("6e400003-b5a3-f393-e0a9-e50e24dcca9e")
+        val PixlNUS: UUID = UUID.fromString("6e400001-b5a3-f393-e0a9-e50e24dcca9e")
+        private val PixlTX = UUID.fromString("6e400002-b5a3-f393-e0a9-e50e24dcca9e")
+        private val PixlRX = UUID.fromString("6e400003-b5a3-f393-e0a9-e50e24dcca9e")
     }
 }

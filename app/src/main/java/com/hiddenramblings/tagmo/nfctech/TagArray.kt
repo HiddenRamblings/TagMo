@@ -30,6 +30,13 @@ import java.nio.BufferUnderflowException
 import java.nio.ByteBuffer
 import java.util.*
 
+fun ByteArray.toTagArray(): ByteArray {
+    return if (this.size != NfcByte.TAG_DATA_SIZE + 8)
+        this.copyOf(NfcByte.TAG_DATA_SIZE + 8)
+    else
+        this
+}
+
 object TagArray {
     @JvmStatic
     fun Tag?.technology(): String {

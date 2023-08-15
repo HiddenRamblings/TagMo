@@ -11,9 +11,12 @@ import android.bluetooth.*
 import android.content.Intent
 import android.os.*
 import androidx.annotation.RequiresApi
+import com.hiddenramblings.tagmo.NFCIntent
 import com.hiddenramblings.tagmo.amiibo.Amiibo
 import com.hiddenramblings.tagmo.eightbit.io.Debug
 import com.hiddenramblings.tagmo.eightbit.os.Version
+import com.hiddenramblings.tagmo.nfctech.NfcByte
+import com.hiddenramblings.tagmo.nfctech.toTagArray
 import org.json.JSONArray
 import org.json.JSONObject
 import java.util.*
@@ -379,7 +382,7 @@ class PixlGattService : Service() {
         queueByteCharacteristic(value, commandCallbacks.size)
     }
 
-    fun uploadAmiiboFile(tagData: ByteArray, amiibo: Amiibo, index: Int, complete: Boolean) {
+    fun uploadAmiiboFile(tagData: ByteArray, complete: Boolean) {
         delayedByteCharacteric(byteArrayOf(0xA0.toByte(), 0xB0.toByte()))
         delayedByteCharacteric(byteArrayOf(
             0xAC.toByte(), 0xAC.toByte(), 0x00, 0x04, 0x00, 0x00, 0x02, 0x1C
@@ -387,11 +390,10 @@ class PixlGattService : Service() {
         delayedByteCharacteric(byteArrayOf(0xAB.toByte(), 0xAB.toByte(), 0x02, 0x1C))
 
         val parameters: ArrayList<ByteArray> = arrayListOf()
-        GattArray.byteToPortions(tagData, 20).forEachIndexed { i, chunk ->
+        GattArray.byteToPortions(tagData.toTagArray(), 20).forEachIndexed { i, chunk ->
             val iteration = floor(i / 20F) + 1
             val bytes: ByteArray = byteArrayOf(0xDD.toByte(), 0xAA.toByte(), 0x00, 0x14)
-            bytes.plus(chunk)
-            bytes.plus(0).plus(iteration.toInt().toByte())
+            bytes.plus(chunk).plus(0).plus(iteration.toInt().toByte())
             parameters.add(bytes)
         }
 

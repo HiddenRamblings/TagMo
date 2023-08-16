@@ -639,7 +639,7 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
                 deviceType = DEVICE.PIXL
                 dismissGattDiscovery()
                 showConnectionNotice()
-                startBluupService()
+                startPixlService()
             }
         }
 
@@ -999,15 +999,16 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
         requireContext().bindService(service, bluupServerConn, Context.BIND_AUTO_CREATE)
     }
 
+    private fun startPixlService() {
+        val service = Intent(requireContext(), PixlGattService::class.java)
+        requireContext().startService(service)
+        requireContext().bindService(service, pixlServerConn, Context.BIND_AUTO_CREATE)
+    }
+
     private fun startPuckService() {
         val service = Intent(requireContext(), PuckGattService::class.java)
         requireContext().startService(service)
         requireContext().bindService(service, puckServerConn, Context.BIND_AUTO_CREATE)
-    }
-
-    fun disconnectService() {
-        dismissSnackbarNotice(true)
-        serviceBluup?.disconnect() ?: servicePuck?.disconnect() ?: stopGattService()
     }
 
     fun stopGattService() {
@@ -1022,6 +1023,14 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
             requireContext().unbindService(bluupServerConn)
             requireContext().stopService(Intent(requireContext(), BluupGattService::class.java))
         } catch (ignored: IllegalArgumentException) { }
+    }
+
+    fun disconnectService() {
+        dismissSnackbarNotice(true)
+        serviceBluup?.disconnect()
+        servicePixl?.disconnect()
+        servicePuck?.disconnect()
+        stopGattService()
     }
 
     @SuppressLint("MissingPermission")

@@ -93,9 +93,7 @@ class PuckGattService : Service() {
                             listener?.onPuckDeviceProfile(slotsCount)
                         } else {
                             puckArray.add(data[1].toInt(), data.copyOfRange(2, data.size))
-                            if (puckArray.size == slotsCount) {
-                                listener?.onPuckListRetrieved(puckArray, activeSlot)
-                            }
+                            listener?.onPuckListRetrieved(puckArray, activeSlot)
                         }
                     }
                     data[0] == PUCK.READ.bytes -> {

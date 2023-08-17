@@ -383,22 +383,27 @@ class PixlGattService : Service() {
         queueByteCharacteristic(value, commandCallbacks.size)
     }
 
-    val deviceFirmware: Unit
-        get() {
-            delayedByteCharacteric(byteArrayOf(
-                    0x02, 0x01, 0x89.toByte(), 0x88.toByte(), 0x03
-            ))
-        }
-
     val deviceAmiibo: Unit
         get() {
-            delayedByteCharacteric(byteArrayOf(
-                    0x00, 0x00, 0x10, 0x02,
-                    0x33, 0x53, 0x34, 0xAB.toByte(),
-                    0x1F, 0xE8.toByte(), 0xC2.toByte(), 0x6D,
-                    0xE5.toByte(), 0x35, 0x27, 0x4B,
-                    0x52, 0xE0.toByte(), 0x1F, 0x26
-            ))
+            when (serviceType) {
+                GattArray.DEVICE.LOOP -> {
+                    delayedByteCharacteric(byteArrayOf(
+                            0x02, 0x01, 0x89.toByte(), 0x88.toByte(), 0x03
+                    ))
+                }
+                GattArray.DEVICE.LINK -> {
+                    delayedByteCharacteric(byteArrayOf(
+                            0x00, 0x00, 0x10, 0x02,
+                            0x33, 0x53, 0x34, 0xAB.toByte(),
+                            0x1F, 0xE8.toByte(), 0xC2.toByte(), 0x6D,
+                            0xE5.toByte(), 0x35, 0x27, 0x4B,
+                            0x52, 0xE0.toByte(), 0x1F, 0x26
+                    ))
+                }
+                else ->{
+
+                }
+            }
         }
 
     val activeAmiibo: Unit

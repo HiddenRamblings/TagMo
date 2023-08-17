@@ -305,8 +305,8 @@
     <string name="encryption_fault">This file may be corrupt or was improperly created.</string>
 
     <string name="custom_tab_back">Back to TagMo</string>
+    <string name="shop_hardware">Shop amiibo hardware</string>
     <string name="device_autodetect">Detected Type: </string>
-    <string name="bluup_purchase">Purchase a Bluup Device</string>
     <string name="gatt_missing">No nearby GATT devices located!</string>
     <string name="device_invalid">Not a valid GATT device!</string>
     <string name="gatt_scanning">Scanning for Bluetooth GATT&#8230;</string>

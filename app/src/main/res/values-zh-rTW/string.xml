@@ -300,7 +300,6 @@
     <string name="encryption_fault">此檔案可能已損壞或建立時內容出現錯誤</string>
 
     <string name="custom_tab_back">返回 TagMo</string>
-    <string name="bluup_purchase">取得Bluup Flask</string>
     <string name="gatt_missing">附近沒有可用的GATT設備！</string>
     <string name="device_invalid">無效的GATT設備！</string>
     <string name="gatt_scanning">正在掃描Bluetooth GATT&#8230;</string>

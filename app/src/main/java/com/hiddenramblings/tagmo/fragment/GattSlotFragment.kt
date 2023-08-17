@@ -807,9 +807,9 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
         }
         if (deviceDialog?.isShowing == true) return
         val view = this.layoutInflater.inflate(R.layout.dialog_devices, null) as LinearLayout
-        view.findViewById<AppCompatButton>(R.id.purchase_bluup).setOnClickListener {
+        view.findViewById<AppCompatButton>(R.id.shop_hardware).setOnClickListener {
             startActivity(Intent(
-                Intent.ACTION_VIEW, Uri.parse("https://www.bluuplabs.com/")
+                Intent.ACTION_VIEW, Uri.parse("https://www.nintendo.com/store/hardware/amiibo/")
             ))
         }
         deviceDialog = AlertDialog.Builder(requireActivity()).setView(view).show().apply {

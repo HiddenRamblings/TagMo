@@ -39,9 +39,9 @@
         android:orientation="vertical" />
 
     <androidx.appcompat.widget.AppCompatButton
-        android:id="@+id/purchase_bluup"
+        android:id="@+id/shop_hardware"
         android:layout_marginTop="2dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/bluup_purchase" />
+        android:text="@string/shop_hardware" />
 </LinearLayout>

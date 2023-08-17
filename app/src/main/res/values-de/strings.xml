@@ -294,7 +294,6 @@
     <string name="tag_update_only">Zuvor geschriebene Tags erfordern "Update".</string>
 
     <string name="custom_tab_back">Zurück zu TagMo</string>
-    <string name="bluup_purchase">Kaufen Sie einen Bluup Flask</string>
     <string name="gatt_missing">Keine GATT-Geräte in der Nähe gefunden!</string>
     <string name="device_invalid">Kein gültiges GATT-Gerät!</string>
     <string name="gatt_scanning">Scannen nach Bluetooth GATT&#8230;</string>

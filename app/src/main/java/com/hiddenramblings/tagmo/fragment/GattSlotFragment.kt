@@ -606,19 +606,7 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
         item.findViewById<TextView>(R.id.device_address).text =
             requireActivity().getString(R.string.device_address, device.address)
 
-        item.findViewById<View>(R.id.connect_flask).run {
-            setOnClickListener {
-                deviceDialog.dismiss()
-                deviceProfile = device.name
-                deviceAddress = device.address
-                deviceType = detectedType
-                dismissGattDiscovery()
-                showConnectionNotice()
-                startBluupService()
-            }
-        }
-
-        item.findViewById<View>(R.id.connect_slide).run {
+        item.findViewById<View>(R.id.connect_bluup).run {
             setOnClickListener {
                 deviceDialog.dismiss()
                 deviceProfile = device.name

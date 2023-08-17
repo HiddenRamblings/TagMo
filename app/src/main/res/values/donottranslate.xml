@@ -59,6 +59,7 @@
     <string name="elite_amiiqo" translatable="false">N2 Elite / Amiiqo</string>
     <string name="gatt_title" translatable="false">Bluetooth</string>
 
+    <string name="device_bluup" translatable="false">Bluup</string>
     <string name="device_flask" translatable="false">Flask</string>
     <string name="device_slide" translatable="false">Slide</string>
     <string name="device_puck" translatable="false">Puck.js</string>

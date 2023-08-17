@@ -36,7 +36,7 @@ class PixlGattService : Service() {
     private var tailCompat: String? = null
     private var wipeDeviceCount = 0
     private var maxTransmissionUnit = 23
-    private val chunkTimeout = 25L
+    private val chunkTimeout = 20L
     fun setListener(listener: PixlBluetoothListener?) {
         this.listener = listener
     }

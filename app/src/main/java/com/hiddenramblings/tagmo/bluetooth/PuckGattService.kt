@@ -31,7 +31,7 @@ class PuckGattService : Service() {
     private var mCharacteristicRX: BluetoothGattCharacteristic? = null
     private var mCharacteristicTX: BluetoothGattCharacteristic? = null
     private var maxTransmissionUnit = 53
-    private val chunkTimeout = 25L
+    private val chunkTimeout = 20L
 
     private var commandLength = 20
     private var returnLength = 260

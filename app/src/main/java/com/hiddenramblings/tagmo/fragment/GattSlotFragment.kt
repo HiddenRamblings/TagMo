@@ -611,6 +611,7 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
                 deviceDialog.dismiss()
                 deviceProfile = device.name
                 deviceAddress = device.address
+                deviceType = detectedType
                 dismissGattDiscovery()
                 showConnectionNotice()
                 startBluupService()
@@ -622,6 +623,7 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
                 deviceDialog.dismiss()
                 deviceProfile = device.name
                 deviceAddress = device.address
+                deviceType = detectedType
                 dismissGattDiscovery()
                 showConnectionNotice()
                 startBluupService()
@@ -633,6 +635,7 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
                 deviceDialog.dismiss()
                 deviceProfile = device.name
                 deviceAddress = device.address
+                deviceType = detectedType
                 dismissGattDiscovery()
                 showConnectionNotice()
                 startPixlService()
@@ -644,6 +647,7 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
                 deviceDialog.dismiss()
                 deviceProfile = device.name
                 deviceAddress = device.address
+                deviceType = detectedType
                 dismissGattDiscovery()
                 showConnectionNotice()
                 startPuckService()
@@ -815,13 +819,13 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
         deviceDialog = AlertDialog.Builder(requireActivity()).setView(view).show().apply {
             mBluetoothAdapter?.bondedDevices?.forEach { device ->
                 if (null != device.name) {
-                    deviceType = getDeviceType(device)
                     view.findViewById<LinearLayout>(R.id.bluetooth_paired)?.addView(
-                        displayScanResult(this, device, deviceType)
+                        displayScanResult(this, device, getDeviceType(device))
                     )
                 }
             }
             scanBluetoothServices(this)
+            setOnCancelListener { disconnectService() }
         }
     }
 
@@ -1022,7 +1026,11 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
             requireContext().stopService(Intent(requireContext(), BluupGattService::class.java))
         } catch (ignored: IllegalArgumentException) { }
         try {
-            requireContext().unbindService(bluupServerConn)
+            requireContext().unbindService(pixlServerConn)
+            requireContext().stopService(Intent(requireContext(), BluupGattService::class.java))
+        } catch (ignored: IllegalArgumentException) { }
+        try {
+            requireContext().unbindService(puckServerConn)
             requireContext().stopService(Intent(requireContext(), BluupGattService::class.java))
         } catch (ignored: IllegalArgumentException) { }
     }

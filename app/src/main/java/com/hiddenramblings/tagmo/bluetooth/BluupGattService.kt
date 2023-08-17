@@ -90,6 +90,8 @@ class BluupGattService : Service() {
     private val bluupHandler = Handler(Looper.getMainLooper())
     private val listCount = 10
 
+    var serviceType = GattArray.DEVICE.BLUUP
+
     interface BluupBluetoothListener {
         fun onBluupServicesDiscovered()
         fun onBluupActiveChanged(jsonObject: JSONObject?)

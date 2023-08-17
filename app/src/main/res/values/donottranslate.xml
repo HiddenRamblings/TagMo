@@ -62,6 +62,8 @@
     <string name="device_flask" translatable="false">Flask</string>
     <string name="device_slide" translatable="false">Slide</string>
     <string name="device_puck" translatable="false">Puck.js</string>
+    <string name="device_link" translatable="false">AmiiboLink</string>
+    <string name="device_loop" translatable="false">AmiLoop</string>
     <string name="device_pixl" translatable="false">Pixl.js</string>
     <string name="device_espruino" translatable="false">Espruino</string>
 

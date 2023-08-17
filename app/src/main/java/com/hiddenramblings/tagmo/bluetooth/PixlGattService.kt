@@ -45,6 +45,8 @@ class PixlGattService : Service() {
     private val pixlHandler = Handler(Looper.getMainLooper())
     private val listCount = 10
 
+    var serviceType = GattArray.DEVICE.PIXL
+
     interface PixlBluetoothListener {
         fun onPixlServicesDiscovered()
         fun onPixlActiveChanged(jsonObject: JSONObject?)
@@ -382,40 +384,102 @@ class PixlGattService : Service() {
         queueByteCharacteristic(value, commandCallbacks.size)
     }
 
-    fun uploadAmiiboFile(tagData: ByteArray, complete: Boolean) {
-        delayedByteCharacteric(byteArrayOf(0xA0.toByte(), 0xB0.toByte()))
-        delayedByteCharacteric(byteArrayOf(
-            0xAC.toByte(), 0xAC.toByte(), 0x00, 0x04, 0x00, 0x00, 0x02, 0x1C
-        ))
-        delayedByteCharacteric(byteArrayOf(0xAB.toByte(), 0xAB.toByte(), 0x02, 0x1C))
-
-        val parameters: ArrayList<ByteArray> = arrayListOf()
-        GattArray.byteToPortions(tagData.toTagArray(), 20).forEachIndexed { i, chunk ->
-            val iteration = floor(i / 20F) + 1
-            val bytes: ByteArray = byteArrayOf(0xDD.toByte(), 0xAA.toByte(), 0x00, 0x14)
-            bytes.plus(chunk).plus(0).plus(iteration.toInt().toByte())
-            parameters.add(bytes)
+    val deviceFirmware: Unit
+        get() {
+            delayedByteCharacteric(byteArrayOf(
+                    0x02, 0x01, 0x89.toByte(), 0x88.toByte(), 0x03
+            ))
         }
 
-        if (complete) {
-            parameters.add(byteArrayOf(0xBC.toByte(), 0xBC.toByte()))
-            parameters.add(byteArrayOf(0xCC.toByte(), 0xDD.toByte()))
+    val deviceAmiibo: Unit
+        get() {
+            delayedByteCharacteric(byteArrayOf(
+                    0x00, 0x00, 0x10, 0x02,
+                    0x33, 0x53, 0x34, 0xAB.toByte(),
+                    0x1F, 0xE8.toByte(), 0xC2.toByte(), 0x6D,
+                    0xE5.toByte(), 0x35, 0x27, 0x4B,
+                    0x52, 0xE0.toByte(), 0x1F, 0x26
+            ))
         }
-        parameters.forEach {
-            commandCallbacks.add(commandCallbacks.size, Runnable {
-                delayedByteCharacteric(it)
-            })
-        }
-    }
 
     val activeAmiibo: Unit
         get() {
 
         }
-    val deviceAmiibo: Unit
-        get() {
 
+    private fun xorByteArray(byteArray: ByteArray): Byte {
+        if (byteArray.isEmpty()) {
+            throw IllegalArgumentException("Empty collection can't be reduced.")
         }
+        var result = byteArray[0]
+        for (i in 1 until byteArray.size) {
+            result = (result.toInt() xor byteArray[i].toInt()).toByte()
+        }
+        return (result.toInt() and 0xff).toByte()
+    }
+    private fun processUint8Array(input: ByteArray): List<ByteArray> {
+        val output = mutableListOf<ByteArray>()
+        var start = 0
+        while (start < input.size) {
+            val chunkSize = Math.min(128, input.size - start)
+            val chunk = input.sliceArray(start until start + chunkSize)
+            val newData = ByteArray(5 + chunk.size + 2)
+            newData[0] = 0x02.toByte()
+            newData[1] = (chunk.size + 3).toByte()
+            newData[2] = 0x87.toByte()
+            newData[3] = if (chunk.size < 128) 1 else 0
+            newData[4] = output.size.toByte()
+            chunk.copyInto(newData, 5)
+            val xorValue = xorByteArray(newData.sliceArray(1 until newData.size - 2))
+            newData[newData.size - 2] = xorValue
+            newData[newData.size - 1] = 0x03.toByte()
+            output.add(newData)
+            start += chunkSize
+        }
+        return output
+    }
+
+    fun uploadAmiiboFile(tagData: ByteArray, complete: Boolean) {
+        when (serviceType) {
+            GattArray.DEVICE.LOOP -> {
+                tagData[536] = 0x80.toByte()
+                tagData[537] = 0x80.toByte()
+                processUint8Array(tagData).forEach {
+                    commandCallbacks.add(commandCallbacks.size, Runnable {
+                        delayedByteCharacteric(it)
+                    })
+                }
+            }
+            GattArray.DEVICE.LINK -> {
+                delayedByteCharacteric(byteArrayOf(0xA0.toByte(), 0xB0.toByte()))
+                delayedByteCharacteric(byteArrayOf(
+                        0xAC.toByte(), 0xAC.toByte(), 0x00, 0x04, 0x00, 0x00, 0x02, 0x1C
+                ))
+                delayedByteCharacteric(byteArrayOf(0xAB.toByte(), 0xAB.toByte(), 0x02, 0x1C))
+
+                val parameters: ArrayList<ByteArray> = arrayListOf()
+                GattArray.byteToPortions(tagData.toTagArray(), 20).forEachIndexed { i, chunk ->
+                    val iteration = (i / 20) + 1
+                    val bytes: ByteArray = byteArrayOf(0xDD.toByte(), 0xAA.toByte(), 0x00, 0x14)
+                    bytes.plus(chunk).plus(0).plus(iteration.toByte())
+                    parameters.add(bytes)
+                }
+
+                if (complete) {
+                    parameters.add(byteArrayOf(0xBC.toByte(), 0xBC.toByte()))
+                    parameters.add(byteArrayOf(0xCC.toByte(), 0xDD.toByte()))
+                }
+                parameters.forEach {
+                    commandCallbacks.add(commandCallbacks.size, Runnable {
+                        delayedByteCharacteric(it)
+                    })
+                }
+            }
+            else -> {
+
+            }
+        }
+    }
 
     private fun getLogTag(uuid: UUID): String {
         return when {

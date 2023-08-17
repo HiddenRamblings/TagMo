@@ -51,8 +51,7 @@ class PixlGattService : Service() {
         fun onPixlServicesDiscovered()
         fun onPixlActiveChanged(jsonObject: JSONObject?)
         fun onPixlStatusChanged(jsonObject: JSONObject?)
-        fun onPixlListRetrieved(jsonArray: JSONArray)
-        fun onPixlRangeRetrieved(jsonArray: JSONArray)
+        fun onPixlDataReceived(result: String?)
         fun onPixlFilesDownload(dataString: String)
         fun onPixlProcessFinish()
         fun onPixlConnectionLost()
@@ -65,7 +64,7 @@ class PixlGattService : Service() {
         if (!output.isNullOrEmpty()) {
             Debug.verbose(this.javaClass, "${getLogTag(characteristic.uuid)} $output")
             if (characteristic.uuid.compareTo(PixlRX) == 0) {
-
+                listener?.onPixlDataReceived(output)
             }
         }
     }

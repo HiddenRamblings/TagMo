@@ -136,7 +136,7 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return inflater.inflate(R.layout.fragment_bluup_slot, container, false)
+        return inflater.inflate(R.layout.fragment_gatt_slot, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -1387,63 +1387,9 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
                             deviceAmiibo
                         }
 
-                        override fun onPixlListRetrieved(jsonArray: JSONArray) {
-                            currentCount = jsonArray.length()
-                            val pixlAmiibos: ArrayList<Amiibo?> = arrayListOf()
-                            for (i in 0 until currentCount) {
-                                try {
-                                    val amiibo = getAmiiboFromTail(
-                                            jsonArray.getString(i).split("|")
-                                    )
-                                    pixlAmiibos.add(amiibo)
-                                } catch (ex: JSONException) {
-                                    Debug.warn(ex)
-                                } catch (ex: NullPointerException) {
-                                    Debug.warn(ex)
-                                }
-                            }
-                            settings.removeChangeListener(gattAdapter)
-                            gattAdapter = GattSlotAdapter(
-                                    settings, this@GattSlotFragment
-                            ).also {
-                                it.setGattAmiibo(pixlAmiibos)
-                                dismissSnackbarNotice(true)
-                                requireView().post {
-                                    bluupContent?.adapter = it
-                                    settings.addChangeListener(it)
-                                }
-                                if (currentCount > 0) {
-                                    activeAmiibo
-                                    requireView().post {
-                                        it.notifyItemRangeInserted(0, currentCount)
-                                    }
-                                } else {
-                                    amiiboTile?.isInvisible = true
-                                    gattButtonState
-                                }
-                            }
-                        }
-
-                        override fun onPixlRangeRetrieved(jsonArray: JSONArray) {
-                            val pixlAmiibos: ArrayList<Amiibo?> = arrayListOf()
-                            for (i in 0 until jsonArray.length()) {
-                                try {
-                                    val amiibo = getAmiiboFromTail(
-                                            jsonArray.getString(i).split("|")
-                                    )
-                                    pixlAmiibos.add(amiibo)
-                                } catch (ex: JSONException) {
-                                    Debug.warn(ex)
-                                } catch (ex: NullPointerException) {
-                                    Debug.warn(ex)
-                                }
-                            }
-                            gattAdapter?.run {
-                                addGattAmiibo(pixlAmiibos)
-                                requireView().post {
-                                    notifyItemRangeInserted(currentCount, pixlAmiibos.size)
-                                }
-                                currentCount = itemCount
+                        override fun onPixlDataReceived(result: String?) {
+                            requireView().post {
+                                requireView().findViewById<TextView>(R.id.gatt_readout).text = result
                             }
                         }
 

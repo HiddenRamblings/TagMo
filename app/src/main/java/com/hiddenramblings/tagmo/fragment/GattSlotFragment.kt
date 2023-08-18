@@ -579,9 +579,9 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
         var selectedAmiibo: Amiibo? = null
         amiiboManager?.let {
             try {
-                val headData = ByteBuffer.wrap(byteData)
-                val amiiboId = headData.getLong(0x0)
-                if(it.amiibos.containsKey(amiiboId)) {
+                val hexData = TagArray.bytesToHex(byteData)
+                val amiiboId = TagArray.hexToLong(hexData.substring(82, 98))
+                if (it.amiibos.containsKey(amiiboId)) {
                     selectedAmiibo = it.amiibos[amiiboId]
                 }
             } catch (e: Exception) { Debug.info(e) }
@@ -1494,12 +1494,6 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
                             deviceAmiibo
                         }
 
-                        override fun onPuckDataReceived(result: String?) {
-                            requireView().post {
-                                requireView().findViewById<TextView>(R.id.gatt_readout).text = result
-                            }
-                        }
-
                         override fun onPuckActiveChanged(slot: Int) {
                             gattAdapter?.run {
                                 val amiibo = getItem(slot)
@@ -1522,12 +1516,7 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
                             currentCount = slotData.size
                             val puckAmiibos: ArrayList<Amiibo?> = arrayListOf()
                             slotData.forEach { bytes ->
-                                if (bytes.size == 80) {
-                                    val amiibo = getAmiiboFromSlice(bytes.copyOfRange(40, 48))
-                                    puckAmiibos.add(amiibo)
-                                } else {
-                                    puckAmiibos.add(null)
-                                }
+                                puckAmiibos.add(getAmiiboFromSlice(bytes))
                             }
                             settings.removeChangeListener(gattAdapter)
                             gattAdapter = GattSlotAdapter(

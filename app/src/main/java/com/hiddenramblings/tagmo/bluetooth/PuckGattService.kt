@@ -45,6 +45,7 @@ class PuckGattService : Service() {
         READ(0x02),
         WRITE(0x03),
         SAVE(0x04),
+        FWRITE(0x05),
         MOVE(0xFD),
         UART(0xFE),
         NFC(0xFF);
@@ -67,7 +68,6 @@ class PuckGattService : Service() {
         fun onPuckServicesDiscovered()
         fun onPuckActiveChanged(slot: Int)
         fun onPuckDeviceProfile(slotCount: Int)
-        fun onPuckDataReceived(result: String?)
         fun onPuckListRetrieved(slotData: ArrayList<ByteArray>, active: Int)
         fun onPuckFilesDownload(tagData: ByteArray)
         fun onPuckProcessFinish()
@@ -82,18 +82,23 @@ class PuckGattService : Service() {
     private fun getCharacteristicValue(characteristic: BluetoothGattCharacteristic, data: ByteArray?) {
         if (data?.isNotEmpty() == true) {
             Debug.info(
-                this.javaClass, "${getLogTag(characteristic.uuid)} ${Arrays.toString(data)}"
+                this.javaClass, "${getLogTag(characteristic.uuid)} ${TagArray.bytesToHex(data)}"
             )
             if (characteristic.uuid.compareTo(PuckRX) == 0) {
-                listener?.onPuckDataReceived(TagArray.bytesToString(data))
                 when {
                     TagArray.bytesToString(data).endsWith("DTM_PUCK_FAST") -> {
                         sendCommand(byteArrayOf(PUCK.INFO.bytes), null)
                     }
                     tempInfoArray.isNotEmpty() -> {
-                        puckArray.add(tempInfoArray[1].toInt(), tempInfoArray.copyOfRange(2, tempInfoArray.size))
-                        listener?.onPuckListRetrieved(puckArray, activeSlot)
+                        val sliceData = tempInfoArray.plus(data)
+                        puckArray.add(sliceData[1].toInt(), sliceData.copyOfRange(2, sliceData.size))
                         tempInfoArray = byteArrayOf()
+                        if (puckArray.size == slotsCount) {
+                            listener?.onPuckListRetrieved(puckArray, activeSlot)
+                        } else{
+                            val nextSlot = sliceData[1].toInt() + 1
+                            sendCommand(byteArrayOf(PUCK.INFO.bytes, nextSlot.toByte()), null)
+                        }
                     }
                     data[0] == PUCK.INFO.bytes -> {
                         if (data.size == 3) {
@@ -101,7 +106,7 @@ class PuckGattService : Service() {
                             slotsCount = data[2].toInt()
                             listener?.onPuckDeviceProfile(slotsCount)
                         } else {
-                            tempInfoArray = tempInfoArray.plus(data)
+                            tempInfoArray = data
                         }
                     }
                     data[0] == PUCK.READ.bytes -> {
@@ -120,6 +125,9 @@ class PuckGattService : Service() {
                                 readResponse = ByteArray(NfcByte.TAG_FILE_SIZE)
                             }
                         }
+                    }
+                    data[0] == PUCK.FWRITE.bytes -> {
+
                     }
                     data[0] == PUCK.SAVE.bytes -> {
                         listener?.onPuckProcessFinish()
@@ -490,9 +498,7 @@ class PuckGattService : Service() {
     val deviceAmiibo: Unit
         get() {
             puckArray = ArrayList<ByteArray>(slotsCount)
-            for (i in 0 until slotsCount) {
-                sendCommand(byteArrayOf(PUCK.INFO.bytes, i.toByte()), null)
-            }
+            sendCommand(byteArrayOf(PUCK.INFO.bytes, 0.toByte()), null)
         }
 
     fun uploadSlotAmiibo(tagData: ByteArray, slot: Int) {

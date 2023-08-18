@@ -77,6 +77,8 @@ class PuckGattService : Service() {
     private var puckArray = ArrayList<ByteArray>(slotsCount)
     private var readResponse = ByteArray(NfcByte.TAG_FILE_SIZE)
 
+    private var tempInfoArray = byteArrayOf()
+
     private fun getCharacteristicValue(characteristic: BluetoothGattCharacteristic, data: ByteArray?) {
         if (data?.isNotEmpty() == true) {
             Debug.info(
@@ -88,14 +90,18 @@ class PuckGattService : Service() {
                     TagArray.bytesToString(data).endsWith("DTM_PUCK_FAST") -> {
                         sendCommand(byteArrayOf(PUCK.INFO.bytes), null)
                     }
+                    tempInfoArray.isNotEmpty() -> {
+                        puckArray.add(tempInfoArray[1].toInt(), tempInfoArray.copyOfRange(2, tempInfoArray.size))
+                        listener?.onPuckListRetrieved(puckArray, activeSlot)
+                        tempInfoArray = byteArrayOf()
+                    }
                     data[0] == PUCK.INFO.bytes -> {
                         if (data.size == 3) {
                             activeSlot = data[1].toInt()
                             slotsCount = data[2].toInt()
                             listener?.onPuckDeviceProfile(slotsCount)
                         } else {
-                            puckArray.add(data[1].toInt(), data.copyOfRange(2, data.size))
-                            listener?.onPuckListRetrieved(puckArray, activeSlot)
+                            tempInfoArray = tempInfoArray.plus(data)
                         }
                     }
                     data[0] == PUCK.READ.bytes -> {

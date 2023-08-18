@@ -465,7 +465,7 @@ class PixlGattService : Service() {
                 GattArray.byteToPortions(tagData.toTagArray(), 20).forEachIndexed { i, chunk ->
                     val iteration = (i / 20) + 1
                     val bytes: ByteArray = byteArrayOf(0xDD.toByte(), 0xAA.toByte(), 0x00, 0x14)
-                    bytes.plus(chunk).plus(0).plus(iteration.toByte())
+                            .plus(chunk).plus(0).plus(iteration.toByte())
                     parameters.add(bytes)
                 }
 

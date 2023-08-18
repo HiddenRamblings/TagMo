@@ -22,10 +22,11 @@
     <TextView
         android:id="@+id/process_text"
         android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="6dp"
+        android:layout_marginStart="6dp"
         android:textAppearance="?android:textAppearanceSmall"
         android:layout_gravity="center_vertical"
-        android:gravity="center"
-        android:text="@string/gatt_upload"
-        android:layout_height="wrap_content" />
+        android:text="@string/gatt_upload" />
     </LinearLayout>
 </LinearLayout>

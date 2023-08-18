@@ -7,6 +7,9 @@ import android.content.DialogInterface
 import android.content.Intent
 import android.content.res.Configuration
 import android.content.res.Resources
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
+import android.os.Build
 import android.os.Bundle
 import android.os.Environment
 import android.os.Handler
@@ -23,6 +26,7 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.AppCompatButton
@@ -53,6 +57,7 @@ import com.hiddenramblings.tagmo.eightbit.io.Debug
 import com.hiddenramblings.tagmo.eightbit.material.IconifiedSnackbar
 import com.hiddenramblings.tagmo.eightbit.os.Storage
 import com.hiddenramblings.tagmo.eightbit.os.Version
+import com.hiddenramblings.tagmo.eightbit.util.Zip
 import com.hiddenramblings.tagmo.eightbit.widget.ProgressAlert
 import com.hiddenramblings.tagmo.nfctech.Foomiibo
 import com.hiddenramblings.tagmo.nfctech.TagArray
@@ -110,6 +115,17 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
             }
         }
     }
+
+    @RequiresApi(Build.VERSION_CODES.KITKAT)
+    private val onSelectArchiveFile = registerForActivityResult(
+            ActivityResultContracts.OpenDocument()
+    ) { uri -> uri?.let {
+        val tempZip = File(TagMo.downloadDir, "archive.zip")
+        tempZip.outputStream().use { fileOut ->
+            requireActivity().contentResolver.openInputStream(uri)?.copyTo(fileOut)
+        }
+        unzipArchiveFile(tempZip)
+    } }
 
     private var browserActivity: BrowserActivity? = null
 
@@ -201,6 +217,14 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
             }
             foomiiboOptions.findViewById<View>(R.id.build_foomiibo_set).setOnClickListener {
                 buildFoomiiboSet(activity)
+            }
+
+            if (Version.isKitKat) {
+                view.findViewById<View>(R.id.select_zip_file).setOnClickListener {
+                    onSelectArchiveFile.launch(arrayOf(getString(R.string.mimetype_zip)))
+                }
+            } else {
+                view.findViewById<View>(R.id.select_zip_file).isGone = true
             }
 
             view.findViewById<View>(R.id.list_divider).apply {
@@ -527,6 +551,38 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
                         }
                     } else {
                         button.isGone = true
+                    }
+                }
+            }
+        }
+    }
+
+    @RequiresApi(Build.VERSION_CODES.KITKAT)
+    fun unzipArchiveFile(zipFile: File) {
+        val folder = Storage.getDownloadDir("TagMo", "Archive").canonicalPath
+        val builder = AlertDialog.Builder(requireContext())
+        val view = layoutInflater.inflate(R.layout.dialog_process, null).apply {
+            keepScreenOn = true
+        }
+        val progressText = view.findViewById<TextView>(R.id.process_text).apply {
+            text = getString(R.string.unzip_item, zipFile.nameWithoutExtension)
+        }
+        builder.setView(view)
+        val processDialog = builder.create().also {
+            it.show()
+            it.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+        }
+        CoroutineScope(Dispatchers.IO).launch {
+            Zip.extract(zipFile, folder) { progress ->
+                CoroutineScope(Dispatchers.Main).launch {
+                    val nameProgress = "${zipFile.nameWithoutExtension} (${progress}%) "
+                    progressText.text = getString(R.string.unzip_item, nameProgress)
+                }
+                if (progress == 100) {
+                    (activity as? BrowserActivity)?.onRootFolderChanged(true)
+                    zipFile.delete()
+                    CoroutineScope(Dispatchers.Main).launch {
+                        processDialog.dismiss()
                     }
                 }
             }

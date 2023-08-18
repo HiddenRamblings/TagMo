@@ -165,8 +165,7 @@ class WebsiteFragment : Fragment() {
         }
     }
 
-    private inner class UnZip(var archive: File, var outputDir: File) :
-        Runnable {
+    private inner class UnZip(var archive: File, var outputDir: File) : Runnable {
         @Throws(IOException::class)
         private fun decompress() {
             val zipFile = ZipFile(archive)

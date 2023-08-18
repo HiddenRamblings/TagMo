@@ -165,6 +165,13 @@
             android:layout_marginVertical="4dp"
             android:text="@string/grant_file_permission" />
 
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/select_zip_file"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginVertical="4dp"
+            android:text="@string/unzip_archive" />
+
         <TextView
             android:id="@+id/stats_character"
             android:layout_width="match_parent"

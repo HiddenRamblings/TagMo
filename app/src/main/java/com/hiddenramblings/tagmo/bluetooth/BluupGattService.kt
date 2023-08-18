@@ -117,12 +117,12 @@ class BluupGattService : Service() {
                     || output.startsWith("{") || response.isNotEmpty()) {
                     response.append(output)
                 }
-                val progress =
+                val formatted =
                     if (response.isNotEmpty()) response.toString().trim { it <= ' ' }.replace(
                         Objects.requireNonNull(System.getProperty("line.separator")).toRegex(), ""
                     ) else ""
-                if (isJSONValid(progress) || progress.endsWith(">")
-                    || progress.lastIndexOf("undefined") == 0 || progress.lastIndexOf("\n") == 0
+                if (isJSONValid(formatted) || formatted.endsWith(">")
+                    || formatted.lastIndexOf("undefined") == 0 || formatted.lastIndexOf("\n") == 0
                 ) {
                     if (commandCallbacks.size > 0) {
                         commandCallbacks[0].run()
@@ -130,9 +130,9 @@ class BluupGattService : Service() {
                     }
                 }
                 when {
-                    progress.startsWith("tag.get()") || progress.startsWith("tag.setTag") -> {
-                        if (progress.endsWith(">")) {
-                            if (progress.contains("Uncaught no such element")
+                    formatted.startsWith("tag.get()") || formatted.startsWith("tag.setTag") -> {
+                        if (formatted.endsWith(">")) {
+                            if (formatted.contains("Uncaught no such element")
                                 && null != nameCompat && null != tailCompat
                             ) {
                                 response = StringBuilder()
@@ -142,9 +142,9 @@ class BluupGattService : Service() {
                                 return
                             }
                             try {
-                                val getAmiibo = progress.substring(
-                                    progress.indexOf("{"),
-                                    progress.lastIndexOf("}") + 1
+                                val getAmiibo = formatted.substring(
+                                    formatted.indexOf("{"),
+                                    formatted.lastIndexOf("}") + 1
                                 )
                                 try {
                                     listener?.onBluupActiveChanged(JSONObject(getAmiibo))
@@ -161,11 +161,11 @@ class BluupGattService : Service() {
                             tailCompat = null
                         }
                     }
-                    progress.startsWith("tag.getList") -> {
-                        if (progress.endsWith(">") || progress.endsWith("\n")) {
-                            val getList = progress.substring(
-                                progress.indexOf("["),
-                                progress.lastIndexOf("]") + 1
+                    formatted.startsWith("tag.getList") -> {
+                        if (formatted.endsWith(">") || formatted.endsWith("\n")) {
+                            val getList = formatted.substring(
+                                formatted.indexOf("["),
+                                formatted.lastIndexOf("]") + 1
                             )
                             try {
                                 var escapedList = getList
@@ -206,8 +206,8 @@ class BluupGattService : Service() {
                             if (rangeIndex == 0) listener?.onBluupProcessFinish()
                         }
                     }
-                    progress.startsWith("tag.remove") -> {
-                        if (progress.endsWith(">") || progress.endsWith("\n")) {
+                    formatted.startsWith("tag.remove") -> {
+                        if (formatted.endsWith(">") || formatted.endsWith("\n")) {
                             if (wipeDeviceCount > 0) {
                                 wipeDeviceCount -= 1
                                 delayedTagCharacteristic("remove(tag.get().name)")
@@ -217,10 +217,10 @@ class BluupGattService : Service() {
                             response = StringBuilder()
                         }
                     }
-                    progress.startsWith("tag.download") -> {
-                        if (progress.endsWith(">") || progress.endsWith("\n")) {
+                    formatted.startsWith("tag.download") -> {
+                        if (formatted.endsWith(">") || formatted.endsWith("\n")) {
                             listener?.let {
-                                for (dataString in progress.split(
+                                for (dataString in formatted.split(
                                     "new Uint8Array".toRegex()).toTypedArray()
                                 ) {
                                     if (dataString.startsWith("tag.download")
@@ -234,14 +234,14 @@ class BluupGattService : Service() {
                             response = StringBuilder()
                         }
                     }
-                    progress.startsWith("tag.createBlank()") -> {
-                        if (progress.endsWith(">") || progress.endsWith("\n")) {
+                    formatted.startsWith("tag.createBlank()") -> {
+                        if (formatted.endsWith(">") || formatted.endsWith("\n")) {
                             response = StringBuilder()
                             listener?.onBluupStatusChanged(null)
                         }
                     }
-                    progress.endsWith("}") -> {
-                        if (progress.startsWith("tag.saveUploadedTag")) {
+                    formatted.endsWith("}") -> {
+                        if (formatted.startsWith("tag.saveUploadedTag")) {
                             response = StringBuilder()
                         } else {
                             listener?.let {
@@ -259,7 +259,7 @@ class BluupGattService : Service() {
                         }
                         response = StringBuilder()
                     }
-                    progress.endsWith(">") -> {
+                    formatted.endsWith(">") -> {
                         response = StringBuilder()
                     }
                 }

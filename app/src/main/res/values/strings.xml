@@ -285,6 +285,7 @@
     <string name="physical_storage_root">Browse Physical Storage</string>
     <string name="grant_file_permission">Enable "All Files" Manager</string>
     <string name="force_document_storage">Enable Document Storage</string>
+    <string name="unzip_archive">Extract bins from zip file</string>
     <string name="refresh_browser">Refresh Browser</string>
 
     <string name="hint_filename">Set Binary File Name</string>

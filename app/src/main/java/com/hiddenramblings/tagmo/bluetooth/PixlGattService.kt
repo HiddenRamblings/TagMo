@@ -11,16 +11,11 @@ import android.bluetooth.*
 import android.content.Intent
 import android.os.*
 import androidx.annotation.RequiresApi
-import com.hiddenramblings.tagmo.NFCIntent
-import com.hiddenramblings.tagmo.amiibo.Amiibo
 import com.hiddenramblings.tagmo.eightbit.io.Debug
 import com.hiddenramblings.tagmo.eightbit.os.Version
-import com.hiddenramblings.tagmo.nfctech.NfcByte
-import com.hiddenramblings.tagmo.nfctech.toTagArray
-import org.json.JSONArray
+import com.hiddenramblings.tagmo.nfctech.toDataBytes
 import org.json.JSONObject
 import java.util.*
-import kotlin.math.floor
 
 @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
 @SuppressLint("MissingPermission")
@@ -463,10 +458,10 @@ class PixlGattService : Service() {
                 delayedByteCharacteric(byteArrayOf(0xAB.toByte(), 0xAB.toByte(), 0x02, 0x1C))
 
                 val parameters: ArrayList<ByteArray> = arrayListOf()
-                GattArray.byteToPortions(tagData.toTagArray(), 20).forEachIndexed { i, chunk ->
-                    val iteration = (i / 20) + 1
+                GattArray.byteToPortions(tagData.toDataBytes(), 20).forEachIndexed { i, chunk ->
+                    val iteration = kotlin.math.floor(i.toDouble() / 20) + 1
                     val bytes: ByteArray = byteArrayOf(0xDD.toByte(), 0xAA.toByte(), 0x00, 0x14)
-                            .plus(chunk).plus(0).plus(iteration.toByte())
+                            .plus(chunk).plus(0).plus(iteration.toInt().toByte())
                     parameters.add(bytes)
                 }
 

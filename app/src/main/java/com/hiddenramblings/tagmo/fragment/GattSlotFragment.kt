@@ -110,7 +110,7 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
     private var servicePixl: PixlGattService? = null
     private var deviceProfile: String? = null
     private var deviceAddress: String? = null
-    private var maxSlotCount = 85
+    private var maxSlotCount = 0
     private var currentCount = 0
     private var deviceDialog: AlertDialog? = null
 
@@ -1200,11 +1200,11 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
             serviceBluup = localBinder.service.apply {
                 if (initialize() && connect(deviceAddress)) {
                     serviceType = deviceType
+                    maxSlotCount = if (serviceType == Nordic.DEVICE.SLIDE) 40 else 85
                     setListener(object : BluupGattService.BluupBluetoothListener {
                         override fun onBluupServicesDiscovered() {
                             isServiceDiscovered = true
                             onBottomSheetChanged(SHEET.MENU)
-                            maxSlotCount = if (deviceType == Nordic.DEVICE.SLIDE) 40 else 85
                             requireView().post {
                                 gattSlotCount.maxValue = maxSlotCount
                                 screenOptions?.isVisible = true
@@ -1357,11 +1357,11 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
             servicePixl = localBinder.service.apply {
                 if (initialize() && connect(deviceAddress)) {
                     serviceType = deviceType
+                    maxSlotCount = 50
                     setListener(object : PixlGattService.PixlBluetoothListener {
                         override fun onPixlServicesDiscovered() {
                             isServiceDiscovered = true
                             onBottomSheetChanged(SHEET.MENU)
-                            maxSlotCount = 50
                             requireView().post {
                                 gattSlotCount.maxValue = maxSlotCount
                                 screenOptions?.isVisible = true
@@ -1385,6 +1385,9 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
                         }
 
                         override fun onPixlDataReceived(result: String?) {
+                            processDialog?.let {
+                                if (it.isShowing) it.dismiss()
+                            }
                             requireView().post {
                                 requireView().findViewById<TextView>(R.id.gatt_readout).text = result
                             }
@@ -1459,11 +1462,11 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
             val localBinder = binder as PuckGattService.LocalBinder
             servicePuck = localBinder.service.apply {
                 if (initialize() && connect(deviceAddress)) {
+                    maxSlotCount = 32
                     setListener(object : PuckGattService.BluetoothGattListener {
                         override fun onPuckServicesDiscovered() {
                             isServiceDiscovered = true
                             onBottomSheetChanged(SHEET.MENU)
-                            maxSlotCount = 32
                             requireView().post {
                                 gattSlotCount.maxValue = maxSlotCount
                                 screenOptions?.isGone = true
@@ -1534,6 +1537,7 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
                         }
 
                         override fun onPuckFilesDownload(tagData: ByteArray) {}
+
                         override fun onPuckProcessFinish() {
                             processDialog?.let {
                                 if (it.isShowing) it.dismiss()

@@ -15,6 +15,8 @@ import com.hiddenramblings.tagmo.eightbit.io.Debug
 import com.hiddenramblings.tagmo.eightbit.os.Version
 import com.hiddenramblings.tagmo.nfctech.NfcByte
 import com.hiddenramblings.tagmo.nfctech.TagArray
+import com.hiddenramblings.tagmo.nfctech.toFileBytes
+import java.lang.Math.floor
 import java.util.*
 
 /**
@@ -77,7 +79,7 @@ class PuckGattService : Service() {
     private var puckArray = ArrayList<ByteArray>(slotsCount)
     private var readResponse = ByteArray(NfcByte.TAG_FILE_SIZE)
 
-    private var tempInfoArray = byteArrayOf()
+    private var tempInfoData = byteArrayOf()
 
     private fun getCharacteristicValue(characteristic: BluetoothGattCharacteristic, data: ByteArray?) {
         if (data?.isNotEmpty() == true) {
@@ -90,10 +92,10 @@ class PuckGattService : Service() {
                     TagArray.bytesToString(data).endsWith("DTM_PUCK_FAST") -> {
                         sendCommand(byteArrayOf(PUCK.INFO.bytes), null)
                     }
-                    tempInfoArray.isNotEmpty() -> {
-                        val sliceData = tempInfoArray.plus(data)
+                    tempInfoData.isNotEmpty() -> {
+                        val sliceData = tempInfoData.plus(data)
                         puckArray.add(sliceData[1].toInt(), sliceData.copyOfRange(2, sliceData.size))
-                        tempInfoArray = byteArrayOf()
+                        tempInfoData = byteArrayOf()
                         if (puckArray.size == slotsCount) {
                             listener?.onPuckListRetrieved(puckArray, activeSlot)
                         } else{
@@ -107,7 +109,7 @@ class PuckGattService : Service() {
                             slotsCount = data[2].toInt()
                             listener?.onPuckDeviceProfile(slotsCount)
                         } else {
-                            tempInfoArray = data
+                            tempInfoData = data
                         }
                     }
                     data[0] == PUCK.READ.bytes -> {
@@ -127,10 +129,13 @@ class PuckGattService : Service() {
                             }
                         }
                     }
-                    data[0] == PUCK.FWRITE.bytes -> {
+                    data[0] == PUCK.WRITE.bytes -> {
 
                     }
                     data[0] == PUCK.SAVE.bytes -> {
+                        sendCommand(byteArrayOf(PUCK.NFC.bytes), null)
+                    }
+                    data[0] == PUCK.NFC.bytes -> {
                         listener?.onPuckProcessFinish()
                         deviceAmiibo
                     }
@@ -503,20 +508,13 @@ class PuckGattService : Service() {
         }
 
     fun uploadSlotAmiibo(tagData: ByteArray, slot: Int) {
-        val count = tagData.size / 16
-        val trail = tagData.size % 16
-        for (i in 0 until count) {
+        val pages = TagArray.bytesToPages(tagData)
+        TagArray.bytesToPages(tagData).forEachIndexed { index, bytes ->
             sendCommand(byteArrayOf(
-                PUCK.WRITE.bytes, slot.toByte(), (i * 4).toByte()
-            ), tagData.copyOfRange(i * 16, (i * 16) + 16))
+                    PUCK.WRITE.bytes, slot.toByte(), (index * NfcByte.PAGE_SIZE).toByte(), pages.size.toByte()
+            ), bytes)
         }
-        sendCommand(byteArrayOf(
-            PUCK.WRITE.bytes, slot.toByte(), (count * 4).toByte()
-        ), tagData.copyOfRange(count * 16, (count * 16) + trail))
-        sendCommand(
-            byteArrayOf(PUCK.SAVE.bytes, slot.toByte()),
-            if (activeSlot == slot) byteArrayOf(PUCK.NFC.bytes) else null
-        )
+        sendCommand(byteArrayOf(PUCK.SAVE.bytes, slot.toByte()), null)
     }
 
     @Suppress("unused")

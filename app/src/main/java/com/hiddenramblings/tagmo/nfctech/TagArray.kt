@@ -30,9 +30,16 @@ import java.nio.BufferUnderflowException
 import java.nio.ByteBuffer
 import java.util.*
 
-fun ByteArray.toTagArray(): ByteArray {
+fun ByteArray.toDataBytes(): ByteArray {
     return if (this.size != NfcByte.TAG_DATA_SIZE + 8)
         this.copyOf(NfcByte.TAG_DATA_SIZE + 8)
+    else
+        this
+}
+
+fun ByteArray.toFileBytes(): ByteArray {
+    return if (this.size != NfcByte.TAG_FILE_SIZE)
+        this.copyOf(NfcByte.TAG_FILE_SIZE)
     else
         this
 }
@@ -185,6 +192,18 @@ object TagArray {
         return hexToString(bytesToHex(bytes))
     }
 
+    fun bytesToPages(data: ByteArray): Array<ByteArray?> {
+        val pages = arrayOfNulls<ByteArray>(data.size / NfcByte.PAGE_SIZE)
+        var i = 0
+        var j = 0
+        while (i < data.size) {
+            pages[j] = data.copyOfRange(i, i + NfcByte.PAGE_SIZE)
+            i += NfcByte.PAGE_SIZE
+            j++
+        }
+        return pages
+    }
+
     @JvmStatic
     @Throws(Exception::class)
     fun validateData(data: ByteArray?): ByteArray {
@@ -195,14 +214,7 @@ object TagArray {
                 throw IOException(getString(R.string.invalid_tag_key))
             else if (data.size < NfcByte.TAG_DATA_SIZE)
                 throw IOException(getString(R.string.invalid_data_size, data.size, NfcByte.TAG_DATA_SIZE))
-            val pages = arrayOfNulls<ByteArray>(data.size / NfcByte.PAGE_SIZE)
-            var i = 0
-            var j = 0
-            while (i < data.size) {
-                pages[j] = Arrays.copyOfRange(data, i, i + NfcByte.PAGE_SIZE)
-                i += NfcByte.PAGE_SIZE
-                j++
-            }
+            val pages = bytesToPages(data)
             when {
                 pages[0]?.let {
                     it[0] != 0x04.toByte()

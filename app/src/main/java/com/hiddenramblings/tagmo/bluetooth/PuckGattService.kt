@@ -82,7 +82,8 @@ class PuckGattService : Service() {
     private fun getCharacteristicValue(characteristic: BluetoothGattCharacteristic, data: ByteArray?) {
         if (data?.isNotEmpty() == true) {
             Debug.info(
-                this.javaClass, "${getLogTag(characteristic.uuid)} ${TagArray.bytesToHex(data)}"
+                this.javaClass, "${Nordic.getLogTag("Puck",
+                    characteristic.uuid)} ${TagArray.bytesToHex(data)}"
             )
             if (characteristic.uuid.compareTo(PuckRX) == 0) {
                 when {
@@ -188,7 +189,7 @@ class PuckGattService : Service() {
             gatt: BluetoothGatt, characteristic: BluetoothGattCharacteristic, status: Int
         ) {
             Debug.info(this.javaClass,
-                "${getLogTag(characteristic.uuid)} onCharacteristicWrite $status"
+                "${Nordic.getLogTag("Puck", characteristic.uuid)} onCharacteristicWrite $status"
             )
         }
 
@@ -351,11 +352,11 @@ class PuckGattService : Service() {
         if (services.isNullOrEmpty()) throw UnsupportedOperationException()
         for (customService in services) {
             when (customService.uuid) {
-                ModernNUS -> {
+                Nordic.NUS -> {
                     legacyInterface = false
                     break
                 }
-                LegacyNUS -> {
+                Nordic.LegacyNUS -> {
                     legacyInterface = true
                     break
                 }
@@ -531,37 +532,10 @@ class PuckGattService : Service() {
         listener?.onPuckActiveChanged(activeSlot)
     }
 
-    private fun getLogTag(uuid: UUID): String {
-        return when {
-            uuid.compareTo(PuckTX) == 0 -> {
-                "PuckTX"
-            }
-            uuid.compareTo(PuckRX) == 0 -> {
-                "PuckRX"
-            }
-            uuid.compareTo(PuckNUS) == 0 -> {
-                "PuckNUS"
-            }
-            else -> {
-                uuid.toString()
-            }
-        }
-    }
-
     companion object {
         private var legacyInterface = false
-        val LegacyNUS: UUID = UUID.fromString("78290001-d52e-473f-a9f4-f03da7c67dd1")
-        val ModernNUS: UUID = UUID.fromString("6e400001-b5a3-f393-e0a9-e50e24dcca9e")
-        private val PuckNUS: UUID = if (legacyInterface) LegacyNUS else ModernNUS
-        private val PuckTX = if (legacyInterface)
-            UUID.fromString("78290002-d52e-473f-a9f4-f03da7c67dd1")
-        else
-            UUID.fromString("6e400002-b5a3-f393-e0a9-e50e24dcca9e")
-        private val PuckRX = if (legacyInterface)
-            UUID.fromString("78290003-d52e-473f-a9f4-f03da7c67dd1")
-        else
-            UUID.fromString("6e400003-b5a3-f393-e0a9-e50e24dcca9e")
-
-
+        val PuckNUS: UUID = if (legacyInterface) Nordic.LegacyNUS else Nordic.NUS
+        val PuckTX = if (legacyInterface) Nordic.LegacyTX else Nordic.TX
+        val PuckRX = if (legacyInterface) Nordic.LegacyRX else Nordic.RX
     }
 }

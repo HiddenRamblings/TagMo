@@ -7,10 +7,6 @@ package com.hiddenramblings.tagmo.bluetooth
 
 object GattArray {
 
-    enum class DEVICE {
-        FLASK, SLIDE, BLUUP, LINK, LOOP, PIXL, PUCK, GATT
-    }
-
     @JvmStatic
     fun byteToPortions(largeByteArray: ByteArray, sizePerPortion: Int): List<ByteArray> {
         val byteArrayPortions: ArrayList<ByteArray> = arrayListOf()

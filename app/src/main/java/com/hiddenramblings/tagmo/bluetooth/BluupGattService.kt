@@ -90,7 +90,7 @@ class BluupGattService : Service() {
     private val bluupHandler = Handler(Looper.getMainLooper())
     private val listCount = 10
 
-    var serviceType = GattArray.DEVICE.BLUUP
+    var serviceType = Nordic.DEVICE.BLUUP
 
     interface BluupBluetoothListener {
         fun onBluupServicesDiscovered()
@@ -108,8 +108,8 @@ class BluupGattService : Service() {
 
     private fun getCharacteristicValue(characteristic: BluetoothGattCharacteristic, output: String?) {
         if (!output.isNullOrEmpty()) {
-            Debug.info(this.javaClass, "${getLogTag(characteristic.uuid)} $output")
-            if (characteristic.uuid.compareTo(BluupRX) == 0) {
+            Debug.info(this.javaClass, "${Nordic.getLogTag("Bluup", characteristic.uuid)} $output")
+            if (characteristic.uuid.compareTo(Nordic.RX) == 0) {
                 if (output.contains(">tag.")) {
                     response = StringBuilder()
                     response.append(output.split(">".toRegex()).toTypedArray()[1])
@@ -313,7 +313,8 @@ class BluupGattService : Service() {
             gatt: BluetoothGatt, characteristic: BluetoothGattCharacteristic, status: Int
         ) {
             Debug.info(
-                this.javaClass, getLogTag(characteristic.uuid) + " onCharacteristicWrite " + status
+                this.javaClass, Nordic.getLogTag("Bluup",
+                    characteristic.uuid) + " onCharacteristicWrite " + status
             )
         }
 
@@ -466,12 +467,12 @@ class BluupGattService : Service() {
         get() = mBluetoothGatt?.services
 
     private fun getCharacteristicRX(mCustomService: BluetoothGattService): BluetoothGattCharacteristic {
-        var mReadCharacteristic = mCustomService.getCharacteristic(BluupRX)
+        var mReadCharacteristic = mCustomService.getCharacteristic(Nordic.RX)
         if (mBluetoothGatt?.readCharacteristic(mReadCharacteristic) != true) run breaking@{
             mCustomService.characteristics.forEach {
                 val customUUID = it.uuid
                 /*get the read characteristic from the service*/
-                if (customUUID.compareTo(BluupRX) == 0) {
+                if (customUUID.compareTo(Nordic.RX) == 0) {
                     Debug.verbose(this.javaClass, "GattReadCharacteristic: $customUUID")
                     mReadCharacteristic = mCustomService.getCharacteristic(customUUID)
                     return@breaking
@@ -486,7 +487,7 @@ class BluupGattService : Service() {
         if (mBluetoothAdapter == null || mBluetoothGatt == null) {
             throw UnsupportedOperationException()
         }
-        val mCustomService = mBluetoothGatt!!.getService(BluupNUS)
+        val mCustomService = mBluetoothGatt!!.getService(Nordic.NUS)
         if (null == mCustomService) {
             val services = supportedGattServices
             if (services.isNullOrEmpty()) throw UnsupportedOperationException()
@@ -502,11 +503,11 @@ class BluupGattService : Service() {
     }
 
     private fun getCharacteristicTX(mCustomService: BluetoothGattService): BluetoothGattCharacteristic {
-        var mWriteCharacteristic = mCustomService.getCharacteristic(BluupTX)
+        var mWriteCharacteristic = mCustomService.getCharacteristic(Nordic.TX)
         if (!mCustomService.characteristics.contains(mWriteCharacteristic)) {
             for (characteristic in mCustomService.characteristics) {
                 val customUUID = characteristic.uuid
-                if (customUUID.compareTo(BluupTX) == 0) {
+                if (customUUID.compareTo(Nordic.TX) == 0) {
                     Debug.verbose(this.javaClass, "GattWriteCharacteristic: $customUUID")
                     mWriteCharacteristic = mCustomService.getCharacteristic(customUUID)
                     break
@@ -522,7 +523,7 @@ class BluupGattService : Service() {
         if (mBluetoothAdapter == null || mBluetoothGatt == null) {
             throw UnsupportedOperationException()
         }
-        val mCustomService = mBluetoothGatt!!.getService(BluupNUS)
+        val mCustomService = mBluetoothGatt!!.getService(Nordic.NUS)
         if (null == mCustomService) {
             val services = supportedGattServices
             if (services.isNullOrEmpty()) throw UnsupportedOperationException()
@@ -725,28 +726,5 @@ class BluupGattService : Service() {
             }
         }
         return true
-    }
-
-    private fun getLogTag(uuid: UUID): String {
-        return when {
-            uuid.compareTo(BluupTX) == 0 -> {
-                "BluupTX"
-            }
-            uuid.compareTo(BluupRX) == 0 -> {
-                "BluupRX"
-            }
-            uuid.compareTo(BluupNUS) == 0 -> {
-                "BluupNUS"
-            }
-            else -> {
-                uuid.toString()
-            }
-        }
-    }
-
-    companion object {
-        val BluupNUS: UUID = UUID.fromString("6e400001-b5a3-f393-e0a9-e50e24dcca9e")
-        private val BluupTX = UUID.fromString("6e400002-b5a3-f393-e0a9-e50e24dcca9e")
-        private val BluupRX = UUID.fromString("6e400003-b5a3-f393-e0a9-e50e24dcca9e")
     }
 }

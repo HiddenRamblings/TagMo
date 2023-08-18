@@ -45,7 +45,7 @@ class PixlGattService : Service() {
     private val pixlHandler = Handler(Looper.getMainLooper())
     private val listCount = 10
 
-    var serviceType = GattArray.DEVICE.PIXL
+    var serviceType = Nordic.DEVICE.PIXL
 
     interface PixlBluetoothListener {
         fun onPixlServicesDiscovered()
@@ -62,8 +62,8 @@ class PixlGattService : Service() {
 
     private fun getCharacteristicValue(characteristic: BluetoothGattCharacteristic, output: String?) {
         if (!output.isNullOrEmpty()) {
-            Debug.info(this.javaClass, "${getLogTag(characteristic.uuid)} $output")
-            if (characteristic.uuid.compareTo(PixlRX) == 0) {
+            Debug.info(this.javaClass, "${Nordic.getLogTag("Puck", characteristic.uuid)} $output")
+            if (characteristic.uuid.compareTo(Nordic.RX) == 0) {
                 listener?.onPixlDataReceived(output)
             }
         }
@@ -115,7 +115,8 @@ class PixlGattService : Service() {
             gatt: BluetoothGatt, characteristic: BluetoothGattCharacteristic, status: Int
         ) {
             Debug.info(
-                this.javaClass, getLogTag(characteristic.uuid) + " onCharacteristicWrite " + status
+                this.javaClass, Nordic.getLogTag("Puck",
+                    characteristic.uuid) + " onCharacteristicWrite " + status
             )
         }
 
@@ -268,12 +269,12 @@ class PixlGattService : Service() {
         get() = mBluetoothGatt?.services
 
     private fun getCharacteristicRX(mCustomService: BluetoothGattService): BluetoothGattCharacteristic {
-        var mReadCharacteristic = mCustomService.getCharacteristic(PixlRX)
+        var mReadCharacteristic = mCustomService.getCharacteristic(Nordic.RX)
         if (mBluetoothGatt?.readCharacteristic(mReadCharacteristic) != true) run breaking@{
             mCustomService.characteristics.forEach {
                 val customUUID = it.uuid
                 /*get the read characteristic from the service*/
-                if (customUUID.compareTo(PixlRX) == 0) {
+                if (customUUID.compareTo(Nordic.RX) == 0) {
                     Debug.verbose(this.javaClass, "GattReadCharacteristic: $customUUID")
                     mReadCharacteristic = mCustomService.getCharacteristic(customUUID)
                     return@breaking
@@ -288,7 +289,7 @@ class PixlGattService : Service() {
         if (mBluetoothAdapter == null || mBluetoothGatt == null) {
             throw UnsupportedOperationException()
         }
-        val mCustomService = mBluetoothGatt!!.getService(PixlNUS)
+        val mCustomService = mBluetoothGatt!!.getService(Nordic.NUS)
         if (null == mCustomService) {
             val services = supportedGattServices
             if (services.isNullOrEmpty()) throw UnsupportedOperationException()
@@ -304,11 +305,11 @@ class PixlGattService : Service() {
     }
 
     private fun getCharacteristicTX(mCustomService: BluetoothGattService): BluetoothGattCharacteristic {
-        var mWriteCharacteristic = mCustomService.getCharacteristic(PixlTX)
+        var mWriteCharacteristic = mCustomService.getCharacteristic(Nordic.TX)
         if (!mCustomService.characteristics.contains(mWriteCharacteristic)) {
             for (characteristic in mCustomService.characteristics) {
                 val customUUID = characteristic.uuid
-                if (customUUID.compareTo(PixlTX) == 0) {
+                if (customUUID.compareTo(Nordic.TX) == 0) {
                     Debug.verbose(this.javaClass, "GattWriteCharacteristic: $customUUID")
                     mWriteCharacteristic = mCustomService.getCharacteristic(customUUID)
                     break
@@ -324,7 +325,7 @@ class PixlGattService : Service() {
         if (mBluetoothAdapter == null || mBluetoothGatt == null) {
             throw UnsupportedOperationException()
         }
-        val mCustomService = mBluetoothGatt!!.getService(PixlNUS)
+        val mCustomService = mBluetoothGatt!!.getService(Nordic.NUS)
         if (null == mCustomService) {
             val services = supportedGattServices
             if (services.isNullOrEmpty()) throw UnsupportedOperationException()
@@ -386,12 +387,12 @@ class PixlGattService : Service() {
     val deviceAmiibo: Unit
         get() {
             when (serviceType) {
-                GattArray.DEVICE.LOOP -> {
+                Nordic.DEVICE.LOOP -> {
                     delayedByteCharacteric(byteArrayOf(
                             0x02, 0x01, 0x89.toByte(), 0x88.toByte(), 0x03
                     ))
                 }
-                GattArray.DEVICE.LINK -> {
+                Nordic.DEVICE.LINK -> {
                     delayedByteCharacteric(byteArrayOf(
                             0x00, 0x00, 0x10, 0x02,
                             0x33, 0x53, 0x34, 0xAB.toByte(),
@@ -445,7 +446,7 @@ class PixlGattService : Service() {
 
     fun uploadAmiiboFile(tagData: ByteArray, complete: Boolean) {
         when (serviceType) {
-            GattArray.DEVICE.LOOP -> {
+            Nordic.DEVICE.LOOP -> {
                 tagData[536] = 0x80.toByte()
                 tagData[537] = 0x80.toByte()
                 processUint8Array(tagData).forEach {
@@ -454,7 +455,7 @@ class PixlGattService : Service() {
                     })
                 }
             }
-            GattArray.DEVICE.LINK -> {
+            Nordic.DEVICE.LINK -> {
                 delayedByteCharacteric(byteArrayOf(0xA0.toByte(), 0xB0.toByte()))
                 delayedByteCharacteric(byteArrayOf(
                         0xAC.toByte(), 0xAC.toByte(), 0x00, 0x04, 0x00, 0x00, 0x02, 0x1C
@@ -483,28 +484,5 @@ class PixlGattService : Service() {
 
             }
         }
-    }
-
-    private fun getLogTag(uuid: UUID): String {
-        return when {
-            uuid.compareTo(PixlTX) == 0 -> {
-                "PixlTX"
-            }
-            uuid.compareTo(PixlRX) == 0 -> {
-                "PixlRX"
-            }
-            uuid.compareTo(PixlNUS) == 0 -> {
-                "PixlNUS"
-            }
-            else -> {
-                uuid.toString()
-            }
-        }
-    }
-
-    companion object {
-        val PixlNUS: UUID = UUID.fromString("6e400001-b5a3-f393-e0a9-e50e24dcca9e")
-        private val PixlTX = UUID.fromString("6e400002-b5a3-f393-e0a9-e50e24dcca9e")
-        private val PixlRX = UUID.fromString("6e400003-b5a3-f393-e0a9-e50e24dcca9e")
     }
 }

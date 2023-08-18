@@ -112,7 +112,7 @@ object Foomiibo {
             val signature = TagArray.bytesToHex(
                 tagData.copyOfRange(NfcByte.SIGNATURE, NfcByte.TAG_FILE_SIZE)
             ).substring(0, 32).lowercase()
-            Debug.info(TagMo::class.java, TagArray.hexToString(signature))
+            Debug.verbose(TagMo::class.java, TagArray.hexToString(signature))
             if (hexSignature == signature) return signature
         }
         return null

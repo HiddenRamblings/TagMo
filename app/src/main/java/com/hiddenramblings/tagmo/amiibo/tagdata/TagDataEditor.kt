@@ -343,7 +343,7 @@ class TagDataEditor : AppCompatActivity() {
             val amiiboId: Long = try {
                 Amiibo.dataToId(tagData)
             } catch (e: Exception) {
-                Debug.info(e)
+                Debug.verbose(e)
                 -1
             }
             when (amiiboId) {

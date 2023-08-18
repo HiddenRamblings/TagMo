@@ -742,7 +742,7 @@ class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
                 try {
                     Amiibo.dataToId(tagData)
                 } catch (e: Exception) {
-                    Debug.info(e)
+                    Debug.verbose(e)
                     amiiboId
                 }
             }

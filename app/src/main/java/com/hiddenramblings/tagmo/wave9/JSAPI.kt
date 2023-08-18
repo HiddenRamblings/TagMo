@@ -17,7 +17,7 @@ class JSAPI(val activity: DimensionActivity, val web: WebView) {
                 // val payload = mifare.readPages(page.toInt())
                 val message = byteArrayOf(0x30, (page.toInt() and 0xFF).toByte())
                 it.transceive(message)?.let { payload ->
-                    Debug.info(javaClass, String.format(
+                    Debug.verbose(javaClass, String.format(
                         "Payload %02X%02X%02X%02X %02X%02X%02X%02X %02X%02X%02X%02X %02X%02X%02X%02X",
                         payload[0], payload[1], payload[2], payload[3],
                         payload[4], payload[5], payload[6], payload[7],
@@ -42,7 +42,7 @@ class JSAPI(val activity: DimensionActivity, val web: WebView) {
         val data = Base64.decode(payload, 0)
         return NTAG215[activity.tag]?.let {
             try {
-                Debug.info(javaClass, String.format(
+                Debug.verbose(javaClass, String.format(
                     "Writing %02X%02X%02X%02X", data[0], data[1], data[2], data[3]
                 ))
                 it.writePage(page.toInt(), data)

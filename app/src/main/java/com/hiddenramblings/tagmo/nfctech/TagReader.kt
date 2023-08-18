@@ -12,11 +12,11 @@ object TagReader {
     @Throws(IOException::class)
     fun validateBlankTag(mifare: NTAG215) {
         mifare.readPages(0x02)?.let {
-            Debug.info(TagWriter::class.java, TagArray.bytesToHex(it))
+            Debug.verbose(TagWriter::class.java, TagArray.bytesToHex(it))
             if (it[2] == 0x0F.toByte() && it[3] == 0xE0.toByte())
                 throw IOException(TagMo.appContext.getString(R.string.error_tag_rewrite))
         }
-        Debug.info(TagWriter::class.java, R.string.validation_success)
+        Debug.verbose(TagWriter::class.java, R.string.validation_success)
     }
 
     @Throws(Exception::class)
@@ -72,7 +72,7 @@ object TagReader {
             System.arraycopy(pages, 0, tagData, dstIndex, dstCount)
             i += BULK_READ_PAGE_COUNT
         }
-        Debug.info(TagReader::class.java, TagArray.bytesToHex(tagData))
+        Debug.verbose(TagReader::class.java, TagArray.bytesToHex(tagData))
         return tagData
     }
 
@@ -129,7 +129,7 @@ object TagReader {
             val data = tag?.amiiboFastRead(0x00, 0x86, bank)
                 ?: throw NullPointerException(context.getString(R.string.fail_read_amiibo))
             System.arraycopy(data, 0, tagData, 0, NfcByte.TAG_DATA_SIZE)
-            Debug.info(TagReader::class.java, TagArray.bytesToHex(tagData))
+            Debug.verbose(TagReader::class.java, TagArray.bytesToHex(tagData))
             tagData
         } catch (e: IllegalStateException) {
             throw IllegalStateException(context.getString(R.string.fail_early_remove))

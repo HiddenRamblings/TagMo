@@ -14,6 +14,7 @@ import androidx.annotation.RequiresApi
 import com.hiddenramblings.tagmo.eightbit.io.Debug
 import com.hiddenramblings.tagmo.eightbit.os.Version
 import com.hiddenramblings.tagmo.nfctech.NfcByte
+import com.hiddenramblings.tagmo.nfctech.TagArray
 import java.util.*
 
 /**
@@ -65,8 +66,8 @@ class PuckGattService : Service() {
     interface BluetoothGattListener {
         fun onPuckServicesDiscovered()
         fun onPuckActiveChanged(slot: Int)
-
         fun onPuckDeviceProfile(slotCount: Int)
+        fun onPuckDataReceived(result: String?)
         fun onPuckListRetrieved(slotData: ArrayList<ByteArray>, active: Int)
         fun onPuckFilesDownload(tagData: ByteArray)
         fun onPuckProcessFinish()
@@ -78,13 +79,14 @@ class PuckGattService : Service() {
 
     private fun getCharacteristicValue(characteristic: BluetoothGattCharacteristic, data: ByteArray?) {
         if (data?.isNotEmpty() == true) {
-            Debug.verbose(
+            Debug.info(
                 this.javaClass, "${getLogTag(characteristic.uuid)} ${Arrays.toString(data)}"
             )
             if (characteristic.uuid.compareTo(PuckRX) == 0) {
+                listener?.onPuckDataReceived(TagArray.bytesToString(data))
                 when {
-                    data.toString() == "DTM_PUCK_FAST" -> {
-
+                    TagArray.bytesToString(data).endsWith("DTM_PUCK_FAST") -> {
+                        sendCommand(byteArrayOf(PUCK.INFO.bytes), null)
                     }
                     data[0] == PUCK.INFO.bytes -> {
                         if (data.size == 3) {
@@ -115,7 +117,7 @@ class PuckGattService : Service() {
                     }
                     data[0] == PUCK.SAVE.bytes -> {
                         listener?.onPuckProcessFinish()
-                        deviceDetails
+                        deviceAmiibo
                     }
                 }
                 if (commandCallbacks.size > 0) {
@@ -171,7 +173,7 @@ class PuckGattService : Service() {
         override fun onCharacteristicWrite(
             gatt: BluetoothGatt, characteristic: BluetoothGattCharacteristic, status: Int
         ) {
-            Debug.verbose(this.javaClass,
+            Debug.info(this.javaClass,
                 "${getLogTag(characteristic.uuid)} onCharacteristicWrite $status"
             )
         }
@@ -477,7 +479,6 @@ class PuckGattService : Service() {
                         0x66, 0x61, 0x73, 0x74, 0x4D, 0x6F, 0x64, 0x65, 0x28, 0x29, 0x0A // fastMode()\n
                 ), null)
             }
-            sendCommand(byteArrayOf(PUCK.INFO.bytes), null)
         }
 
     val deviceAmiibo: Unit

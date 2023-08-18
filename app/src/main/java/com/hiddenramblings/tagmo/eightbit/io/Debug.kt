@@ -280,7 +280,7 @@ object Debug {
             val log = getDeviceProfile(context)
             val mLogcatProc = Runtime.getRuntime().exec(arrayOf(
                 "logcat", "-d", "-t", "256", "--pid=${android.os.Process.myPid()}",
-                "*:W", "AndroidRuntime", "System.err", "AppIconSolution*:S", "ViewRootImpl*:S"
+                "*:I", "AndroidRuntime", "System.err", "AppIconSolution*:S", "ViewRootImpl*:S"
             ))
             val reader = BufferedReader(InputStreamReader(mLogcatProc.inputStream))
             log.append(separator).append(separator)

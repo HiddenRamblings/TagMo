@@ -551,7 +551,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
                     }
                 }
             } catch (ex: ActivityNotFoundException) {
-                Debug.info(ex)
+                Debug.verbose(ex)
             }
         } else {
             Intent(Intent.ACTION_GET_CONTENT).apply {
@@ -568,7 +568,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
                         }
                     }
                 } catch (ex: ActivityNotFoundException) {
-                    Debug.info(ex)
+                    Debug.verbose(ex)
                 }
             }
         }

@@ -62,7 +62,7 @@ class PixlGattService : Service() {
 
     private fun getCharacteristicValue(characteristic: BluetoothGattCharacteristic, output: String?) {
         if (!output.isNullOrEmpty()) {
-            Debug.verbose(this.javaClass, "${getLogTag(characteristic.uuid)} $output")
+            Debug.info(this.javaClass, "${getLogTag(characteristic.uuid)} $output")
             if (characteristic.uuid.compareTo(PixlRX) == 0) {
                 listener?.onPixlDataReceived(output)
             }
@@ -114,7 +114,7 @@ class PixlGattService : Service() {
         override fun onCharacteristicWrite(
             gatt: BluetoothGatt, characteristic: BluetoothGattCharacteristic, status: Int
         ) {
-            Debug.verbose(
+            Debug.info(
                 this.javaClass, getLogTag(characteristic.uuid) + " onCharacteristicWrite " + status
             )
         }

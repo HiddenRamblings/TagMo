@@ -259,7 +259,7 @@ object TagArray {
                 throw Exception(getString(R.string.fail_read_size))
             if (!compareRange(pages, tagData, 9))
                 throw Exception(getString(R.string.fail_mismatch_uid))
-            Debug.info(TagWriter::class.java, R.string.validation_success)
+            Debug.verbose(TagWriter::class.java, R.string.validation_success)
         }
     }
 
@@ -351,7 +351,7 @@ object TagArray {
             MediaScannerConnection.scanFile(
                 TagMo.appContext, arrayOf(binFile.canonicalPath), null, null
             )
-        } catch (e: Exception) { Debug.info(e) }
+        } catch (e: Exception) { Debug.verbose(e) }
         return binFile.canonicalPath
     }
 

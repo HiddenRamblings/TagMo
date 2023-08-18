@@ -9,6 +9,8 @@ import android.bluetooth.BluetoothDevice
 import android.bluetooth.le.*
 import android.content.*
 import android.graphics.Bitmap
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.net.Uri
 import android.os.*
 import android.view.*
@@ -958,14 +960,16 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
 
     private fun showProcessingNotice(upload: Boolean) {
         val builder = AlertDialog.Builder(requireContext())
-        val view = layoutInflater.inflate(R.layout.dialog_process, null)
+        val view = layoutInflater.inflate(R.layout.dialog_process, null).apply {
+            keepScreenOn = true
+        }
         view.findViewById<TextView>(R.id.process_text).setText(
             if (upload) R.string.gatt_upload else R.string.gatt_remove
         )
         builder.setView(view)
         processDialog = builder.create().also {
             it.show()
-            it.window?.decorView?.keepScreenOn = true
+            it.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
         }
     }
 
@@ -1364,7 +1368,7 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
                         override fun onPixlServicesDiscovered() {
                             isServiceDiscovered = true
                             onBottomSheetChanged(SHEET.MENU)
-                            maxSlotCount = 1
+                            maxSlotCount = 50
                             requireView().post {
                                 gattSlotCount.maxValue = maxSlotCount
                                 screenOptions?.isVisible = true
@@ -1488,6 +1492,12 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
                                 gattSlotCount.maxValue = slotCount
                             }
                             deviceAmiibo
+                        }
+
+                        override fun onPuckDataReceived(result: String?) {
+                            requireView().post {
+                                requireView().findViewById<TextView>(R.id.gatt_readout).text = result
+                            }
                         }
 
                         override fun onPuckActiveChanged(slot: Int) {

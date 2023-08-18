@@ -1059,7 +1059,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                 Amiibo.dataToId(tagData)
             } catch (e: Exception) {
                 available = false
-                Debug.info(e)
+                Debug.verbose(e)
             }
         }
         toolbar.menu.findItem(R.id.mnu_write).isVisible = available
@@ -2105,7 +2105,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
         if (tagData?.isNotEmpty() == true) {
             try {
                 amiiboId = Amiibo.dataToId(tagData)
-            } catch (e: Exception) { Debug.info(e) }
+            } catch (e: Exception) { Debug.verbose(e) }
         }
         when (amiiboId) {
             -1L -> {

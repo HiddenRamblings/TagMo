@@ -27,18 +27,14 @@ class PixlGattService : Service() {
     private var mBluetoothGatt: BluetoothGatt? = null
     private var mCharacteristicRX: BluetoothGattCharacteristic? = null
     private var mCharacteristicTX: BluetoothGattCharacteristic? = null
-    private var nameCompat: String? = null
-    private var tailCompat: String? = null
-    private var wipeDeviceCount = 0
     private var maxTransmissionUnit = 23
-    private val chunkTimeout = 20L
+    private val chunkTimeout = 25L
     fun setListener(listener: PixlBluetoothListener?) {
         this.listener = listener
     }
 
     private val commandCallbacks = ArrayList<Runnable>()
     private val pixlHandler = Handler(Looper.getMainLooper())
-    private val listCount = 10
 
     var serviceType = Nordic.DEVICE.PIXL
 

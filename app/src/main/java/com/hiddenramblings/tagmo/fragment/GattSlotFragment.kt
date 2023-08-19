@@ -115,6 +115,7 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
     private var deviceDialog: AlertDialog? = null
 
     private var deviceType = Nordic.DEVICE.GATT
+    private val chunkTimeout = 25L
 
     private enum class STATE {
         NONE, SCANNING, CONNECT, MISSING, TIMEOUT
@@ -821,7 +822,7 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
                 bytesList.forEachIndexed { i, byte ->
                     fragmentHandler.postDelayed({
                         uploadAmiiboData(byte, i == bytesList.size - 1)
-                    }, 30L * i)
+                    }, chunkTimeout * i)
                 }
                 onBottomSheetChanged(SHEET.MENU)
                 dialog.dismiss()
@@ -841,7 +842,7 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
                 amiiboList.forEachIndexed { i, file ->
                     fragmentHandler.postDelayed({
                         uploadAmiiboFile(file, i == amiiboList.size - 1)
-                    }, 30L * i)
+                    }, chunkTimeout * i)
                 }
                 onBottomSheetChanged(SHEET.MENU)
                 settings.removeChangeListener(writeTagAdapter)
@@ -1357,7 +1358,11 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
             servicePixl = localBinder.service.apply {
                 if (initialize() && connect(deviceAddress)) {
                     serviceType = deviceType
-                    maxSlotCount = 50
+                    maxSlotCount = when (serviceType) {
+                        Nordic.DEVICE.LINK -> 1
+                        Nordic.DEVICE.LOOP -> 1
+                        else -> 50
+                    }
                     setListener(object : PixlGattService.PixlBluetoothListener {
                         override fun onPixlServicesDiscovered() {
                             isServiceDiscovered = true

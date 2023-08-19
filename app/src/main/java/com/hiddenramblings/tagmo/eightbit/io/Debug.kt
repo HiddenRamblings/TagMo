@@ -18,12 +18,14 @@ import android.content.*
 import android.net.Uri
 import android.os.Build
 import android.util.Log
+import com.google.android.material.snackbar.Snackbar
 import com.hiddenramblings.tagmo.BrowserActivity
 import com.hiddenramblings.tagmo.BuildConfig
 import com.hiddenramblings.tagmo.Preferences
 import com.hiddenramblings.tagmo.R
 import com.hiddenramblings.tagmo.TagMo
 import com.hiddenramblings.tagmo.amiibo.KeyManager
+import com.hiddenramblings.tagmo.eightbit.material.IconifiedSnackbar
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -295,7 +297,16 @@ object Debug {
             withContext(Dispatchers.Main) {
                 submitLogcat(Debug.context, logText)
                 if (!logText.contains("AndroidRuntime") && context is BrowserActivity) {
-                    context.showWebsite(null)
+                    IconifiedSnackbar(context).buildSnackbar(
+                            R.string.menu_guides,
+                            R.drawable.ic_support_required_menu, Snackbar.LENGTH_INDEFINITE
+                    ).also { status ->
+                        status.setAction(R.string.view) {
+                            context.showWebsite(null)
+                            status.dismiss()
+                        }
+                        status.show()
+                    }
                 }
             }
         }

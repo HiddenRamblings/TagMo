@@ -7,9 +7,7 @@ import java.util.zip.ZipFile
 
 
 /**
- * UnzipUtils class extracts files and sub-directories of a standard zip file to
- * a destination directory.
- *
+ * Extracts files and sub-directories of a standard zip file to a destination folder.
  */
 object Zip {
     /**
@@ -62,12 +60,6 @@ object Zip {
         )
     }
 
-    /**
-     * Extracts a zip entry (file entry)
-     * @param inputStream
-     * @param destFilePath
-     * @throws IOException
-     */
     /**
      * Extracts a zip entry (file entry)
      * @param inputStream

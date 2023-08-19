@@ -34,10 +34,7 @@ class PuckGattService : Service() {
     private var mCharacteristicRX: BluetoothGattCharacteristic? = null
     private var mCharacteristicTX: BluetoothGattCharacteristic? = null
     private var maxTransmissionUnit = 53
-    private val chunkTimeout = 20L
-
-    private var commandLength = 20
-    private var returnLength = 260
+    private val chunkTimeout = 25L
 
     // Command, Slot, Parameters
     @Suppress("unused")
@@ -77,8 +74,7 @@ class PuckGattService : Service() {
     }
 
     private var puckArray = ArrayList<ByteArray>(slotsCount)
-    private var readResponse = ByteArray(NfcByte.TAG_FILE_SIZE)
-
+    private var readResponse = byteArrayOf()
     private var tempInfoData = byteArrayOf()
 
     private fun getCharacteristicValue(characteristic: BluetoothGattCharacteristic, data: ByteArray?) {
@@ -113,20 +109,12 @@ class PuckGattService : Service() {
                         }
                     }
                     data[0] == PUCK.READ.bytes -> {
-                        when {
-                            data[2].toInt() == 0 -> {
-                                System.arraycopy(data, 4, readResponse, 0, data.size)
-                            }
-
-                            data[2] in 63..125 -> {
-                                System.arraycopy(data, 4, readResponse, 252, data.size)
-                            }
-
-                            else -> {
-                                System.arraycopy(data, 4, readResponse, 504, data.size)
-                                listener?.onPuckFilesDownload(readResponse)
-                                readResponse = ByteArray(NfcByte.TAG_FILE_SIZE)
-                            }
+                        if (data[2].toInt() + (data[3].toInt() * 4) >= 143) {
+                            readResponse = readResponse.plus(data.copyOfRange(4, data.size))
+                            listener?.onPuckFilesDownload(readResponse)
+                            readResponse = byteArrayOf()
+                        } else {
+                            readResponse = readResponse.plus(data.copyOfRange(4, data.size))
                         }
                     }
                     data[0] == PUCK.WRITE.bytes -> {
@@ -216,7 +204,7 @@ class PuckGattService : Service() {
         override fun onMtuChanged(gatt: BluetoothGatt, mtu: Int, status: Int) {
             if (status == BluetoothGatt.GATT_SUCCESS) {
                 Debug.verbose(this.javaClass, "onMtuChange complete: $mtu")
-                maxTransmissionUnit = mtu
+                maxTransmissionUnit = mtu - 3
             } else {
                 Debug.warn(this.javaClass, "onMtuChange received: $status")
             }
@@ -444,7 +432,7 @@ class PuckGattService : Service() {
     }
 
     private fun delayedWriteCharacteristic(value: ByteArray) {
-        val chunks = GattArray.byteToPortions(value, commandLength)
+        val chunks = GattArray.byteToPortions(value, maxTransmissionUnit)
         val commandQueue = commandCallbacks.size + chunks.size
         puckHandler.postDelayed({
             var i = 0
@@ -511,7 +499,7 @@ class PuckGattService : Service() {
         val pages = TagArray.bytesToPages(tagData)
         TagArray.bytesToPages(tagData).forEachIndexed { index, bytes ->
             sendCommand(byteArrayOf(
-                    PUCK.WRITE.bytes, slot.toByte(), (index * NfcByte.PAGE_SIZE).toByte(), pages.size.toByte()
+                    PUCK.WRITE.bytes, slot.toByte(), (index * NfcByte.PAGE_SIZE).toByte(), 0x01
             ), bytes)
         }
         sendCommand(byteArrayOf(PUCK.SAVE.bytes, slot.toByte()), null)
@@ -519,9 +507,11 @@ class PuckGattService : Service() {
 
     @Suppress("unused")
     fun downloadSlotData(slot: Int) {
-        sendCommand(byteArrayOf(PUCK.READ.bytes, slot.toByte(), 0x00, 0x3F), null)
-        sendCommand(byteArrayOf(PUCK.READ.bytes, slot.toByte(), 0x3F, 0x3F), null)
-        sendCommand(byteArrayOf(PUCK.READ.bytes, slot.toByte(), 0x7E, 0x11), null)
+        for (i in 0..35) {
+            sendCommand(byteArrayOf(PUCK.READ.bytes, slot.toByte(), (i * 4).toByte(), 0x04), null)
+        }
+        sendCommand(byteArrayOf(PUCK.READ.bytes, slot.toByte(), 0x8C.toByte(), 0x03), null)
+
     }
 
     fun setActiveSlot(slot: Int) {

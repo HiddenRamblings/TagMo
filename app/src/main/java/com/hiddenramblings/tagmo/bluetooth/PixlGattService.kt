@@ -13,6 +13,7 @@ import android.os.*
 import androidx.annotation.RequiresApi
 import com.hiddenramblings.tagmo.eightbit.io.Debug
 import com.hiddenramblings.tagmo.eightbit.os.Version
+import com.hiddenramblings.tagmo.nfctech.TagArray
 import org.json.JSONObject
 import java.util.*
 
@@ -50,18 +51,21 @@ class PixlGattService : Service() {
     private var response = StringBuilder()
     private var rangeIndex = 0
 
-    private fun getCharacteristicValue(characteristic: BluetoothGattCharacteristic, output: String?) {
-        if (!output.isNullOrEmpty()) {
-            Debug.info(this.javaClass, "${Nordic.getLogTag("Puck", characteristic.uuid)} $output")
+    private fun getCharacteristicValue(characteristic: BluetoothGattCharacteristic, data: ByteArray?) {
+        if (data?.isNotEmpty() == true) {
+            Debug.info(
+                    this.javaClass, "${Nordic.getLogTag("Pixl",
+                    characteristic.uuid)} ${TagArray.bytesToHex(data)}"
+            )
             if (characteristic.uuid.compareTo(Nordic.RX) == 0) {
-                listener?.onPixlDataReceived(output)
+                listener?.onPixlDataReceived(Arrays.toString(data))
             }
         }
     }
 
     fun getCharacteristicValue(characteristic: BluetoothGattCharacteristic) {
         @Suppress("DEPRECATION")
-        getCharacteristicValue(characteristic, characteristic.getStringValue(0x0))
+        getCharacteristicValue(characteristic, characteristic.value)
     }
 
     // Implements callback methods for GATT events that the app cares about.  For example,
@@ -86,10 +90,10 @@ class PixlGattService : Service() {
         }
 
         override fun onCharacteristicRead(
-            gatt: BluetoothGatt, characteristic: BluetoothGattCharacteristic, value: ByteArray, status: Int
+                gatt: BluetoothGatt, characteristic: BluetoothGattCharacteristic, value: ByteArray, status: Int
         ) {
             if (status == BluetoothGatt.GATT_SUCCESS)
-                getCharacteristicValue(characteristic, value.decodeToString())
+                getCharacteristicValue(characteristic, value)
         }
 
         @Deprecated("Deprecated in Java", ReplaceWith(
@@ -111,9 +115,9 @@ class PixlGattService : Service() {
         }
 
         override fun onCharacteristicChanged(
-            gatt: BluetoothGatt, characteristic: BluetoothGattCharacteristic, value: ByteArray
+                gatt: BluetoothGatt, characteristic: BluetoothGattCharacteristic, value: ByteArray
         ) {
-            getCharacteristicValue(characteristic, value.decodeToString())
+            getCharacteristicValue(characteristic, value)
         }
 
         @Deprecated("Deprecated in Java", ReplaceWith(

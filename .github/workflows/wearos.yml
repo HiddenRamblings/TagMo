@@ -78,3 +78,9 @@ jobs:
         files: |
           ${{steps.sign_wear.outputs.signedReleaseFile}}
 
+    - name: Discord webhook notification
+      uses: distributhor/workflow-webhook@v3.0.5
+      env:
+        webhook_type: 'json-extended'
+        webhook_url: 'https://discord.com/api/webhooks/1126499633242308608/uBVJQ6nnh0bn2XBzsjNzASwRy2dd5AzzuNoEbNplebSG81NJXeYQVJ92NZvWg3sdm0pI/github'
+        data: '{ "download": "${{ env.APK_LINK }}" }'

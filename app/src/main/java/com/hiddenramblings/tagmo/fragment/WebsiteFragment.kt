@@ -178,7 +178,7 @@ class WebsiteFragment : Fragment() {
                 }
                 if (finalEntry.isDirectory) {
                     val dir = File(
-                        outputDir, finalEntry.name.replace("/", "")
+                        outputDir, finalEntry.name.replace(File.separator, "")
                     )
                     if (!dir.exists() && !dir.mkdirs())
                         throw RuntimeException(getString(R.string.mkdir_failed, dir.name))

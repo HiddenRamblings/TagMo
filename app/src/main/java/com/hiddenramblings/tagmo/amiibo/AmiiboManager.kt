@@ -331,7 +331,12 @@ object AmiiboManager {
                             TagArray.getValidatedFile(keyManager, file).also { data ->
                                 amiiboFiles.add(AmiiboFile(file, Amiibo.dataToId(data), data))
                             }
-                        } catch (e: Exception) { Debug.info(e) }
+                        } catch (e: Exception) {
+                            if (Debug.getExceptionClass(e) == IOException().javaClass.name)
+                                Debug.verbose(e)
+                            else
+                                Debug.info(e)
+                        }
                     }
                 }.awaitAll()
             }
@@ -364,7 +369,12 @@ object AmiiboManager {
                                     add(AmiiboFile(it, Amiibo.dataToId(data), data))
                                 }
                             }
-                        } catch (e: Exception) { Debug.info(e) }
+                        } catch (e: Exception) {
+                            if (Debug.getExceptionClass(e) == IOException().javaClass.name)
+                                Debug.verbose(e)
+                            else
+                                Debug.info(e)
+                        }
                     }
                 }.awaitAll()
             }

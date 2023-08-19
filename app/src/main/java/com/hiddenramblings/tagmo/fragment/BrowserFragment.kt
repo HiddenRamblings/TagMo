@@ -559,7 +559,7 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
 
     @RequiresApi(Build.VERSION_CODES.KITKAT)
     fun unzipArchiveFile(zipFile: File) {
-        val folder = Storage.getDownloadDir("TagMo", "Archive").canonicalPath
+        val folder = Storage.getDownloadDir("TagMo", "Archive").absolutePath
         val builder = AlertDialog.Builder(requireContext())
         val view = layoutInflater.inflate(R.layout.dialog_process, null).apply {
             keepScreenOn = true

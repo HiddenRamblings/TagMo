@@ -281,7 +281,7 @@ object Debug {
             val separator = System.getProperty("line.separator") ?: "\n"
             val log = getDeviceProfile(context)
             val mLogcatProc = Runtime.getRuntime().exec(arrayOf(
-                "logcat", "-d", "-t", "384", "--pid=${android.os.Process.myPid()}",
+                "logcat", "-d", "-t", "256", "--pid=${android.os.Process.myPid()}",
                     "AppIconSolution*:S", "ViewRootImpl*:S",
                     "*:I", "AndroidRuntime", "System.err"
             ))

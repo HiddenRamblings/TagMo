@@ -13,7 +13,6 @@ import android.os.*
 import androidx.annotation.RequiresApi
 import com.hiddenramblings.tagmo.eightbit.io.Debug
 import com.hiddenramblings.tagmo.eightbit.os.Version
-import com.hiddenramblings.tagmo.nfctech.toDataBytes
 import org.json.JSONObject
 import java.util.*
 
@@ -413,7 +412,7 @@ class PixlGattService : Service() {
         }
         return (result.toInt() and 0xff).toByte()
     }
-    private fun processUint8Array(input: ByteArray): List<ByteArray> {
+    private fun processLoopUpload(input: ByteArray): List<ByteArray> {
         val output = mutableListOf<ByteArray>()
         var start = 0
         while (start < input.size) {
@@ -435,37 +434,58 @@ class PixlGattService : Service() {
         return output
     }
 
+    private fun processLinkUpload(inputArray: ByteArray): List<ByteArray> {
+        val writeCommands = mutableListOf<ByteArray>()
+
+        // Ensure the working array is exactly 540 bytes
+        val workingArray = ByteArray(540)
+        inputArray.copyInto(workingArray, startIndex = 0, endIndex = 540)
+
+        // Add initial byte arrays to the output
+        writeCommands.add(byteArrayOf(0xA0.toByte(), 0xB0.toByte()))
+        writeCommands.add(byteArrayOf(
+                0xAC.toByte(), 0xAC.toByte(), 0x00.toByte(), 0x04.toByte(),
+                0x00.toByte(), 0x00.toByte(), 0x02.toByte(), 0x1C.toByte())
+        )
+        writeCommands.add(byteArrayOf(0xAB.toByte(), 0xAB.toByte(), 0x02.toByte(), 0x1C.toByte()))
+
+        // Loop through the input array and slice 20 bytes at a time
+        for (i in workingArray.indices step 20) {
+            val slice = workingArray.sliceArray(i until i + 20)
+            val iteration = (i / 20) + 1
+
+            // Create temporary ByteArray with required values
+            val tempArray = byteArrayOf(
+                    0xDD.toByte(), 0xAA.toByte(), 0x00.toByte(), 0x14.toByte(),
+                    *slice,
+                    0x00.toByte(),
+                    iteration.toByte()
+            )
+
+            // Add temporary array to the output
+            writeCommands.add(tempArray)
+        }
+
+        // Add final byte arrays to the output
+        writeCommands.add(byteArrayOf(0xBC.toByte(), 0xBC.toByte()))
+        writeCommands.add(byteArrayOf(0xCC.toByte(), 0xDD.toByte()))
+
+        return writeCommands
+    }
+
     fun uploadAmiiboFile(tagData: ByteArray, complete: Boolean) {
         when (serviceType) {
             Nordic.DEVICE.LOOP -> {
                 tagData[536] = 0x80.toByte()
                 tagData[537] = 0x80.toByte()
-                processUint8Array(tagData).forEach {
+                processLoopUpload(tagData).forEach {
                     commandCallbacks.add(commandCallbacks.size, Runnable {
                         delayedByteCharacteric(it)
                     })
                 }
             }
             Nordic.DEVICE.LINK -> {
-                delayedByteCharacteric(byteArrayOf(0xA0.toByte(), 0xB0.toByte()))
-                delayedByteCharacteric(byteArrayOf(
-                        0xAC.toByte(), 0xAC.toByte(), 0x00, 0x04, 0x00, 0x00, 0x02, 0x1C
-                ))
-                delayedByteCharacteric(byteArrayOf(0xAB.toByte(), 0xAB.toByte(), 0x02, 0x1C))
-
-                val parameters: ArrayList<ByteArray> = arrayListOf()
-                GattArray.byteToPortions(tagData.toDataBytes(), 20).forEachIndexed { i, chunk ->
-                    val iteration = kotlin.math.floor(i.toDouble() / 20) + 1
-                    val bytes: ByteArray = byteArrayOf(0xDD.toByte(), 0xAA.toByte(), 0x00, 0x14)
-                            .plus(chunk).plus(0).plus(iteration.toInt().toByte())
-                    parameters.add(bytes)
-                }
-
-                if (complete) {
-                    parameters.add(byteArrayOf(0xBC.toByte(), 0xBC.toByte()))
-                    parameters.add(byteArrayOf(0xCC.toByte(), 0xDD.toByte()))
-                }
-                parameters.forEach {
+                processLinkUpload(tagData).forEach {
                     commandCallbacks.add(commandCallbacks.size, Runnable {
                         delayedByteCharacteric(it)
                     })

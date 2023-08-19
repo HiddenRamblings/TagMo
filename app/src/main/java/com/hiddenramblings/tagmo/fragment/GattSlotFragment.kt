@@ -597,16 +597,7 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
     ) : View {
         val item = this.layoutInflater.inflate(R.layout.device_bluetooth, null)
         item.findViewById<TextView>(R.id.device_name).text = device.name
-        item.findViewById<TextView>(R.id.device_type).text = when(detectedType) {
-            Nordic.DEVICE.FLASK -> getString(R.string.device_flask)
-            Nordic.DEVICE.SLIDE -> getString(R.string.device_slide)
-            Nordic.DEVICE.BLUUP -> getString(R.string.device_espruino)
-            Nordic.DEVICE.LINK -> getString(R.string.device_link)
-            Nordic.DEVICE.LOOP -> getString(R.string.device_loop)
-            Nordic.DEVICE.PIXL -> getString(R.string.device_pixl)
-            Nordic.DEVICE.PUCK -> getString(R.string.device_puck)
-            Nordic.DEVICE.GATT -> getString(R.string.unknown)
-        }
+        item.findViewById<TextView>(R.id.device_type).text = getDeviceTypeName(detectedType)
         item.findViewById<TextView>(R.id.device_address).text =
             requireActivity().getString(R.string.device_address, device.address)
 
@@ -629,8 +620,27 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
                 deviceAddress = device.address
                 deviceType = detectedType
                 dismissGattDiscovery()
-                showConnectionNotice()
-                startPixlService()
+                AlertDialog.Builder(requireContext())
+                        .setMessage(getString(R.string.pixl_type_warning, getDeviceTypeName(deviceType)))
+                        .setPositiveButton(R.string.device_loop) { dialog: DialogInterface, _: Int ->
+                            dialog.dismiss()
+                            deviceType = Nordic.DEVICE.LOOP
+                            showConnectionNotice()
+                            startPixlService()
+                        }
+                        .setNegativeButton(R.string.device_link) { dialog: DialogInterface, _: Int ->
+                            dialog.dismiss()
+                            deviceType = Nordic.DEVICE.LINK
+                            showConnectionNotice()
+                            startPixlService()
+                        }
+                        .setNeutralButton(R.string.device_pixl) { dialog: DialogInterface, _: Int ->
+                            dialog.dismiss()
+                            deviceType = Nordic.DEVICE.PIXL
+                            showConnectionNotice()
+                            startPixlService()
+                        }
+                        .show()
             }
         }
 
@@ -659,6 +669,19 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
                  it.lowercase().startsWith("pixl.js")-> Nordic.DEVICE.PIXL
                 else -> Nordic.DEVICE.GATT
             }
+        }
+    }
+
+    private fun getDeviceTypeName(deviceType:  Nordic.DEVICE) : String {
+        return when(deviceType) {
+            Nordic.DEVICE.FLASK -> getString(R.string.device_flask)
+            Nordic.DEVICE.SLIDE -> getString(R.string.device_slide)
+            Nordic.DEVICE.BLUUP -> getString(R.string.device_espruino)
+            Nordic.DEVICE.LINK -> getString(R.string.device_link)
+            Nordic.DEVICE.LOOP -> getString(R.string.device_loop)
+            Nordic.DEVICE.PIXL -> getString(R.string.device_pixl)
+            Nordic.DEVICE.PUCK -> getString(R.string.device_puck)
+            else -> getString(R.string.unknown)
         }
     }
 

@@ -313,6 +313,7 @@
     <string name="gatt_scanning">Scanning for Bluetooth GATT&#8230;</string>
     <string name="gatt_located">Connecting to Bluetooth GATT&#8230;</string>
     <string name="gatt_disconnect">GATT device connection lost!</string>
+    <string name="pixl_type_warning">%1$s detected. Change device type?</string>
     <string name="gatt_count">Slot %1$s Active, %2$d Slots Occupied</string>
     <string name="write_slot_file">Upload binary to GATT device</string>
     <string name="write_slots">Write %1$d slots</string>

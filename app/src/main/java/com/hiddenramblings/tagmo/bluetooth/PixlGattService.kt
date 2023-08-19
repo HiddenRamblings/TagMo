@@ -337,24 +337,24 @@ class PixlGattService : Service() {
         val chunks = GattArray.byteToPortions(value, maxTransmissionUnit)
         val commandQueue = commandCallbacks.size + chunks.size
         pixlHandler.postDelayed({
-            chunks.forEachIndexed { i, chunk ->
+            var i = 0
+            while (i < chunks.size) {
+                val chunk = chunks[i]
+                if (null == mCharacteristicTX) continue
                 pixlHandler.postDelayed({
-                    try {
-                        mCharacteristicTX!!.writeType =
+                    mCharacteristicTX!!.writeType =
                             BluetoothGattCharacteristic.WRITE_TYPE_NO_RESPONSE
-                        if (Version.isTiramisu) {
-                            mBluetoothGatt!!.writeCharacteristic(
+                    if (Version.isTiramisu) {
+                        mBluetoothGatt!!.writeCharacteristic(
                                 mCharacteristicTX!!, chunk,
                                 BluetoothGattCharacteristic.WRITE_TYPE_NO_RESPONSE
-                            )
-                        } else @Suppress("DEPRECATION") {
-                            mCharacteristicTX!!.value = chunk
-                            mBluetoothGatt!!.writeCharacteristic(mCharacteristicTX)
-                        }
-                    } catch (ex: NullPointerException) {
-                        listener?.onPixlServicesDiscovered()
+                        )
+                    } else @Suppress("DEPRECATION") {
+                        mCharacteristicTX!!.value = chunk
+                        mBluetoothGatt!!.writeCharacteristic(mCharacteristicTX)
                     }
                 }, (i + 1) * chunkTimeout)
+                i += 1
             }
         }, commandQueue * chunkTimeout)
     }

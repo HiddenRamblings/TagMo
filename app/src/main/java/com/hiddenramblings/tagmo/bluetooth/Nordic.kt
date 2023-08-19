@@ -15,24 +15,32 @@ object Nordic {
     val LegacyTX = UUID.fromString("78290002-d52e-473f-a9f4-f03da7c67dd1")
     val LegacyRX = UUID.fromString("78290003-d52e-473f-a9f4-f03da7c67dd1")
 
+    val omllboNUS: UUID = UUID.fromString("0000ff10-0000-1000-8000-00805f9b34fb")
+    val omllboTX: UUID = UUID.fromString("0000ff11-0000-1000-8000-00805f9b34fb")
+    val omllboRX: UUID = UUID.fromString("0000ff12-0000-1000-8000-00805f9b34fb")
+
+    private fun UUID.isUUID(uuid: UUID): Boolean {
+       return this.compareTo(uuid) == 0
+    }
+
     fun getLogTag(device:String, uuid: UUID): String {
         return when {
-            uuid.compareTo(TX) == 0 -> {
+            uuid.isUUID(TX) -> {
                 "${device}TX"
             }
-            uuid.compareTo(RX) == 0 -> {
+            uuid.isUUID(RX) -> {
                 "${device}RX"
             }
-            uuid.compareTo(NUS) == 0 -> {
+            uuid.isUUID(NUS) -> {
                 "${device}NUS"
             }
-            uuid.compareTo(LegacyTX) == 0  -> {
+            uuid.isUUID(LegacyTX) -> {
                 "${device}LegacyTX"
             }
-            uuid.compareTo(LegacyRX) == 0 -> {
+            uuid.isUUID(LegacyRX) -> {
                 "${device}LegacyRX"
             }
-            uuid.compareTo(LegacyNUS) == 0 -> {
+            uuid.isUUID(LegacyNUS) -> {
                 "${device}LegacyNUS"
             }
             else -> {

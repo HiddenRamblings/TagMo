@@ -347,6 +347,21 @@ class PixlGattService : Service() {
         }, commandQueue * chunkTimeout)
     }
 
+    private fun queueByteCharacteristic(value: ByteArray) {
+        if (null == mCharacteristicTX) {
+            try {
+                setPixlCharacteristicTX()
+            } catch (e: UnsupportedOperationException) {
+                Debug.warn(e)
+            }
+        }
+        commandCallbacks.add(Runnable { delayedWriteCharacteristic(value) })
+        if (commandCallbacks.size == 1) {
+            commandCallbacks[0].run()
+            commandCallbacks.removeAt(0)
+        }
+    }
+
     private fun queueByteCharacteristic(value: ByteArray, index: Int) {
         if (null == mCharacteristicTX) {
             try {
@@ -363,7 +378,7 @@ class PixlGattService : Service() {
     }
 
     private fun delayedByteCharacteric(value: ByteArray) {
-        queueByteCharacteristic(value, commandCallbacks.size)
+        queueByteCharacteristic(value)
     }
 
     val deviceAmiibo: Unit
@@ -408,7 +423,7 @@ class PixlGattService : Service() {
         val output = mutableListOf<ByteArray>()
         var start = 0
         while (start < input.size) {
-            val chunkSize = Math.min(128, input.size - start)
+            val chunkSize = 128.coerceAtMost(input.size - start)
             val chunk = input.sliceArray(start until start + chunkSize)
             val newData = ByteArray(5 + chunk.size + 2)
             newData[0] = 0x02.toByte()
@@ -465,20 +480,20 @@ class PixlGattService : Service() {
         return writeCommands
     }
 
-    fun uploadAmiiboFile(tagData: ByteArray, complete: Boolean) {
+    fun uploadAmiiboData(tagData: ByteArray) {
         when (serviceType) {
             Nordic.DEVICE.LOOP -> {
                 tagData[536] = 0x80.toByte()
                 tagData[537] = 0x80.toByte()
                 processLoopUpload(tagData).forEach {
-                    commandCallbacks.add(commandCallbacks.size, Runnable {
+                    commandCallbacks.add(Runnable {
                         delayedByteCharacteric(it)
                     })
                 }
             }
             Nordic.DEVICE.LINK -> {
                 processLinkUpload(tagData).forEach {
-                    commandCallbacks.add(commandCallbacks.size, Runnable {
+                    commandCallbacks.add(Runnable {
                         delayedByteCharacteric(it)
                     })
                 }

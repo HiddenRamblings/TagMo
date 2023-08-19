@@ -281,7 +281,9 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
                 if (TagMo.isUserInputEnabled) setLayerType(View.LAYER_TYPE_SOFTWARE, null)
                 setOnValueChangedListener { _, _, newVal ->
                     if (maxSlotCount - currentCount > 0)
-                        writeSlots?.text = getString(R.string.write_slots, newVal)
+                        bluupContent?.post {
+                            writeSlots?.text = getString(R.string.write_slots, newVal)
+                        }
                 }
             }
 
@@ -893,6 +895,7 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
                 serviceBluup?.uploadAmiiboFile(
                     data, it, gattAdapter?.getDuplicates(it) ?: 0, complete
                 )
+                servicePixl?.uploadAmiiboData(data)
                 servicePuck?.uploadSlotAmiibo(data, gattSlotCount.value - 1)
             }
         }
@@ -913,6 +916,7 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
                     serviceBluup?.uploadAmiiboFile(
                         data, it, gattAdapter?.getDuplicates(it) ?: 0, complete
                     )
+                    servicePixl?.uploadAmiiboData(data)
                     servicePuck?.uploadSlotAmiibo(data, gattSlotCount.value - 1)
                 }
             }

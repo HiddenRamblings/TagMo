@@ -1,7 +1,7 @@
 /*
  * ====================================================================
  * Copyright (C) 2022 AbandonedCart @ TagMo
- * Copyright (C) 2022 withgallantry @ BluupLabs
+ * Flask Copyright (C) 2022 withgallantry @ BluupLabs
  * ====================================================================
  */
 package com.hiddenramblings.tagmo.bluetooth
@@ -551,7 +551,7 @@ class BluupGattService : Service() {
         }, commandQueue * chunkTimeout)
     }
 
-    private fun queueTagCharacteristic(value: String, index: Int) {
+    private fun queueTagCharacteristic(value: String) {
         if (null == mCharacteristicTX) {
             try {
                 setBluupCharacteristicTX()
@@ -559,7 +559,7 @@ class BluupGattService : Service() {
                 Debug.warn(e)
             }
         }
-        commandCallbacks.add(index, Runnable { delayedWriteCharacteristic("tag.$value\n") })
+        commandCallbacks.add(Runnable { delayedWriteCharacteristic("tag.$value\n") })
         if (commandCallbacks.size == 1) {
             commandCallbacks[0].run()
             commandCallbacks.removeAt(0)
@@ -567,14 +567,10 @@ class BluupGattService : Service() {
     }
 
     private fun delayedTagCharacteristic(value: String) {
-        queueTagCharacteristic(value, commandCallbacks.size)
+        queueTagCharacteristic(value)
     }
 
     private fun promptTagCharacteristic(value: String) {
-        queueTagCharacteristic(value, 0)
-    }
-
-    private fun queueScreenCharacteristic(value: String, index: Int) {
         if (null == mCharacteristicTX) {
             try {
                 setBluupCharacteristicTX()
@@ -582,7 +578,22 @@ class BluupGattService : Service() {
                 Debug.warn(e)
             }
         }
-        commandCallbacks.add(index, Runnable { delayedWriteCharacteristic("screen.$value\n") })
+        commandCallbacks.add(0, Runnable { delayedWriteCharacteristic("tag.$value\n") })
+        if (commandCallbacks.size == 1) {
+            commandCallbacks[0].run()
+            commandCallbacks.removeAt(0)
+        }
+    }
+
+    private fun queueScreenCharacteristic(value: String) {
+        if (null == mCharacteristicTX) {
+            try {
+                setBluupCharacteristicTX()
+            } catch (e: UnsupportedOperationException) {
+                Debug.warn(e)
+            }
+        }
+        commandCallbacks.add(Runnable { delayedWriteCharacteristic("screen.$value\n") })
         if (commandCallbacks.size == 1) {
             commandCallbacks[0].run()
             commandCallbacks.removeAt(0)
@@ -590,7 +601,7 @@ class BluupGattService : Service() {
     }
 
     private fun delayedScreenCharacteristic(value: String) {
-        queueScreenCharacteristic(value, commandCallbacks.size)
+        queueScreenCharacteristic(value)
     }
 
     private fun truncateUnicode(unicodeName: String, tailSize: Int) : String {
@@ -632,7 +643,7 @@ class BluupGattService : Service() {
             parameters.add("getList()")
         }
         parameters.forEach {
-            commandCallbacks.add(commandCallbacks.size, Runnable {
+            commandCallbacks.add(Runnable {
                 delayedWriteCharacteristic("tag.$it\n")
             })
         }
@@ -660,7 +671,7 @@ class BluupGattService : Service() {
                 return
             }
             tail?.let {
-                nameCompat = truncateUnicode(GattArray.stringToUnicode(it), it.length)
+                nameCompat = truncateUnicode(GattArray.stringToUnicode(name), it.length)
                 tailCompat = it
                 delayedTagCharacteristic("remove(\"$nameCompat|$it|0\")")
             }

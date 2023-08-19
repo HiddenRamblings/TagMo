@@ -445,6 +445,21 @@ class PuckGattService : Service() {
         }, commandQueue * chunkTimeout)
     }
 
+    private fun queueByteCharacteristic(value: ByteArray) {
+        if (null == mCharacteristicTX) {
+            try {
+                setPuckCharacteristicTX()
+            } catch (e: UnsupportedOperationException) {
+                Debug.warn(e)
+            }
+        }
+        commandCallbacks.add(Runnable { delayedWriteCharacteristic(value) })
+        if (commandCallbacks.size == 1) {
+            commandCallbacks[0].run()
+            commandCallbacks.removeAt(0)
+        }
+    }
+
     private fun queueByteCharacteristic(value: ByteArray, index: Int) {
         if (null == mCharacteristicTX) {
             try {
@@ -461,7 +476,7 @@ class PuckGattService : Service() {
     }
 
     private fun delayedByteCharacteric(value: ByteArray) {
-        queueByteCharacteristic(value, commandCallbacks.size)
+        queueByteCharacteristic(value)
     }
 
     private fun sendCommand(params: ByteArray, data: ByteArray?) {
@@ -511,7 +526,7 @@ class PuckGattService : Service() {
     companion object {
         private var legacyInterface = false
         val PuckNUS: UUID = if (legacyInterface) Nordic.LegacyNUS else Nordic.NUS
-        val PuckTX = if (legacyInterface) Nordic.LegacyTX else Nordic.TX
-        val PuckRX = if (legacyInterface) Nordic.LegacyRX else Nordic.RX
+        val PuckTX: UUID = if (legacyInterface) Nordic.LegacyTX else Nordic.TX
+        val PuckRX: UUID = if (legacyInterface) Nordic.LegacyRX else Nordic.RX
     }
 }

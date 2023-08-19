@@ -224,18 +224,6 @@ class PixlGattService : Service() {
                 mBluetoothGatt?.writeDescriptor(descriptorTX)
             }
         } catch (ignored: Exception) { }
-        try {
-            val descriptorTX = characteristic.getDescriptor(
-                UUID.fromString("00002902-0000-1000-8000-00805f9b34fb")
-            )
-            val value = BluetoothGattDescriptor.ENABLE_INDICATION_VALUE
-            if (Version.isTiramisu) {
-                mBluetoothGatt?.writeDescriptor(descriptorTX, value)
-            } else @Suppress("DEPRECATION") {
-                descriptorTX.value = value
-                mBluetoothGatt?.writeDescriptor(descriptorTX)
-            }
-        } catch (ignored: Exception) { }
     }
 
     /**

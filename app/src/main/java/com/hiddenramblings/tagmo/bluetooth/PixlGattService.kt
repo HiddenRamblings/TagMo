@@ -56,7 +56,7 @@ class PixlGattService : Service() {
                     characteristic.uuid)} ${TagArray.bytesToHex(data)}"
             )
             if (characteristic.uuid.isUUID(Nordic.RX)) {
-                listener?.onPixlDataReceived(Arrays.toString(data))
+                listener?.onPixlDataReceived(TagArray.bytesToHex(data))
             }
         }
     }
@@ -416,6 +416,7 @@ class PixlGattService : Service() {
         }
         return (result.toInt() and 0xff).toByte()
     }
+
     private fun processLoopUpload(input: ByteArray): List<ByteArray> {
         val output = mutableListOf<ByteArray>()
         var start = 0

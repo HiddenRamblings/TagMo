@@ -18,6 +18,7 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothManager
+import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
@@ -179,7 +180,12 @@ class BluetoothHandler(
                     .setMessage(R.string.tiramisu_bluetooth)
                     .setCancelable(false)
                     .setPositiveButton(R.string.proceed) { dialog: DialogInterface, _: Int ->
-                        onRequestAdapter.launch(Intent(Settings.ACTION_BLUETOOTH_SETTINGS))
+                        onRequestAdapter.launch(
+                                try {
+                                    Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE)
+                                } catch (anf: ActivityNotFoundException) {
+                                    Intent(Settings.ACTION_BLUETOOTH_SETTINGS)
+                                })
                         dialog.dismiss()
                     }
                     .setNegativeButton(R.string.cancel) { dialog: DialogInterface, _: Int ->

@@ -316,7 +316,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
                         }
                     }
                 }
-            } catch (e: Exception) { Debug.info(e) }
+            } catch (e: Exception) { Debug.warn(e) }
         }
     }
 

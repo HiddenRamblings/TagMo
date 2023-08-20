@@ -11,6 +11,7 @@ import android.bluetooth.*
 import android.content.Intent
 import android.os.*
 import androidx.annotation.RequiresApi
+import com.hiddenramblings.tagmo.bluetooth.Nordic.isUUID
 import com.hiddenramblings.tagmo.eightbit.io.Debug
 import com.hiddenramblings.tagmo.eightbit.os.Version
 import com.hiddenramblings.tagmo.nfctech.TagArray
@@ -50,11 +51,11 @@ class PixlGattService : Service() {
 
     private fun getCharacteristicValue(characteristic: BluetoothGattCharacteristic, data: ByteArray?) {
         if (data?.isNotEmpty() == true) {
-            Debug.info(
+            Debug.warn(
                     this.javaClass, "${Nordic.getLogTag(javaClass,
                     characteristic.uuid)} ${TagArray.bytesToHex(data)}"
             )
-            if (characteristic.uuid.compareTo(Nordic.RX) == 0) {
+            if (characteristic.uuid.isUUID(Nordic.RX)) {
                 listener?.onPixlDataReceived(Arrays.toString(data))
             }
         }
@@ -104,7 +105,7 @@ class PixlGattService : Service() {
         override fun onCharacteristicWrite(
             gatt: BluetoothGatt, characteristic: BluetoothGattCharacteristic, status: Int
         ) {
-            Debug.info(
+            Debug.warn(
                 this.javaClass, Nordic.getLogTag(javaClass,
                     characteristic.uuid) + " onCharacteristicWrite " + status
             )
@@ -252,7 +253,7 @@ class PixlGattService : Service() {
             mCustomService.characteristics.forEach {
                 val customUUID = it.uuid
                 /*get the read characteristic from the service*/
-                if (customUUID.compareTo(Nordic.RX) == 0) {
+                if (customUUID.isUUID(Nordic.RX)) {
                     Debug.verbose(this.javaClass, "GattReadCharacteristic: $customUUID")
                     mReadCharacteristic = mCustomService.getCharacteristic(customUUID)
                     return@breaking
@@ -287,7 +288,7 @@ class PixlGattService : Service() {
         if (!mCustomService.characteristics.contains(mWriteCharacteristic)) {
             for (characteristic in mCustomService.characteristics) {
                 val customUUID = characteristic.uuid
-                if (customUUID.compareTo(Nordic.TX) == 0) {
+                if (customUUID.isUUID(Nordic.TX)) {
                     Debug.verbose(this.javaClass, "GattWriteCharacteristic: $customUUID")
                     mWriteCharacteristic = mCustomService.getCharacteristic(customUUID)
                     break

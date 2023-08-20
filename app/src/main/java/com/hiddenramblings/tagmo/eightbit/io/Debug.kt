@@ -74,7 +74,7 @@ object Debug {
 
     @JvmStatic
     fun error(source: Class<*>, params: String?) {
-        if (hasDebugging()) params?.let { Log.e(source.simpleName, it) }
+        params?.let { Log.e(source.simpleName, it) }
     }
 
     @JvmStatic
@@ -89,7 +89,6 @@ object Debug {
 
     @JvmStatic
     fun error(ex: Exception) {
-        if (!hasDebugging()) return
         if (ex.stackTrace.isNotEmpty()) {
             val exception = StringWriter()
             ex.printStackTrace(PrintWriter(exception))
@@ -99,12 +98,12 @@ object Debug {
 
     @JvmStatic
     fun error(resource: Int, ex: Exception) {
-        if (hasDebugging()) Log.e(ex.javaClass.simpleName, context.getString(resource), ex)
+        Log.e(ex.javaClass.simpleName, context.getString(resource), ex)
     }
 
     @JvmStatic
     fun warn(source: Class<*>, params: String?) {
-        if (hasDebugging()) params?.let { Log.w(source.simpleName, it) }
+        params?.let { Log.w(source.simpleName, it) }
     }
 
     @JvmStatic
@@ -119,7 +118,6 @@ object Debug {
 
     @JvmStatic
     fun warn(ex: Exception) {
-        if (!hasDebugging()) return
         if (ex.stackTrace.isNotEmpty()) {
             val exception = StringWriter()
             ex.printStackTrace(PrintWriter(exception))
@@ -129,12 +127,12 @@ object Debug {
 
     @JvmStatic
     fun warn(resource: Int, ex: Exception) {
-        if (hasDebugging()) Log.w(ex.javaClass.simpleName, context.getString(resource), ex)
+        Log.w(ex.javaClass.simpleName, context.getString(resource), ex)
     }
 
     @JvmStatic
     fun info(source: Class<*>, params: String?) {
-        if (hasDebugging()) params?.let { Log.i(source.simpleName, it) }
+        params?.let { Log.i(source.simpleName, it) }
     }
 
     @JvmStatic
@@ -149,7 +147,6 @@ object Debug {
 
     @JvmStatic
     fun info(ex: Exception) {
-        if (!hasDebugging()) return
         if (ex.stackTrace.isNotEmpty()) {
             val exception = StringWriter()
             ex.printStackTrace(PrintWriter(exception))
@@ -159,7 +156,7 @@ object Debug {
 
     @JvmStatic
     fun info(resource: Int, ex: Exception) {
-        if (hasDebugging()) Log.i(ex.javaClass.simpleName, context.getString(resource), ex)
+        Log.i(ex.javaClass.simpleName, context.getString(resource), ex)
     }
 
     @JvmStatic
@@ -283,7 +280,7 @@ object Debug {
             val mLogcatProc = Runtime.getRuntime().exec(arrayOf(
                 "logcat", "-d", "-t", "256", "--pid=${android.os.Process.myPid()}",
                     "AppIconSolution*:S", "ViewRootImpl*:S",
-                    "*:I", "AndroidRuntime", "System.err"
+                    "*:W", "AndroidRuntime", "System.err"
             ))
             val reader = BufferedReader(InputStreamReader(mLogcatProc.inputStream))
             log.append(separator).append(separator)

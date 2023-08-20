@@ -171,27 +171,22 @@ class QRCodeScanner : AppCompatActivity() {
         }
     }
 
-    private val secretKeySpec = SecretKeySpec(byteArrayOf(
-        0x59, 0xFC.toByte(), 0x81.toByte(), 0x7E, 0x64, 0x46,
-        0xEA.toByte(), 0x61, 0x90.toByte(), 0x34, 0x7B, 0x20,
-        0xE9.toByte(), 0xBD.toByte(), 0xCE.toByte(), 0x52
+    private val keySpec = SecretKeySpec(byteArrayOf(
+            0x59, 0xFC.toByte(), 0x81.toByte(), 0x7E,
+            0x64, 0x46, 0xEA.toByte(), 0x61,
+            0x90.toByte(), 0x34, 0x7B, 0x20,
+            0xE9.toByte(), 0xBD.toByte(), 0xCE.toByte(), 0x52
     ), "AES")
 
     @Throws(Exception::class)
     private fun decryptMii(qrData: ByteArray?) {
         if (null == qrData) return
         val nonce = qrData.copyOfRange(0, 8)
-        val empty = byteArrayOf(0, 0, 0, 0)
         val cipher = Cipher.getInstance("AES/CCM/NoPadding")
-        cipher.init(
-            Cipher.DECRYPT_MODE, secretKeySpec,
-            if (Version.isKitKat)
-                GCMParameterSpec(nonce.size + empty.size, nonce.plus(empty))
-            else IvParameterSpec(nonce.plus(empty))
-        )
-        val content = cipher.doFinal(qrData, 0, 0x58)
+        cipher.init(Cipher.DECRYPT_MODE, keySpec, IvParameterSpec(nonce + byteArrayOf(0, 0, 0, 0)))
+        val content = cipher.doFinal(qrData.copyOfRange(8, 0x58))
         txtMiiValue.text = TagArray.bytesToHex(
-            content.copyOfRange(0, 12).plus(nonce).plus(content.copyOfRange(12, content.size))
+                content.copyOfRange(0, 12).plus(nonce).plus(content.copyOfRange(12, content.size))
         )
     }
 
@@ -203,9 +198,7 @@ class QRCodeScanner : AppCompatActivity() {
 
     private fun processBarcode(barcode: Barcode) {
         txtRawValue.setText(barcode.rawValue, TextView.BufferType.EDITABLE)
-        txtRawBytes.setText(
-            TagArray.bytesToHex(barcode.rawBytes), TextView.BufferType.EDITABLE
-        )
+        txtRawBytes.setText(TagArray.bytesToHex(barcode.rawBytes), TextView.BufferType.EDITABLE)
         clearPreviews(false)
         try {
             decodeAmiibo(barcode.rawBytes)

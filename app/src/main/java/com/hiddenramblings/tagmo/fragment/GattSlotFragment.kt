@@ -1188,6 +1188,7 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
                                 setBluupCharacteristicRX()
                                 deviceAmiibo
                             } catch (uoe: UnsupportedOperationException) {
+                                Debug.verbose(uoe)
                                 disconnectService()
                                 Toasty(requireContext()).Short(R.string.device_invalid)
                             }
@@ -1341,14 +1342,15 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
                             onBottomSheetChanged(SHEET.MENU)
                             requireView().post {
                                 gattSlotCount.maxValue = maxSlotCount
-                                screenOptions?.isVisible = true
-                                createBlank?.isVisible = true
+                                screenOptions?.isGone = true
+                                createBlank?.isGone = true
                                 requireView().findViewById<TextView>(R.id.hardware_info).text = deviceProfile
                             }
                             try {
                                 setPixlCharacteristicRX()
                                 deviceAmiibo
                             } catch (uoe: UnsupportedOperationException) {
+                                Debug.verbose(uoe)
                                 disconnectService()
                                 Toasty(requireContext()).Short(R.string.device_invalid)
                             }
@@ -1456,6 +1458,7 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
                                 setPuckServicesUUID()
                                 deviceDetails
                             } catch (uoe: UnsupportedOperationException) {
+                                Debug.verbose(uoe)
                                 disconnectService()
                                 Toasty(requireContext()).Short(R.string.device_invalid)
                             }

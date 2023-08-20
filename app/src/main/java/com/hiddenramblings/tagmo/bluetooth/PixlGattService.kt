@@ -385,14 +385,14 @@ class PixlGattService : Service() {
                     delayedByteCharacteric(byteArrayOf(
                             0x02, 0x01, 0x89.toByte(), 0x88.toByte(), 0x03
                     ))
+                    delayedByteCharacteric(byteArrayOf(0x89.toByte()))
                 }
                 Nordic.DEVICE.LINK -> {
                     delayedByteCharacteric(byteArrayOf(
-                            0x00, 0x00, 0x10, 0x02,
-                            0x33, 0x53, 0x34, 0xAB.toByte(),
-                            0x1F, 0xE8.toByte(), 0xC2.toByte(), 0x6D,
-                            0xE5.toByte(), 0x35, 0x27, 0x4B,
-                            0x52, 0xE0.toByte(), 0x1F, 0x26
+                            0x00, 0x00, 0x10, 0x02, 0x33,
+                            0x53, 0x34, 0xAB.toByte(), 0x1F, 0xE8.toByte(),
+                            0xC2.toByte(), 0x6D, 0xE5.toByte(), 0x35, 0x27,
+                            0x4B, 0x52, 0xE0.toByte(), 0x1F, 0x26
                     ))
                 }
                 else ->{

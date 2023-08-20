@@ -80,7 +80,7 @@ class PuckGattService : Service() {
     private fun getCharacteristicValue(characteristic: BluetoothGattCharacteristic, data: ByteArray?) {
         if (data?.isNotEmpty() == true) {
             Debug.info(
-                this.javaClass, "${Nordic.getLogTag("Puck",
+                this.javaClass, "${Nordic.getLogTag(javaClass,
                     characteristic.uuid)} ${TagArray.bytesToHex(data)}"
             )
             if (characteristic.uuid.compareTo(PuckRX) == 0) {
@@ -169,9 +169,7 @@ class PuckGattService : Service() {
                 getCharacteristicValue(characteristic, value)
         }
 
-        @Deprecated("Deprecated in Java", ReplaceWith(
-            "onCharacteristicRead(gatt: BluetoothGatt, characteristic: BluetoothGattCharacteristic, value: ByteArray, status: Int)"
-        ))
+        @Deprecated("Deprecated in Java", ReplaceWith("if (status == BluetoothGatt.GATT_SUCCESS) getCharacteristicValue(characteristic)", "android.bluetooth.BluetoothGatt"))
         override fun onCharacteristicRead(
             gatt: BluetoothGatt, characteristic: BluetoothGattCharacteristic, status: Int
         ) {
@@ -182,7 +180,7 @@ class PuckGattService : Service() {
             gatt: BluetoothGatt, characteristic: BluetoothGattCharacteristic, status: Int
         ) {
             Debug.info(this.javaClass,
-                "${Nordic.getLogTag("Puck", characteristic.uuid)} onCharacteristicWrite $status"
+                "${Nordic.getLogTag(javaClass, characteristic.uuid)} onCharacteristicWrite $status"
             )
         }
 

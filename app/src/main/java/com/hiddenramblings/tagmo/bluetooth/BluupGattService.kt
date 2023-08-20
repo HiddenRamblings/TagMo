@@ -108,7 +108,7 @@ class BluupGattService : Service() {
 
     private fun getCharacteristicValue(characteristic: BluetoothGattCharacteristic, output: String?) {
         if (!output.isNullOrEmpty()) {
-            Debug.info(this.javaClass, "${Nordic.getLogTag("Bluup", characteristic.uuid)} $output")
+            Debug.info(this.javaClass, "${Nordic.getLogTag(javaClass, characteristic.uuid)} $output")
             if (characteristic.uuid.compareTo(Nordic.RX) == 0) {
                 if (output.contains(">tag.")) {
                     response = StringBuilder()
@@ -272,8 +272,6 @@ class BluupGattService : Service() {
         getCharacteristicValue(characteristic, characteristic.getStringValue(0x0))
     }
 
-    // Implements callback methods for GATT events that the app cares about.  For example,
-    // connection change and services discovered.
     private val mGattCallback: BluetoothGattCallback = object : BluetoothGattCallback() {
         override fun onConnectionStateChange(gatt: BluetoothGatt, status: Int, newState: Int) {
             if (newState == BluetoothProfile.STATE_CONNECTED) {
@@ -300,9 +298,7 @@ class BluupGattService : Service() {
                 getCharacteristicValue(characteristic, value.decodeToString())
         }
 
-        @Deprecated("Deprecated in Java", ReplaceWith(
-            "onCharacteristicRead(gatt: BluetoothGatt, characteristic: BluetoothGattCharacteristic, value: ByteArray, status: Int)"
-        ))
+        @Deprecated("Deprecated in Java", ReplaceWith("if (status == BluetoothGatt.GATT_SUCCESS) getCharacteristicValue(characteristic)", "android.bluetooth.BluetoothGatt"))
         override fun onCharacteristicRead(
             gatt: BluetoothGatt, characteristic: BluetoothGattCharacteristic, status: Int
         ) {
@@ -313,7 +309,7 @@ class BluupGattService : Service() {
             gatt: BluetoothGatt, characteristic: BluetoothGattCharacteristic, status: Int
         ) {
             Debug.info(
-                this.javaClass, Nordic.getLogTag("Bluup",
+                this.javaClass, Nordic.getLogTag(javaClass,
                     characteristic.uuid) + " onCharacteristicWrite " + status
             )
         }

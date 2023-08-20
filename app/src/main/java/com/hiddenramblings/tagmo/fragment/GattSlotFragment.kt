@@ -44,7 +44,6 @@ import com.hiddenramblings.tagmo.amiibo.tagdata.AmiiboData
 import com.hiddenramblings.tagmo.bluetooth.BluetoothHandler
 import com.hiddenramblings.tagmo.bluetooth.BluetoothHandler.BluetoothListener
 import com.hiddenramblings.tagmo.bluetooth.BluupGattService
-import com.hiddenramblings.tagmo.bluetooth.GattArray
 import com.hiddenramblings.tagmo.bluetooth.Nordic
 import com.hiddenramblings.tagmo.bluetooth.PixlGattService
 import com.hiddenramblings.tagmo.bluetooth.PuckGattService
@@ -64,7 +63,6 @@ import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
 import java.io.IOException
-import java.nio.ByteBuffer
 import java.text.ParseException
 
 @SuppressLint("NewApi")
@@ -97,16 +95,12 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
     var bottomSheet: BottomSheetBehavior<View>? = null
         private set
     private var mBluetoothAdapter: BluetoothAdapter? = null
-    private var scanCallbackBluupLP: ScanCallback? = null
-    private var scanCallbackBluup: LeScanCallback? = null
-    private var serviceBluup: BluupGattService? = null
-    private var scanCallbackPuckLP: ScanCallback? = null
+    private var scanCallbackNordicLP: ScanCallback? = null
     private var scanCallbackLegacyLP: ScanCallback? = null
-    private var scanCallbackPuck: LeScanCallback? = null
+    private var scanCallbackNordic: LeScanCallback? = null
     private var scanCallbackLegacy: LeScanCallback? = null
+    private var serviceBluup: BluupGattService? = null
     private var servicePuck: PuckGattService? = null
-    private var scanCallbackPixlLP: ScanCallback? = null
-    private var scanCallbackPixl: LeScanCallback? = null
     private var servicePixl: PixlGattService? = null
     private var deviceProfile: String? = null
     private var deviceAddress: String? = null
@@ -704,8 +698,9 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
             val settings = ScanSettings.Builder().setScanMode(
                 ScanSettings.SCAN_MODE_LOW_LATENCY
             ).build()
-            val filterBluup = ScanFilter.Builder().setServiceUuid(ParcelUuid(Nordic.NUS)).build()
-            scanCallbackBluupLP = object : ScanCallback() {
+
+            val filterNordic = ScanFilter.Builder().setServiceUuid(ParcelUuid(Nordic.NUS)).build()
+            scanCallbackNordicLP = object : ScanCallback() {
                 override fun onScanResult(callbackType: Int, result: ScanResult) {
                     super.onScanResult(callbackType, result)
                     if (!devices.contains(result.device)) {
@@ -716,35 +711,7 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
                     }
                 }
             }
-            scanner?.startScan(listOf(filterBluup), settings, scanCallbackBluupLP)
-
-            val filterPixl = ScanFilter.Builder().setServiceUuid(ParcelUuid(Nordic.NUS)).build()
-            scanCallbackPixlLP = object : ScanCallback() {
-                override fun onScanResult(callbackType: Int, result: ScanResult) {
-                    super.onScanResult(callbackType, result)
-                    if (!devices.contains(result.device)) {
-                        devices.add(result.device)
-                        deviceDialog.findViewById<LinearLayout>(R.id.bluetooth_result)?.addView(
-                                displayScanResult(deviceDialog, result.device, getDeviceType(result.device))
-                        )
-                    }
-                }
-            }
-            scanner?.startScan(listOf(filterPixl), settings, scanCallbackPixlLP)
-
-            val filterPuck = ScanFilter.Builder().setServiceUuid(ParcelUuid(Nordic.NUS)).build()
-            scanCallbackPuckLP = object : ScanCallback() {
-                override fun onScanResult(callbackType: Int, result: ScanResult) {
-                    super.onScanResult(callbackType, result)
-                    if (!devices.contains(result.device)) {
-                        devices.add(result.device)
-                        deviceDialog.findViewById<LinearLayout>(R.id.bluetooth_result)?.addView(
-                            displayScanResult(deviceDialog, result.device, getDeviceType(result.device))
-                        )
-                    }
-                }
-            }
-            scanner?.startScan(listOf(filterPuck), settings, scanCallbackPuckLP)
+            scanner?.startScan(listOf(filterNordic), settings, scanCallbackNordicLP)
 
             val filterLegacy = ScanFilter.Builder().setServiceUuid(ParcelUuid(Nordic.LegacyNUS)).build()
             scanCallbackLegacyLP = object : ScanCallback() {
@@ -760,7 +727,7 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
             }
             scanner?.startScan(listOf(filterLegacy), settings, scanCallbackLegacyLP)
         } else @Suppress("DEPRECATION") {
-            scanCallbackBluup =
+            scanCallbackNordic =
                 LeScanCallback { device: BluetoothDevice, _: Int, _: ByteArray? ->
                     if (!devices.contains(device)) {
                         devices.add(device)
@@ -769,29 +736,7 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
                         )
                     }
                 }
-            mBluetoothAdapter?.startLeScan(arrayOf(Nordic.NUS), scanCallbackBluup)
-
-            scanCallbackPixl =
-                    LeScanCallback { device: BluetoothDevice, _: Int, _: ByteArray? ->
-                        if (!devices.contains(device)) {
-                            devices.add(device)
-                            deviceDialog.findViewById<LinearLayout>(R.id.bluetooth_result)?.addView(
-                                    displayScanResult(deviceDialog, device, getDeviceType(device))
-                            )
-                        }
-                    }
-            mBluetoothAdapter?.startLeScan(arrayOf(Nordic.NUS), scanCallbackPixl)
-
-            scanCallbackPuck =
-                LeScanCallback { device: BluetoothDevice, _: Int, _: ByteArray? ->
-                    if (!devices.contains(device)) {
-                        devices.add(device)
-                        deviceDialog.findViewById<LinearLayout>(R.id.bluetooth_result)?.addView(
-                            displayScanResult(deviceDialog, device, getDeviceType(device))
-                        )
-                    }
-                }
-            mBluetoothAdapter?.startLeScan(arrayOf(Nordic.NUS), scanCallbackPuck)
+            mBluetoothAdapter?.startLeScan(arrayOf(Nordic.NUS), scanCallbackNordic)
 
             scanCallbackLegacy =
                     LeScanCallback { device: BluetoothDevice, _: Int, _: ByteArray? ->
@@ -1040,11 +985,11 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
         } catch (ignored: IllegalArgumentException) { }
         try {
             requireContext().unbindService(pixlServerConn)
-            requireContext().stopService(Intent(requireContext(), BluupGattService::class.java))
+            requireContext().stopService(Intent(requireContext(), PixlGattService::class.java))
         } catch (ignored: IllegalArgumentException) { }
         try {
             requireContext().unbindService(puckServerConn)
-            requireContext().stopService(Intent(requireContext(), BluupGattService::class.java))
+            requireContext().stopService(Intent(requireContext(), PuckGattService::class.java))
         } catch (ignored: IllegalArgumentException) { }
     }
 
@@ -1063,17 +1008,17 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
         mBluetoothAdapter?.let { adapter ->
             if (!adapter.isEnabled) return
             if (Version.isLollipop) {
-                scanCallbackBluupLP?.let {
+                scanCallbackNordicLP?.let {
                     adapter.bluetoothLeScanner.stopScan(it)
                     adapter.bluetoothLeScanner.flushPendingScanResults(it)
                 }
-                scanCallbackPuckLP?.let {
+                scanCallbackLegacyLP?.let {
                     adapter.bluetoothLeScanner.stopScan(it)
                     adapter.bluetoothLeScanner.flushPendingScanResults(it)
                 }
             } else @Suppress("DEPRECATION") {
-                scanCallbackBluup?.let { adapter.stopLeScan(it) }
-                scanCallbackPuck?.let { adapter.stopLeScan(it) }
+                scanCallbackNordic?.let { adapter.stopLeScan(it) }
+                scanCallbackLegacy?.let { adapter.stopLeScan(it) }
             }
         }
     }

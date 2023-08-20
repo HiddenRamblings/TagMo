@@ -1,5 +1,7 @@
 package com.hiddenramblings.tagmo.bluetooth
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import java.util.UUID
 
 object Nordic {
@@ -23,7 +25,14 @@ object Nordic {
        return this.compareTo(uuid) == 0
     }
 
-    fun getLogTag(device:String, uuid: UUID): String {
+    @RequiresApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
+    fun getLogTag(source: Class<*>, uuid: UUID): String {
+        val device = when (source) {
+            BluupGattService().javaClass -> "Bluup"
+            PixlGattService().javaClass -> "Pixl"
+            PuckGattService().javaClass -> "Puck"
+            else -> "Gatt"
+        }
         return when {
             uuid.isUUID(TX) -> {
                 "${device}TX"

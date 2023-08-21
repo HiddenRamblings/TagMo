@@ -43,10 +43,8 @@ import com.hiddenramblings.tagmo.amiibo.KeyManager
 import com.hiddenramblings.tagmo.amiibo.tagdata.AmiiboData
 import com.hiddenramblings.tagmo.bluetooth.BluetoothHandler
 import com.hiddenramblings.tagmo.bluetooth.BluetoothHandler.BluetoothListener
-import com.hiddenramblings.tagmo.bluetooth.BluupGattService
+import com.hiddenramblings.tagmo.bluetooth.GattService
 import com.hiddenramblings.tagmo.bluetooth.Nordic
-import com.hiddenramblings.tagmo.bluetooth.PixlGattService
-import com.hiddenramblings.tagmo.bluetooth.PuckGattService
 import com.hiddenramblings.tagmo.eightbit.io.Debug
 import com.hiddenramblings.tagmo.eightbit.material.IconifiedSnackbar
 import com.hiddenramblings.tagmo.eightbit.os.Version
@@ -99,9 +97,7 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
     private var scanCallbackLegacyLP: ScanCallback? = null
     private var scanCallbackNordic: LeScanCallback? = null
     private var scanCallbackLegacy: LeScanCallback? = null
-    private var serviceBluup: BluupGattService? = null
-    private var servicePuck: PuckGattService? = null
-    private var servicePixl: PixlGattService? = null
+    private var serviceGatt: GattService? = null
     private var deviceProfile: String? = null
     private var deviceAddress: String? = null
     private var maxSlotCount = 0
@@ -164,7 +160,7 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
             slotOptionsMenu = view.findViewById(R.id.slot_options_menu)
 
             createBlank = view.findViewById<AppCompatButton>(R.id.create_blank).apply {
-                setOnClickListener { serviceBluup?.createBlankTag() }
+                setOnClickListener { serviceGatt?.createBlankTag() }
             }
 
             screenOptions = view.findViewById(R.id.screen_options)
@@ -265,7 +261,7 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
                         }
                         .setNegativeButton(R.string.proceed) { _: DialogInterface?, _: Int ->
                             showProcessingNotice(false)
-                            serviceBluup?.clearStorage(currentCount)
+                            serviceGatt?.clearStorage(currentCount)
                         }
                         .show()
                 }
@@ -346,9 +342,9 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
         }
 
         view.findViewById<View>(R.id.screen_layered)
-            .setOnClickListener { serviceBluup?.setFlaskFace(false) }
+            .setOnClickListener { serviceGatt?.setFlaskFace(false) }
         view.findViewById<View>(R.id.screen_stacked)
-            .setOnClickListener { serviceBluup?.setFlaskFace(true) }
+            .setOnClickListener { serviceGatt?.setFlaskFace(true) }
         gattButtonState
     }
 
@@ -422,9 +418,9 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
     private fun resetActiveSlot() {
         gattAdapter?.getItem(0).run {
             if (this is BluupTag) {
-                serviceBluup?.setActiveAmiibo(name, String(TagArray.longToBytes(id)))
+                serviceGatt?.setActiveAmiibo(name, String(TagArray.longToBytes(id)))
             } else {
-                this?.let { serviceBluup?.setActiveAmiibo(it.name, it.bluupTail) }
+                this?.let { serviceGatt?.setActiveAmiibo(it.name, it.bluupTail) }
             }
         }
     }
@@ -605,7 +601,7 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
                 deviceType = detectedType
                 dismissGattDiscovery()
                 showConnectionNotice()
-                startBluupService()
+                startGattService()
             }
         }
 
@@ -622,19 +618,19 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
                             dialog.dismiss()
                             deviceType = Nordic.DEVICE.LOOP
                             showConnectionNotice()
-                            startPixlService()
+                            startGattService()
                         }
                         .setNegativeButton(R.string.device_link) { dialog: DialogInterface, _: Int ->
                             dialog.dismiss()
                             deviceType = Nordic.DEVICE.LINK
                             showConnectionNotice()
-                            startPixlService()
+                            startGattService()
                         }
                         .setNeutralButton(R.string.device_pixl) { dialog: DialogInterface, _: Int ->
                             dialog.dismiss()
                             deviceType = Nordic.DEVICE.PIXL
                             showConnectionNotice()
-                            startPixlService()
+                            startGattService()
                         }
                         .show()
             }
@@ -648,7 +644,7 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
                 deviceType = detectedType
                 dismissGattDiscovery()
                 showConnectionNotice()
-                startPuckService()
+                startGattService()
             }
         }
         return item
@@ -837,11 +833,22 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
         }
         amiibo?.let {
             amiiboData?.array?.let { data ->
-                serviceBluup?.uploadAmiiboFile(
-                    data, it, gattAdapter?.getDuplicates(it) ?: 0, complete
-                )
-                servicePixl?.uploadAmiiboData(data)
-                servicePuck?.uploadSlotAmiibo(data, gattSlotCount.value - 1)
+                when (deviceType) {
+                    Nordic.DEVICE.BLUUP, Nordic.DEVICE.FLASK, Nordic.DEVICE.SLIDE -> {
+                        serviceGatt?.uploadAmiiboFile(
+                                data, it, gattAdapter?.getDuplicates(it) ?: 0, complete
+                        )
+                    }
+                    Nordic.DEVICE.PIXL, Nordic.DEVICE.LOOP, Nordic.DEVICE.LINK -> {
+                        serviceGatt?.uploadAmiiboData(data)
+                    }
+                    Nordic.DEVICE.PUCK -> {
+                        serviceGatt?.uploadSlotAmiibo(data, gattSlotCount.value - 1)
+                    }
+                    else -> {
+
+                    }
+                }
             }
         }
     }
@@ -858,11 +865,22 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
             }
             amiibo?.let {
                 file.data?.let { data ->
-                    serviceBluup?.uploadAmiiboFile(
-                        data, it, gattAdapter?.getDuplicates(it) ?: 0, complete
-                    )
-                    servicePixl?.uploadAmiiboData(data)
-                    servicePuck?.uploadSlotAmiibo(data, gattSlotCount.value - 1)
+                    when (deviceType) {
+                        Nordic.DEVICE.BLUUP, Nordic.DEVICE.FLASK, Nordic.DEVICE.SLIDE -> {
+                            serviceGatt?.uploadAmiiboFile(
+                                    data, it, gattAdapter?.getDuplicates(it) ?: 0, complete
+                            )
+                        }
+                        Nordic.DEVICE.PIXL, Nordic.DEVICE.LOOP, Nordic.DEVICE.LINK -> {
+                            serviceGatt?.uploadAmiiboData(data)
+                        }
+                        Nordic.DEVICE.PUCK -> {
+                            serviceGatt?.uploadSlotAmiibo(data, gattSlotCount.value - 1)
+                        }
+                        else -> {
+
+                        }
+                    }
                 }
             }
         }
@@ -957,22 +975,10 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
         }
     }
 
-    private fun startBluupService() {
-        val service = Intent(requireContext(), BluupGattService::class.java)
+    private fun startGattService() {
+        val service = Intent(requireContext(), GattService::class.java)
         requireContext().startService(service)
-        requireContext().bindService(service, bluupServerConn, Context.BIND_AUTO_CREATE)
-    }
-
-    private fun startPixlService() {
-        val service = Intent(requireContext(), PixlGattService::class.java)
-        requireContext().startService(service)
-        requireContext().bindService(service, pixlServerConn, Context.BIND_AUTO_CREATE)
-    }
-
-    private fun startPuckService() {
-        val service = Intent(requireContext(), PuckGattService::class.java)
-        requireContext().startService(service)
-        requireContext().bindService(service, puckServerConn, Context.BIND_AUTO_CREATE)
+        requireContext().bindService(service, gattServerConn, Context.BIND_AUTO_CREATE)
     }
 
     fun stopGattService() {
@@ -980,24 +986,14 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
         onBottomSheetChanged(SHEET.LOCKED)
         deviceAddress = null
         try {
-            requireContext().unbindService(bluupServerConn)
-            requireContext().stopService(Intent(requireContext(), BluupGattService::class.java))
-        } catch (ignored: IllegalArgumentException) { }
-        try {
-            requireContext().unbindService(pixlServerConn)
-            requireContext().stopService(Intent(requireContext(), PixlGattService::class.java))
-        } catch (ignored: IllegalArgumentException) { }
-        try {
-            requireContext().unbindService(puckServerConn)
-            requireContext().stopService(Intent(requireContext(), PuckGattService::class.java))
+            requireContext().unbindService(gattServerConn)
+            requireContext().stopService(Intent(requireContext(), GattService::class.java))
         } catch (ignored: IllegalArgumentException) { }
     }
 
     fun disconnectService() {
         dismissSnackbarNotice(true)
-        serviceBluup?.disconnect()
-        servicePixl?.disconnect()
-        servicePuck?.disconnect()
+        serviceGatt?.disconnect()
         stopGattService()
     }
 
@@ -1099,11 +1095,36 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
             toolbar?.menu?.findItem(R.id.mnu_backup)?.isVisible = false
             toolbar?.setOnMenuItemClickListener { item: MenuItem ->
                 if (item.itemId == R.id.mnu_activate) {
-                    serviceBluup?.setActiveAmiibo(amiiboName, amiibo.bluupTail)
-                    servicePuck?.setActiveSlot(position)
+                    when (deviceType) {
+                        Nordic.DEVICE.BLUUP, Nordic.DEVICE.FLASK, Nordic.DEVICE.SLIDE -> {
+                            serviceGatt?.setActiveAmiibo(amiiboName, amiibo.bluupTail)
+                        }
+                        Nordic.DEVICE.PIXL, Nordic.DEVICE.LOOP, Nordic.DEVICE.LINK -> {
+
+                        }
+                        Nordic.DEVICE.PUCK -> {
+                            serviceGatt?.setActiveSlot(position)
+                        }
+                        else -> {
+
+                        }
+                    }
                     return@setOnMenuItemClickListener true
                 } else if (item.itemId == R.id.mnu_delete) {
-                    serviceBluup?.deleteAmiibo(amiiboName, amiibo.bluupTail)
+                    when (deviceType) {
+                        Nordic.DEVICE.BLUUP, Nordic.DEVICE.FLASK, Nordic.DEVICE.SLIDE -> {
+                            serviceGatt?.deleteAmiibo(amiiboName, amiibo.bluupTail)
+                        }
+                        Nordic.DEVICE.PIXL, Nordic.DEVICE.LOOP, Nordic.DEVICE.LINK -> {
+
+                        }
+                        Nordic.DEVICE.PUCK -> {
+
+                        }
+                        else -> {
+
+                        }
+                    }
                     bottomSheet?.state = BottomSheetBehavior.STATE_COLLAPSED
                     return@setOnMenuItemClickListener true
                 }
@@ -1115,17 +1136,55 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
             toolbar?.setOnMenuItemClickListener { item: MenuItem ->
                 when (item.itemId) {
                     R.id.mnu_activate -> {
-                        serviceBluup?.setActiveAmiibo(amiiboName, it.bluupTail)
-                        servicePuck?.setActiveSlot(position)
+                        when (deviceType) {
+                            Nordic.DEVICE.BLUUP, Nordic.DEVICE.FLASK, Nordic.DEVICE.SLIDE -> {
+                                serviceGatt?.setActiveAmiibo(amiiboName, it.bluupTail)
+                            }
+                            Nordic.DEVICE.PIXL, Nordic.DEVICE.LOOP, Nordic.DEVICE.LINK -> {
+
+                            }
+                            Nordic.DEVICE.PUCK -> {
+                                serviceGatt?.setActiveSlot(position)
+                            }
+                            else -> {
+
+                            }
+                        }
                         return@setOnMenuItemClickListener true
                     }
                     R.id.mnu_delete -> {
-                        serviceBluup?.deleteAmiibo(amiiboName, it.bluupTail)
+                        when (deviceType) {
+                            Nordic.DEVICE.BLUUP, Nordic.DEVICE.FLASK, Nordic.DEVICE.SLIDE -> {
+                                serviceGatt?.deleteAmiibo(amiiboName, it.bluupTail)
+                            }
+                            Nordic.DEVICE.PIXL, Nordic.DEVICE.LOOP, Nordic.DEVICE.LINK -> {
+
+                            }
+                            Nordic.DEVICE.PUCK -> {
+
+                            }
+                            else -> {
+
+                            }
+                        }
                         bottomSheet?.state = BottomSheetBehavior.STATE_COLLAPSED
                         return@setOnMenuItemClickListener true
                     }
                     R.id.mnu_backup -> {
-                        serviceBluup?.downloadAmiibo(amiiboName, it.bluupTail)
+                        when (deviceType) {
+                            Nordic.DEVICE.BLUUP, Nordic.DEVICE.FLASK, Nordic.DEVICE.SLIDE -> {
+                                serviceGatt?.downloadAmiibo(amiiboName, it.bluupTail)
+                            }
+                            Nordic.DEVICE.PIXL, Nordic.DEVICE.LOOP, Nordic.DEVICE.LINK -> {
+
+                            }
+                            Nordic.DEVICE.PUCK -> {
+
+                            }
+                            else -> {
+
+                            }
+                        }
                         bottomSheet?.state = BottomSheetBehavior.STATE_COLLAPSED
                         return@setOnMenuItemClickListener true
                     }
@@ -1166,15 +1225,22 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
         selectBluetoothDevice()
     }
 
-    private var bluupServerConn: ServiceConnection = object : ServiceConnection {
+    private var gattServerConn: ServiceConnection = object : ServiceConnection {
         var isServiceDiscovered = false
         override fun onServiceConnected(component: ComponentName, binder: IBinder) {
-            val localBinder = binder as BluupGattService.LocalBinder
-            serviceBluup = localBinder.service.apply {
+            val localBinder = binder as GattService.LocalBinder
+            serviceGatt = localBinder.service.apply {
                 if (initialize() && connect(deviceAddress)) {
                     serviceType = deviceType
-                    maxSlotCount = if (serviceType == Nordic.DEVICE.SLIDE) 40 else 85
-                    setListener(object : BluupGattService.BluupBluetoothListener {
+                    maxSlotCount = when (serviceType) {
+                        Nordic.DEVICE.FLASK -> 85
+                        Nordic.DEVICE.SLIDE -> 40
+                        Nordic.DEVICE.LINK -> 1
+                        Nordic.DEVICE.LOOP -> 1
+                        Nordic.DEVICE.PUCK -> 32
+                        else -> 50
+                    }
+                    setListener(object : GattService.BluetoothGattListener {
                         override fun onBluupServicesDiscovered() {
                             isServiceDiscovered = true
                             onBottomSheetChanged(SHEET.MENU)
@@ -1185,7 +1251,7 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
                                 requireView().findViewById<TextView>(R.id.hardware_info).text = deviceProfile
                             }
                             try {
-                                setBluupCharacteristicRX()
+                                setCharacteristicRX()
                                 deviceAmiibo
                             } catch (uoe: UnsupportedOperationException) {
                                 Debug.verbose(uoe)
@@ -1308,35 +1374,7 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
                             bottomSheet?.state = BottomSheetBehavior.STATE_COLLAPSED
                             stopGattService()
                         }
-                    })
-                } else {
-                    stopGattService()
-                    Toasty(requireContext()).Short(R.string.device_invalid)
-                }
-            }
-        }
 
-        override fun onServiceDisconnected(name: ComponentName) {
-            stopGattService()
-            if (!isServiceDiscovered) {
-                showTimeoutNotice()
-            }
-        }
-    }
-
-    private var pixlServerConn: ServiceConnection = object : ServiceConnection {
-        var isServiceDiscovered = false
-        override fun onServiceConnected(component: ComponentName, binder: IBinder) {
-            val localBinder = binder as PixlGattService.LocalBinder
-            servicePixl = localBinder.service.apply {
-                if (initialize() && connect(deviceAddress)) {
-                    serviceType = deviceType
-                    maxSlotCount = when (serviceType) {
-                        Nordic.DEVICE.LINK -> 1
-                        Nordic.DEVICE.LOOP -> 1
-                        else -> 50
-                    }
-                    setListener(object : PixlGattService.PixlBluetoothListener {
                         override fun onPixlServicesDiscovered() {
                             isServiceDiscovered = true
                             onBottomSheetChanged(SHEET.MENU)
@@ -1347,7 +1385,7 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
                                 requireView().findViewById<TextView>(R.id.hardware_info).text = deviceProfile
                             }
                             try {
-                                setPixlCharacteristicRX()
+                                setCharacteristicRX()
                                 deviceAmiibo
                             } catch (uoe: UnsupportedOperationException) {
                                 Debug.verbose(uoe)
@@ -1421,30 +1459,7 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
                             bottomSheet?.state = BottomSheetBehavior.STATE_COLLAPSED
                             stopGattService()
                         }
-                    })
-                } else {
-                    stopGattService()
-                    Toasty(requireContext()).Short(R.string.device_invalid)
-                }
-            }
-        }
 
-        override fun onServiceDisconnected(name: ComponentName) {
-            stopGattService()
-            if (!isServiceDiscovered) {
-                showTimeoutNotice()
-            }
-        }
-    }
-
-    private var puckServerConn: ServiceConnection = object : ServiceConnection {
-        var isServiceDiscovered = false
-        override fun onServiceConnected(name: ComponentName, binder: IBinder) {
-            val localBinder = binder as PuckGattService.LocalBinder
-            servicePuck = localBinder.service.apply {
-                if (initialize() && connect(deviceAddress)) {
-                    maxSlotCount = 32
-                    setListener(object : PuckGattService.BluetoothGattListener {
                         override fun onPuckServicesDiscovered() {
                             isServiceDiscovered = true
                             onBottomSheetChanged(SHEET.MENU)
@@ -1482,14 +1497,14 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
                                 gattButtonState
                                 requireView().post {
                                     gattStats?.text = getString(
-                                        R.string.gatt_count, slot.toString(), currentCount
+                                            R.string.gatt_count, slot.toString(), currentCount
                                     )
                                 }
                             }
                         }
 
                         override fun onPuckListRetrieved(
-                            slotData: ArrayList<ByteArray>, active: Int
+                                slotData: ArrayList<ByteArray>, active: Int
                         ) {
                             currentCount = slotData.size
                             val puckAmiibos: ArrayList<Amiibo?> = arrayListOf()
@@ -1498,7 +1513,7 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
                             }
                             settings.removeChangeListener(gattAdapter)
                             gattAdapter = GattSlotAdapter(
-                                settings, this@GattSlotFragment
+                                    settings, this@GattSlotFragment
                             ).also {
                                 it.setGattAmiibo(puckAmiibos)
                                 dismissSnackbarNotice(true)
@@ -1528,7 +1543,7 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
 
                         override fun onPuckConnectionLost() {
                             fragmentHandler.postDelayed(
-                                { showDisconnectNotice() }, TagMo.uiDelay.toLong()
+                                    { showDisconnectNotice() }, TagMo.uiDelay.toLong()
                             )
                             bottomSheet?.state = BottomSheetBehavior.STATE_COLLAPSED
                             stopGattService()
@@ -1536,7 +1551,7 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
                     })
                 } else {
                     stopGattService()
-                    Toasty(requireActivity()).Short(R.string.device_invalid)
+                    Toasty(requireContext()).Short(R.string.device_invalid)
                 }
             }
         }

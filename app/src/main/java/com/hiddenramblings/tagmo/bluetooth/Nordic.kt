@@ -26,34 +26,28 @@ object Nordic {
     }
 
     @RequiresApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
-    fun getLogTag(source: Class<*>, uuid: UUID): String {
-        val device = when (source) {
-            BluupGattService().javaClass -> "Bluup"
-            PixlGattService().javaClass -> "Pixl"
-            PuckGattService().javaClass -> "Puck"
-            else -> "Gatt"
-        }
+    fun getLogTag(uuid: UUID): String {
         return when {
             uuid.isUUID(TX) -> {
-                "${device}TX"
+                "NordicTX"
             }
             uuid.isUUID(RX) -> {
-                "${device}RX"
+                "NordicRX"
             }
             uuid.isUUID(NUS) -> {
-                "${device}NUS"
+                "NordicNUS"
             }
             uuid.isUUID(LegacyTX) -> {
-                "${device}LegacyTX"
+                "LegacyTX"
             }
             uuid.isUUID(LegacyRX) -> {
-                "${device}LegacyRX"
+                "LegacyRX"
             }
             uuid.isUUID(LegacyNUS) -> {
-                "${device}LegacyNUS"
+                "LegacyNUS"
             }
             else -> {
-                "${device}[${uuid}]"
+                "Gatt[${uuid}]"
             }
         }
     }

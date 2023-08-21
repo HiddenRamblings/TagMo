@@ -129,9 +129,7 @@
             android:configChanges="orientation|screenLayout|screenSize|smallestScreenSize"
             android:launchMode="singleTop" />
         <service
-            android:name=".bluetooth.BluupGattService" />
-        <service
-            android:name=".bluetooth.PuckGattService" />
+            android:name=".bluetooth.GattService" />
         <receiver
             android:name=".update.UpdateReceiver"
             android:exported="true">

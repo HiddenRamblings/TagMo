@@ -182,9 +182,16 @@ class QRCodeScanner : AppCompatActivity() {
     private fun decryptMii(qrData: ByteArray?) {
         if (null == qrData) return
         val nonce = qrData.copyOfRange(0, 8)
+        val ivSpec = nonce.plus(byteArrayOf(0, 0, 0, 0))
         val cipher = Cipher.getInstance("AES/CCM/NoPadding")
-        cipher.init(Cipher.DECRYPT_MODE, keySpec, IvParameterSpec(nonce + byteArrayOf(0, 0, 0, 0)))
-        val content = cipher.doFinal(qrData.copyOfRange(8, 0x58))
+        cipher.init(
+                Cipher.DECRYPT_MODE, keySpec,
+                if (Version.isKitKat)
+                    GCMParameterSpec(ivSpec.size * Byte.SIZE_BITS, ivSpec)
+                else
+                    IvParameterSpec(ivSpec)
+        )
+        val content = cipher.doFinal(qrData, 8, 0x58)
         txtMiiValue.text = TagArray.bytesToHex(
                 content.copyOfRange(0, 12).plus(nonce).plus(content.copyOfRange(12, content.size))
         )

@@ -135,6 +135,13 @@ class PixlGattService : Service() {
             }
             listener?.onPixlServicesDiscovered()
         }
+
+        override fun onReliableWriteCompleted(gatt: BluetoothGatt?, status: Int) {
+            super.onReliableWriteCompleted(gatt, status)
+            if (status == BluetoothGatt.GATT_SUCCESS)
+                mCharacteristicRX?.let { getCharacteristicValue(it) }
+        }
+
     }
 
     inner class LocalBinder : Binder() {
@@ -318,6 +325,22 @@ class PixlGattService : Service() {
         mCharacteristicTX?.let { setCharacteristicNotification(it, true) }
     }
 
+    private fun reliableWriteCharacteristic(value: ByteArray) {
+        mBluetoothGatt!!.beginReliableWrite()
+        mCharacteristicTX!!.writeType =
+                BluetoothGattCharacteristic.WRITE_TYPE_DEFAULT
+        if (Version.isTiramisu) {
+            mBluetoothGatt!!.writeCharacteristic(
+                    mCharacteristicTX!!, value,
+                    BluetoothGattCharacteristic.WRITE_TYPE_DEFAULT
+            )
+        } else @Suppress("DEPRECATION") {
+            mCharacteristicTX!!.value = value
+            mBluetoothGatt!!.writeCharacteristic(mCharacteristicTX)
+        }
+        mBluetoothGatt!!.executeReliableWrite()
+    }
+
     private fun delayedWriteCharacteristic(value: ByteArray) {
         val chunks = GattArray.byteToPortions(value, maxTransmissionUnit)
         val commandQueue = commandCallbacks.size + chunks.size
@@ -382,10 +405,9 @@ class PixlGattService : Service() {
         get() {
             when (serviceType) {
                 Nordic.DEVICE.LOOP -> {
-                    delayedByteCharacteric(byteArrayOf(
+                    reliableWriteCharacteristic(byteArrayOf(
                             0x02, 0x01, 0x89.toByte(), 0x88.toByte(), 0x03
                     ))
-                    delayedByteCharacteric(byteArrayOf(0x89.toByte()))
                 }
                 Nordic.DEVICE.LINK -> {
                     delayedByteCharacteric(byteArrayOf(

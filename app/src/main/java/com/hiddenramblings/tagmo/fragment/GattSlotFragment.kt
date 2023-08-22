@@ -1353,28 +1353,6 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
                             }
                         }
 
-                        override fun onBluupFilesDownload(dataString: String) {
-                            Debug.info(this.javaClass, dataString)
-                            try {
-                                val tagData = dataString.toByteArray()
-                            } catch (e: Exception) { e.printStackTrace() }
-                            Toasty(requireActivity()).Short(R.string.fail_firmware_api)
-                        }
-
-                        override fun onBluupProcessFinish() {
-                            processDialog?.let {
-                                if (it.isShowing) it.dismiss()
-                            }
-                        }
-
-                        override fun onBluupConnectionLost() {
-                            fragmentHandler.postDelayed(
-                                { showDisconnectNotice() }, TagMo.uiDelay.toLong()
-                            )
-                            bottomSheet?.state = BottomSheetBehavior.STATE_COLLAPSED
-                            stopGattService()
-                        }
-
                         override fun onPixlServicesDiscovered() {
                             isServiceDiscovered = true
                             onBottomSheetChanged(SHEET.MENU)
@@ -1438,28 +1416,6 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
                             }
                         }
 
-                        override fun onPixlFilesDownload(dataString: String) {
-                            Debug.info(this.javaClass, dataString)
-                            try {
-                                val tagData = dataString.toByteArray()
-                            } catch (e: Exception) { e.printStackTrace() }
-                            Toasty(requireActivity()).Short(R.string.fail_firmware_api)
-                        }
-
-                        override fun onPixlProcessFinish() {
-                            processDialog?.let {
-                                if (it.isShowing) it.dismiss()
-                            }
-                        }
-
-                        override fun onPixlConnectionLost() {
-                            fragmentHandler.postDelayed(
-                                    { showDisconnectNotice() }, TagMo.uiDelay.toLong()
-                            )
-                            bottomSheet?.state = BottomSheetBehavior.STATE_COLLAPSED
-                            stopGattService()
-                        }
-
                         override fun onPuckServicesDiscovered() {
                             isServiceDiscovered = true
                             onBottomSheetChanged(SHEET.MENU)
@@ -1479,11 +1435,12 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
                             }
                         }
 
-                        override fun onPuckDeviceProfile(slotCount: Int) {
+                        override fun onPuckDeviceProfile(activeSlot: Int, slotCount: Int) {
                             maxSlotCount = slotCount
                             requireView().post {
                                 gattSlotCount.maxValue = slotCount
                             }
+                            prefs.gattActiveSlot(activeSlot)
                             deviceAmiibo
                         }
 
@@ -1503,9 +1460,7 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
                             }
                         }
 
-                        override fun onPuckListRetrieved(
-                                slotData: ArrayList<ByteArray>, active: Int
-                        ) {
+                        override fun onPuckListRetrieved(slotData: ArrayList<ByteArray>) {
                             currentCount = slotData.size
                             val puckAmiibos: ArrayList<Amiibo?> = arrayListOf()
                             slotData.forEach { bytes ->
@@ -1525,7 +1480,7 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
                                     requireView().post {
                                         it.notifyItemRangeInserted(0, currentCount)
                                     }
-                                    onPuckActiveChanged(active)
+                                    onPuckActiveChanged(prefs.gattActiveSlot())
                                 } else {
                                     amiiboTile?.isInvisible = true
                                     gattButtonState
@@ -1533,15 +1488,24 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
                             }
                         }
 
-                        override fun onPuckFilesDownload(tagData: ByteArray) {}
+                        override fun onFilesDownload(tagData: ByteArray) {
+                            when (serviceType) {
+                                Nordic.DEVICE.BLUUP, Nordic.DEVICE.FLASK, Nordic.DEVICE.SLIDE -> {
+                                    Toasty(requireActivity()).Short(R.string.fail_firmware_api)
+                                }
+                                else -> {
 
-                        override fun onPuckProcessFinish() {
+                                }
+                            }
+                        }
+
+                        override fun onProcessFinish() {
                             processDialog?.let {
                                 if (it.isShowing) it.dismiss()
                             }
                         }
 
-                        override fun onPuckConnectionLost() {
+                        override fun onConnectionLost() {
                             fragmentHandler.postDelayed(
                                     { showDisconnectNotice() }, TagMo.uiDelay.toLong()
                             )

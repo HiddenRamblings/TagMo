@@ -31,6 +31,8 @@ import com.hiddenramblings.tagmo.eightbit.io.Debug
 import com.hiddenramblings.tagmo.eightbit.os.Version
 import com.hiddenramblings.tagmo.nfctech.NfcByte
 import com.hiddenramblings.tagmo.nfctech.TagArray
+import com.hiddenramblings.tagmo.nfctech.toDataBytes
+import com.hiddenramblings.tagmo.nfctech.toFileBytes
 import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
@@ -56,7 +58,6 @@ class GattService : Service() {
     private var maxTransmissionUnit = 53
     private val chunkTimeout = 25L
 
-    private var activeSlot = 0
     private var slotsCount = 0
 
     private var nameCompat: String? = null
@@ -103,25 +104,19 @@ class GattService : Service() {
         fun onBluupStatusChanged(jsonObject: JSONObject?)
         fun onBluupListRetrieved(jsonArray: JSONArray)
         fun onBluupRangeRetrieved(jsonArray: JSONArray)
-        fun onBluupFilesDownload(dataString: String)
-        fun onBluupProcessFinish()
-        fun onBluupConnectionLost()
 
         fun onPixlServicesDiscovered()
         fun onPixlActiveChanged(jsonObject: JSONObject?)
         fun onPixlStatusChanged(jsonObject: JSONObject?)
         fun onPixlDataReceived(result: String?)
-        fun onPixlFilesDownload(dataString: String)
-        fun onPixlProcessFinish()
-        fun onPixlConnectionLost()
 
         fun onPuckServicesDiscovered()
         fun onPuckActiveChanged(slot: Int)
-        fun onPuckDeviceProfile(slotCount: Int)
-        fun onPuckListRetrieved(slotData: ArrayList<ByteArray>, active: Int)
-        fun onPuckFilesDownload(tagData: ByteArray)
-        fun onPuckProcessFinish()
-        fun onPuckConnectionLost()
+        fun onPuckDeviceProfile(activeSlot: Int, slotCount: Int)
+        fun onPuckListRetrieved(slotData: ArrayList<ByteArray>)
+        fun onFilesDownload(tagData: ByteArray)
+        fun onProcessFinish()
+        fun onConnectionLost()
     }
 
     private fun getCharacteristicValue(characteristic: BluetoothGattCharacteristic, data: ByteArray?) {
@@ -146,7 +141,8 @@ class GattService : Service() {
                                 puckArray.add(sliceData[1].toInt(), sliceData.copyOfRange(2, sliceData.size))
                                 tempInfoData = byteArrayOf()
                                 if (puckArray.size == slotsCount) {
-                                    listener?.onPuckListRetrieved(puckArray, activeSlot)
+                                    listener?.onPuckListRetrieved(puckArray)
+                                    sendCommand(byteArrayOf(PUCK.INFO.bytes), null)
                                 } else{
                                     val nextSlot = sliceData[1].toInt() + 1
                                     sendCommand(byteArrayOf(PUCK.INFO.bytes, nextSlot.toByte()), null)
@@ -154,9 +150,8 @@ class GattService : Service() {
                             }
                             data[0] == PUCK.INFO.bytes -> {
                                 if (data.size == 3) {
-                                    activeSlot = data[1].toInt()
                                     slotsCount = data[2].toInt()
-                                    listener?.onPuckDeviceProfile(slotsCount)
+                                    listener?.onPuckDeviceProfile(data[1].toInt(), slotsCount)
                                 } else {
                                     tempInfoData = data
                                 }
@@ -164,7 +159,7 @@ class GattService : Service() {
                             data[0] == PUCK.READ.bytes -> {
                                 if (data[2].toInt() + (data[3].toInt() * 4) >= 143) {
                                     readResponse = readResponse.plus(data.copyOfRange(4, data.size))
-                                    listener?.onPuckFilesDownload(readResponse)
+                                    listener?.onFilesDownload(readResponse)
                                     readResponse = byteArrayOf()
                                 } else {
                                     readResponse = readResponse.plus(data.copyOfRange(4, data.size))
@@ -177,7 +172,7 @@ class GattService : Service() {
                                 sendCommand(byteArrayOf(PUCK.NFC.bytes), null)
                             }
                             data[0] == PUCK.NFC.bytes -> {
-                                listener?.onPuckProcessFinish()
+                                listener?.onProcessFinish()
                                 deviceAmiibo
                             }
                         }
@@ -291,7 +286,7 @@ class GattService : Service() {
                                 Debug.warn(e)
                             }
                             response = StringBuilder()
-                            if (rangeIndex == 0) listener?.onBluupProcessFinish()
+                            if (rangeIndex == 0) listener?.onProcessFinish()
                         }
                     }
                     formatted.startsWith("tag.remove") -> {
@@ -314,9 +309,12 @@ class GattService : Service() {
                                     if (dataString.startsWith("tag.download")
                                             && dataString.endsWith("=")
                                     ) continue
-                                    it.onBluupFilesDownload(dataString.substring(
-                                            1, dataString.lastIndexOf(")")
-                                    ))
+                                    Debug.info(this.javaClass, dataString)
+                                    try {
+                                        it.onFilesDownload(dataString.substring(
+                                                1, dataString.lastIndexOf(")")
+                                        ).toByteArray())
+                                    } catch (e: Exception) { e.printStackTrace() }
                                 }
                             }
                             response = StringBuilder()
@@ -373,7 +371,6 @@ class GattService : Service() {
 
             }
         }
-        getCharacteristicValue(characteristic, characteristic.value)
     }
 
     // Implements callback methods for GATT events that the app cares about.  For example,
@@ -383,20 +380,7 @@ class GattService : Service() {
             if (newState == BluetoothProfile.STATE_CONNECTED) {
                 mBluetoothGatt?.discoverServices()
             } else if (newState == BluetoothProfile.STATE_DISCONNECTED) {
-                when (serviceType) {
-                    Nordic.DEVICE.BLUUP, Nordic.DEVICE.FLASK, Nordic.DEVICE.SLIDE -> {
-                        listener?.onBluupConnectionLost()
-                    }
-                    Nordic.DEVICE.PIXL, Nordic.DEVICE.LOOP, Nordic.DEVICE.LINK -> {
-                        listener?.onPixlConnectionLost()
-                    }
-                    Nordic.DEVICE.PUCK -> {
-                        listener?.onPuckConnectionLost()
-                    }
-                    else -> {
-
-                    }
-                }
+                listener?.onConnectionLost()
             }
         }
 
@@ -872,7 +856,9 @@ class GattService : Service() {
 
     val deviceDetails: Unit
         get() {
-            if (!legacyInterface) {
+            if (legacyInterface) {
+                sendCommand(byteArrayOf(PUCK.INFO.bytes), null)
+            } else {
                 sendCommand(byteArrayOf(
                         0x66, 0x61, 0x73, 0x74, 0x4D, 0x6F, 0x64, 0x65, 0x28, 0x29, 0x0A
                 ), null)
@@ -938,10 +924,6 @@ class GattService : Service() {
     private fun processLinkUpload(inputArray: ByteArray): List<ByteArray> {
         val writeCommands = mutableListOf<ByteArray>()
 
-        // Ensure the working array is exactly 540 bytes
-        val workingArray = ByteArray(540)
-        inputArray.copyInto(workingArray, startIndex = 0, endIndex = 540)
-
         // Add initial byte arrays to the output
         writeCommands.add(byteArrayOf(0xA0.toByte(), 0xB0.toByte()))
         writeCommands.add(byteArrayOf(
@@ -951,8 +933,8 @@ class GattService : Service() {
         writeCommands.add(byteArrayOf(0xAB.toByte(), 0xAB.toByte(), 0x02.toByte(), 0x1C.toByte()))
 
         // Loop through the input array and slice 20 bytes at a time
-        for (i in workingArray.indices step 20) {
-            val slice = workingArray.sliceArray(i until i + 20)
+        for (i in inputArray.indices step 20) {
+            val slice = inputArray.sliceArray(i until i + 20)
             val iteration = (i / 20) + 1
 
             // Create temporary ByteArray with required values
@@ -977,16 +959,17 @@ class GattService : Service() {
     fun uploadAmiiboData(tagData: ByteArray) {
         when (serviceType) {
             Nordic.DEVICE.LOOP -> {
-                tagData[536] = 0x80.toByte()
-                tagData[537] = 0x80.toByte()
-                processLoopUpload(tagData).forEach {
+                val uploadData = tagData.toDataBytes()
+                uploadData[536] = 0x80.toByte()
+                uploadData[537] = 0x80.toByte()
+                processLoopUpload(uploadData).forEach {
                     commandCallbacks.add(Runnable {
                         delayedByteCharacteric(it)
                     })
                 }
             }
             Nordic.DEVICE.LINK -> {
-                processLinkUpload(tagData).forEach {
+                processLinkUpload(tagData.toDataBytes()).forEach {
                     commandCallbacks.add(Runnable {
                         delayedByteCharacteric(it)
                     })
@@ -999,8 +982,7 @@ class GattService : Service() {
     }
 
     fun uploadSlotAmiibo(tagData: ByteArray, slot: Int) {
-        val pages = TagArray.bytesToPages(tagData)
-        TagArray.bytesToPages(tagData).forEachIndexed { index, bytes ->
+        TagArray.bytesToPages(tagData.toFileBytes()).forEachIndexed { index, bytes ->
             sendCommand(byteArrayOf(
                     PUCK.WRITE.bytes, slot.toByte(), (index * NfcByte.PAGE_SIZE).toByte(), 0x01
             ), bytes)
@@ -1050,8 +1032,7 @@ class GattService : Service() {
 
     fun setActiveSlot(slot: Int) {
         sendCommand(byteArrayOf(PUCK.NFC.bytes, slot.toByte()), null)
-        activeSlot = slot
-        listener?.onPuckActiveChanged(activeSlot)
+        listener?.onPuckActiveChanged(slot)
     }
 
     fun deleteAmiibo(amiiboName: String?, tail: String?) {

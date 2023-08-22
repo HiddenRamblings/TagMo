@@ -321,6 +321,7 @@
     <string name="slots_full">Device full</string>
     <string name="slots_empty">Device empty</string>
     <string name="create_blank">Create blank virtual NFC tag</string>
+    <string name="reset_device">Factory reset current device</string>
     <string name="gatt_erase_confirm">Erase all slots from GATT device?</string>
     <string name="gatt_write_confirm">Write selections to GATT device?</string>
     <string name="gatt_upload">Uploading binary&#8230;</string>

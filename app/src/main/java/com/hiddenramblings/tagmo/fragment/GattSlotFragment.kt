@@ -84,6 +84,7 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
     private var eraseSlots: AppCompatButton? = null
     private var slotOptionsMenu: LinearLayout? = null
     private var createBlank: AppCompatButton? = null
+    private var resetDevice: AppCompatButton? = null
     private var switchMenuOptions: AppCompatToggleButton? = null
     private var writeSlotsLayout: LinearLayout? = null
     private var writeTagAdapter: WriteTagAdapter? = null
@@ -161,6 +162,10 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
 
             createBlank = view.findViewById<AppCompatButton>(R.id.create_blank).apply {
                 setOnClickListener { serviceGatt?.createBlankTag() }
+            }
+
+            resetDevice = view.findViewById<AppCompatButton>(R.id.reset_device).apply {
+                setOnClickListener { serviceGatt?.resetDevice() }
             }
 
             screenOptions = view.findViewById(R.id.screen_options)
@@ -1248,6 +1253,7 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
                                 gattSlotCount.maxValue = maxSlotCount
                                 screenOptions?.isVisible = true
                                 createBlank?.isVisible = true
+                                resetDevice?.isGone = true
                                 requireView().findViewById<TextView>(R.id.hardware_info).text = deviceProfile
                             }
                             try {
@@ -1359,7 +1365,8 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
                             requireView().post {
                                 gattSlotCount.maxValue = maxSlotCount
                                 screenOptions?.isGone = true
-                                createBlank?.isGone = true
+                                createBlank?.isVisible = serviceType == Nordic.DEVICE.LOOP
+                                resetDevice?.isVisible = true
                                 requireView().findViewById<TextView>(R.id.hardware_info).text = deviceProfile
                             }
                             try {
@@ -1423,6 +1430,7 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
                                 gattSlotCount.maxValue = maxSlotCount
                                 screenOptions?.isGone = true
                                 createBlank?.isGone = true
+                                resetDevice?.isGone = true
                                 requireView().findViewById<TextView>(R.id.hardware_info).text = deviceProfile
                             }
                             try {

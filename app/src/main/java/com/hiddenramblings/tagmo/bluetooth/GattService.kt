@@ -39,6 +39,7 @@ import org.json.JSONObject
 import java.util.ArrayList
 import java.util.Objects
 import java.util.UUID
+import kotlin.random.Random
 
 /**
  * Service for managing connection and data communication with a GATT server hosted on a
@@ -956,6 +957,46 @@ class GattService : Service() {
         return writeCommands
     }
 
+    private fun generateBlank() {
+        val blankData = ByteArray(NfcByte.TAG_FILE_SIZE)
+
+        blankData[0] = 0x04.toByte()
+        blankData[1] = Random.nextInt(256).toByte()
+        blankData[2] = Random.nextInt(256).toByte()
+        blankData[3] = (blankData[0].toInt()
+                xor blankData[1].toInt()
+                xor blankData[2].toInt()
+                xor 0x88).toByte()
+        blankData[4] = Random.nextInt(256).toByte()
+        blankData[5] = Random.nextInt(256).toByte()
+        blankData[6] = Random.nextInt(256).toByte()
+        blankData[7] = Random.nextInt(256).toByte()
+        blankData[8] = (blankData[4].toInt()
+                xor blankData[5].toInt()
+                xor blankData[6].toInt()
+                xor blankData[7].toInt()).toByte()
+
+        val static0x09 = byteArrayOf(
+                0x48, 0x00, 0x00, 0xE1.toByte(), 0x10, 0x3E, 0x00, 0x03, 0x00, 0xFE.toByte()
+        )
+        blankData.copyInto(static0x09, startIndex = 9)
+
+        val static0x20B = byteArrayOf(
+                0xBD.toByte(), 0x04, 0x00, 0x00, 0xFF.toByte(), 0x00, 0x05
+        )
+        blankData.copyInto(static0x20B, startIndex = 0x20B)
+
+        val tagData = blankData.toDataBytes()
+        tagData[536] = 0x80.toByte()
+        tagData[537] = 0x80.toByte()
+
+        processLoopUpload(tagData).forEach {
+            commandCallbacks.add(Runnable {
+                delayedByteCharacteric(it)
+            })
+        }
+    }
+
     fun uploadAmiiboData(tagData: ByteArray) {
         when (serviceType) {
             Nordic.DEVICE.LOOP -> {
@@ -1073,12 +1114,44 @@ class GattService : Service() {
     }
 
     fun createBlankTag() {
-        delayedTagCharacteristic("createBlank()")
+        when (serviceType) {
+            Nordic.DEVICE.BLUUP, Nordic.DEVICE.FLASK, Nordic.DEVICE.SLIDE -> {
+                delayedTagCharacteristic("createBlank()")
+            }
+            Nordic.DEVICE.LINK -> {
+                generateBlank()
+            }
+            else -> {
+
+
+            }
+        }
     }
 
     fun clearStorage(count: Int) {
         wipeDeviceCount = count - 1
         delayedTagCharacteristic("remove(tag.get().name)")
+    }
+
+    fun resetDevice() {
+        when (serviceType) {
+            Nordic.DEVICE.LOOP -> {
+                reliableWriteCharacteristic(
+                        byteArrayOf(0x12, 0x0d, 0x00, 0x02, 0x01, 0x8f.toByte(), 0x8e.toByte(), 0x03)
+                )
+            }
+            Nordic.DEVICE.LINK -> {
+                delayedByteCharacteric(byteArrayOf(
+                        0x00, 0x00, 0x10, 0x02, 0xAA.toByte(),
+                        0x54, 0x54, 0x2B, 0xD5.toByte(), 0xCC.toByte(),
+                        0x22, 0x42, 0x36, 0x7D, 0x6D,
+                        0xB2.toByte(), 0x6A, 0xAC.toByte(), 0xA6.toByte(), 0xAC.toByte()
+                ))
+            }
+            else -> {
+
+            }
+        }
     }
 
     fun setFlaskFace(stacked: Boolean) {

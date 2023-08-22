@@ -13,15 +13,14 @@ import com.hiddenramblings.tagmo.amiibo.Amiibo
 import com.hiddenramblings.tagmo.eightbit.io.Debug
 import java.io.File
 import java.text.DecimalFormat
-import java.util.*
+import kotlin.random.Random
 
 object Foomiibo {
     val directory: File by lazy { File(TagMo.appContext.filesDir, "Foomiibo") }
 
     private fun getRandomBytes(size: Int): ByteArray {
-        val random = Random()
         val randBytes = ByteArray(size)
-        random.nextBytes(randBytes)
+        Random.nextBytes(randBytes)
         return randBytes
     }
 
@@ -35,12 +34,11 @@ object Foomiibo {
 
     @Suppress("unused")
     private fun randomizeSerial(serial: String): String {
-        val random = Random()
-        val week = DecimalFormat("00").format((random.nextInt(52) + 1))
-        val year = random.nextInt(9 + 1).toString()
+        val week = DecimalFormat("00").format((Random.nextInt(52) + 1))
+        val year = Random.nextInt(9 + 1).toString()
         val identifier = serial.substring(3, 7)
         val facility = TagMo.appContext.resources
-            .getStringArray(R.array.production_factory)[random.nextInt(3 + 1)]
+            .getStringArray(R.array.production_factory)[Random.nextInt(3 + 1)]
         return week + year + "000" + identifier + facility
     }
 

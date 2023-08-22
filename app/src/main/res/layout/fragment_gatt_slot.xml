@@ -132,6 +132,12 @@
                 android:layout_height="wrap_content"
                 android:text="@string/create_blank" />
 
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/reset_device"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/reset_device" />
+
             <androidx.appcompat.widget.SwitchCompat
                 android:id="@+id/write_fill_random"
                 android:layout_width="wrap_content"

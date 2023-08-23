@@ -8,7 +8,7 @@ package com.hiddenramblings.tagmo.bluetooth
 object GattArray {
 
     @JvmStatic
-    fun byteToPortions(largeByteArray: ByteArray, sizePerPortion: Int): List<ByteArray> {
+    fun bytesToPortions(largeByteArray: ByteArray, sizePerPortion: Int): List<ByteArray> {
         val byteArrayPortions: ArrayList<ByteArray> = arrayListOf()
         largeByteArray.asIterable().chunked(sizePerPortion).forEach {
             byteArrayPortions.add(it.toByteArray())

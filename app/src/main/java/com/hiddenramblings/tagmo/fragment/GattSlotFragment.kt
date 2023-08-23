@@ -1388,9 +1388,6 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
 
                         @SuppressLint("SetTextI18n", "CutPasteId")
                         override fun onPixlDataReceived(result: String?) {
-                            processDialog?.let {
-                                if (it.isShowing) it.dismiss()
-                            }
                             requireView().post {
                                 requireView().findViewById<TextView>(R.id.gatt_readout).text =
                                         "${requireView().findViewById<TextView>(R.id.gatt_readout).text}$result"

@@ -42,9 +42,52 @@ import java.util.UUID
 import kotlin.random.Random
 
 /**
- * Service for managing connection and data communication with a GATT server hosted on a
- * given Bluetooth LE device.
- */
+ * Service for managing connection and data communication with a GATT server
+ * hosted on a given Bluetooth LE device based on core/java/android/bluetooth
+ *
+ * Android Bluetooth Low Energy Status Codes
+ *
+ * 0	0x00	BLE_HCI_STATUS_CODE_SUCCESS
+ * 1	0x01	BLE_HCI_STATUS_CODE_UNKNOWN_BTLE_COMMAND
+ * 2	0x02	BLE_HCI_STATUS_CODE_UNKNOWN_CONNECTION_IDENTIFIER
+ * 5	0x05	BLE_HCI_AUTHENTICATION_FAILURE
+ * 6	0x06	BLE_HCI_STATUS_CODE_PIN_OR_KEY_MISSING
+ * 7	0x07	BLE_HCI_MEMORY_CAPACITY_EXCEEDED
+ * 8	0x08	BLE_HCI_CONNECTION_TIMEOUT
+ * 12	0x0C	BLE_HCI_STATUS_CODE_COMMAND_DISALLOWED
+ * 18	0x12	BLE_HCI_STATUS_CODE_INVALID_BTLE_COMMAND_PARAMETERS
+ * 19	0x13	BLE_HCI_REMOTE_USER_TERMINATED_CONNECTION
+ * 20	0x14	BLE_HCI_REMOTE_DEV_TERMINATION_DUE_TO_LOW_RESOURCES
+ * 21	0x15	BLE_HCI_REMOTE_DEV_TERMINATION_DUE_TO_POWER_OFF
+ * 22	0x16	BLE_HCI_LOCAL_HOST_TERMINATED_CONNECTION
+ * 26	0x1A	BLE_HCI_UNSUPPORTED_REMOTE_FEATURE
+ * 30	0x1E	BLE_HCI_STATUS_CODE_INVALID_LMP_PARAMETERS
+ * 31	0x1F	BLE_HCI_STATUS_CODE_UNSPECIFIED_ERROR
+ * 34	0x22	BLE_HCI_STATUS_CODE_LMP_RESPONSE_TIMEOUT
+ * 36	0x24	BLE_HCI_STATUS_CODE_LMP_PDU_NOT_ALLOWED
+ * 40	0x28	BLE_HCI_INSTANT_PASSED
+ * 41	0x29	BLE_HCI_PAIRING_WITH_UNIT_KEY_UNSUPPORTED
+ * 42	0x2A	BLE_HCI_DIFFERENT_TRANSACTION_COLLISION
+ * 58	0x3A	BLE_HCI_CONTROLLER_BUSY
+ * 59	0x3B	BLE_HCI_CONN_INTERVAL_UNACCEPTABLE
+ * 60	0x3C	BLE_HCI_DIRECTED_ADVERTISER_TIMEOUT
+ * 61	0x3D	BLE_HCI_CONN_TERMINATED_DUE_TO_MIC_FAILURE
+ * 62	0x3E	BLE_HCI_CONN_FAILED_TO_BE_ESTABLISHED
+ * 128	0x80	GATT_NO_RESSOURCES
+ * 129	0x81	GATT_INTERNAL_ERROR
+ * 130	0x82	GATT_WRONG_STATE
+ * 131	0x83	GATT_DB_FULL
+ * 132	0x84	GATT_BUSY
+ * 133	0x85	GATT_ERROR
+ * 135	0x87	GATT_ILLEGAL_PARAMETER
+ * 137	0x89	GATT_AUTH_FAIL
+ * 138	0x8A	GATT_MORE
+ * 139	0x8B	GATT_INVALID_CFG
+ * 140	0x8C	GATT_SERVICE_STARTED
+ * 141	0x8D	GATT_ENCRYPED_NO_MITM
+ * 142	0x8E	GATT_NOT_ENCRYPTED
+ **/
+
 @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
 @SuppressLint("MissingPermission")
 class GattService : Service() {
@@ -56,7 +99,7 @@ class GattService : Service() {
     private var mCharacteristicRX: BluetoothGattCharacteristic? = null
     private var mCharacteristicTX: BluetoothGattCharacteristic? = null
 
-    private var maxTransmissionUnit = 53
+    private var maxTransmissionUnit = 20 // MTU - 3
     private val chunkTimeout = 25L
 
     private var slotsCount = 0
@@ -68,6 +111,8 @@ class GattService : Service() {
 
     private var response = StringBuilder()
     private var rangeIndex = 0
+
+    private var uploadData = byteArrayOf()
 
     private var puckArray = ArrayList<ByteArray>(slotsCount)
     private var readResponse = byteArrayOf()
@@ -84,6 +129,28 @@ class GattService : Service() {
         MOVE(0xFD),
         UART(0xFE),
         NFC(0xFF);
+
+        // RESTART
+        val bytes: Byte
+
+        init { this.bytes = bytes.toByte() }
+    }
+
+    private enum class PIXL(bytes: Int) {
+        VERSION(0x01),
+        DFU(0x02),
+        LIST(0x10),
+        FORMAT(0x11),
+        OPEN(0x12),
+        CLOSE(0x13),
+        READ(0x14),
+        WRITE(0x15),
+        READ_DIR(0x16),
+        CREATE_DIR(0x17),
+        DELETE_DIR(0x18),
+        RENAME_DIR(0x19),
+        META(0x1A);
+
 
         // RESTART
         val bytes: Byte
@@ -125,18 +192,60 @@ class GattService : Service() {
             Debug.warn(this.javaClass,
                     "${Nordic.getLogTag(characteristic.uuid)} ${TagArray.bytesToHex(data)}"
             )
-            when (serviceType) {
-                Nordic.DEVICE.PIXL, Nordic.DEVICE.LOOP, Nordic.DEVICE.LINK -> {
-                    if (characteristic.uuid.isUUID(GattRX)) {
+            if (characteristic.uuid.isUUID(GattRX)) {
+                when (serviceType) {
+                    Nordic.DEVICE.PIXL -> {
                         listener?.onPixlDataReceived(TagArray.bytesToHex(data))
                     }
-                }
-                Nordic.DEVICE.PUCK -> {
-                    if (characteristic.uuid.isUUID(GattRX)) {
+
+                    Nordic.DEVICE.LOOP -> {
+                        listener?.onPixlDataReceived(TagArray.bytesToHex(data))
+                    }
+
+                    Nordic.DEVICE.LINK -> {
+                        listener?.onPixlDataReceived(TagArray.bytesToHex(data))
+                        when (data) {
+                            byteArrayOf(0xB0.toByte(), 0xA0.toByte()) -> {
+                                delayedByteCharacteric(byteArrayOf(
+                                        0xAC.toByte(), 0xAC.toByte(), 0x00.toByte(), 0x04.toByte(),
+                                        0x00.toByte(), 0x00.toByte(), 0x02.toByte(), 0x1C.toByte())
+                                )
+                            }
+
+                            byteArrayOf(0xCA.toByte(), 0xCA.toByte()) -> {
+                                delayedByteCharacteric(byteArrayOf(
+                                        0xAB.toByte(), 0xAB.toByte(), 0x02.toByte(), 0x1C.toByte()
+                                ))
+                            }
+
+                            byteArrayOf(0xBA.toByte(), 0xBA.toByte()) -> {
+                                processLinkUpload(uploadData.toDataBytes())
+                            }
+
+                            byteArrayOf(0xAA.toByte(), 0xDD.toByte()) -> {
+
+                            }
+
+                            byteArrayOf(0xCB.toByte(), 0xCB.toByte()) -> {
+                                delayedByteCharacteric(byteArrayOf(0xCC.toByte(), 0xDD.toByte()))
+                            }
+
+                            byteArrayOf(0xDD.toByte(), 0xCC.toByte()) -> {
+                                listener?.onProcessFinish()
+                            }
+
+                            else -> {
+
+                            }
+                        }
+                    }
+
+                    Nordic.DEVICE.PUCK -> {
                         when {
                             TagArray.bytesToString(data).endsWith("DTM_PUCK_FAST") -> {
                                 sendCommand(byteArrayOf(PUCK.INFO.bytes), null)
                             }
+
                             tempInfoData.isNotEmpty() -> {
                                 val sliceData = tempInfoData.plus(data)
                                 puckArray.add(sliceData[1].toInt(), sliceData.copyOfRange(2, sliceData.size))
@@ -144,11 +253,12 @@ class GattService : Service() {
                                 if (puckArray.size == slotsCount) {
                                     listener?.onPuckListRetrieved(puckArray)
                                     sendCommand(byteArrayOf(PUCK.INFO.bytes), null)
-                                } else{
+                                } else {
                                     val nextSlot = sliceData[1].toInt() + 1
                                     sendCommand(byteArrayOf(PUCK.INFO.bytes, nextSlot.toByte()), null)
                                 }
                             }
+
                             data[0] == PUCK.INFO.bytes -> {
                                 if (data.size == 3) {
                                     slotsCount = data[2].toInt()
@@ -157,6 +267,7 @@ class GattService : Service() {
                                     tempInfoData = data
                                 }
                             }
+
                             data[0] == PUCK.READ.bytes -> {
                                 if (data[2].toInt() + (data[3].toInt() * 4) >= 143) {
                                     readResponse = readResponse.plus(data.copyOfRange(4, data.size))
@@ -166,25 +277,28 @@ class GattService : Service() {
                                     readResponse = readResponse.plus(data.copyOfRange(4, data.size))
                                 }
                             }
+
                             data[0] == PUCK.WRITE.bytes -> {
 
                             }
+
                             data[0] == PUCK.SAVE.bytes -> {
                                 sendCommand(byteArrayOf(PUCK.NFC.bytes), null)
                             }
+
                             data[0] == PUCK.NFC.bytes -> {
                                 listener?.onProcessFinish()
                                 deviceAmiibo
                             }
                         }
-                        if (commandCallbacks.size > 0) {
-                            commandCallbacks[0].run()
-                            commandCallbacks.removeAt(0)
-                        }
+                    }
+                    else -> {
+
                     }
                 }
-                else -> {
-
+                if (commandCallbacks.size > 0) {
+                    commandCallbacks[0].run()
+                    commandCallbacks.removeAt(0)
                 }
             }
         }
@@ -713,7 +827,7 @@ class GattService : Service() {
     }
 
     private fun delayedWriteCharacteristic(value: ByteArray) {
-        val chunks = GattArray.byteToPortions(value, maxTransmissionUnit)
+        val chunks = GattArray.bytesToPortions(value, maxTransmissionUnit)
         val commandQueue = commandCallbacks.size + chunks.size
         gattHandler.postDelayed({
             var i = 0
@@ -922,39 +1036,22 @@ class GattService : Service() {
         return output
     }
 
-    private fun processLinkUpload(inputArray: ByteArray): List<ByteArray> {
-        val writeCommands = mutableListOf<ByteArray>()
+    private fun processLinkUpload(inputArray: ByteArray) {
+        val chunks = GattArray.bytesToPortions(inputArray, 0x96)
 
-        // Add initial byte arrays to the output
-        writeCommands.add(byteArrayOf(0xA0.toByte(), 0xB0.toByte()))
-        writeCommands.add(byteArrayOf(
-                0xAC.toByte(), 0xAC.toByte(), 0x00.toByte(), 0x04.toByte(),
-                0x00.toByte(), 0x00.toByte(), 0x02.toByte(), 0x1C.toByte())
-        )
-        writeCommands.add(byteArrayOf(0xAB.toByte(), 0xAB.toByte(), 0x02.toByte(), 0x1C.toByte()))
-
-        // Loop through the input array and slice 20 bytes at a time
-        for (i in inputArray.indices step 20) {
-            val slice = inputArray.sliceArray(i until i + 20)
-            val iteration = (i / 20) + 1
-
-            // Create temporary ByteArray with required values
+        chunks.forEachIndexed { index, bytes ->
+            val size = if (index == chunks.lastIndex) bytes.size else 0x96
             val tempArray = byteArrayOf(
-                    0xDD.toByte(), 0xAA.toByte(), 0x00.toByte(), 0x14.toByte(),
-                    *slice,
-                    0x00.toByte(),
-                    iteration.toByte()
+                    0xDD.toByte(), 0xAA.toByte(), 0x00.toByte(), size.toByte(),
+                    *bytes,
+                    0x00.toByte(), index.toByte()
             )
-
-            // Add temporary array to the output
-            writeCommands.add(tempArray)
+            commandCallbacks.add(Runnable {
+                delayedByteCharacteric(tempArray)
+            })
         }
 
-        // Add final byte arrays to the output
-        writeCommands.add(byteArrayOf(0xBC.toByte(), 0xBC.toByte()))
-        writeCommands.add(byteArrayOf(0xCC.toByte(), 0xDD.toByte()))
-
-        return writeCommands
+        commandCallbacks.add(Runnable { byteArrayOf(0xBC.toByte(), 0xBC.toByte()) })
     }
 
     private fun generateBlank() {
@@ -1010,11 +1107,8 @@ class GattService : Service() {
                 }
             }
             Nordic.DEVICE.LINK -> {
-                processLinkUpload(tagData.toDataBytes()).forEach {
-                    commandCallbacks.add(Runnable {
-                        delayedByteCharacteric(it)
-                    })
-                }
+                uploadData = tagData
+                delayedByteCharacteric(byteArrayOf(0xA0.toByte(), 0xB0.toByte()))
             }
             else -> {
 
@@ -1034,7 +1128,7 @@ class GattService : Service() {
     fun uploadAmiiboFile(tagData: ByteArray, amiibo: Amiibo, index: Int, complete: Boolean) {
         delayedTagCharacteristic("startTagUpload(${tagData.size})")
         val parameters: ArrayList<String> = arrayListOf()
-        for (chunk in GattArray.byteToPortions(tagData, 128)) {
+        for (chunk in GattArray.bytesToPortions(tagData, 128)) {
             val byteString = Base64.encodeToString(
                     chunk, Base64.NO_PADDING or Base64.NO_CLOSE or Base64.NO_WRAP
             )

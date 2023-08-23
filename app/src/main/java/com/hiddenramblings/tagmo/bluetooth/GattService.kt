@@ -811,19 +811,20 @@ class GattService : Service() {
     }
 
     private fun reliableWriteCharacteristic(value: ByteArray) {
-        mBluetoothGatt!!.beginReliableWrite()
-        mCharacteristicTX!!.writeType =
-                BluetoothGattCharacteristic.WRITE_TYPE_DEFAULT
-        if (Version.isTiramisu) {
-            mBluetoothGatt!!.writeCharacteristic(
-                    mCharacteristicTX!!, value,
-                    BluetoothGattCharacteristic.WRITE_TYPE_DEFAULT
-            )
-        } else @Suppress("DEPRECATION") {
-            mCharacteristicTX!!.value = value
-            mBluetoothGatt!!.writeCharacteristic(mCharacteristicTX)
-        }
-        mBluetoothGatt!!.executeReliableWrite()
+//        mBluetoothGatt!!.beginReliableWrite()
+//        mCharacteristicTX!!.writeType =
+//                BluetoothGattCharacteristic.WRITE_TYPE_DEFAULT
+//        if (Version.isTiramisu) {
+//            mBluetoothGatt!!.writeCharacteristic(
+//                    mCharacteristicTX!!, value,
+//                    BluetoothGattCharacteristic.WRITE_TYPE_DEFAULT
+//            )
+//        } else @Suppress("DEPRECATION") {
+//            mCharacteristicTX!!.value = value
+//            mBluetoothGatt!!.writeCharacteristic(mCharacteristicTX)
+//        }
+//        mBluetoothGatt!!.executeReliableWrite()
+        delayedByteCharacteric(value)
     }
 
     private fun delayedWriteCharacteristic(value: ByteArray) {

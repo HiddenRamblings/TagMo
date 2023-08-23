@@ -647,6 +647,9 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
                 deviceProfile = device.name
                 deviceAddress = device.address
                 deviceType = detectedType
+                isEnabled = detectedType != Nordic.DEVICE.PIXL
+                        || deviceType != Nordic.DEVICE.LOOP
+                        || deviceType != Nordic.DEVICE.LINK
                 dismissGattDiscovery()
                 showConnectionNotice()
                 startGattService()

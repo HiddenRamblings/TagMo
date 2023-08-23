@@ -254,7 +254,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                             } else {
                                 pagerAdapter.bluupSlots.run {
                                     delayedBluetoothEnable()
-                                    amiibosView = bluupContent
+                                    amiibosView = gattContent
                                     browserSheet = bottomSheet
                                 }
                             }
@@ -262,7 +262,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                         3 -> {
                             pagerAdapter.bluupSlots.run {
                                 delayedBluetoothEnable()
-                                amiibosView = bluupContent
+                                amiibosView = gattContent
                                 browserSheet = bottomSheet
                             }
                         }
@@ -296,7 +296,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                                 setTitle(R.string.gatt_title)
                                 pagerAdapter.bluupSlots.run {
                                     delayedBluetoothEnable()
-                                    amiibosView = bluupContent
+                                    amiibosView = gattContent
                                     browserSheet = bottomSheet
                                 }
                             }
@@ -305,7 +305,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                             setTitle(R.string.gatt_title)
                             pagerAdapter.bluupSlots.run {
                                 delayedBluetoothEnable()
-                                amiibosView = bluupContent
+                                amiibosView = gattContent
                                 browserSheet = bottomSheet
                             }
                         }

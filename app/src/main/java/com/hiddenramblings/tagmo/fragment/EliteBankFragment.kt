@@ -305,7 +305,7 @@ class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
             })
         }
         view.findViewById<View>(R.id.lock_elite).setOnClickListener {
-            android.app.AlertDialog.Builder(requireContext())
+            AlertDialog.Builder(requireContext())
                 .setTitle(R.string.lock_elite_warning)
                 .setMessage(R.string.lock_elite_details)
                 .setPositiveButton(R.string.cancel, null)

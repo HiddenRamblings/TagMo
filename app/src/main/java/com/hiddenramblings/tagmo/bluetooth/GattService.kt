@@ -180,12 +180,12 @@ class GattService : Service() {
         fun onPixlServicesDiscovered()
         fun onPixlActiveChanged(jsonObject: JSONObject?)
         fun onPixlStatusChanged(jsonObject: JSONObject?)
-        fun onPixlDataReceived(result: String?)
 
         fun onPuckServicesDiscovered()
         fun onPuckActiveChanged(slot: Int)
         fun onPuckDeviceProfile(activeSlot: Int, slotCount: Int)
         fun onPuckListRetrieved(slotData: ArrayList<ByteArray>)
+
         fun onFilesDownload(tagData: ByteArray)
         fun onProcessFinish()
         fun onConnectionLost()
@@ -199,15 +199,15 @@ class GattService : Service() {
             if (characteristic.uuid.isUUID(GattRX)) {
                 when (serviceType) {
                     Nordic.DEVICE.PIXL -> {
-                        listener?.onPixlDataReceived(data.toHex())
+
                     }
 
                     Nordic.DEVICE.LOOP -> {
-                        listener?.onPixlDataReceived(data.toHex())
+
                     }
 
                     Nordic.DEVICE.LINK -> {
-                        listener?.onPixlDataReceived(data.toHex())
+
                         when (data) {
                             byteArrayOf(0xB0.toByte(), 0xA0.toByte()) -> {
                                 delayedByteCharacteric(byteArrayOf(

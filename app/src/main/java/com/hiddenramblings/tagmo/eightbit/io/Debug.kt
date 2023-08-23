@@ -14,6 +14,7 @@
 package com.hiddenramblings.tagmo.eightbit.io
 
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.content.*
 import android.net.Uri
 import android.os.Build
@@ -229,19 +230,23 @@ object Debug {
     private fun submitLogcat(context: Context, logText: String) {
         if (BuildConfig.WEAR_OS) return
         val subject = context.getString(R.string.git_issue_title, BuildConfig.COMMIT)
+        val heading = if (logText.contains("AndroidRuntime"))
+            context.getString(R.string.logcat_crash)
+        else
+            subject
         with (context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager) {
             setPrimaryClip(ClipData.newPlainText(subject, logText))
         }
         try {
             val emailIntent = setEmailParams(Intent.ACTION_SENDTO, subject, logText)
             context.startActivity(Intent.createChooser(
-                emailIntent, context.getString(R.string.logcat_crash)
+                emailIntent, heading
             ).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
         } catch (anf: ActivityNotFoundException) {
             try {
                 val emailIntent = setEmailParams(Intent.ACTION_SEND, subject, logText)
                 context.startActivity(Intent.createChooser(
-                    emailIntent, context.getString(R.string.logcat_crash)
+                    emailIntent, heading
                 ).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
             } catch (ex: ActivityNotFoundException) {
                 try {
@@ -293,18 +298,38 @@ object Debug {
             val logText = log.toString()
             log.setLength(0)
             withContext(Dispatchers.Main) {
-                submitLogcat(Debug.context, logText)
-                if (!logText.contains("AndroidRuntime") && context is BrowserActivity) {
+                if (context is Activity) {
                     IconifiedSnackbar(context).buildSnackbar(
-                            R.string.menu_guides,
-                            R.drawable.ic_support_required_menu, Snackbar.LENGTH_INDEFINITE
+                            context.getString(R.string.git_issue_title, BuildConfig.COMMIT),
+                            R.drawable.ic_support_required_menu,
+                            Snackbar.LENGTH_INDEFINITE
                     ).also { status ->
-                        status.setAction(R.string.view) {
-                            context.showWebsite(null)
-                            status.dismiss()
+                        status.addCallback(object: Snackbar.Callback() {
+                            override fun onDismissed(transientBottomBar: Snackbar?, event: Int) {
+                                if (event != DISMISS_EVENT_ACTION
+                                        && !logText.contains("AndroidRuntime")
+                                        && context is BrowserActivity) {
+                                    IconifiedSnackbar(context).buildSnackbar(
+                                            R.string.menu_guides,
+                                            R.drawable.ic_support_required_menu,
+                                            Snackbar.LENGTH_INDEFINITE
+                                    ).also { guides ->
+                                        guides.setAction(R.string.view) {
+                                            context.showWebsite(null)
+                                            guides.dismiss()
+                                        }
+                                        guides.show()
+                                    }
+                                }
+                            }
+                        })
+                        status.setAction(R.string.submit) {
+                            submitLogcat(context, logText)
                         }
                         status.show()
                     }
+                } else {
+                    submitLogcat(Debug.context, logText)
                 }
             }
         }

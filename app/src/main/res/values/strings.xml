@@ -66,6 +66,7 @@
     <string name="erase">Erase</string>
     <string name="cancel">Cancel</string>
     <string name="accept">Accept</string>
+    <string name="submit">Submit</string>
     <string name="deny">Deny</string>
     <string name="start">Start</string>
     <string name="delete">Delete</string>

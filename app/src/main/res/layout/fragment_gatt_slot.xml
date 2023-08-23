@@ -10,20 +10,6 @@
     android:orientation="vertical"
     tools:context=".fragment.GattSlotFragment">
 
-    <FrameLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
-        <TextView
-            android:id="@+id/gatt_readout"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:gravity="center"
-            android:layout_marginLeft="8dp"
-            android:layout_marginStart="8dp"
-            android:textColor="@color/tag_text"
-            android:textSize="16sp"/>
-
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -42,8 +28,6 @@
             android:paddingHorizontal="4dp"
             android:paddingBottom="@dimen/recyclerview_padding"/>
     </LinearLayout>
-
-    </FrameLayout>
 
     <LinearLayout
         android:id="@+id/bottom_sheet_slot"

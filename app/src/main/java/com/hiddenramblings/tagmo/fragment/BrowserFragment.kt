@@ -341,7 +341,7 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
                     amiiboTypes.forEach {
                         if (!items.contains(it.name)) items.add(it.name)
                     }
-                    android.app.AlertDialog.Builder(requireContext())
+                    AlertDialog.Builder(requireContext())
                         .setTitle(R.string.pref_amiibo_types)
                         .setAdapter(
                             ArrayAdapter(

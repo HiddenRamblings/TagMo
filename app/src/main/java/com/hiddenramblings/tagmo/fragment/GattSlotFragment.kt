@@ -75,7 +75,7 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
     private var amiiboTile: CardView? = null
     private var amiiboCard: CardView? = null
     private var toolbar: Toolbar? = null
-    var bluupContent: RecyclerView? = null
+    var gattContent: RecyclerView? = null
         private set
     var gattAdapter: GattSlotAdapter? = null
     private var gattStats: TextView? = null
@@ -151,7 +151,7 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
         browserActivity?.let { activity ->
             settings = activity.settings ?: BrowserSettings().initialize()
 
-            bluupContent = view.findViewById<RecyclerView>(R.id.bluup_content).apply {
+            gattContent = view.findViewById<RecyclerView>(R.id.bluup_content).apply {
                 layoutManager = if (settings.amiiboView == BrowserSettings.VIEW.IMAGE.value)
                     GridLayoutManager(activity, activity.columnCount)
                 else
@@ -278,7 +278,7 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
                 if (TagMo.isUserInputEnabled) setLayerType(View.LAYER_TYPE_SOFTWARE, null)
                 setOnValueChangedListener { _, _, newVal ->
                     if (maxSlotCount - currentCount > 0)
-                        bluupContent?.post {
+                        gattContent?.post {
                             writeSlots?.text = getString(R.string.write_slots, newVal)
                         }
                 }
@@ -306,10 +306,10 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
                         if (writeSlotsLayout?.visibility == View.VISIBLE)
                             onBottomSheetChanged(SHEET.MENU)
                         toggle.setImageResource(R.drawable.ic_expand_less_24dp)
-                        bluupContent?.setPadding(0, 0, 0, 0)
+                        gattContent?.setPadding(0, 0, 0, 0)
                     } else if (newState == BottomSheetBehavior.STATE_EXPANDED) {
                         toggle.setImageResource(R.drawable.ic_expand_more_24dp)
-                        bluupContent?.let {
+                        gattContent?.let {
                             val bottomHeight: Int = (view.measuredHeight - peekHeight)
                             it.setPadding(0, 0, 0, if (slideHeight > 0)
                                 (bottomHeight * slideHeight).toInt() else 0
@@ -402,7 +402,7 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
 
     private val gattButtonState: Unit
         get() {
-            bluupContent?.post {
+            gattContent?.post {
                 val openSlots = maxSlotCount - currentCount
                 gattSlotCount.value = openSlots
                 if (openSlots > 0) {
@@ -945,7 +945,6 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
             ).also { status ->
                 status.setAction(R.string.scan) {
                     selectBluetoothDevice()
-                    status.dismiss()
                 }
                 status.show()
             }
@@ -978,7 +977,6 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
             ).also { status ->
                 status.setAction(R.string.retry) {
                     selectBluetoothDevice()
-                    status.dismiss()
                 }
                 status.show()
             }
@@ -1294,13 +1292,13 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
                                 }
                             }
                             settings.removeChangeListener(gattAdapter)
+                            dismissSnackbarNotice(true)
                             gattAdapter = GattSlotAdapter(
                                 settings, this@GattSlotFragment
                             ).also {
                                 it.setGattAmiibo(bluupAmiibos)
-                                dismissSnackbarNotice(true)
                                 requireView().post {
-                                    bluupContent?.adapter = it
+                                    gattContent?.adapter = it
                                     settings.addChangeListener(it)
                                 }
                                 if (currentCount > 0) {
@@ -1374,6 +1372,7 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
                                 resetDevice?.isVisible = true
                                 requireView().findViewById<TextView>(R.id.hardware_info).text = deviceProfile
                             }
+                            dismissSnackbarNotice(true)
                             try {
                                 setCharacteristicRX()
                                 deviceAmiibo
@@ -1389,15 +1388,6 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
                                 if (it.isShowing) it.dismiss()
                             }
                             deviceAmiibo
-                        }
-
-                        @SuppressLint("SetTextI18n", "CutPasteId")
-                        override fun onPixlDataReceived(result: String?) {
-                            dismissSnackbarNotice(true)
-                            requireView().post {
-                                requireView().findViewById<TextView>(R.id.gatt_readout).text =
-                                        "${requireView().findViewById<TextView>(R.id.gatt_readout).text}$result"
-                            }
                         }
 
                         override fun onPixlActiveChanged(jsonObject: JSONObject?) {
@@ -1478,13 +1468,13 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
                                 puckAmiibos.add(getAmiiboFromSlice(bytes))
                             }
                             settings.removeChangeListener(gattAdapter)
+                            dismissSnackbarNotice(true)
                             gattAdapter = GattSlotAdapter(
                                     settings, this@GattSlotFragment
                             ).also {
                                 it.setGattAmiibo(puckAmiibos)
-                                dismissSnackbarNotice(true)
                                 requireView().post {
-                                    bluupContent?.adapter = it
+                                    gattContent?.adapter = it
                                     settings.addChangeListener(it)
                                 }
                                 if (currentCount > 0) {

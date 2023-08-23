@@ -490,7 +490,6 @@ class NfcActivity : AppCompatActivity() {
                                 ).buildTickerBar(R.string.progress_unlock)
                                 unlockBar.setAction(R.string.proceed) {
                                     ntag.amiiboUnlock()
-                                    unlockBar.dismiss()
                                 }.show()
                                 while (unlockBar.isShown) setResult(RESULT_OK)
                             } else {

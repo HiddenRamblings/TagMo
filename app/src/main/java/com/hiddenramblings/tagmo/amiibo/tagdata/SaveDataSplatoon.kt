@@ -1,6 +1,7 @@
 package com.hiddenramblings.tagmo.amiibo.tagdata
 
 import com.hiddenramblings.tagmo.nfctech.TagArray
+import com.hiddenramblings.tagmo.nfctech.TagArray.toByteArray
 import java.util.Random
 
 open class SaveDataSplatoon(appData: ByteArray?) : AppData(appData!!) {
@@ -18,7 +19,7 @@ open class SaveDataSplatoon(appData: ByteArray?) : AppData(appData!!) {
             "9E F3 63 B2 BO AE DD A2 5D 09 CC 9B 9B D1 D5 3E" +
             "88 BO 6D C2 AF 9D 66 7E 20 24 77 3B 88 7C AF 7F" +
             "88 9C B6 3D"
-    private val saveDataBytes = TagArray.stringToByteArray(saveDataHex)
+    private val saveDataBytes = saveDataHex.toByteArray()
     private val saveDataHex2 = "01 01 00 00" +
             "00 00 00 00 99 24 8D 4B 4C 84 9D FO A4 98 OC F5" +
             "AE D1 42 9B 40 1D 20 42 7D 85 28 77 62 OD FO C8" +
@@ -33,7 +34,7 @@ open class SaveDataSplatoon(appData: ByteArray?) : AppData(appData!!) {
             "02 56 C7 3D B6 D4 F8 7A 90 A1 55 7E D4 4A E1 6B" +
             "78 CO 3F 99 89 47 37 37 ED 6A E2 C8 9E C5 32 67" +
             "AA 42 4E 6D"
-    private val saveDataBytes2 = TagArray.stringToByteArray(saveDataHex2)
+    private val saveDataBytes2 = saveDataHex2.toByteArray()
 
     fun hasUnlockData(): Boolean {
         val saveData = appData.array().copyOfRange(GAME_DATA_OFFSET, saveDataBytes.size)

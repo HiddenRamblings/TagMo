@@ -4,6 +4,7 @@ import android.util.Base64
 import com.hiddenramblings.tagmo.R
 import com.hiddenramblings.tagmo.TagMo
 import com.hiddenramblings.tagmo.nfctech.TagArray
+import com.hiddenramblings.tagmo.nfctech.TagArray.toHex
 import org.json.JSONException
 import org.json.JSONObject
 import java.io.IOException
@@ -71,7 +72,7 @@ object PowerTagManager {
                 (uid[5].toInt() and 0xFE).toByte(),
                 (uid[6].toInt() and 0xFE).toByte()
             )
-            val keymap = it[TagArray.bytesToHex(uidc)] ?: throw NullPointerException(
+            val keymap = it[uidc.toHex()] ?: throw NullPointerException(
                 TagMo.appContext.getString(R.string.uid_key_missing)
             )
             return keymap[page10bytes] ?: throw NullPointerException(

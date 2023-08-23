@@ -7,7 +7,7 @@ import com.hiddenramblings.tagmo.TagMo
 import com.hiddenramblings.tagmo.amiibo.tagdata.AmiiboData
 import com.hiddenramblings.tagmo.eightbit.io.Debug
 import com.hiddenramblings.tagmo.eightbit.os.Version
-import com.hiddenramblings.tagmo.nfctech.TagArray
+import com.hiddenramblings.tagmo.nfctech.TagArray.toByteArray
 import java.io.IOException
 
 open class Amiibo : Comparable<Amiibo>, Parcelable {
@@ -66,7 +66,7 @@ open class Amiibo : Comparable<Amiibo>, Parcelable {
                 Integer.parseInt(it.substring(8, 16), 16).toString(36)
             } catch (nf: NumberFormatException) {
                 Debug.warn(nf)
-                String(TagArray.longToBytes(id))
+                String(id.toByteArray())
             }
         }
     open var bluupName: String? = null

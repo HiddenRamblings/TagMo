@@ -12,6 +12,7 @@ import android.nfc.tech.TagTechnology
 import com.hiddenramblings.tagmo.R
 import com.hiddenramblings.tagmo.TagMo
 import com.hiddenramblings.tagmo.eightbit.io.Debug
+import com.hiddenramblings.tagmo.nfctech.TagArray.toHex
 import java.io.IOException
 import java.math.BigInteger
 import java.security.MessageDigest
@@ -104,7 +105,7 @@ class Infinity : TagTechnology {
         }
 
         private fun andBeyond(tag: Tag) : ByteArray {
-            return calc_keya(TagArray.bytesToHex(tag.id))
+            return calc_keya(tag.id.toHex())
         }
 
         private fun getMifareClasssic(tag: Tag?): Infinity? {

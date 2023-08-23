@@ -45,7 +45,7 @@ class ScanTag {
                 // ntag.connect()
                 if (!hasTestedElite) {
                     hasTestedElite = true
-                    if (!isPowerTag(ntag) && prefs.eliteEnabled()) isEliteDevice = isElite(ntag)
+                    if (ntag.isPowerTag && prefs.eliteEnabled()) isEliteDevice = ntag.isElite
                 }
                 try {
                     if (isEliteDevice) {

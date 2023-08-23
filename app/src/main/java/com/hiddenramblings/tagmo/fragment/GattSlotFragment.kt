@@ -50,6 +50,8 @@ import com.hiddenramblings.tagmo.eightbit.material.IconifiedSnackbar
 import com.hiddenramblings.tagmo.eightbit.os.Version
 import com.hiddenramblings.tagmo.eightbit.request.ImageTarget
 import com.hiddenramblings.tagmo.nfctech.TagArray
+import com.hiddenramblings.tagmo.nfctech.TagArray.toByteArray
+import com.hiddenramblings.tagmo.nfctech.TagArray.toHex
 import com.hiddenramblings.tagmo.widget.Toasty
 import com.shawnlin.numberpicker.NumberPicker
 import kotlinx.coroutines.CoroutineScope
@@ -423,7 +425,7 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
     private fun resetActiveSlot() {
         gattAdapter?.getItem(0).run {
             if (this is BluupTag) {
-                serviceGatt?.setActiveAmiibo(name, String(TagArray.longToBytes(id)))
+                serviceGatt?.setActiveAmiibo(name, String(id.toByteArray()))
             } else {
                 this?.let { serviceGatt?.setActiveAmiibo(it.name, it.bluupTail) }
             }
@@ -578,7 +580,7 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
         var selectedAmiibo: Amiibo? = null
         amiiboManager?.let {
             try {
-                val hexData = TagArray.bytesToHex(byteData)
+                val hexData = byteData.toHex()
                 val amiiboId = TagArray.hexToLong(hexData.substring(82, 98))
                 if (it.amiibos.containsKey(amiiboId)) {
                     selectedAmiibo = it.amiibos[amiiboId]
@@ -1391,6 +1393,7 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
 
                         @SuppressLint("SetTextI18n", "CutPasteId")
                         override fun onPixlDataReceived(result: String?) {
+                            dismissSnackbarNotice(true)
                             requireView().post {
                                 requireView().findViewById<TextView>(R.id.gatt_readout).text =
                                         "${requireView().findViewById<TextView>(R.id.gatt_readout).text}$result"

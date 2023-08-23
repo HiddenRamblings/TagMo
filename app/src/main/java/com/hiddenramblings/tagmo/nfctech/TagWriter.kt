@@ -5,6 +5,8 @@ import com.hiddenramblings.tagmo.TagMo
 import com.hiddenramblings.tagmo.amiibo.KeyManager
 import com.hiddenramblings.tagmo.amiibo.PowerTagManager
 import com.hiddenramblings.tagmo.eightbit.io.Debug
+import com.hiddenramblings.tagmo.nfctech.TagArray.isPowerTag
+import com.hiddenramblings.tagmo.nfctech.TagArray.toHex
 import java.io.BufferedReader
 import java.io.IOException
 import java.io.InputStreamReader
@@ -98,7 +100,7 @@ object TagWriter {
         val idPages = mifare.readPages(0)
         if (null == idPages || idPages.size != NfcByte.PAGE_SIZE * 4)
             throw IOException(TagMo.appContext.getString(R.string.fail_read_size))
-        val isPowerTag = TagArray.isPowerTag(mifare)
+        val isPowerTag = mifare.isPowerTag
         Debug.verbose(TagWriter::class.java, R.string.power_tag_verify, isPowerTag.toString())
         var writeData = keyManager.decrypt(tagData)
         writeData = if (isPowerTag) {
@@ -108,7 +110,7 @@ object TagWriter {
             patchUid(idPages, writeData)
         }
         writeData = keyManager.encrypt(writeData)
-        Debug.verbose(TagWriter::class.java, TagArray.bytesToHex(writeData))
+        Debug.verbose(TagWriter::class.java, writeData.toHex())
         if (!isPowerTag) {
             TagArray.validateNtag(mifare, writeData, validateNtag)
             try {
@@ -121,14 +123,14 @@ object TagWriter {
             val oldid = mifare.tag!!.id
             if (null == oldid || oldid.size != 7)
                 throw Exception(TagMo.appContext.getString(R.string.fail_read_uid))
-            Debug.verbose(TagWriter::class.java, R.string.old_uid, TagArray.bytesToHex(oldid))
+            Debug.verbose(TagWriter::class.java, R.string.old_uid, oldid.toHex())
             val page10 = mifare.readPages(0x10)
-            Debug.verbose(TagWriter::class.java, R.string.page_ten, TagArray.bytesToHex(page10))
-            val page10bytes = TagArray.bytesToHex(byteArrayOf(page10?.get(0) ?: 0, page10?.get(3) ?: 0))
+            page10?.let { Debug.verbose(TagWriter::class.java, R.string.page_ten, it.toHex()) }
+            val page10bytes = byteArrayOf(page10?.get(0) ?: 0, page10?.get(3) ?: 0).toHex()
             val ptagKeySuffix = PowerTagManager.getPowerTagKey(oldid, page10bytes)
             val ptagKey = TagArray.hexToByteArray(NfcByte.POWERTAG_KEY)
             System.arraycopy(ptagKeySuffix, 0, ptagKey, 8, 8)
-            Debug.verbose(TagWriter::class.java, R.string.ptag_key, TagArray.bytesToHex(ptagKey))
+            Debug.verbose(TagWriter::class.java, R.string.ptag_key, ptagKey.toHex())
             mifare.transceive(NfcByte.POWERTAG_WRITE)
             mifare.transceive(ptagKey)
             if (!(idPages[0] == 0xFF.toByte() && idPages[1] == 0xFF.toByte())) doAuth(mifare)
@@ -229,7 +231,7 @@ object TagWriter {
             throw IOException(TagMo.appContext.getString(R.string.fail_read))
         val uid = uidFromPages(pages01)
         val password = keygen(uid)
-        Debug.verbose(TagWriter::class.java, R.string.password, TagArray.bytesToHex(password!!))
+        Debug.verbose(TagWriter::class.java, R.string.password, password!!.toHex())
         val auth = byteArrayOf(
             0x1B.toByte(),
             password[0],
@@ -239,7 +241,7 @@ object TagWriter {
         )
         val response = tag.transceive(auth)
             ?: throw Exception(TagMo.appContext.getString(R.string.error_auth_null))
-        val respStr = TagArray.bytesToHex(response)
+        val respStr = response.toHex()
         Debug.verbose(TagWriter::class.java, R.string.auth_response, respStr)
         if ("8080" != respStr) {
             throw Exception(TagMo.appContext.getString(R.string.fail_auth))
@@ -271,7 +273,7 @@ object TagWriter {
             throw IOException(TagMo.appContext.getString(R.string.fail_read))
         val uid = uidFromPages(pages01)
         val password = keygen(uid)
-        Debug.verbose(TagWriter::class.java, R.string.password, TagArray.bytesToHex(password!!))
+        Debug.verbose(TagWriter::class.java, R.string.password, password!!.toHex())
         Debug.verbose(TagWriter::class.java, R.string.write_pack)
         tag.writePage(0x86, byteArrayOf(0x80.toByte(), 0x80.toByte(), 0.toByte(), 0.toByte()))
         Debug.verbose(TagWriter::class.java, R.string.write_pwd)
@@ -311,7 +313,7 @@ object TagWriter {
             if (write) {
                 val result = ByteArray(8)
                 System.arraycopy(tagData, 84, result, 0, result.size)
-                Debug.verbose(TagWriter::class.java, TagArray.bytesToHex(result))
+                Debug.verbose(TagWriter::class.java, result.toHex())
             } else {
                 throw Exception(TagMo.appContext.getString(R.string.error_elite_write))
             }

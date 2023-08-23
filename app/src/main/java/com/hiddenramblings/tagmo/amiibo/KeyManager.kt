@@ -7,6 +7,7 @@ import com.hiddenramblings.tagmo.eightbit.io.Debug
 import com.hiddenramblings.tagmo.nfctech.Foomiibo
 import com.hiddenramblings.tagmo.nfctech.NfcByte
 import com.hiddenramblings.tagmo.nfctech.TagArray
+import com.hiddenramblings.tagmo.nfctech.TagArray.toHex
 import java.io.DataInputStream
 import java.io.IOException
 import java.io.InputStream
@@ -58,7 +59,7 @@ class KeyManager(var context: Context) {
     @Throws(IOException::class, NoSuchAlgorithmException::class)
     private fun readKey(data: ByteArray) {
         val md5 = MessageDigest.getInstance("MD5")
-        val hex = TagArray.bytesToHex(md5.digest(data)).uppercase()
+        val hex = md5.digest(data).toHex().uppercase()
         if (FIXED_KEY_MD5 == hex) {
             saveKeyFile(FIXED_KEY_MD5, data)
             fixedKey = loadKeyFromStorage(FIXED_KEY_MD5)

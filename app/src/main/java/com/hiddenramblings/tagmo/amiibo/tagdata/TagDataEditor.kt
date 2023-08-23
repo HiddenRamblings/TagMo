@@ -34,6 +34,7 @@ import com.hiddenramblings.tagmo.eightbit.io.Debug
 import com.hiddenramblings.tagmo.eightbit.os.Version
 import com.hiddenramblings.tagmo.nfctech.Foomiibo
 import com.hiddenramblings.tagmo.nfctech.TagArray
+import com.hiddenramblings.tagmo.nfctech.TagArray.toHex
 import com.hiddenramblings.tagmo.widget.Toasty
 import com.vicmikhailau.maskededittext.MaskedEditText
 import kotlinx.coroutines.*
@@ -221,7 +222,7 @@ class TagDataEditor : AppCompatActivity() {
         txtSerialNumber = findViewById(R.id.txtSerialNumber)
         generateSerial = findViewById<AppCompatButton>(R.id.random_serial).apply {
             setOnClickListener {
-                txtSerialNumber.setText(TagArray.bytesToHex(Foomiibo.generateRandomUID()))
+                txtSerialNumber.setText(Foomiibo.generateRandomUID().toHex())
             }
         }
         txtInitDate = findViewById<EditText>(R.id.txtInitDate).apply {
@@ -646,7 +647,7 @@ class TagDataEditor : AppCompatActivity() {
     }
 
     private fun loadUID() {
-        txtUID.setText(TagArray.bytesToHex(amiiboData.uID))
+        txtUID.setText(amiiboData.uID.toHex())
     }
 
     private fun loadCountryCode() {
@@ -948,7 +949,7 @@ class TagDataEditor : AppCompatActivity() {
         txtSerialNumber.tag = txtSerialNumber.keyListener
         txtSerialNumber.keyListener = null
         val value = amiiboData.uID
-        txtSerialNumber.setText(TagArray.bytesToHex(value))
+        txtSerialNumber.setText(value.toHex())
     }
 
     private class CountryCodesAdapter(data: HashMap<Int, String>) : BaseAdapter(), Filterable {

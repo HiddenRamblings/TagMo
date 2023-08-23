@@ -26,13 +26,17 @@ import android.os.Looper
 import android.util.Base64
 import androidx.annotation.RequiresApi
 import com.hiddenramblings.tagmo.amiibo.Amiibo
+import com.hiddenramblings.tagmo.bluetooth.GattArray.toDataBytes
+import com.hiddenramblings.tagmo.bluetooth.GattArray.toFileBytes
+import com.hiddenramblings.tagmo.bluetooth.GattArray.toPortions
+import com.hiddenramblings.tagmo.bluetooth.GattArray.toUnicode
 import com.hiddenramblings.tagmo.bluetooth.Nordic.isUUID
 import com.hiddenramblings.tagmo.eightbit.io.Debug
 import com.hiddenramblings.tagmo.eightbit.os.Version
 import com.hiddenramblings.tagmo.nfctech.NfcByte
 import com.hiddenramblings.tagmo.nfctech.TagArray
-import com.hiddenramblings.tagmo.nfctech.toDataBytes
-import com.hiddenramblings.tagmo.nfctech.toFileBytes
+import com.hiddenramblings.tagmo.nfctech.TagArray.toHex
+import com.hiddenramblings.tagmo.nfctech.TagArray.toPages
 import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
@@ -190,20 +194,20 @@ class GattService : Service() {
     private fun getCharacteristicValue(characteristic: BluetoothGattCharacteristic, data: ByteArray?) {
         if (data?.isNotEmpty() == true) {
             Debug.warn(this.javaClass,
-                    "${Nordic.getLogTag(characteristic.uuid)} ${TagArray.bytesToHex(data)}"
+                    "${Nordic.getLogTag(characteristic.uuid)} ${data.toHex()}"
             )
             if (characteristic.uuid.isUUID(GattRX)) {
                 when (serviceType) {
                     Nordic.DEVICE.PIXL -> {
-                        listener?.onPixlDataReceived(TagArray.bytesToHex(data))
+                        listener?.onPixlDataReceived(data.toHex())
                     }
 
                     Nordic.DEVICE.LOOP -> {
-                        listener?.onPixlDataReceived(TagArray.bytesToHex(data))
+                        listener?.onPixlDataReceived(data.toHex())
                     }
 
                     Nordic.DEVICE.LINK -> {
-                        listener?.onPixlDataReceived(TagArray.bytesToHex(data))
+                        listener?.onPixlDataReceived(data.toHex())
                         when (data) {
                             byteArrayOf(0xB0.toByte(), 0xA0.toByte()) -> {
                                 delayedByteCharacteric(byteArrayOf(
@@ -242,7 +246,7 @@ class GattService : Service() {
 
                     Nordic.DEVICE.PUCK -> {
                         when {
-                            TagArray.bytesToString(data).endsWith("DTM_PUCK_FAST") -> {
+                            TagArray.hexToString(data.toHex()).endsWith("DTM_PUCK_FAST") -> {
                                 sendCommand(byteArrayOf(PUCK.INFO.bytes), null)
                             }
 
@@ -828,7 +832,7 @@ class GattService : Service() {
     }
 
     private fun delayedWriteCharacteristic(value: ByteArray) {
-        val chunks = GattArray.bytesToPortions(value, maxTransmissionUnit)
+        val chunks = value.toPortions(maxTransmissionUnit)
         val commandQueue = commandCallbacks.size + chunks.size
         gattHandler.postDelayed({
             var i = 0
@@ -892,7 +896,7 @@ class GattService : Service() {
     }
 
     private fun delayedWriteCharacteristic(value: String) {
-        val chunks = GattArray.stringToPortions(value, maxTransmissionUnit)
+        val chunks = value.toPortions(maxTransmissionUnit)
         val commandQueue = commandCallbacks.size + chunks.size
         gattHandler.postDelayed({
             chunks.forEachIndexed { i, chunk ->
@@ -1038,7 +1042,7 @@ class GattService : Service() {
     }
 
     private fun processLinkUpload(inputArray: ByteArray) {
-        val chunks = GattArray.bytesToPortions(inputArray, 0x96)
+        val chunks = inputArray.toPortions(0x96)
 
         chunks.forEachIndexed { index, bytes ->
             val size = if (index == chunks.lastIndex) bytes.size else 0x96
@@ -1118,7 +1122,7 @@ class GattService : Service() {
     }
 
     fun uploadSlotAmiibo(tagData: ByteArray, slot: Int) {
-        TagArray.bytesToPages(tagData.toFileBytes()).forEachIndexed { index, bytes ->
+        tagData.toFileBytes().toPages().forEachIndexed { index, bytes ->
             sendCommand(byteArrayOf(
                     PUCK.WRITE.bytes, slot.toByte(), (index * NfcByte.PAGE_SIZE).toByte(), 0x01
             ), bytes)
@@ -1129,14 +1133,14 @@ class GattService : Service() {
     fun uploadAmiiboFile(tagData: ByteArray, amiibo: Amiibo, index: Int, complete: Boolean) {
         delayedTagCharacteristic("startTagUpload(${tagData.size})")
         val parameters: ArrayList<String> = arrayListOf()
-        for (chunk in GattArray.bytesToPortions(tagData, 128)) {
+        for (chunk in tagData.toPortions(128)) {
             val byteString = Base64.encodeToString(
                     chunk, Base64.NO_PADDING or Base64.NO_CLOSE or Base64.NO_WRAP
             )
             parameters.add("tagUploadChunk(\"$byteString\")")
         }
         amiibo.name?.let { name ->
-            val nameUnicode = GattArray.stringToUnicode(name)
+            val nameUnicode = name.toUnicode()
             val nameIndexed = if (index > 0) "$index.$nameUnicode" else nameUnicode
             val amiiboName = truncateUnicode(nameIndexed, amiibo.bluupTail.length)
             parameters.add("saveUploadedTag(\"$amiiboName|${amiibo.bluupTail}|0\")")
@@ -1159,7 +1163,7 @@ class GattService : Service() {
                 return
             }
             tail?.let {
-                nameCompat = truncateUnicode(GattArray.stringToUnicode(name), it.length)
+                nameCompat = truncateUnicode(name.toUnicode(), it.length)
                 tailCompat = it
                 delayedTagCharacteristic("setTag(\"$nameCompat|$it|0\")")
             }
@@ -1179,7 +1183,7 @@ class GattService : Service() {
                 return
             }
             tail?.let {
-                nameCompat = truncateUnicode(GattArray.stringToUnicode(name), it.length)
+                nameCompat = truncateUnicode(name.toUnicode(), it.length)
                 tailCompat = it
                 delayedTagCharacteristic("remove(\"$nameCompat|$it|0\")")
             }
@@ -1189,7 +1193,7 @@ class GattService : Service() {
     fun downloadAmiibo(fileName: String?, tail: String?) {
         tail?.let {
             fileName?.let { file ->
-                val amiiboName = truncateUnicode(GattArray.stringToUnicode(file), it.length)
+                val amiiboName = truncateUnicode(file.toUnicode(), it.length)
                 delayedTagCharacteristic("download(\"$amiiboName|$it|0\")")
             }
         }
@@ -1256,7 +1260,7 @@ class GattService : Service() {
     private fun fixSlotDetails(amiiboName: String?, tail: String?) {
         tail?.let {
             amiiboName?.let { amiibo ->
-                val fixedName = truncateUnicode(GattArray.stringToUnicode(amiibo), it.length)
+                val fixedName = truncateUnicode(amiibo.toUnicode(), it.length)
                 promptTagCharacteristic(
                         "rename(\"$fixedName|$it\",\"$fixedName|$it|0\" )"
                 )

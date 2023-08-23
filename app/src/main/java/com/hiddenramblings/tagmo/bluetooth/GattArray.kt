@@ -5,28 +5,44 @@
  */
 package com.hiddenramblings.tagmo.bluetooth
 
+import com.hiddenramblings.tagmo.nfctech.NfcByte
+
 object GattArray {
 
+    fun ByteArray.toDataBytes(): ByteArray {
+        return if (this.size != NfcByte.TAG_DATA_SIZE + 8)
+            this.copyOf(NfcByte.TAG_DATA_SIZE + 8)
+        else
+            this
+    }
+
+    fun ByteArray.toFileBytes(): ByteArray {
+        return if (this.size != NfcByte.TAG_FILE_SIZE)
+            this.copyOf(NfcByte.TAG_FILE_SIZE)
+        else
+            this
+    }
+
     @JvmStatic
-    fun bytesToPortions(largeByteArray: ByteArray, sizePerPortion: Int): List<ByteArray> {
+    fun ByteArray.toPortions(sizePerPortion: Int): List<ByteArray> {
         val byteArrayPortions: ArrayList<ByteArray> = arrayListOf()
-        largeByteArray.asIterable().chunked(sizePerPortion).forEach {
+        this.asIterable().chunked(sizePerPortion).forEach {
             byteArrayPortions.add(it.toByteArray())
         }
         return byteArrayPortions
     }
 
     @JvmStatic
-    fun stringToPortions(largeString: String, sizePerPortion: Int): List<String> {
+    fun String.toPortions(sizePerPortion: Int): List<String> {
         val stringPortions: ArrayList<String> = arrayListOf()
-        val size = largeString.length
+        val size = this.length
         if (size <= sizePerPortion) {
-            stringPortions.add(largeString)
+            stringPortions.add(this)
         } else {
             var index = 0
             while (index < size) {
-                stringPortions.add(largeString.substring(index,
-                    (index + sizePerPortion).coerceAtMost(largeString.length)
+                stringPortions.add(this.substring(index,
+                    (index + sizePerPortion).coerceAtMost(this.length)
                 ))
                 index += sizePerPortion
             }
@@ -35,9 +51,9 @@ object GattArray {
     }
 
     @JvmStatic
-    fun stringToUnicode(s: String): String {
-        val sb = StringBuilder(s.length * 3)
-        for (c in s.toCharArray()) {
+    fun String.toUnicode(): String {
+        val sb = StringBuilder(this.length * 3)
+        for (c in this.toCharArray()) {
             if (c.code < 256) {
                 sb.append(c)
             } else {

@@ -34,6 +34,8 @@ import com.hiddenramblings.tagmo.amiibo.tagdata.AmiiboData
 import com.hiddenramblings.tagmo.eightbit.io.Debug
 import com.hiddenramblings.tagmo.eightbit.material.IconifiedSnackbar
 import com.hiddenramblings.tagmo.eightbit.os.Version
+import com.hiddenramblings.tagmo.nfctech.TagArray.isElite
+import com.hiddenramblings.tagmo.nfctech.TagArray.isPowerTag
 import com.hiddenramblings.tagmo.nfctech.TagArray.technology
 import com.hiddenramblings.tagmo.parcelable
 import com.hiddenramblings.tagmo.parcelableArrayList
@@ -267,10 +269,10 @@ class NfcActivity : AppCompatActivity() {
                 // ntag.connect()
                 if (!hasTestedElite) {
                     hasTestedElite = true
-                    if (TagArray.isPowerTag(ntag)) {
+                    if (ntag.isPowerTag) {
                         showMessage(R.string.tag_scanning, getString(R.string.power_tag))
                     } else if (prefs.eliteEnabled()) {
-                        isEliteDevice = (isEliteIntent || TagArray.isElite(ntag)
+                        isEliteDevice = (isEliteIntent || ntag.isElite
                                 || NFCIntent.ACTION_UNLOCK_UNIT == mode
                                 || NFCIntent.ACTION_BLIND_SCAN == mode)
                         if (isEliteDevice) showMessage(R.string.tag_scanning, getString(R.string.elite_n2))

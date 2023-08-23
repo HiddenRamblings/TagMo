@@ -29,6 +29,7 @@ import com.hiddenramblings.tagmo.eightbit.io.Debug
 import com.hiddenramblings.tagmo.eightbit.os.Storage
 import com.hiddenramblings.tagmo.eightbit.os.Version
 import com.hiddenramblings.tagmo.nfctech.TagArray
+import com.hiddenramblings.tagmo.nfctech.TagArray.toHex
 import com.hiddenramblings.tagmo.widget.Toasty
 import java.io.File
 import java.io.FileOutputStream
@@ -82,7 +83,7 @@ class HexCodeViewer : AppCompatActivity() {
                 } catch (e: IOException) {
                     tagData?.let {
                         saveHexViewToFile(
-                            prefs, listView, TagArray.bytesToHex(tagData.copyOfRange(0, 9))
+                            prefs, listView, tagData.copyOfRange(0, 9).toHex()
                         )
                     }
                 }

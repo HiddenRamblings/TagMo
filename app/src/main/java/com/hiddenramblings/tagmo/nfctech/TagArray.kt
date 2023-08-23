@@ -30,20 +30,6 @@ import java.nio.BufferUnderflowException
 import java.nio.ByteBuffer
 import java.util.*
 
-fun ByteArray.toDataBytes(): ByteArray {
-    return if (this.size != NfcByte.TAG_DATA_SIZE + 8)
-        this.copyOf(NfcByte.TAG_DATA_SIZE + 8)
-    else
-        this
-}
-
-fun ByteArray.toFileBytes(): ByteArray {
-    return if (this.size != NfcByte.TAG_FILE_SIZE)
-        this.copyOf(NfcByte.TAG_FILE_SIZE)
-    else
-        this
-}
-
 object TagArray {
     @JvmStatic
     fun Tag?.technology(): String {
@@ -80,19 +66,18 @@ object TagArray {
 
     private val mPrefs = Preferences(TagMo.appContext)
     @JvmStatic
-    fun isPowerTag(mifare: NTAG215?): Boolean {
+    val NTAG215.isPowerTag: Boolean get() {
         if (mPrefs.powerTagEnabled()) {
-            return mifare?.transceive(NfcByte.POWERTAG_SIG)?.let {
+            return this.transceive(NfcByte.POWERTAG_SIG)?.let {
                 compareRange(it, NfcByte.POWERTAG_SIGNATURE, NfcByte.POWERTAG_SIGNATURE.size)
             } ?: false
         }
         return false
     }
-
     @JvmStatic
-    fun isElite(mifare: NTAG215?): Boolean {
+    val NTAG215.isElite: Boolean get() {
         if (mPrefs.eliteEnabled()) {
-            val signature = mifare?.readSignature(false)
+            val signature = this.readSignature(false)
             val page10 = hexToByteArray("FFFFFFFFFF")
             return signature?.let {
                 compareRange(it, page10, 32 - page10.size, it.size)
@@ -118,10 +103,43 @@ object TagArray {
     }
 
     @JvmStatic
-    fun bytesToHex(bytes: ByteArray?): String {
+    fun ByteArray.toHex(): String {
         val sb = StringBuilder()
-        bytes?.forEach { sb.append(String.format("%02X", it)) }
+        this.forEach { sb.append(String.format("%02X", it)) }
         return sb.toString()
+    }
+
+    fun ByteArray.toLong(): Long {
+        val buffer = ByteBuffer.allocate(
+            if (Version.isNougat) java.lang.Long.BYTES else 8
+        ).put(this).also { it.flip() }
+        return try {
+            buffer.long
+        } catch (bue: BufferUnderflowException) {
+            try {
+                buffer.int.toLong()
+            } catch (bue: BufferUnderflowException) {
+                buffer.short.toLong()
+            }
+        }
+    }
+
+    fun ByteArray.toPages(): Array<ByteArray?> {
+        val pages = arrayOfNulls<ByteArray>(this.size / NfcByte.PAGE_SIZE)
+        var i = 0
+        var j = 0
+        while (i < this.size) {
+            pages[j] = this.copyOfRange(i, i + NfcByte.PAGE_SIZE)
+            i += NfcByte.PAGE_SIZE
+            j++
+        }
+        return pages
+    }
+
+    fun Long.toByteArray(): ByteArray {
+        return ByteBuffer.allocate(
+                if (Version.isNougat) java.lang.Long.BYTES else 8
+        ).putLong(this).array()
     }
 
     @JvmStatic
@@ -137,29 +155,8 @@ object TagArray {
         return data
     }
 
-    fun stringToByteArray(value: String) : ByteArray {
-        return hexToByteArray(value.filter { !it.isWhitespace() })
-    }
-
-    fun longToBytes(x: Long): ByteArray {
-        return ByteBuffer.allocate(
-            if (Version.isNougat) java.lang.Long.BYTES else 8
-        ).putLong(x).array()
-    }
-
-    fun bytesToLong(bytes: ByteArray): Long {
-        val buffer = ByteBuffer.allocate(
-            if (Version.isNougat) java.lang.Long.BYTES else 8
-        ).put(bytes).also { it.flip() }
-        return try {
-            buffer.long
-        } catch (bue: BufferUnderflowException) {
-            try {
-                buffer.int.toLong()
-            } catch (bue: BufferUnderflowException) {
-                buffer.short.toLong()
-            }
-        }
+    fun String.toByteArray() : ByteArray {
+        return hexToByteArray(this.filter { !it.isWhitespace() })
     }
 
     fun hexToLong(hex: String): Long {
@@ -188,22 +185,6 @@ object TagArray {
         return output.toString()
     }
 
-    fun bytesToString(bytes: ByteArray?): String {
-        return hexToString(bytesToHex(bytes))
-    }
-
-    fun bytesToPages(data: ByteArray): Array<ByteArray?> {
-        val pages = arrayOfNulls<ByteArray>(data.size / NfcByte.PAGE_SIZE)
-        var i = 0
-        var j = 0
-        while (i < data.size) {
-            pages[j] = data.copyOfRange(i, i + NfcByte.PAGE_SIZE)
-            i += NfcByte.PAGE_SIZE
-            j++
-        }
-        return pages
-    }
-
     @JvmStatic
     @Throws(Exception::class)
     fun validateData(data: ByteArray?): ByteArray {
@@ -214,7 +195,7 @@ object TagArray {
                 throw IOException(getString(R.string.invalid_tag_key))
             else if (data.size < NfcByte.TAG_DATA_SIZE)
                 throw IOException(getString(R.string.invalid_data_size, data.size, NfcByte.TAG_DATA_SIZE))
-            val pages = bytesToPages(data)
+            val pages = data.toPages()
             when {
                 pages[0]?.let {
                     it[0] != 0x04.toByte()
@@ -289,7 +270,7 @@ object TagArray {
         }
         try {
             val name = amiibo.name?.replace(File.separatorChar, '-')
-            val uidHex = bytesToHex(tagData?.copyOfRange(0, 9))
+            val uidHex = (tagData?.copyOfRange(0, 9))?.toHex()
             return if (verified) String.format(
                 Locale.ROOT, "%1\$s[%2\$s]-%3\$s.bin", name, uidHex, status
             ) else String.format(

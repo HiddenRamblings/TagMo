@@ -48,6 +48,7 @@ import com.hiddenramblings.tagmo.amiibo.AmiiboManager
 import com.hiddenramblings.tagmo.eightbit.io.Debug
 import com.hiddenramblings.tagmo.eightbit.os.Version
 import com.hiddenramblings.tagmo.nfctech.TagArray
+import com.hiddenramblings.tagmo.nfctech.TagArray.toHex
 import com.hiddenramblings.tagmo.widget.Toasty
 import org.json.JSONException
 import java.io.IOException
@@ -120,7 +121,7 @@ class QRCodeScanner : AppCompatActivity() {
         if (intent.hasExtra(NFCIntent.EXTRA_TAG_DATA)) {
             val data = intent.getByteArrayExtra(NFCIntent.EXTRA_TAG_DATA)
             try {
-                encodeQR(TagArray.bytesToString(data), Barcode.TYPE_TEXT)?.let {
+                encodeQR(data?.let { TagArray.hexToString(it.toHex()) }, Barcode.TYPE_TEXT)?.let {
                     barcodePreview.setImageBitmap(it)
                     scanBarcodes(InputImage.fromBitmap(it, 0))
                 }
@@ -192,9 +193,8 @@ class QRCodeScanner : AppCompatActivity() {
                     IvParameterSpec(ivSpec)
         )
         val content = cipher.doFinal(qrData, 8, 0x58)
-        txtMiiValue.text = TagArray.bytesToHex(
-                content.copyOfRange(0, 12).plus(nonce).plus(content.copyOfRange(12, content.size))
-        )
+        txtMiiValue.text = content.copyOfRange(0, 12).plus(nonce)
+                .plus(content.copyOfRange(12, content.size)).toHex()
     }
 
     private fun clearPreviews(barcode : Boolean) {
@@ -205,7 +205,7 @@ class QRCodeScanner : AppCompatActivity() {
 
     private fun processBarcode(barcode: Barcode) {
         txtRawValue.setText(barcode.rawValue, TextView.BufferType.EDITABLE)
-        txtRawBytes.setText(TagArray.bytesToHex(barcode.rawBytes), TextView.BufferType.EDITABLE)
+        barcode.rawBytes?.let { txtRawBytes.setText(it.toHex(), TextView.BufferType.EDITABLE) }
         clearPreviews(false)
         try {
             decodeAmiibo(barcode.rawBytes)

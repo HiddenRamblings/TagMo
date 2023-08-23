@@ -11,6 +11,7 @@ import com.hiddenramblings.tagmo.R
 import com.hiddenramblings.tagmo.TagMo
 import com.hiddenramblings.tagmo.amiibo.Amiibo
 import com.hiddenramblings.tagmo.eightbit.io.Debug
+import com.hiddenramblings.tagmo.nfctech.TagArray.toHex
 import java.io.File
 import java.text.DecimalFormat
 import kotlin.random.Random
@@ -107,9 +108,9 @@ object Foomiibo {
 
     fun getDataSignature(tagData: ByteArray): String? {
         if (tagData.size == NfcByte.TAG_FILE_SIZE) {
-            val signature = TagArray.bytesToHex(
-                tagData.copyOfRange(NfcByte.SIGNATURE, NfcByte.TAG_FILE_SIZE)
-            ).substring(0, 32).lowercase()
+            val signature = tagData.copyOfRange(
+                    NfcByte.SIGNATURE, NfcByte.TAG_FILE_SIZE
+            ).toHex().substring(0, 32).lowercase()
             Debug.verbose(TagMo::class.java, TagArray.hexToString(signature))
             if (hexSignature == signature) return signature
         }

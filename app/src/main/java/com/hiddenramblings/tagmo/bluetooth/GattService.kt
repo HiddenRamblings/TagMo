@@ -247,7 +247,7 @@ class GattService : Service() {
                     Nordic.DEVICE.PUCK -> {
                         when {
                             TagArray.hexToString(data.toHex()).endsWith("DTM_PUCK_FAST") -> {
-                                sendCommand(byteArrayOf(PUCK.INFO.bytes), null)
+                                delayedByteCharacteric(byteArrayOf(PUCK.INFO.bytes))
                             }
 
                             tempInfoData.isNotEmpty() -> {
@@ -256,10 +256,9 @@ class GattService : Service() {
                                 tempInfoData = byteArrayOf()
                                 if (puckArray.size == slotsCount) {
                                     listener?.onPuckListRetrieved(puckArray)
-                                    sendCommand(byteArrayOf(PUCK.INFO.bytes), null)
                                 } else {
                                     val nextSlot = sliceData[1].toInt() + 1
-                                    sendCommand(byteArrayOf(PUCK.INFO.bytes, nextSlot.toByte()), null)
+                                    delayedByteCharacteric(byteArrayOf(PUCK.INFO.bytes, nextSlot.toByte()))
                                 }
                             }
 
@@ -287,7 +286,7 @@ class GattService : Service() {
                             }
 
                             data[0] == PUCK.SAVE.bytes -> {
-                                sendCommand(byteArrayOf(PUCK.NFC.bytes), null)
+                                delayedByteCharacteric(byteArrayOf(PUCK.NFC.bytes))
                             }
 
                             data[0] == PUCK.NFC.bytes -> {
@@ -891,10 +890,6 @@ class GattService : Service() {
         queueByteCharacteristic(value)
     }
 
-    private fun sendCommand(params: ByteArray, data: ByteArray?) {
-        delayedByteCharacteric(data?.let { params.plus(data) } ?: params)
-    }
-
     private fun delayedWriteCharacteristic(value: String) {
         val chunks = value.toPortions(maxTransmissionUnit)
         val commandQueue = commandCallbacks.size + chunks.size
@@ -977,11 +972,11 @@ class GattService : Service() {
     val deviceDetails: Unit
         get() {
             if (legacyInterface) {
-                sendCommand(byteArrayOf(PUCK.INFO.bytes), null)
+                delayedByteCharacteric(byteArrayOf(PUCK.INFO.bytes))
             } else {
-                sendCommand(byteArrayOf(
+                delayedByteCharacteric(byteArrayOf(
                         0x66, 0x61, 0x73, 0x74, 0x4D, 0x6F, 0x64, 0x65, 0x28, 0x29, 0x0A
-                ), null)
+                ))
             }
         }
 
@@ -1006,7 +1001,7 @@ class GattService : Service() {
                 }
                 Nordic.DEVICE.PUCK -> {
                     puckArray = ArrayList<ByteArray>(slotsCount)
-                    sendCommand(byteArrayOf(PUCK.INFO.bytes, 0.toByte()), null)
+                    delayedByteCharacteric(byteArrayOf(PUCK.INFO.bytes, 0.toByte()))
                 }
                 else ->{
 
@@ -1122,12 +1117,20 @@ class GattService : Service() {
     }
 
     fun uploadSlotAmiibo(tagData: ByteArray, slot: Int) {
+        val parameters: ArrayList<ByteArray> = arrayListOf()
         tagData.toFileBytes().toPages().forEachIndexed { index, bytes ->
-            sendCommand(byteArrayOf(
-                    PUCK.WRITE.bytes, slot.toByte(), (index * NfcByte.PAGE_SIZE).toByte(), 0x01
-            ), bytes)
+            bytes?.let {
+                parameters.add(byteArrayOf(
+                        PUCK.WRITE.bytes, slot.toByte(), (index * NfcByte.PAGE_SIZE).toByte(), *it
+                ))
+            }
         }
-        sendCommand(byteArrayOf(PUCK.SAVE.bytes, slot.toByte()), null)
+        parameters.add(byteArrayOf(PUCK.SAVE.bytes, slot.toByte()))
+        parameters.forEach {
+            commandCallbacks.add(Runnable {
+                delayedByteCharacteric(it)
+            })
+        }
     }
 
     fun uploadAmiiboFile(tagData: ByteArray, amiibo: Amiibo, index: Int, complete: Boolean) {
@@ -1171,7 +1174,7 @@ class GattService : Service() {
     }
 
     fun setActiveSlot(slot: Int) {
-        sendCommand(byteArrayOf(PUCK.NFC.bytes, slot.toByte()), null)
+        delayedByteCharacteric(byteArrayOf(PUCK.NFC.bytes, slot.toByte()))
         listener?.onPuckActiveChanged(slot)
     }
 
@@ -1201,10 +1204,16 @@ class GattService : Service() {
 
     @Suppress("unused")
     fun downloadSlotData(slot: Int) {
+        val parameters: ArrayList<ByteArray> = arrayListOf()
         for (i in 0..35) {
-            sendCommand(byteArrayOf(PUCK.READ.bytes, slot.toByte(), (i * 4).toByte(), 0x04), null)
+            parameters.add(byteArrayOf(PUCK.READ.bytes, slot.toByte(), (i * 4).toByte(), 0x04))
         }
-        sendCommand(byteArrayOf(PUCK.READ.bytes, slot.toByte(), 0x8C.toByte(), 0x03), null)
+        parameters.add(byteArrayOf(PUCK.READ.bytes, slot.toByte(), 0x8C.toByte(), 0x03))
+        parameters.forEach {
+            commandCallbacks.add(Runnable {
+                delayedByteCharacteric(it)
+            })
+        }
 
     }
 

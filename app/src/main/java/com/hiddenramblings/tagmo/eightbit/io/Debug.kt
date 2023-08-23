@@ -312,7 +312,7 @@ object Debug {
                                     IconifiedSnackbar(context).buildSnackbar(
                                             R.string.menu_guides,
                                             R.drawable.ic_support_required_menu,
-                                            Snackbar.LENGTH_INDEFINITE
+                                            Snackbar.LENGTH_LONG
                                     ).also { guides ->
                                         guides.setAction(R.string.view) {
                                             context.showWebsite(null)

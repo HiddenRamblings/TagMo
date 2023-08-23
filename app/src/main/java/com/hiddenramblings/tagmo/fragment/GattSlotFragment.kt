@@ -1462,11 +1462,11 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
                         }
 
                         override fun onPuckListRetrieved(slotData: ArrayList<ByteArray>) {
-                            currentCount = slotData.size
                             val puckAmiibos: ArrayList<Amiibo?> = arrayListOf()
                             slotData.forEach { bytes ->
-                                puckAmiibos.add(getAmiiboFromSlice(bytes))
+                                getAmiiboFromSlice(bytes)?.let { puckAmiibos.add(it) }
                             }
+                            currentCount = puckAmiibos.size
                             settings.removeChangeListener(gattAdapter)
                             dismissSnackbarNotice(true)
                             gattAdapter = GattSlotAdapter(
@@ -1480,8 +1480,8 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
                                 if (currentCount > 0) {
                                     requireView().post {
                                         it.notifyItemRangeInserted(0, currentCount)
+                                        onPuckActiveChanged(prefs.gattActiveSlot())
                                     }
-                                    onPuckActiveChanged(prefs.gattActiveSlot())
                                 } else {
                                     amiiboTile?.isInvisible = true
                                     gattButtonState

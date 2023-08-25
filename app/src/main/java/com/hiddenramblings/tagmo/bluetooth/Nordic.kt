@@ -25,29 +25,28 @@ object Nordic {
        return this.compareTo(uuid) == 0
     }
 
-    @RequiresApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
-    fun getLogTag(uuid: UUID): String {
+    val UUID.logTag: String get() {
         return when {
-            uuid.isUUID(TX) -> {
+            this.isUUID(TX) -> {
                 "NordicTX"
             }
-            uuid.isUUID(RX) -> {
+            this.isUUID(RX) -> {
                 "NordicRX"
             }
-            uuid.isUUID(NUS) -> {
+            this.isUUID(NUS) -> {
                 "NordicNUS"
             }
-            uuid.isUUID(LegacyTX) -> {
+            this.isUUID(LegacyTX) -> {
                 "LegacyTX"
             }
-            uuid.isUUID(LegacyRX) -> {
+            this.isUUID(LegacyRX) -> {
                 "LegacyRX"
             }
-            uuid.isUUID(LegacyNUS) -> {
+            this.isUUID(LegacyNUS) -> {
                 "LegacyNUS"
             }
             else -> {
-                "Gatt[${uuid}]"
+                "Gatt[${this}]"
             }
         }
     }

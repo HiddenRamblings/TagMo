@@ -49,7 +49,7 @@ class GattSlotAdapter(
     }
 
     fun getItem(i: Int): Amiibo? {
-        return gattAmiibo[i]
+        return if (gattAmiibo.size > i) gattAmiibo[i] else null
     }
 
     override fun getItemViewType(position: Int): Int {

@@ -853,7 +853,7 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
                         serviceGatt?.uploadAmiiboData(data)
                     }
                     Nordic.DEVICE.PUCK -> {
-                        serviceGatt?.uploadSlotAmiibo(data, gattSlotCount.value - 1)
+                        serviceGatt?.uploadPuckAmiibo(data, gattSlotCount.value - 1)
                     }
                     else -> {
 
@@ -885,7 +885,7 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
                             serviceGatt?.uploadAmiiboData(data)
                         }
                         Nordic.DEVICE.PUCK -> {
-                            serviceGatt?.uploadSlotAmiibo(data, gattSlotCount.value - 1)
+                            serviceGatt?.uploadPuckAmiibo(data, gattSlotCount.value - 1)
                         }
                         else -> {
 
@@ -1111,7 +1111,7 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
 
                         }
                         Nordic.DEVICE.PUCK -> {
-                            serviceGatt?.setActiveSlot(position)
+                            serviceGatt?.setActiveAmiibo(position)
                         }
                         else -> {
 
@@ -1152,7 +1152,7 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
 
                             }
                             Nordic.DEVICE.PUCK -> {
-                                serviceGatt?.setActiveSlot(position)
+                                serviceGatt?.setActiveAmiibo(position)
                             }
                             else -> {
 
@@ -1181,7 +1181,7 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
                     R.id.mnu_backup -> {
                         when (deviceType) {
                             Nordic.DEVICE.BLUUP, Nordic.DEVICE.FLASK, Nordic.DEVICE.SLIDE -> {
-                                serviceGatt?.downloadAmiibo(amiiboName, it.bluupTail)
+                                serviceGatt?.downloadAmiiboData(amiiboName, it.bluupTail)
                             }
                             Nordic.DEVICE.PIXL, Nordic.DEVICE.LOOP, Nordic.DEVICE.LINK -> {
 

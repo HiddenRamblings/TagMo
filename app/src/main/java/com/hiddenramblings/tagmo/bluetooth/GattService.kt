@@ -30,6 +30,7 @@ import com.hiddenramblings.tagmo.bluetooth.GattArray.toDataBytes
 import com.hiddenramblings.tagmo.bluetooth.GattArray.toFileBytes
 import com.hiddenramblings.tagmo.bluetooth.GattArray.toPortions
 import com.hiddenramblings.tagmo.bluetooth.GattArray.toUnicode
+import com.hiddenramblings.tagmo.bluetooth.Nordic.logTag
 import com.hiddenramblings.tagmo.bluetooth.Nordic.isUUID
 import com.hiddenramblings.tagmo.eightbit.io.Debug
 import com.hiddenramblings.tagmo.eightbit.os.Version
@@ -194,8 +195,7 @@ class GattService : Service() {
     private fun getCharacteristicValue(characteristic: BluetoothGattCharacteristic, data: ByteArray?) {
         if (data?.isNotEmpty() == true) {
             Debug.warn(this.javaClass,
-                    "${Nordic.getLogTag(characteristic.uuid)} ${data.toHex()}"
-            )
+                    "${characteristic.uuid.logTag}\n${data.toHex()}\n${TagArray.hexToString(data.toHex())}")
             if (characteristic.uuid.isUUID(GattRX)) {
                 when (serviceType) {
                     Nordic.DEVICE.PIXL -> {
@@ -223,7 +223,7 @@ class GattService : Service() {
                             }
 
                             byteArrayOf(0xBA.toByte(), 0xBA.toByte()) -> {
-                                processLinkUpload(uploadData.toDataBytes())
+                                processLinkUpload()
                             }
 
                             byteArrayOf(0xAA.toByte(), 0xDD.toByte()) -> {
@@ -285,6 +285,10 @@ class GattService : Service() {
 
                             }
 
+                            data[0] == PUCK.FWRITE.bytes -> {
+                                processPuckUpload(data[1])
+                            }
+
                             data[0] == PUCK.SAVE.bytes -> {
                                 delayedByteCharacteric(byteArrayOf(PUCK.NFC.bytes))
                             }
@@ -309,7 +313,7 @@ class GattService : Service() {
 
     private fun getCharacteristicValue(characteristic: BluetoothGattCharacteristic, output: String?) {
         if (!output.isNullOrEmpty()) {
-            Debug.warn(this.javaClass, "${Nordic.getLogTag(characteristic.uuid)} $output")
+            Debug.warn(this.javaClass, "${characteristic.uuid.logTag}\n$output")
             if (characteristic.uuid.isUUID(GattRX)) {
                 if (output.contains(">tag.")) {
                     response = StringBuilder()
@@ -337,7 +341,7 @@ class GattService : Service() {
                                     && null != nameCompat && null != tailCompat
                             ) {
                                 response = StringBuilder()
-                                fixSlotDetails(nameCompat, tailCompat)
+                                fixBluupDetails(nameCompat, tailCompat)
                                 nameCompat = null
                                 tailCompat = null
                                 return
@@ -474,15 +478,12 @@ class GattService : Service() {
     fun getCharacteristicValue(characteristic: BluetoothGattCharacteristic) {
         when (serviceType) {
             Nordic.DEVICE.BLUUP, Nordic.DEVICE.FLASK, Nordic.DEVICE.SLIDE -> {
-                @Suppress("DEPRECATION")
                 getCharacteristicValue(characteristic, characteristic.getStringValue(0x0))
             }
             Nordic.DEVICE.PIXL, Nordic.DEVICE.LOOP, Nordic.DEVICE.LINK -> {
-                @Suppress("DEPRECATION")
                 getCharacteristicValue(characteristic, characteristic.value)
             }
             Nordic.DEVICE.PUCK -> {
-                @Suppress("DEPRECATION")
                 getCharacteristicValue(characteristic, characteristic.value)
             }
             else -> {
@@ -523,7 +524,7 @@ class GattService : Service() {
                     }
                 }
             } else {
-                Debug.warn(this.javaClass, "onServicesDiscovered received: $status")
+                Debug.info(this.javaClass, "onServicesDiscovered received: $status")
             }
         }
 
@@ -535,7 +536,7 @@ class GattService : Service() {
         }
 
 
-        @Deprecated("Deprecated in Java", ReplaceWith("if (status == BluetoothGatt.GATT_SUCCESS) getCharacteristicValue(characteristic)", "android.bluetooth.BluetoothGatt"))
+        @Deprecated("Deprecated in Java", ReplaceWith(""))
         override fun onCharacteristicRead(
                 gatt: BluetoothGatt, characteristic: BluetoothGattCharacteristic, status: Int
         ) {
@@ -545,9 +546,7 @@ class GattService : Service() {
         override fun onCharacteristicWrite(
                 gatt: BluetoothGatt, characteristic: BluetoothGattCharacteristic, status: Int
         ) {
-            Debug.warn(this.javaClass,
-                    Nordic.getLogTag(characteristic.uuid) + " onCharacteristicWrite " + status
-            )
+            Debug.info(this.javaClass, "${characteristic.uuid.logTag} onCharacteristicWrite $status")
         }
 
         override fun onCharacteristicChanged(
@@ -569,9 +568,7 @@ class GattService : Service() {
             }
         }
 
-        @Deprecated("Deprecated in Java", ReplaceWith(
-                "onCharacteristicChanged(gatt: BluetoothGatt, characteristic: BluetoothGattCharacteristic, value: ByteArray)"
-        ))
+        @Deprecated("Deprecated in Java", ReplaceWith(""))
         override fun onCharacteristicChanged(
                 gatt: BluetoothGatt, characteristic: BluetoothGattCharacteristic
         ) {
@@ -580,7 +577,7 @@ class GattService : Service() {
 
         override fun onMtuChanged(gatt: BluetoothGatt, mtu: Int, status: Int) {
             if (status == BluetoothGatt.GATT_SUCCESS) {
-                Debug.verbose(this.javaClass, "onMtuChange complete: $mtu")
+                Debug.warn(this.javaClass, "onMtuChange complete: $mtu")
                 maxTransmissionUnit = mtu - 3
             } else {
                 Debug.warn(this.javaClass, "onMtuChange received: $status")
@@ -1036,9 +1033,8 @@ class GattService : Service() {
         return output
     }
 
-    private fun processLinkUpload(inputArray: ByteArray) {
-        val chunks = inputArray.toPortions(0x96)
-
+    private fun processLinkUpload() {
+        val chunks = uploadData.toPortions(0x96)
         chunks.forEachIndexed { index, bytes ->
             val size = if (index == chunks.lastIndex) bytes.size else 0x96
             val tempArray = byteArrayOf(
@@ -1050,11 +1046,23 @@ class GattService : Service() {
                 delayedByteCharacteric(tempArray)
             })
         }
-
         commandCallbacks.add(Runnable { byteArrayOf(0xBC.toByte(), 0xBC.toByte()) })
     }
 
-    private fun generateBlank() {
+    private fun processPuckUpload(slot: Byte) {
+        val parameters: ArrayList<ByteArray> = arrayListOf()
+        uploadData.toFileBytes().toPortions(maxTransmissionUnit).forEach {
+            parameters.add(it)
+        }
+        parameters.add(byteArrayOf(PUCK.SAVE.bytes, slot))
+        parameters.forEach {
+            commandCallbacks.add(Runnable {
+                delayedByteCharacteric(it)
+            })
+        }
+    }
+
+    private fun generateLoopBlank() {
         val blankData = ByteArray(NfcByte.TAG_FILE_SIZE)
 
         blankData[0] = 0x04.toByte()
@@ -1107,7 +1115,7 @@ class GattService : Service() {
                 }
             }
             Nordic.DEVICE.LINK -> {
-                uploadData = tagData
+                uploadData = byteArrayOf(*tagData.toDataBytes())
                 delayedByteCharacteric(byteArrayOf(0xA0.toByte(), 0xB0.toByte()))
             }
             else -> {
@@ -1116,7 +1124,7 @@ class GattService : Service() {
         }
     }
 
-    fun uploadSlotAmiibo(tagData: ByteArray, slot: Int) {
+    fun uploadPuckAmiibo(tagData: ByteArray, slot: Int) {
         val parameters: ArrayList<ByteArray> = arrayListOf()
         tagData.toFileBytes().toPages().forEachIndexed { index, bytes ->
             bytes?.let {
@@ -1131,10 +1139,15 @@ class GattService : Service() {
                 delayedByteCharacteric(it)
             })
         }
+        if (commandCallbacks.size == parameters.size) {
+            commandCallbacks[0].run()
+            commandCallbacks.removeAt(0)
+        }
+//        uploadData = byteArrayOf(*tagData.toFileBytes())
+//        delayedByteCharacteric(byteArrayOf(PUCK.FWRITE.bytes, slot.toByte()))
     }
 
     fun uploadAmiiboFile(tagData: ByteArray, amiibo: Amiibo, index: Int, complete: Boolean) {
-        delayedTagCharacteristic("startTagUpload(${tagData.size})")
         val parameters: ArrayList<String> = arrayListOf()
         for (chunk in tagData.toPortions(128)) {
             val byteString = Base64.encodeToString(
@@ -1157,6 +1170,7 @@ class GattService : Service() {
                 delayedWriteCharacteristic("tag.$it\n")
             })
         }
+        delayedTagCharacteristic("startTagUpload(${tagData.size})")
     }
 
     fun setActiveAmiibo(amiiboName: String?, tail: String?) {
@@ -1173,7 +1187,7 @@ class GattService : Service() {
         }
     }
 
-    fun setActiveSlot(slot: Int) {
+    fun setActiveAmiibo(slot: Int) {
         delayedByteCharacteric(byteArrayOf(PUCK.NFC.bytes, slot.toByte()))
         listener?.onPuckActiveChanged(slot)
     }
@@ -1193,7 +1207,7 @@ class GattService : Service() {
         }
     }
 
-    fun downloadAmiibo(fileName: String?, tail: String?) {
+    fun downloadAmiiboData(fileName: String?, tail: String?) {
         tail?.let {
             fileName?.let { file ->
                 val amiiboName = truncateUnicode(file.toUnicode(), it.length)
@@ -1203,9 +1217,9 @@ class GattService : Service() {
     }
 
     @Suppress("unused")
-    fun downloadSlotData(slot: Int) {
+    fun downloadAmiiboData(slot: Int) {
         val parameters: ArrayList<ByteArray> = arrayListOf()
-        for (i in 0..35) {
+        for (i in 1..34) {
             parameters.add(byteArrayOf(PUCK.READ.bytes, slot.toByte(), (i * 4).toByte(), 0x04))
         }
         parameters.add(byteArrayOf(PUCK.READ.bytes, slot.toByte(), 0x8C.toByte(), 0x03))
@@ -1214,7 +1228,7 @@ class GattService : Service() {
                 delayedByteCharacteric(it)
             })
         }
-
+        delayedByteCharacteric(byteArrayOf(PUCK.READ.bytes, slot.toByte(), 0.toByte(), 0x04))
     }
 
     private fun getDeviceAmiiboRange(index: Int) {
@@ -1227,7 +1241,7 @@ class GattService : Service() {
                 delayedTagCharacteristic("createBlank()")
             }
             Nordic.DEVICE.LINK -> {
-                generateBlank()
+                generateLoopBlank()
             }
             else -> {
 
@@ -1266,7 +1280,7 @@ class GattService : Service() {
         delayedScreenCharacteristic("setFace(" + (if (stacked) 1 else 0) + ")")
     }
 
-    private fun fixSlotDetails(amiiboName: String?, tail: String?) {
+    private fun fixBluupDetails(amiiboName: String?, tail: String?) {
         tail?.let {
             amiiboName?.let { amiibo ->
                 val fixedName = truncateUnicode(amiibo.toUnicode(), it.length)

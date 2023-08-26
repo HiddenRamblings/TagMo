@@ -2,7 +2,9 @@ package com.hiddenramblings.tagmo.eightbit.util
 
 import android.os.Build
 import androidx.annotation.RequiresApi
+import com.hiddenramblings.tagmo.eightbit.os.Version
 import java.io.*
+import java.nio.charset.Charset
 import java.util.zip.ZipFile
 
 
@@ -11,14 +13,14 @@ import java.util.zip.ZipFile
  */
 object Zip {
     /**
-     * @param zipFile
+     * @param archiveFile
      * @param destDirectory
      * @throws IOException
      */
     @RequiresApi(Build.VERSION_CODES.KITKAT)
-    @Throws(IOException::class)
+    @Throws(IllegalArgumentException::class, IOException::class)
     fun extract(
-            zipFile: File,
+            archiveFile: File,
             destDirectory: String,
             updateProgress: (progress: Int) -> Unit
     ) {
@@ -27,7 +29,11 @@ object Zip {
                 mkdirs()
             }
         }
-        ZipFile(zipFile).use { zip ->
+        val zipFile = if (Version.isNougat)
+            ZipFile(archiveFile, Charset.forName("CP437"))
+        else
+            ZipFile(archiveFile)
+        zipFile.use { zip ->
             var entryCount = 0
             val totalEntries = zip.entries().toList().size // files to unzip
             zip.entries().asSequence().forEach { entry ->

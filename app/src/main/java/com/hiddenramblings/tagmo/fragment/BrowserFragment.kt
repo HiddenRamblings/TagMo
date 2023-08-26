@@ -561,18 +561,23 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
             it.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
         }
         CoroutineScope(Dispatchers.IO).launch {
-            Zip.extract(zipFile, folder) { progress ->
-                CoroutineScope(Dispatchers.Main).launch {
-                    val nameProgress = "${zipFile.nameWithoutExtension} (${progress}%) "
-                    progressText.text = getString(R.string.unzip_item, nameProgress)
-                }
-                if (progress == 100) {
-                    (activity as? BrowserActivity)?.onRootFolderChanged(true)
-                    zipFile.delete()
+            try {
+                Zip.extract(zipFile, folder) { progress ->
                     CoroutineScope(Dispatchers.Main).launch {
-                        processDialog.dismiss()
+                        val nameProgress = "${zipFile.nameWithoutExtension} (${progress}%) "
+                        progressText.text = getString(R.string.unzip_item, nameProgress)
+                    }
+                    if (progress == 100) {
+                        (activity as? BrowserActivity)?.onRootFolderChanged(true)
+                        zipFile.delete()
+                        CoroutineScope(Dispatchers.Main).launch {
+                            processDialog.dismiss()
+                        }
                     }
                 }
+            } catch (iae: IllegalArgumentException) {
+                Debug.error(iae)
+                Toasty(requireContext()).Short(R.string.error_archive_format)
             }
         }
     }

@@ -220,8 +220,6 @@
     <string name="tag_validation_details">Nicht alle NFC-Chipsätze überprüfen Tags korrekt.\nDeaktivieren, um Tag-Kompatibilitätsprüfungen zu ignorieren.</string>
     <string name="enable_automatic_scan">Automatischer NFC-Scan</string>
     <string name="automatic_scan_details">Deaktivieren, um unerwartete Scans zu verhindern.</string>
-    <string name="hide_foomiibo_panel">Foomiibo-Panel ausblenden</string>
-    <string name="hide_foomiibo_details">Foomiibo-Panel aus dem Browser entfernen.</string>
     <string name="tag_devices">Geräte taggen</string>
     <string name="enable_power_tag">Power Tag Unterstützung</string>
     <string name="power_tag_details">Siehe Github für Einschränkungen und Verwendung.</string>

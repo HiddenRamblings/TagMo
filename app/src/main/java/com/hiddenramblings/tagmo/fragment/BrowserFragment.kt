@@ -34,7 +34,6 @@ import androidx.appcompat.widget.AppCompatImageView
 import androidx.appcompat.widget.Toolbar
 import androidx.core.view.isGone
 import androidx.core.view.isVisible
-import androidx.core.view.updatePadding
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -442,12 +441,12 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
         } ?: setAmiiboStats()
     }
 
-    fun setFoomiiboVisibility() {
+    private fun setFoomiiboPlacement() {
         if (!isAdded || null == view) return
-        val divider = requireView().findViewById<View>(R.id.list_divider)
         val peekHeight = bottomSheet?.peekHeight ?: 0
-        val minHeight = (peekHeight + divider.height + requireContext().resources
-            .getDimension(R.dimen.sliding_bar_margin))
+        val minHeight = (peekHeight
+                + requireView().findViewById<View>(R.id.list_divider).height
+                + requireContext().resources.getDimension(R.dimen.sliding_bar_margin))
         browserWrapper?.let {
             it.layoutParams?.let { layoutParams ->
                 val srcHeight = layoutParams.height
@@ -457,17 +456,6 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
                 } else {
                     val valueY = prefs.foomiiboOffset()
                     layoutParams.height = if (valueY != -1) valueY else layoutParams.height
-                }
-                if (prefs.foomiiboDisabled()) {
-                    divider.isGone = true
-                    layoutParams.height = requireView().height
-                    browserContent?.updatePadding(
-                            0, 4.toPx, 0,
-                            resources.getDimensionPixelOffset(R.dimen.button_height_min)
-                    )
-                } else {
-                    browserContent?.updatePadding(0, 4.toPx, 0, 0)
-                    divider.isVisible = true
                 }
                 if (srcHeight != layoutParams.height) it.requestLayout()
             }
@@ -778,6 +766,6 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
     override fun onConfigurationChanged(newConfig: Configuration) {
         super.onConfigurationChanged(newConfig)
         if (null == view) return
-        browserWrapper?.postDelayed({ setFoomiiboVisibility() }, TagMo.uiDelay.toLong())
+        browserWrapper?.postDelayed({ setFoomiiboPlacement() }, TagMo.uiDelay.toLong())
     }
 }

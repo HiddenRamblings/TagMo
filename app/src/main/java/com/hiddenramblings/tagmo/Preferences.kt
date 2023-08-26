@@ -164,15 +164,6 @@ class Preferences(context: Context) {
         putBoolean(automaticScan, value)
     }
 
-    private val foomiiboDisabled = "disable_foomiibo_browser"
-    fun foomiiboDisabled(): Boolean {
-        return getBoolean(foomiiboDisabled, false)
-    }
-
-    fun foomiiboDisabled(value: Boolean) {
-        putBoolean(foomiiboDisabled, value)
-    }
-
     private val imageNetwork = "image_network_settings"
     fun imageNetwork(): String? {
         return getString(imageNetwork, GlideTagModule.IMAGE_NETWORK_ALWAYS)

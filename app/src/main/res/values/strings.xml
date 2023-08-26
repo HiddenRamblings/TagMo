@@ -226,8 +226,6 @@
     <string name="tag_validation_details">Not all NFC chipsets correctly verify tags.\nDisable to bypass tag compatibility checks.</string>
     <string name="enable_automatic_scan">Automatic NFC Scan</string>
     <string name="automatic_scan_details">Disable to prevent unexpected scans.</string>
-    <string name="hide_foomiibo_panel">Hide Foomiibo Panel</string>
-    <string name="hide_foomiibo_details">Remove Foomiibo panel from Browser.</string>
     <string name="tag_devices">Tag Devices</string>
     <string name="enable_power_tag">Power Tag support</string>
     <string name="power_tag_details">See Github for limitations and use.</string>

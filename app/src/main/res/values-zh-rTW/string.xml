@@ -226,8 +226,6 @@
     <string name="automatic_scan_details">停用此項目可避免手持設備出現非預期掃描的狀況。</string>
     <string name="tag_devices">Tag 裝置</string>
     <string name="enable_power_tag">啟用支援Power Tag</string>
-    <string name="hide_foomiibo_panel">隱藏Foomiibo控制面板</string>
-    <string name="hide_foomiibo_details">隱藏瀏覽器畫面下方的Foomiibo面板</string>
     <string name="power_tag_details">請檢視Github官方頁面提供的使用方式、相容性與限制說明。</string>
     <string name="enable_elite">啟用支援N2 Elite</string>
     <string name="elite_details">請檢視Github官方頁面提供的使用方式、相容性與限制說明。</string>

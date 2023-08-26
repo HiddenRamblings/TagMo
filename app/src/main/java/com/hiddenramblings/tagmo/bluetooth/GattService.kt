@@ -42,6 +42,7 @@ import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
 import java.util.ArrayList
+import java.util.Arrays
 import java.util.Objects
 import java.util.UUID
 import kotlin.random.Random
@@ -186,6 +187,7 @@ class GattService : Service() {
         fun onPuckActiveChanged(slot: Int)
         fun onPuckDeviceProfile(activeSlot: Int, slotCount: Int)
         fun onPuckListRetrieved(slotData: ArrayList<ByteArray>)
+        fun onPuckTagReloaded()
 
         fun onFilesDownload(tagData: ByteArray)
         fun onProcessFinish()
@@ -194,8 +196,7 @@ class GattService : Service() {
 
     private fun getCharacteristicValue(characteristic: BluetoothGattCharacteristic, data: ByteArray?) {
         if (data?.isNotEmpty() == true) {
-            Debug.warn(this.javaClass,
-                    "${characteristic.uuid.logTag}\n${data.toHex()}\n${TagArray.hexToString(data.toHex())}")
+            Debug.warn(this.javaClass, "${characteristic.uuid.logTag} ${data.toHex()}")
             if (characteristic.uuid.isUUID(GattRX)) {
                 when (serviceType) {
                     Nordic.DEVICE.PIXL -> {
@@ -207,34 +208,33 @@ class GattService : Service() {
                     }
 
                     Nordic.DEVICE.LINK -> {
-
-                        when (data) {
-                            byteArrayOf(0xB0.toByte(), 0xA0.toByte()) -> {
+                        when {
+                            Arrays.equals(data, byteArrayOf(0xB0.toByte(), 0xA0.toByte())) -> {
                                 delayedByteCharacteric(byteArrayOf(
                                         0xAC.toByte(), 0xAC.toByte(), 0x00.toByte(), 0x04.toByte(),
                                         0x00.toByte(), 0x00.toByte(), 0x02.toByte(), 0x1C.toByte())
                                 )
                             }
 
-                            byteArrayOf(0xCA.toByte(), 0xCA.toByte()) -> {
+                            Arrays.equals(data, byteArrayOf(0xCA.toByte(), 0xCA.toByte())) -> {
                                 delayedByteCharacteric(byteArrayOf(
                                         0xAB.toByte(), 0xAB.toByte(), 0x02.toByte(), 0x1C.toByte()
                                 ))
                             }
 
-                            byteArrayOf(0xBA.toByte(), 0xBA.toByte()) -> {
+                            Arrays.equals(data, byteArrayOf(0xBA.toByte(), 0xBA.toByte())) -> {
                                 processLinkUpload()
                             }
 
-                            byteArrayOf(0xAA.toByte(), 0xDD.toByte()) -> {
+                            Arrays.equals(data, byteArrayOf(0xAA.toByte(), 0xDD.toByte())) -> {
 
                             }
 
-                            byteArrayOf(0xCB.toByte(), 0xCB.toByte()) -> {
+                            Arrays.equals(data, byteArrayOf(0xCB.toByte(), 0xCB.toByte())) -> {
                                 delayedByteCharacteric(byteArrayOf(0xCC.toByte(), 0xDD.toByte()))
                             }
 
-                            byteArrayOf(0xDD.toByte(), 0xCC.toByte()) -> {
+                            Arrays.equals(data, byteArrayOf(0xDD.toByte(), 0xCC.toByte())) -> {
                                 listener?.onProcessFinish()
                             }
 
@@ -294,8 +294,7 @@ class GattService : Service() {
                             }
 
                             data[0] == PUCK.NFC.bytes -> {
-                                listener?.onProcessFinish()
-                                deviceAmiibo
+                                listener?.onPuckTagReloaded()
                             }
                         }
                     }

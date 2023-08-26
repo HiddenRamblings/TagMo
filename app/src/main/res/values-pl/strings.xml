@@ -220,8 +220,6 @@
     <string name="tag_validation_details">Nie wszystkie chipsety NFC poprawnie weryfikują znaczniki.\nWyłącz, aby zignorować sprawdzanie zgodności znaczników.</string>
     <string name="enable_automatic_scan">Automatyczne skanowanie NFC</string>
     <string name="automatic_scan_details">Wyłącz, aby zapobiec nieoczekiwanemu skanowaniu.</string>
-    <string name="hide_foomiibo_panel">Ukryj panel Foomiibo</string>
-    <string name="hide_foomiibo_details">Usuń panel Foomiibo z przeglądarki.</string>
     <string name="tag_devices">Oznaczanie urządzeń</string>
     <string name="enable_power_tag">Obsługa tagów zasilania</string>
     <string name="power_tag_details">Zobacz Github dla ograniczeń i użycia.</string>

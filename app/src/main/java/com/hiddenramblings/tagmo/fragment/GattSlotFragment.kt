@@ -1489,6 +1489,13 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
                             }
                         }
 
+                        override fun onPuckTagReloaded() {
+                            processDialog?.let {
+                                if (it.isShowing) it.dismiss()
+                            }
+                            deviceAmiibo
+                        }
+
                         override fun onFilesDownload(tagData: ByteArray) {
                             when (serviceType) {
                                 Nordic.DEVICE.BLUUP, Nordic.DEVICE.FLASK, Nordic.DEVICE.SLIDE -> {

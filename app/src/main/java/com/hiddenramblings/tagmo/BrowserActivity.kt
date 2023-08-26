@@ -711,10 +711,6 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
         }
     }
 
-    fun setFoomiiboVisibility() {
-        pagerAdapter.browser.setFoomiiboVisibility()
-    }
-
     fun getQueryCount(queryText: String?): Int {
         if (null == queryText) return 0
         val amiiboManager = settings?.amiiboManager ?: return 0

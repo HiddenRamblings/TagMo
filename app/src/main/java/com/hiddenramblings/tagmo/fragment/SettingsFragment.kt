@@ -163,14 +163,6 @@ class SettingsFragment : PreferenceFragmentCompat() {
                     super@SettingsFragment.onPreferenceTreeClick(it)
                 }
         }
-        findPreference<CheckBoxPreference>(getString(R.string.settings_hide_foomiibo_panel))?.apply {
-            isChecked = prefs.foomiiboDisabled()
-            onPreferenceClickListener = Preference.OnPreferenceClickListener {
-                prefs.foomiiboDisabled((it as CheckBoxPreference).isChecked)
-                browserActivity?.setFoomiiboVisibility()
-                super@SettingsFragment.onPreferenceTreeClick(it)
-            }
-        }
         findPreference<SwitchPreferenceCompat>(getString(R.string.settings_enable_power_tag_support))?.apply {
             isChecked = prefs.powerTagEnabled()
             onPreferenceClickListener = Preference.OnPreferenceClickListener {

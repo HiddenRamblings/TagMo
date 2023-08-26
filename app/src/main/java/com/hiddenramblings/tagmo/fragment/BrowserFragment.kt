@@ -441,7 +441,7 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
         } ?: setAmiiboStats()
     }
 
-    private fun setFoomiiboPlacement() {
+    fun setFoomiiboParams() {
         if (!isAdded || null == view) return
         val peekHeight = bottomSheet?.peekHeight ?: 0
         val minHeight = (peekHeight
@@ -771,6 +771,6 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
     override fun onConfigurationChanged(newConfig: Configuration) {
         super.onConfigurationChanged(newConfig)
         if (null == view) return
-        browserWrapper?.postDelayed({ setFoomiiboPlacement() }, TagMo.uiDelay.toLong())
+        browserWrapper?.postDelayed({ setFoomiiboParams() }, TagMo.uiDelay.toLong())
     }
 }

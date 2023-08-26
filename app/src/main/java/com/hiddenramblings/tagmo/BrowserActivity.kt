@@ -1734,7 +1734,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
         setSnackbarListener(object: SnackbarListener {
             override fun onSnackbarHidden(fakeSnackbar: AnimatedLinearLayout) {
                 viewPager.postDelayed({
-                    setFoomiiboVisibility()
+                    pagerAdapter.browser.setFoomiiboParams()
                     nfcFab.loadSavedPosition(prefs)
                 }, TagMo.uiDelay.toLong())
                 snackbarListener = null
@@ -1759,7 +1759,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
         setSnackbarListener(object: SnackbarListener {
             override fun onSnackbarHidden(fakeSnackbar: AnimatedLinearLayout) {
                 viewPager.postDelayed({
-                    setFoomiiboVisibility()
+                    pagerAdapter.browser.setFoomiiboParams()
                     nfcFab.loadSavedPosition(prefs)
                 }, TagMo.uiDelay.toLong())
                 snackbarListener = null

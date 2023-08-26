@@ -99,7 +99,7 @@ class KeyManager(var context: Context) {
 
     @Throws(Exception::class)
     fun decrypt(tagData: ByteArray?): ByteArray {
-        if (null == tagData) throw Exception(context.getString(R.string.fail_decrypt))
+        if (null == tagData) throw Exception(context.getString(R.string.fail_decrypt_null))
         if (!hasFixedKey() || !hasUnFixedKey())
             throw Exception(context.getString(R.string.key_not_present))
         val tool = AmiiTool()

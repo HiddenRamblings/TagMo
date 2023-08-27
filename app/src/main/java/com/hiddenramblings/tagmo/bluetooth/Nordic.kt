@@ -1,12 +1,19 @@
 package com.hiddenramblings.tagmo.bluetooth
 
-import android.os.Build
-import androidx.annotation.RequiresApi
+import com.hiddenramblings.tagmo.R
+import com.hiddenramblings.tagmo.TagMo
 import java.util.UUID
 
 object Nordic {
     enum class DEVICE {
-        FLASK, SLIDE, BLUUP, LINK, LOOP, PIXL, PUCK, GATT
+        FLASK,
+        SLIDE,
+        BLUUP,
+        LINK,
+        LOOP,
+        PIXL,
+        PUCK,
+        GATT
     }
 
     val NUS  = UUID.fromString("6e400001-b5a3-f393-e0a9-e50e24dcca9e")
@@ -23,6 +30,20 @@ object Nordic {
 
     fun UUID.isUUID(uuid: UUID): Boolean {
        return this.compareTo(uuid) == 0
+    }
+
+    val DEVICE.logTag: String get() {
+        val context = TagMo.appContext
+        return when (this) {
+            DEVICE.FLASK -> context.getString(R.string.device_flask)
+            DEVICE.SLIDE -> context.getString(R.string.device_slide)
+            DEVICE.BLUUP -> context.getString(R.string.device_espruino)
+            DEVICE.LINK -> context.getString(R.string.device_link)
+            DEVICE.LOOP -> context.getString(R.string.device_loop)
+            DEVICE.PIXL -> context.getString(R.string.device_pixl)
+            DEVICE.PUCK -> context.getString(R.string.device_puck)
+            else -> context.getString(R.string.unknown)
+        }
     }
 
     val UUID.logTag: String get() {

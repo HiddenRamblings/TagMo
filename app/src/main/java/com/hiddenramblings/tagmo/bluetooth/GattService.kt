@@ -41,6 +41,7 @@ import com.hiddenramblings.tagmo.nfctech.TagArray.toPages
 import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
+import java.nio.charset.Charset
 import java.util.ArrayList
 import java.util.Arrays
 import java.util.Objects
@@ -124,6 +125,8 @@ class GattService : Service() {
     private var readResponse = byteArrayOf()
     private var tempInfoData = byteArrayOf()
 
+    private var loopFirmware: String? = null
+
     @Suppress("unused")
     private enum class PUCK(bytes: Int) {
         TEST(0x00),
@@ -180,8 +183,8 @@ class GattService : Service() {
         fun onBluupRangeRetrieved(jsonArray: JSONArray)
 
         fun onPixlServicesDiscovered()
+        fun onPixlConnected()
         fun onPixlActiveChanged(jsonObject: JSONObject?)
-        fun onPixlStatusChanged(jsonObject: JSONObject?)
 
         fun onPuckServicesDiscovered()
         fun onPuckActiveChanged(slot: Int)
@@ -204,11 +207,17 @@ class GattService : Service() {
                     }
 
                     Nordic.DEVICE.LOOP -> {
-
+                        if (null == loopFirmware) {
+                            loopFirmware = decipherFirmware(data)
+                            listener?.onPixlConnected()
+                        }
                     }
 
                     Nordic.DEVICE.LINK -> {
                         when {
+                            data.toHex() == "00001002E346EA49B8A3B2541F1CCAB1F93FCF43" -> {
+                                listener?.onPixlConnected()
+                            }
                             Arrays.equals(data, byteArrayOf(0xB0.toByte(), 0xA0.toByte())) -> {
                                 delayedByteCharacteric(byteArrayOf(
                                         0xAC.toByte(), 0xAC.toByte(), 0x00.toByte(), 0x04.toByte(),
@@ -504,6 +513,7 @@ class GattService : Service() {
 
         override fun onServicesDiscovered(gatt: BluetoothGatt, status: Int) {
             if (status == BluetoothGatt.GATT_SUCCESS) {
+                Debug.warn(this.javaClass, "onServicesDiscovered: ${serviceType.logTag}")
                 if (Version.isLollipop) {
                     gatt.requestMtu(512) // Maximum: 517
                 } else {
@@ -1303,6 +1313,14 @@ class GattService : Service() {
             }
         }
         return true
+    }
+
+    private fun decipherFirmware(data: ByteArray): String {
+        return data.sliceArray(
+                3 until data[1].toInt() + 3
+        ).toString(Charset.defaultCharset()).also {
+            Debug.warn(this.javaClass, "${serviceType.logTag} firmware: $it")
+        }
     }
 
     private fun truncateUnicode(unicodeName: String, tailSize: Int) : String {

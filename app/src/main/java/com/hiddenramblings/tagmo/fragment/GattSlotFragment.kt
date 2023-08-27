@@ -45,6 +45,7 @@ import com.hiddenramblings.tagmo.bluetooth.BluetoothHandler
 import com.hiddenramblings.tagmo.bluetooth.BluetoothHandler.BluetoothListener
 import com.hiddenramblings.tagmo.bluetooth.GattService
 import com.hiddenramblings.tagmo.bluetooth.Nordic
+import com.hiddenramblings.tagmo.bluetooth.Nordic.logTag
 import com.hiddenramblings.tagmo.eightbit.io.Debug
 import com.hiddenramblings.tagmo.eightbit.material.IconifiedSnackbar
 import com.hiddenramblings.tagmo.eightbit.os.Version
@@ -596,7 +597,7 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
     ) : View {
         val item = this.layoutInflater.inflate(R.layout.device_bluetooth, null)
         item.findViewById<TextView>(R.id.device_name).text = device.name
-        item.findViewById<TextView>(R.id.device_type).text = getDeviceTypeName(detectedType)
+        item.findViewById<TextView>(R.id.device_type).text = detectedType.logTag
         item.findViewById<TextView>(R.id.device_address).text =
             requireActivity().getString(R.string.device_address, device.address)
 
@@ -620,7 +621,7 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
                 deviceType = detectedType
                 dismissGattDiscovery()
                 AlertDialog.Builder(requireContext())
-                        .setMessage(getString(R.string.pixl_type_warning, getDeviceTypeName(deviceType)))
+                        .setMessage(getString(R.string.pixl_type_warning, detectedType.logTag))
                         .setPositiveButton(R.string.device_loop) { dialog: DialogInterface, _: Int ->
                             dialog.dismiss()
                             deviceType = Nordic.DEVICE.LOOP
@@ -671,19 +672,6 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
                  it.lowercase().startsWith("pixl.js")-> Nordic.DEVICE.PIXL
                 else -> Nordic.DEVICE.GATT
             }
-        }
-    }
-
-    private fun getDeviceTypeName(deviceType:  Nordic.DEVICE) : String {
-        return when(deviceType) {
-            Nordic.DEVICE.FLASK -> getString(R.string.device_flask)
-            Nordic.DEVICE.SLIDE -> getString(R.string.device_slide)
-            Nordic.DEVICE.BLUUP -> getString(R.string.device_espruino)
-            Nordic.DEVICE.LINK -> getString(R.string.device_link)
-            Nordic.DEVICE.LOOP -> getString(R.string.device_loop)
-            Nordic.DEVICE.PIXL -> getString(R.string.device_pixl)
-            Nordic.DEVICE.PUCK -> getString(R.string.device_puck)
-            else -> getString(R.string.unknown)
         }
     }
 
@@ -1372,7 +1360,6 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
                                 resetDevice?.isVisible = true
                                 requireView().findViewById<TextView>(R.id.hardware_info).text = deviceProfile
                             }
-                            dismissSnackbarNotice(true)
                             try {
                                 setCharacteristicRX()
                                 deviceAmiibo
@@ -1383,11 +1370,8 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
                             }
                         }
 
-                        override fun onPixlStatusChanged(jsonObject: JSONObject?) {
-                            processDialog?.let {
-                                if (it.isShowing) it.dismiss()
-                            }
-                            deviceAmiibo
+                        override fun onPixlConnected() {
+                            dismissSnackbarNotice(true)
                         }
 
                         override fun onPixlActiveChanged(jsonObject: JSONObject?) {

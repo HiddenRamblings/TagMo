@@ -1190,6 +1190,13 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
         }
     }
 
+    private fun setBulkOptionVisibility(isVisible: Boolean) {
+        writeRandom?.isVisible = isVisible
+        writeSlots?.isVisible = isVisible
+        eraseSlots?.isVisible = isVisible
+        gattSlotCount.isVisible = isVisible
+    }
+
     override fun onAmiiboImageClicked(amiibo: Amiibo?) {
         amiibo?.let {
             this.startActivity(Intent(requireContext(), ImageActivity::class.java)
@@ -1241,6 +1248,7 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
                             isServiceDiscovered = true
                             onBottomSheetChanged(SHEET.MENU)
                             requireView().post {
+                                setBulkOptionVisibility(true)
                                 gattSlotCount.maxValue = maxSlotCount
                                 screenOptions?.isVisible = true
                                 createBlank?.isVisible = true
@@ -1354,6 +1362,7 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
                             isServiceDiscovered = true
                             onBottomSheetChanged(SHEET.MENU)
                             requireView().post {
+                                setBulkOptionVisibility(serviceType == Nordic.DEVICE.PIXL)
                                 gattSlotCount.maxValue = maxSlotCount
                                 screenOptions?.isGone = true
                                 createBlank?.isVisible = serviceType == Nordic.DEVICE.LOOP
@@ -1370,8 +1379,13 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
                             }
                         }
 
-                        override fun onPixlConnected() {
+                        @SuppressLint("SetTextI18n")
+                        override fun onPixlConnected(firmware: String) {
                             dismissSnackbarNotice(true)
+                            requireView().post {
+                                requireView().findViewById<TextView>(R.id.hardware_info)
+                                        .text = "$deviceProfile $firmware"
+                            }
                         }
 
                         override fun onPixlActiveChanged(jsonObject: JSONObject?) {
@@ -1404,6 +1418,7 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
                             isServiceDiscovered = true
                             onBottomSheetChanged(SHEET.MENU)
                             requireView().post {
+                                setBulkOptionVisibility(true)
                                 gattSlotCount.maxValue = maxSlotCount
                                 screenOptions?.isGone = true
                                 createBlank?.isGone = true

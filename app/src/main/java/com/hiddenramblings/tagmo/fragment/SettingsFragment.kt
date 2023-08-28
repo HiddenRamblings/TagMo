@@ -42,7 +42,6 @@ import com.hiddenramblings.tagmo.eightbit.io.Debug
 import com.hiddenramblings.tagmo.eightbit.material.IconifiedSnackbar
 import com.hiddenramblings.tagmo.eightbit.net.JSONExecutor
 import com.hiddenramblings.tagmo.eightbit.os.Version
-import com.hiddenramblings.tagmo.nfctech.TagArray
 import com.hiddenramblings.tagmo.nfctech.TagArray.toByteArray
 import com.hiddenramblings.tagmo.security.SecurityHandler
 import com.hiddenramblings.tagmo.widget.Toasty
@@ -120,7 +119,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
         }
         importKeys = findPreference<Preference>(getString(R.string.settings_import_keys))?.apply {
             onPreferenceClickListener = Preference.OnPreferenceClickListener {
-                keyEntryMethod()
+                showKeyEntryDialog()
                 super@SettingsFragment.onPreferenceTreeClick(it)
             }
         }
@@ -313,7 +312,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
         }
     }
 
-    private fun keyEntryDialog() {
+    private fun showHexEntryDialog() {
         val view = layoutInflater.inflate(R.layout.dialog_save_item, null)
         val dialog = AlertDialog.Builder(requireContext())
         view.findViewById<TextView>(R.id.save_item_label).setText(R.string.key_hex_entry)
@@ -335,14 +334,14 @@ class SettingsFragment : PreferenceFragmentCompat() {
         scannerDialog.show()
     }
 
-    private fun keyEntryMethod() {
+    private fun showKeyEntryDialog() {
         AlertDialog.Builder(requireContext())
             .setMessage(R.string.key_input_method)
             .setPositiveButton(R.string.key_input_bin) { _: DialogInterface?, _: Int ->
                 onImportKeysClicked()
             }
             .setNegativeButton(R.string.key_input_hex) { _: DialogInterface?, _: Int ->
-                keyEntryDialog()
+                showHexEntryDialog()
             }
             .show()
     }
@@ -440,7 +439,10 @@ class SettingsFragment : PreferenceFragmentCompat() {
             withContext(Dispatchers.Main) {
                 browserActivity?.let { activity ->
                     buildSnackbar(activity, R.string.amiibo_info_updated, Snackbar.LENGTH_SHORT).show()
-                    activity.settings?.notifyChanges()
+                    activity.settings?.run {
+                        this.amiiboManager = amiiboManager
+                        notifyChanges()
+                    }
                 }
             }
         }

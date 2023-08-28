@@ -55,7 +55,10 @@ class TagMo : Application() {
     override fun onCreate() {
         super.onCreate()
         AppCompatDelegate.setCompatVectorFromResourcesEnabled(true)
-        if (BuildConfig.WEAR_OS) appContext.setTheme(R.style.AppTheme)
+        if (BuildConfig.WEAR_OS)
+            appContext.setTheme(R.style.AppTheme)
+        else
+            setThemePreference()
         Thread.setDefaultUncaughtExceptionHandler { _: Thread?, error: Throwable ->
             val exception = StringWriter().apply {
                 error.printStackTrace(PrintWriter(this))
@@ -66,7 +69,6 @@ class TagMo : Application() {
             android.os.Process.killProcess(android.os.Process.myPid())
             exitProcess(-1)
         }
-        setThemePreference()
     }
 
     init { appContext = this }

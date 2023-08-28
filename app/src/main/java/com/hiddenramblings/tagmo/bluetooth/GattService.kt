@@ -125,8 +125,6 @@ class GattService : Service() {
     private var readResponse = byteArrayOf()
     private var tempInfoData = byteArrayOf()
 
-    private var loopFirmware: String? = null
-
     @Suppress("unused")
     private enum class PUCK(bytes: Int) {
         TEST(0x00),
@@ -183,7 +181,7 @@ class GattService : Service() {
         fun onBluupRangeRetrieved(jsonArray: JSONArray)
 
         fun onPixlServicesDiscovered()
-        fun onPixlConnected()
+        fun onPixlConnected(firmware: String)
         fun onPixlActiveChanged(jsonObject: JSONObject?)
 
         fun onPuckServicesDiscovered()
@@ -201,49 +199,57 @@ class GattService : Service() {
         if (data?.isNotEmpty() == true) {
             Debug.warn(this.javaClass, "${characteristic.uuid.logTag} ${data.toHex()}")
             if (characteristic.uuid.isUUID(GattRX)) {
+                val hexData = data.toHex()
                 when (serviceType) {
                     Nordic.DEVICE.PIXL -> {
 
                     }
 
                     Nordic.DEVICE.LOOP -> {
-                        if (null == loopFirmware) {
-                            loopFirmware = decipherFirmware(data)
-                            listener?.onPixlConnected()
+                        if (hexData.substring(6, 20) == "AmiLoop_FW") {
+                            val firmware = decipherFirmware(data)
+                                    .replace("AmiLoop_FW_V", "")
+                            listener?.onPixlConnected(firmware)
                         }
                     }
 
                     Nordic.DEVICE.LINK -> {
                         when {
-                            data.toHex() == "00001002E346EA49B8A3B2541F1CCAB1F93FCF43" -> {
-                                listener?.onPixlConnected()
+                            hexData.startsWith("00002013") -> {
+                                val firmware = hexData.substring(
+                                        8 + (20 * 2), hexData.length
+                                ) // 32 bytes, index of 20, length of 13
+                                listener?.onPixlConnected(firmware)
                             }
-                            Arrays.equals(data, byteArrayOf(0xB0.toByte(), 0xA0.toByte())) -> {
+                            hexData == "00001002E346EA49B8A3B2541F1CCAB1F93FCF43" -> {
+
+                            }
+                            hexData == byteArrayOf(0xB0.toByte(), 0xA0.toByte()).toHex() -> {
                                 delayedByteCharacteric(byteArrayOf(
                                         0xAC.toByte(), 0xAC.toByte(), 0x00.toByte(), 0x04.toByte(),
                                         0x00.toByte(), 0x00.toByte(), 0x02.toByte(), 0x1C.toByte())
                                 )
                             }
 
-                            Arrays.equals(data, byteArrayOf(0xCA.toByte(), 0xCA.toByte())) -> {
+                            hexData == byteArrayOf(0xCA.toByte(), 0xCA.toByte()).toHex() -> {
                                 delayedByteCharacteric(byteArrayOf(
                                         0xAB.toByte(), 0xAB.toByte(), 0x02.toByte(), 0x1C.toByte()
                                 ))
                             }
 
-                            Arrays.equals(data, byteArrayOf(0xBA.toByte(), 0xBA.toByte())) -> {
+                            hexData == byteArrayOf(0xBA.toByte(), 0xBA.toByte()).toHex() -> {
                                 processLinkUpload()
                             }
 
-                            Arrays.equals(data, byteArrayOf(0xAA.toByte(), 0xDD.toByte())) -> {
+                            hexData == byteArrayOf(0xAA.toByte(), 0xDD.toByte()).toHex() -> {
 
                             }
 
-                            Arrays.equals(data, byteArrayOf(0xCB.toByte(), 0xCB.toByte())) -> {
+                            hexData == byteArrayOf(0xCB.toByte(), 0xCB.toByte()).toHex() -> {
                                 delayedByteCharacteric(byteArrayOf(0xCC.toByte(), 0xDD.toByte()))
                             }
 
-                            Arrays.equals(data, byteArrayOf(0xDD.toByte(), 0xCC.toByte())) -> {
+                            hexData == byteArrayOf(0xDD.toByte(), 0xCC.toByte()).toHex() -> {
                                 listener?.onProcessFinish()
                             }
 

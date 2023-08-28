@@ -30,8 +30,8 @@ import com.hiddenramblings.tagmo.bluetooth.GattArray.toDataBytes
 import com.hiddenramblings.tagmo.bluetooth.GattArray.toFileBytes
 import com.hiddenramblings.tagmo.bluetooth.GattArray.toPortions
 import com.hiddenramblings.tagmo.bluetooth.GattArray.toUnicode
-import com.hiddenramblings.tagmo.bluetooth.Nordic.logTag
 import com.hiddenramblings.tagmo.bluetooth.Nordic.isUUID
+import com.hiddenramblings.tagmo.bluetooth.Nordic.logTag
 import com.hiddenramblings.tagmo.eightbit.io.Debug
 import com.hiddenramblings.tagmo.eightbit.os.Version
 import com.hiddenramblings.tagmo.nfctech.NfcByte
@@ -42,8 +42,6 @@ import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
 import java.nio.charset.Charset
-import java.util.ArrayList
-import java.util.Arrays
 import java.util.Objects
 import java.util.UUID
 import kotlin.random.Random
@@ -1053,10 +1051,8 @@ class GattService : Service() {
         chunks.forEachIndexed { index, bytes ->
             val size = if (index == chunks.lastIndex) bytes.size else 0x96
             val tempArray = byteArrayOf(
-                    0xDD.toByte(), 0xAA.toByte(), 0x00.toByte(), size.toByte(),
-                    *bytes,
-                    0x00.toByte(), index.toByte()
-            )
+                    0xDD.toByte(), 0xAA.toByte(), 0x00.toByte(), size.toByte()
+            ).plus(bytes).plus(byteArrayOf(0x00.toByte(), index.toByte()))
             commandCallbacks.add(Runnable {
                 delayedByteCharacteric(tempArray)
             })
@@ -1130,7 +1126,7 @@ class GattService : Service() {
                 }
             }
             Nordic.DEVICE.LINK -> {
-                uploadData = byteArrayOf(*tagData.toDataBytes())
+                uploadData = tagData.toDataBytes()
                 delayedByteCharacteric(byteArrayOf(0xA0.toByte(), 0xB0.toByte()))
             }
             else -> {
@@ -1144,8 +1140,8 @@ class GattService : Service() {
         tagData.toFileBytes().toPages().forEachIndexed { index, bytes ->
             bytes?.let {
                 parameters.add(byteArrayOf(
-                        PUCK.WRITE.bytes, slot.toByte(), (index * NfcByte.PAGE_SIZE).toByte(), *it
-                ))
+                        PUCK.WRITE.bytes, slot.toByte(), (index * NfcByte.PAGE_SIZE).toByte()
+                ).plus(it))
             }
         }
         parameters.add(byteArrayOf(PUCK.SAVE.bytes, slot.toByte()))
@@ -1158,7 +1154,7 @@ class GattService : Service() {
             commandCallbacks[0].run()
             commandCallbacks.removeAt(0)
         }
-//        uploadData = byteArrayOf(*tagData.toFileBytes())
+//        uploadData = tagData.toFileBytes()
 //        delayedByteCharacteric(byteArrayOf(PUCK.FWRITE.bytes, slot.toByte()))
     }
 
@@ -1344,7 +1340,7 @@ class GattService : Service() {
         for (i in 1 until byteArray.size) {
             result = (result.toInt() xor byteArray[i].toInt()).toByte()
         }
-        return (result.toInt() and 0xff).toByte()
+        return (result.toInt() and 0xFF).toByte()
     }
 
     companion object {

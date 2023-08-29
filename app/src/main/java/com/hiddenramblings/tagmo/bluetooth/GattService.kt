@@ -214,9 +214,7 @@ class GattService : Service() {
                     Nordic.DEVICE.LINK -> {
                         when {
                             hexData.startsWith("00002013") -> {
-                                val firmware = hexData.substring(
-                                        8 + (20 * 2), hexData.length
-                                ) // 32 bytes, index of 20, length of 13
+                                val firmware = hexData.substring(8, hexData.length) // 32 bytes
                                 listener?.onPixlConnected(firmware)
                             }
                             hexData == "00001002E346EA49B8A3B2541F1CCAB1F93FCF43" -> {
@@ -325,7 +323,7 @@ class GattService : Service() {
 
     private fun getCharacteristicValue(characteristic: BluetoothGattCharacteristic, output: String?) {
         if (!output.isNullOrEmpty()) {
-            Debug.warn(this.javaClass, "${characteristic.uuid.logTag}\n$output")
+            Debug.warn(this.javaClass, "${characteristic.uuid.logTag} $output")
             if (characteristic.uuid.isUUID(GattRX)) {
                 if (output.contains(">tag.")) {
                     response = StringBuilder()
@@ -516,8 +514,8 @@ class GattService : Service() {
         }
 
         override fun onServicesDiscovered(gatt: BluetoothGatt, status: Int) {
+            Debug.warn(this.javaClass, "${serviceType.logTag} onServicesDiscovered $status")
             if (status == BluetoothGatt.GATT_SUCCESS) {
-                Debug.warn(this.javaClass, "onServicesDiscovered: ${serviceType.logTag}")
                 if (Version.isLollipop) {
                     gatt.requestMtu(512) // Maximum: 517
                 } else {
@@ -536,8 +534,6 @@ class GattService : Service() {
                         }
                     }
                 }
-            } else {
-                Debug.info(this.javaClass, "onServicesDiscovered received: $status")
             }
         }
 
@@ -589,11 +585,9 @@ class GattService : Service() {
         }
 
         override fun onMtuChanged(gatt: BluetoothGatt, mtu: Int, status: Int) {
+            Debug.warn(this.javaClass, "${serviceType.logTag} onMtuChange $mtu $status")
             if (status == BluetoothGatt.GATT_SUCCESS) {
-                Debug.warn(this.javaClass, "onMtuChange complete: $mtu")
                 maxTransmissionUnit = mtu - 3
-            } else {
-                Debug.warn(this.javaClass, "onMtuChange received: $status")
             }
             when (serviceType) {
                 Nordic.DEVICE.BLUUP, Nordic.DEVICE.FLASK, Nordic.DEVICE.SLIDE -> {
@@ -1024,8 +1018,8 @@ class GattService : Service() {
             delayedTagCharacteristic("get()")
         }
 
-    private fun processLoopUpload(input: ByteArray): List<ByteArray> {
-        val output = mutableListOf<ByteArray>()
+    private fun processLoopUpload(input: ByteArray): ArrayList<ByteArray> {
+        val output = ArrayList<ByteArray>()
         var start = 0
         while (start < input.size) {
             val chunkSize = 128.coerceAtMost(input.size - start)
@@ -1073,7 +1067,7 @@ class GattService : Service() {
         }
     }
 
-    private fun generateLoopBlank() {
+    private fun generateBlankData(): ByteArray {
         val blankData = ByteArray(NfcByte.TAG_FILE_SIZE)
 
         blankData[0] = 0x04.toByte()
@@ -1102,15 +1096,7 @@ class GattService : Service() {
         )
         blankData.copyInto(static0x20B, startIndex = 0x20B)
 
-        val tagData = blankData.toDataBytes()
-        tagData[536] = 0x80.toByte()
-        tagData[537] = 0x80.toByte()
-
-        processLoopUpload(tagData).forEach {
-            commandCallbacks.add(Runnable {
-                delayedByteCharacteric(it)
-            })
-        }
+        return blankData
     }
 
     fun uploadAmiiboData(tagData: ByteArray) {
@@ -1251,8 +1237,20 @@ class GattService : Service() {
             Nordic.DEVICE.BLUUP, Nordic.DEVICE.FLASK, Nordic.DEVICE.SLIDE -> {
                 delayedTagCharacteristic("createBlank()")
             }
+            Nordic.DEVICE.LOOP -> {
+                val blankData = generateBlankData()
+                val tagData = blankData.toDataBytes()
+                tagData[536] = 0x80.toByte()
+                tagData[537] = 0x80.toByte()
+
+                processLoopUpload(tagData).forEach {
+                    commandCallbacks.add(Runnable {
+                        delayedByteCharacteric(it)
+                    })
+                }
+            }
             Nordic.DEVICE.LINK -> {
-                generateLoopBlank()
+                generateBlankData()
             }
             else -> {
 

@@ -10,21 +10,15 @@ import com.hiddenramblings.tagmo.nfctech.NfcByte
 object GattArray {
 
     fun ByteArray.toDataBytes(): ByteArray {
-        return if (this.size != NfcByte.TAG_DATA_SIZE + 8)
-            this.copyOf(NfcByte.TAG_DATA_SIZE + 8)
-        else
-            this
+        return this.copyOf(NfcByte.TAG_DATA_SIZE + 8)
     }
 
     fun ByteArray.toFileBytes(): ByteArray {
-        return if (this.size != NfcByte.TAG_FILE_SIZE)
-            this.copyOf(NfcByte.TAG_FILE_SIZE)
-        else
-            this
+        return this.copyOf(NfcByte.TAG_FILE_SIZE)
     }
 
     @JvmStatic
-    fun ByteArray.toPortions(sizePerPortion: Int): List<ByteArray> {
+    fun ByteArray.toPortions(sizePerPortion: Int): ArrayList<ByteArray> {
         val byteArrayPortions: ArrayList<ByteArray> = arrayListOf()
         this.asIterable().chunked(sizePerPortion).forEach {
             byteArrayPortions.add(it.toByteArray())
@@ -33,7 +27,7 @@ object GattArray {
     }
 
     @JvmStatic
-    fun String.toPortions(sizePerPortion: Int): List<String> {
+    fun String.toPortions(sizePerPortion: Int): ArrayList<String> {
         val stringPortions: ArrayList<String> = arrayListOf()
         val size = this.length
         if (size <= sizePerPortion) {

@@ -7,6 +7,7 @@ import com.hiddenramblings.tagmo.TagMo
 import com.hiddenramblings.tagmo.eightbit.charset.CharsetCompat
 import com.hiddenramblings.tagmo.nfctech.NfcByte
 import com.hiddenramblings.tagmo.nfctech.TagArray
+import com.hiddenramblings.tagmo.nfctech.TagArray.toHexByteArray
 import java.io.IOException
 import java.io.UnsupportedEncodingException
 import java.nio.ByteBuffer
@@ -147,7 +148,7 @@ open class AmiiboData : Parcelable {
             }
         }
         val crc16 = String.format("%04X", crc and 0xFFFF)
-        TagArray.hexToByteArray(crc16).forEachIndexed { x, byte -> tagData.put(0xFE + x, byte) }
+        crc16.toHexByteArray().forEachIndexed { x, byte -> tagData.put(0xFE + x, byte) }
     }
 
     fun writeCrc32() {

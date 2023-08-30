@@ -143,30 +143,20 @@ object TagArray {
     }
 
     @JvmStatic
-    fun hexToByteArray(s: String): ByteArray {
-        val len: Int = s.length
+    fun hexToByteArray(hex: String): ByteArray {
+        val len: Int = hex.length
         val data = ByteArray(len / 2)
         var i = 0
         while (i < len) {
-            data[i / 2] = ((Character.digit(s[i], 16) shl 4)
-                    + Character.digit(s[i + 1], 16)).toByte()
+            data[i / 2] = ((Character.digit(hex[i], 16) shl 4)
+                    + Character.digit(hex[i + 1], 16)).toByte()
             i += 2
         }
         return data
     }
 
-    fun String.toByteArray() : ByteArray {
+    fun String.toHexByteArray() : ByteArray {
         return hexToByteArray(this.filter { !it.isWhitespace() })
-    }
-
-    fun hexToLong(hex: String): Long {
-        var result: Long = 0
-        try {
-            result = hex.toLong(16)
-        } catch (nf: NumberFormatException) {
-            hex.forEach { result = (result shl 4) + Character.digit(it, 16).toLong() }
-        }
-        return result
     }
 
     fun hexToString(hex: String): String {
@@ -183,6 +173,16 @@ object TagArray {
             i += 2
         }
         return output.toString()
+    }
+
+    fun hexToLong(hex: String): Long {
+        var result: Long = 0
+        try {
+            result = hex.toLong(16)
+        } catch (nf: NumberFormatException) {
+            hex.forEach { result = (result shl 4) + Character.digit(it, 16).toLong() }
+        }
+        return result
     }
 
     @JvmStatic

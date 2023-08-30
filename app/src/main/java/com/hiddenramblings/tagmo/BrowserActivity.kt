@@ -485,7 +485,13 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
     private fun onCreateMainMenuLayout() {
         findViewById<CardView>(R.id.menu_amiibo).setOnClickListener {
             closePrefsDrawer()
+            showBrowserPage()
+        }
+
+        findViewById<CardView>(R.id.menu_foomiibo).setOnClickListener {
+            closePrefsDrawer()
             if (viewPager.currentItem != 0) viewPager.setCurrentItem(0, false)
+            pagerAdapter.browser.setFoomiiboVisibility(true)
         }
 
         findViewById<CardView>(R.id.menu_elite).apply {
@@ -536,7 +542,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
 
     @SuppressLint("NotifyDataSetChanged")
     fun onTabCollectionChanged() {
-        if (viewPager.currentItem != 0) viewPager.setCurrentItem(0, false)
+        showBrowserPage()
         if (Version.isTiramisu) onApplicationRecreate() else pagerAdapter.notifyDataSetChanged()
         onCreateMainMenuLayout()
     }
@@ -1734,7 +1740,6 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
         setSnackbarListener(object: SnackbarListener {
             override fun onSnackbarHidden(fakeSnackbar: AnimatedLinearLayout) {
                 viewPager.postDelayed({
-                    pagerAdapter.browser.setFoomiiboParams()
                     nfcFab.loadSavedPosition(prefs)
                 }, TagMo.uiDelay.toLong())
                 snackbarListener = null
@@ -1759,7 +1764,6 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
         setSnackbarListener(object: SnackbarListener {
             override fun onSnackbarHidden(fakeSnackbar: AnimatedLinearLayout) {
                 viewPager.postDelayed({
-                    pagerAdapter.browser.setFoomiiboParams()
                     nfcFab.loadSavedPosition(prefs)
                 }, TagMo.uiDelay.toLong())
                 snackbarListener = null
@@ -2309,6 +2313,11 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
         }
     }
 
+    fun showBrowserPage() {
+        if (viewPager.currentItem != 0) viewPager.setCurrentItem(0, false)
+        pagerAdapter.browser.setFoomiiboVisibility(false)
+    }
+
     fun showElitePage(extras: Bundle) {
         if (viewPager.currentItem == 2) {
             pagerAdapter.eliteBanks.onHardwareLoaded(extras)
@@ -2551,7 +2560,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                             if (viewPager.currentItem == 1 && pagerAdapter.website.hasGoneBack())
                                 return
                             else
-                                viewPager.setCurrentItem(0, false)
+                                showBrowserPage()
                         }
                         else -> {
                             finishAffinity()
@@ -2568,7 +2577,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                                 if (viewPager.currentItem == 1 && pagerAdapter.website.hasGoneBack())
                                     return
                                 else
-                                    viewPager.setCurrentItem(0, false)
+                                    showBrowserPage()
                             } else {
                                 finishAffinity()
                             }

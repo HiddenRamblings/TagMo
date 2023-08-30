@@ -145,7 +145,6 @@
     <string name="build_foomiibo_set">Build Foomiibo</string>
     <string name="foomiibo_progress">Building %1$s&#8230;</string>
     <string name="foomiibo_removing">Clearing %1$s&#8230;</string>
-    <string name="number_foomiibo">Database: %1$d Foomiibo</string>
 
     <string name="wrote_file">%1$s saved!</string>
     <string name="wrote_foomiibo">%1$s Foomiibo saved!</string>
@@ -211,6 +210,7 @@
     <string name="donate">Donate</string>
 
     <string name="menu_amiibo">Backup Browser</string>
+    <string name="menu_foomiibo">Foomiibo Panel</string>
     <string name="menu_elite">N2 Elite Connect</string>
     <string name="menu_gatt">Bluetooth Connect</string>
     <string name="menu_qr_code">QR Code Toolkit</string>

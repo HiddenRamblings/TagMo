@@ -143,7 +143,6 @@
     <string name="build_foomiibo_set">建立 Foomiibo</string>
     <string name="foomiibo_progress">正在建立 %1$s&#8230;</string>
     <string name="foomiibo_removing">正在清除 %1$s&#8230;</string>
-    <string name="number_foomiibo">Foomiibo資料庫: %1$d</string>
 
     <string name="wrote_file">%1$s 已儲存！</string>
     <string name="wrote_foomiibo">%1$s Foomiibo 已儲存！</string>

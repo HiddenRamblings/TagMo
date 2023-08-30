@@ -140,7 +140,6 @@
     <string name="build_foomiibo_set">Foomiibo aufbauen</string>
     <string name="foomiibo_progress">Bauen %1$s&#8230;</string>
     <string name="foomiibo_removing">Leeren %1$s&#8230;</string>
-    <string name="number_foomiibo">Datenbank: %1$d Foomiibo</string>
 
     <string name="wrote_file">%1$s gespeichert!</string>
     <string name="wrote_foomiibo">%1$s Foomiibo gespeichert!</string>

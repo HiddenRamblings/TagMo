@@ -33,7 +33,9 @@ import androidx.appcompat.widget.AppCompatButton
 import androidx.appcompat.widget.AppCompatImageView
 import androidx.appcompat.widget.Toolbar
 import androidx.core.view.isGone
+import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
+import androidx.core.view.updatePadding
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -225,38 +227,6 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
             } else {
                 view.findViewById<View>(R.id.select_zip_file).isGone = true
             }
-
-            view.findViewById<View>(R.id.list_divider).apply {
-                isGone = true
-                browserWrapper?.layoutParams?.let { layoutParams ->
-                    if (BuildConfig.WEAR_OS) layoutParams.height = layoutParams.height / 3
-                }
-                setOnTouchListener { v: View, event: MotionEvent ->
-                    browserWrapper?.let {
-                        it.layoutParams?.let { layoutParams ->
-                            val srcHeight = layoutParams.height
-                            val y = event.y.toInt()
-                            if (layoutParams.height + y < -0.5f) return@setOnTouchListener true
-                            if (event.action == MotionEvent.ACTION_MOVE) {
-                                layoutParams.height += y
-                            } else if (event.action == MotionEvent.ACTION_UP) {
-                                if (layoutParams.height + y < 0f) {
-                                    layoutParams.height = 0
-                                } else {
-                                    val peekHeight = bottomSheet?.peekHeight ?: 0
-                                    val minHeight = peekHeight + v.height + requireContext().resources
-                                        .getDimensionPixelOffset(R.dimen.sliding_bar_margin)
-                                    if (layoutParams.height > view.height - minHeight)
-                                        layoutParams.height = view.height - minHeight
-                                }
-                            }
-                            if (srcHeight != layoutParams.height) it.requestLayout()
-                            prefs.foomiiboOffset(it.layoutParams.height)
-                        }
-                    }
-                    true
-                }
-            }
             activity.onFilterContentsLoaded()
         }
     }
@@ -290,10 +260,7 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
             val amiiboTitleStats = requireView().findViewById<TextView>(R.id.stats_amiibo_titles)
             val amiiboManager = settings.amiiboManager
             val hasAmiibo = null != amiiboManager
-            val foomiiboStats = requireView().findViewById<TextView>(R.id.divider_text)
-            foomiiboStats.text = getString(
-                R.string.number_foomiibo, if (hasAmiibo) amiiboManager!!.amiibos.size else 0
-            )
+
             characterStats.text = getString(
                 R.string.number_character,
                 if (hasAmiibo) amiiboManager!!.characters.size else 0
@@ -441,27 +408,6 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
         } ?: setAmiiboStats()
     }
 
-    fun setFoomiiboParams() {
-        if (!isAdded || null == view) return
-        val peekHeight = bottomSheet?.peekHeight ?: 0
-        val minHeight = (peekHeight
-                + requireView().findViewById<View>(R.id.list_divider).height
-                + requireContext().resources.getDimension(R.dimen.sliding_bar_margin))
-        browserWrapper?.let {
-            it.layoutParams?.let { layoutParams ->
-                val srcHeight = layoutParams.height
-                val outHeight = requireView().height - minHeight.toInt()
-                if (layoutParams.height > outHeight && outHeight > 0) {
-                    layoutParams.height = outHeight
-                } else {
-                    val valueY = prefs.foomiiboOffset()
-                    layoutParams.height = if (valueY != -1) valueY else layoutParams.height
-                }
-                if (srcHeight != layoutParams.height) it.requestLayout()
-            }
-        }
-    }
-
     fun setStorageButtons() {
         if (BuildConfig.WEAR_OS) return
         browserActivity?.let { activity ->
@@ -543,6 +489,11 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
                 }
             }
         }
+    }
+
+    fun setFoomiiboVisibility(isActive: Boolean) {
+        browserWrapper?.isVisible = !isActive
+        foomiiboContent?.isVisible = isActive
     }
 
     @RequiresApi(Build.VERSION_CODES.KITKAT)
@@ -766,11 +717,5 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
                 putLong(NFCIntent.EXTRA_AMIIBO_ID, amiibo.id)
             })
         )
-    }
-
-    override fun onConfigurationChanged(newConfig: Configuration) {
-        super.onConfigurationChanged(newConfig)
-        if (null == view) return
-        browserWrapper?.postDelayed({ setFoomiiboParams() }, TagMo.uiDelay.toLong())
     }
 }

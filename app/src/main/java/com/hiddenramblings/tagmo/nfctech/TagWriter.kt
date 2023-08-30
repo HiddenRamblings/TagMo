@@ -7,6 +7,7 @@ import com.hiddenramblings.tagmo.amiibo.PowerTagManager
 import com.hiddenramblings.tagmo.eightbit.io.Debug
 import com.hiddenramblings.tagmo.nfctech.TagArray.isPowerTag
 import com.hiddenramblings.tagmo.nfctech.TagArray.toHex
+import com.hiddenramblings.tagmo.nfctech.TagArray.toHexByteArray
 import java.io.BufferedReader
 import java.io.IOException
 import java.io.InputStreamReader
@@ -128,7 +129,7 @@ object TagWriter {
             page10?.let { Debug.verbose(TagWriter::class.java, R.string.page_ten, it.toHex()) }
             val page10bytes = byteArrayOf(page10?.get(0) ?: 0, page10?.get(3) ?: 0).toHex()
             val ptagKeySuffix = PowerTagManager.getPowerTagKey(oldid, page10bytes)
-            val ptagKey = TagArray.hexToByteArray(NfcByte.POWERTAG_KEY)
+            val ptagKey = NfcByte.POWERTAG_KEY.toHexByteArray()
             System.arraycopy(ptagKeySuffix, 0, ptagKey, 8, 8)
             Debug.verbose(TagWriter::class.java, R.string.ptag_key, ptagKey.toHex())
             mifare.transceive(NfcByte.POWERTAG_WRITE)
@@ -305,9 +306,8 @@ object TagWriter {
     @Throws(Exception::class)
     fun wipeBankData(mifare: NTAG215, bankNumber: Int) {
         if (doEliteAuth(mifare, mifare.fastRead(0, 0))) {
-            val tagData = TagArray.hexToByteArray(
-                String(CharArray(1080)).replace("\u0000", "F")
-            )
+            val tagData = String(CharArray(1080))
+                    .replace("\u0000", "F").toHexByteArray()
             var write = mifare.amiiboFastWrite(0, bankNumber, tagData)
             if (!write) write = mifare.amiiboWrite(0, bankNumber, tagData)
             if (write) {

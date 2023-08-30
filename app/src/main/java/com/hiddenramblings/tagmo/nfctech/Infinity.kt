@@ -13,6 +13,7 @@ import com.hiddenramblings.tagmo.R
 import com.hiddenramblings.tagmo.TagMo
 import com.hiddenramblings.tagmo.eightbit.io.Debug
 import com.hiddenramblings.tagmo.nfctech.TagArray.toHex
+import com.hiddenramblings.tagmo.nfctech.TagArray.toHexByteArray
 import java.io.IOException
 import java.math.BigInteger
 import java.security.MessageDigest
@@ -91,11 +92,11 @@ class Infinity : TagTechnology {
                 throw NumberFormatException(TagMo.appContext.getString(R.string.fail_uid_invalid))
 
             val sha1 = MessageDigest.getInstance("SHA-1")
-            val textBytes: ByteArray = TagArray.hexToByteArray("${String.format(
+            val textBytes: ByteArray = "${String.format(
                 "%032X", magic_nums[0] * magic_nums[1] * magic_nums[3] * magic_nums[5]
             )}$uid${String.format(
                 "%030X", magic_nums[0] * magic_nums[2] * magic_nums[4]
-            )}")
+            )}".toHexByteArray()
             sha1.update(textBytes, 0, textBytes.size)
             val key = sha1.digest()
 

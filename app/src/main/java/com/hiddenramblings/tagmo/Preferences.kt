@@ -236,15 +236,6 @@ class Preferences(context: Context) {
         putString(browserRootDocument, value)
     }
 
-    private val foomiiboOffset = "foomiiboOffset"
-    fun foomiiboOffset(): Int {
-        return getInt(foomiiboOffset, -1)
-    }
-
-    fun foomiiboOffset(value: Int) {
-        putInt(foomiiboOffset, value)
-    }
-
     private val eliteBankCount = "eliteBankCount"
     fun eliteBankCount(): Int {
         return getInt(eliteBankCount, 200)

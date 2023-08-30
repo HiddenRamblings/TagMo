@@ -30,6 +30,7 @@ import com.hiddenramblings.tagmo.eightbit.os.Storage
 import com.hiddenramblings.tagmo.eightbit.os.Version
 import com.hiddenramblings.tagmo.nfctech.TagArray
 import com.hiddenramblings.tagmo.nfctech.TagArray.toHex
+import com.hiddenramblings.tagmo.nfctech.TagArray.toHexByteArray
 import com.hiddenramblings.tagmo.widget.Toasty
 import java.io.File
 import java.io.FileOutputStream
@@ -116,7 +117,7 @@ class HexCodeViewer : AppCompatActivity() {
         if (hex.isNotBlank()) {
             val data = hex.toString()
             val hexData = keyManager.encrypt(
-                TagArray.hexToByteArray(data.substring(0, data.length - 24))
+                data.substring(0, data.length - 24).toHexByteArray()
             )
             setResult(
                 RESULT_OK, Intent(NFCIntent.ACTION_UPDATE_TAG)

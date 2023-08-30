@@ -35,6 +35,7 @@ import com.hiddenramblings.tagmo.eightbit.os.Version
 import com.hiddenramblings.tagmo.nfctech.Foomiibo
 import com.hiddenramblings.tagmo.nfctech.TagArray
 import com.hiddenramblings.tagmo.nfctech.TagArray.toHex
+import com.hiddenramblings.tagmo.nfctech.TagArray.toHexByteArray
 import com.hiddenramblings.tagmo.widget.Toasty
 import com.vicmikhailau.maskededittext.MaskedEditText
 import kotlinx.coroutines.*
@@ -542,7 +543,7 @@ class TagDataEditor : AppCompatActivity() {
                 return
             }
             try {
-                val serialNumber = TagArray.hexToByteArray(txtSerialNumber.text.toString())
+                val serialNumber = txtSerialNumber.text.toString().toHexByteArray()
                 newAmiiboData.uID = serialNumber
             } catch (e: Exception) {
                 txtSerialNumber.requestFocus()

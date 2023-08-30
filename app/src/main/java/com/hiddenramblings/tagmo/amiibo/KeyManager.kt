@@ -4,9 +4,7 @@ import android.content.Context
 import com.hiddenramblings.tagmo.AmiiTool
 import com.hiddenramblings.tagmo.R
 import com.hiddenramblings.tagmo.eightbit.io.Debug
-import com.hiddenramblings.tagmo.nfctech.Foomiibo
 import com.hiddenramblings.tagmo.nfctech.NfcByte
-import com.hiddenramblings.tagmo.nfctech.TagArray
 import com.hiddenramblings.tagmo.nfctech.TagArray.toHex
 import java.io.DataInputStream
 import java.io.IOException
@@ -110,15 +108,7 @@ class KeyManager(var context: Context) {
         val decrypted = ByteArray(NfcByte.TAG_DATA_SIZE)
         if (tool.unpack(tagData, NfcByte.TAG_DATA_SIZE, decrypted, decrypted.size) == 0)
             throw Exception(context.getString(R.string.fail_decrypt))
-        return if (tagData.size ==  NfcByte.TAG_FILE_SIZE) {
-            return ByteArray(NfcByte.TAG_FILE_SIZE).apply {
-                System.arraycopy(decrypted, 0, this, 0x0, decrypted.size)
-                val signature = tagData.copyOfRange(NfcByte.SIGNATURE, tagData.size)
-                System.arraycopy(signature, 0, this, NfcByte.SIGNATURE, signature.size)
-            }
-        } else {
-            decrypted
-        }
+        return decrypted.copyInto(tagData)
     }
 
     @Throws(RuntimeException::class)
@@ -133,15 +123,7 @@ class KeyManager(var context: Context) {
         val encrypted = ByteArray(NfcByte.TAG_DATA_SIZE)
         if (tool.pack(tagData, NfcByte.TAG_DATA_SIZE, encrypted, encrypted.size) == 0)
             throw RuntimeException(context.getString(R.string.fail_encrypt))
-        return if (tagData.size ==  NfcByte.TAG_FILE_SIZE) {
-            return ByteArray(NfcByte.TAG_FILE_SIZE).apply {
-                System.arraycopy(encrypted, 0, this, 0x0, encrypted.size)
-                val signature = tagData.copyOfRange(NfcByte.SIGNATURE, tagData.size)
-                System.arraycopy(signature, 0, this, NfcByte.SIGNATURE, signature.size)
-            }
-        } else {
-            encrypted
-        }
+        return encrypted.copyInto(tagData)
     }
 
     companion object {

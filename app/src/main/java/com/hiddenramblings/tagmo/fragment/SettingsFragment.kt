@@ -42,7 +42,7 @@ import com.hiddenramblings.tagmo.eightbit.io.Debug
 import com.hiddenramblings.tagmo.eightbit.material.IconifiedSnackbar
 import com.hiddenramblings.tagmo.eightbit.net.JSONExecutor
 import com.hiddenramblings.tagmo.eightbit.os.Version
-import com.hiddenramblings.tagmo.nfctech.TagArray.toByteArray
+import com.hiddenramblings.tagmo.nfctech.TagArray.toHexByteArray
 import com.hiddenramblings.tagmo.security.SecurityHandler
 import com.hiddenramblings.tagmo.widget.Toasty
 import kotlinx.coroutines.CoroutineScope
@@ -324,7 +324,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
             if (input.text.isNullOrEmpty()) return@setOnClickListener
             try {
                 keyManager.evaluateKey(ByteArrayInputStream(
-                    input.text.toString().toByteArray()
+                    input.text.toString().toHexByteArray()
                 ))
                 browserActivity?.onKeysLoaded(true)
                 updateKeySummary()

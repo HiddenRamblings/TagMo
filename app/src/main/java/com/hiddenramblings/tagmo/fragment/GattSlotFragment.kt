@@ -1379,12 +1379,10 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
                             }
                         }
 
-                        @SuppressLint("SetTextI18n")
                         override fun onPixlConnected(firmware: String) {
                             dismissSnackbarNotice(true)
                             requireView().post {
-                                requireView().findViewById<TextView>(R.id.hardware_info)
-                                        .text = "$deviceProfile $firmware"
+                                requireView().findViewById<TextView>(R.id.hardware_info).text = firmware
                             }
                         }
 

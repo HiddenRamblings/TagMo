@@ -123,6 +123,8 @@ class GattService : Service() {
     private var readResponse = byteArrayOf()
     private var tempInfoData = byteArrayOf()
 
+    private var chunkNumber = 0
+
     @Suppress("unused")
     private enum class PUCK(bytes: Int) {
         TEST(0x00),
@@ -204,18 +206,26 @@ class GattService : Service() {
                     }
 
                     Nordic.DEVICE.LOOP -> {
-                        if (hexData.substring(6, 20) == "AmiLoop_FW") {
-                            val firmware = decipherFirmware(data)
-                                    .replace("AmiLoop_FW_V", "")
-                            listener?.onPixlConnected(firmware)
+                        when {
+                            hexData == "0201000103" -> {
+                                chunkNumber -= 1
+                                if (chunkNumber == 0) listener?.onProcessFinish()
+                            }
+
+                            hexData.contains("416D694C6F6F705F46575F56") -> {
+                                listener?.onPixlConnected(decipherFirmware(data))
+                            }
+
+                            else -> {
+
+                            }
                         }
                     }
 
                     Nordic.DEVICE.LINK -> {
                         when {
                             hexData.startsWith("00002013") -> {
-                                val firmware = hexData.substring(8, hexData.length) // 32 bytes
-                                listener?.onPixlConnected(firmware)
+                                listener?.onPixlConnected(hexData.substring(8, hexData.length))
                             }
                             hexData == "00001002E346EA49B8A3B2541F1CCAB1F93FCF43" -> {
 
@@ -257,7 +267,7 @@ class GattService : Service() {
 
                     Nordic.DEVICE.PUCK -> {
                         when {
-                            TagArray.hexToString(data.toHex()).endsWith("DTM_PUCK_FAST") -> {
+                            TagArray.hexToString(hexData).endsWith("DTM_PUCK_FAST") -> {
                                 delayedByteCharacteric(byteArrayOf(PUCK.INFO.bytes))
                             }
 
@@ -854,6 +864,7 @@ class GattService : Service() {
                         mCharacteristicTX!!.value = chunk
                         mBluetoothGatt!!.writeCharacteristic(mCharacteristicTX)
                     }
+                    Debug.info(this.javaClass, "onCharacteristicWrite ${chunk.toHex()}")
                 }, (i + 1) * chunkTimeout)
                 i += 1
             }
@@ -869,21 +880,6 @@ class GattService : Service() {
             }
         }
         commandCallbacks.add(Runnable { delayedWriteCharacteristic(value) })
-        if (commandCallbacks.size == 1) {
-            commandCallbacks[0].run()
-            commandCallbacks.removeAt(0)
-        }
-    }
-
-    private fun queueByteCharacteristic(value: ByteArray, index: Int) {
-        if (null == mCharacteristicTX) {
-            try {
-                setCharacteristicTX()
-            } catch (e: UnsupportedOperationException) {
-                Debug.warn(e)
-            }
-        }
-        commandCallbacks.add(index, Runnable { delayedWriteCharacteristic(value) })
         if (commandCallbacks.size == 1) {
             commandCallbacks[0].run()
             commandCallbacks.removeAt(0)
@@ -1004,7 +1000,7 @@ class GattService : Service() {
                     ))
                 }
                 Nordic.DEVICE.PUCK -> {
-                    puckArray = ArrayList<ByteArray>(slotsCount)
+                    puckArray = ArrayList(slotsCount)
                     delayedByteCharacteric(byteArrayOf(PUCK.INFO.bytes, 0.toByte()))
                 }
                 else ->{
@@ -1018,24 +1014,20 @@ class GattService : Service() {
             delayedTagCharacteristic("get()")
         }
 
-    private fun processLoopUpload(input: ByteArray): ArrayList<ByteArray> {
-        val output = ArrayList<ByteArray>()
-        var start = 0
-        while (start < input.size) {
-            val chunkSize = 128.coerceAtMost(input.size - start)
-            val chunk = input.sliceArray(start until start + chunkSize)
-            val newData = ByteArray(5 + chunk.size + 2)
+    private fun processLoopUpload(tagData: ByteArray): ArrayList<ByteArray> {
+        val output = arrayListOf<ByteArray>()
+        tagData.toPortions(128).forEachIndexed { index, bytes ->
+            val newData = ByteArray(5 + bytes.size + 2)
             newData[0] = 0x02.toByte()
-            newData[1] = (chunk.size + 3).toByte()
+            newData[1] = (bytes.size + 3).toByte()
             newData[2] = 0x87.toByte()
-            newData[3] = if (chunk.size < 128) 1 else 0
-            newData[4] = output.size.toByte()
-            chunk.copyInto(newData, 5)
-            val xorValue = xorByteArray(newData.sliceArray(1 until newData.size - 2))
+            newData[3] = if (bytes.size < 128) 1 else 0
+            newData[4] = index.toByte()
+            bytes.copyInto(newData, 5)
+            val xorValue = xorByteArray(newData.copyOfRange(1, newData.size - 2))
             newData[newData.size - 2] = xorValue
             newData[newData.size - 1] = 0x03.toByte()
             output.add(newData)
-            start += chunkSize
         }
         return output
     }
@@ -1047,11 +1039,9 @@ class GattService : Service() {
             val tempArray = byteArrayOf(
                     0xDD.toByte(), 0xAA.toByte(), 0x00.toByte(), size.toByte()
             ).plus(bytes).plus(byteArrayOf(0x00.toByte(), index.toByte()))
-            commandCallbacks.add(Runnable {
-                delayedByteCharacteric(tempArray)
-            })
+            delayedByteCharacteric(tempArray)
         }
-        commandCallbacks.add(Runnable { byteArrayOf(0xBC.toByte(), 0xBC.toByte()) })
+        delayedByteCharacteric(byteArrayOf(0xBC.toByte(), 0xBC.toByte()))
     }
 
     private fun processPuckUpload(slot: Byte) {
@@ -1061,9 +1051,7 @@ class GattService : Service() {
         }
         parameters.add(byteArrayOf(PUCK.SAVE.bytes, slot))
         parameters.forEach {
-            commandCallbacks.add(Runnable {
-                delayedByteCharacteric(it)
-            })
+            delayedByteCharacteric(it)
         }
     }
 
@@ -1089,12 +1077,12 @@ class GattService : Service() {
         val static0x09 = byteArrayOf(
                 0x48, 0x00, 0x00, 0xE1.toByte(), 0x10, 0x3E, 0x00, 0x03, 0x00, 0xFE.toByte()
         )
-        blankData.copyInto(static0x09, startIndex = 9)
+        static0x09.copyInto(blankData, 9)
 
         val static0x20B = byteArrayOf(
                 0xBD.toByte(), 0x04, 0x00, 0x00, 0xFF.toByte(), 0x00, 0x05
         )
-        blankData.copyInto(static0x20B, startIndex = 0x20B)
+        static0x20B.copyInto(blankData, 0x20B)
 
         return blankData
     }
@@ -1105,10 +1093,14 @@ class GattService : Service() {
                 val uploadData = tagData.toDataBytes()
                 uploadData[536] = 0x80.toByte()
                 uploadData[537] = 0x80.toByte()
-                processLoopUpload(uploadData).forEach {
-                    commandCallbacks.add(Runnable {
-                        delayedByteCharacteric(it)
-                    })
+                val parameters = processLoopUpload(uploadData)
+                chunkNumber = parameters.size
+                parameters.forEach {
+                    commandCallbacks.add(Runnable { delayedWriteCharacteristic(it) })
+                }
+                if (commandCallbacks.size == chunkNumber) {
+                    commandCallbacks[0].run()
+                    commandCallbacks.removeAt(0)
                 }
             }
             Nordic.DEVICE.LINK -> {
@@ -1131,10 +1123,11 @@ class GattService : Service() {
             }
         }
         parameters.add(byteArrayOf(PUCK.SAVE.bytes, slot.toByte()))
+//        parameters.forEach {
+//            delayedByteCharacteric(it)
+//        }
         parameters.forEach {
-            commandCallbacks.add(Runnable {
-                delayedByteCharacteric(it)
-            })
+            commandCallbacks.add(Runnable { delayedWriteCharacteristic(it) })
         }
         if (commandCallbacks.size == parameters.size) {
             commandCallbacks[0].run()
@@ -1216,16 +1209,13 @@ class GattService : Service() {
     @Suppress("unused")
     fun downloadAmiiboData(slot: Int) {
         val parameters: ArrayList<ByteArray> = arrayListOf()
-        for (i in 1..34) {
+        for (i in 0..34) {
             parameters.add(byteArrayOf(PUCK.READ.bytes, slot.toByte(), (i * 4).toByte(), 0x04))
         }
         parameters.add(byteArrayOf(PUCK.READ.bytes, slot.toByte(), 0x8C.toByte(), 0x03))
         parameters.forEach {
-            commandCallbacks.add(Runnable {
-                delayedByteCharacteric(it)
-            })
+            delayedByteCharacteric(it)
         }
-        delayedByteCharacteric(byteArrayOf(PUCK.READ.bytes, slot.toByte(), 0.toByte(), 0x04))
     }
 
     private fun getDeviceAmiiboRange(index: Int) {
@@ -1243,10 +1233,14 @@ class GattService : Service() {
                 tagData[536] = 0x80.toByte()
                 tagData[537] = 0x80.toByte()
 
-                processLoopUpload(tagData).forEach {
-                    commandCallbacks.add(Runnable {
-                        delayedByteCharacteric(it)
-                    })
+                val parameters = processLoopUpload(tagData)
+                chunkNumber = parameters.size
+                parameters.forEach {
+                    commandCallbacks.add(Runnable { delayedWriteCharacteristic(it) })
+                }
+                if (commandCallbacks.size == chunkNumber) {
+                    commandCallbacks[0].run()
+                    commandCallbacks.removeAt(0)
                 }
             }
             Nordic.DEVICE.LINK -> {
@@ -1316,10 +1310,8 @@ class GattService : Service() {
     }
 
     private fun decipherFirmware(data: ByteArray): String {
-        return data.sliceArray(
-                3 until data[1].toInt() + 3
-        ).toString(Charset.defaultCharset()).also {
-            Debug.warn(this.javaClass, "${serviceType.logTag} firmware: $it")
+        return data.sliceArray(3 until data[1].toInt() + 3).toString(Charset.defaultCharset()).also {
+            Debug.warn(this.javaClass, "${serviceType.logTag} $it")
         }
     }
 

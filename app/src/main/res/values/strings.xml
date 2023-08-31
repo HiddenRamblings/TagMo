@@ -325,6 +325,8 @@
     <string name="gatt_write_confirm">Write selections to GATT device?</string>
     <string name="gatt_upload">Uploading binary&#8230;</string>
     <string name="gatt_remove">Wiping slot data&#8230;</string>
+    <string name="gatt_create">Creating blank tag&#8230;</string>
+    <string name="gatt_format">Formatting device&#8230;</string>
     <string name="fail_bluetooth_adapter">Bluetooth adapter unavailable!</string>
     <string name="tiramisu_bluetooth">Android 13 requires manually enabling Bluetooth. Open Settings to enable Bluetooth?</string>
     <string name="fail_permissions">Required permission denied by user!</string>
@@ -332,7 +334,7 @@
 
     <string name="paired_devices">Paired Bluetooth Devices</string>
     <string name="device_address">MAC: %1$s</string>
-    <string name="switch_devices">Connect a new device</string>
+    <string name="switch_devices">Switch / disconnect device</string>
 
     <string name="clone_random">Clone with random serial</string>
 

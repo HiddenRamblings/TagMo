@@ -14,7 +14,11 @@ import android.graphics.drawable.ColorDrawable
 import android.net.Uri
 import android.os.*
 import android.view.*
+import android.widget.AdapterView
+import android.widget.AdapterView.OnItemSelectedListener
+import android.widget.ArrayAdapter
 import android.widget.LinearLayout
+import android.widget.Spinner
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.*
@@ -115,7 +119,11 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
         NONE, SCANNING, CONNECT, MISSING, TIMEOUT
     }
 
-    private var noticeState = STATE.NONE
+    private var deviceState = STATE.NONE
+
+    private enum class NOTICE {
+        UPLOAD, REMOVE, CREATE, FORMAT
+    }
 
     private enum class SHEET {
         LOCKED, AMIIBO, MENU, WRITE
@@ -164,11 +172,17 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
             slotOptionsMenu = view.findViewById(R.id.slot_options_menu)
 
             createBlank = view.findViewById<AppCompatButton>(R.id.create_blank).apply {
-                setOnClickListener { serviceGatt?.createBlankTag() }
+                setOnClickListener {
+                    showProcessingNotice(NOTICE.CREATE)
+                    serviceGatt?.createBlankTag()
+                }
             }
 
             resetDevice = view.findViewById<AppCompatButton>(R.id.reset_device).apply {
-                setOnClickListener { serviceGatt?.resetDevice() }
+                setOnClickListener {
+                    showProcessingNotice(NOTICE.FORMAT)
+                    serviceGatt?.resetDevice()
+                }
             }
 
             screenOptions = view.findViewById(R.id.screen_options)
@@ -210,7 +224,7 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
                     writeTagAdapter?.setListener(object : WriteTagAdapter.OnAmiiboClickListener {
                         override fun onAmiiboClicked(amiiboFile: AmiiboFile?) {
                             onBottomSheetChanged(SHEET.AMIIBO)
-                            showProcessingNotice(true)
+                            showProcessingNotice(NOTICE.UPLOAD)
                             uploadAmiiboFile(amiiboFile)
                             settings.removeChangeListener(writeTagAdapter)
                         }
@@ -268,7 +282,7 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
                             dialog.dismiss()
                         }
                         .setNegativeButton(R.string.proceed) { _: DialogInterface?, _: Int ->
-                            showProcessingNotice(false)
+                            showProcessingNotice(NOTICE.REMOVE)
                             serviceGatt?.clearStorage(currentCount)
                         }
                         .show()
@@ -782,7 +796,7 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
         AlertDialog.Builder(requireContext())
             .setMessage(R.string.gatt_write_confirm)
             .setPositiveButton(R.string.proceed) { dialog: DialogInterface, _: Int ->
-                showProcessingNotice(true)
+                showProcessingNotice(NOTICE.UPLOAD)
                 bytesList.forEachIndexed { i, byte ->
                     fragmentHandler.postDelayed({
                         uploadAmiiboData(byte, i == bytesList.size - 1)
@@ -802,7 +816,7 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
         AlertDialog.Builder(requireContext())
             .setMessage(R.string.gatt_write_confirm)
             .setPositiveButton(R.string.proceed) { dialog: DialogInterface, _: Int ->
-                showProcessingNotice(true)
+                showProcessingNotice(NOTICE.UPLOAD)
                 amiiboList.forEachIndexed { i, file ->
                     fragmentHandler.postDelayed({
                         uploadAmiiboFile(file, i == amiiboList.size - 1)
@@ -891,13 +905,13 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
     }
 
     private fun dismissSnackbarNotice(finite: Boolean = false) {
-        if (finite) noticeState = STATE.NONE
+        if (finite) deviceState = STATE.NONE
         if (statusBar?.isShown == true) statusBar?.dismiss()
     }
 
     private fun showScanningNotice() {
         dismissSnackbarNotice()
-        noticeState = STATE.SCANNING
+        deviceState = STATE.SCANNING
         if (isFragmentVisible) {
             statusBar = IconifiedSnackbar(requireActivity()).buildSnackbar(
                 R.string.gatt_scanning,
@@ -911,7 +925,7 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
 
     private fun showConnectionNotice() {
         dismissSnackbarNotice()
-        noticeState = STATE.CONNECT
+        deviceState = STATE.CONNECT
         if (isFragmentVisible) {
             statusBar = IconifiedSnackbar(requireActivity()).buildSnackbar(
                 R.string.gatt_located,
@@ -925,7 +939,7 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
 
     private fun showDisconnectNotice() {
         dismissSnackbarNotice()
-        noticeState = STATE.MISSING
+        deviceState = STATE.MISSING
         if (isFragmentVisible) {
             statusBar = IconifiedSnackbar(requireActivity()).buildSnackbar(
                 R.string.gatt_disconnect,
@@ -939,13 +953,18 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
         }
     }
 
-    private fun showProcessingNotice(upload: Boolean) {
+    private fun showProcessingNotice(notice: NOTICE) {
         val builder = AlertDialog.Builder(requireContext())
         val view = layoutInflater.inflate(R.layout.dialog_process, null).apply {
             keepScreenOn = true
         }
         view.findViewById<TextView>(R.id.process_text).setText(
-            if (upload) R.string.gatt_upload else R.string.gatt_remove
+                when (notice) {
+                    NOTICE.REMOVE -> R.string.gatt_remove
+                    NOTICE.CREATE -> R.string.gatt_create
+                    NOTICE.FORMAT -> R.string.gatt_format
+                    else -> R.string.gatt_upload
+                }
         )
         builder.setView(view)
         processDialog = builder.create().also {
@@ -956,7 +975,7 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
 
     private fun showTimeoutNotice() {
         dismissSnackbarNotice()
-        noticeState = STATE.TIMEOUT
+        deviceState = STATE.TIMEOUT
         if (isFragmentVisible) {
             statusBar = IconifiedSnackbar(requireActivity()).buildSnackbar(
                 R.string.gatt_missing,
@@ -1043,7 +1062,7 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
     override fun onPause() {
         isFragmentVisible = false
         dismissSnackbarNotice()
-        if (noticeState == STATE.SCANNING) dismissGattDiscovery()
+        if (deviceState == STATE.SCANNING) dismissGattDiscovery()
         super.onPause()
     }
 
@@ -1059,7 +1078,7 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
     private fun onFragmentLoaded() {
         if (statusBar?.isShown != true) {
             fragmentHandler.postDelayed({
-                when (noticeState) {
+                when (deviceState) {
                     STATE.SCANNING, STATE.TIMEOUT -> {
                         if (isBluetoothEnabled) {
                             showScanningNotice()
@@ -1195,6 +1214,25 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
         writeSlots?.isVisible = isVisible
         eraseSlots?.isVisible = isVisible
         gattSlotCount.isVisible = isVisible
+        requireView().findViewById<Spinner>(R.id.sort_mode_spinner).apply {
+            this.isVisible = !isVisible
+            if (!isVisible) {
+                this.adapter = ArrayAdapter(
+                        requireActivity(),
+                        android.R.layout.simple_spinner_item,
+                        resources.getStringArray(R.array.gattSortOrder)
+                ).apply {
+                    setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+                }
+                onItemSelectedListener = object : OnItemSelectedListener {
+                    override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+                        serviceGatt?.setSortingMode(position)
+                    }
+
+                    override fun onNothingSelected(parent: AdapterView<*>?) {}
+                }
+            }
+        }
     }
 
     override fun onAmiiboImageClicked(amiibo: Amiibo?) {
@@ -1213,7 +1251,7 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
 
     override fun onAdapterMissing() {
         this.mBluetoothAdapter = null
-        noticeState = STATE.MISSING
+        deviceState = STATE.MISSING
         setBottomSheetHidden(true)
         Toasty(requireActivity()).Long(R.string.fail_bluetooth_adapter)
     }
@@ -1384,6 +1422,7 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
                             requireView().post {
                                 requireView().findViewById<TextView>(R.id.hardware_info).text = firmware
                             }
+                            bottomSheet?.state = BottomSheetBehavior.STATE_EXPANDED
                         }
 
                         override fun onPixlActiveChanged(jsonObject: JSONObject?) {

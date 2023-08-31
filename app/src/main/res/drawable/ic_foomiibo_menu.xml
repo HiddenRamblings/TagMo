@@ -6,8 +6,8 @@
     <item
         android:gravity="center"
         android:drawable="@mipmap/ic_foomiibo_round"
-        android:top="10dp"
-        android:bottom="10dp"
-        android:left="10dp"
-        android:right="10dp" />
+        android:top="18dp"
+        android:bottom="18dp"
+        android:left="18dp"
+        android:right="18dp" />
 </layer-list>

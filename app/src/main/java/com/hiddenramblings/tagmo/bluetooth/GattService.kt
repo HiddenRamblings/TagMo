@@ -864,7 +864,6 @@ class GattService : Service() {
                         mCharacteristicTX!!.value = chunk
                         mBluetoothGatt!!.writeCharacteristic(mCharacteristicTX)
                     }
-                    Debug.info(this.javaClass, "onCharacteristicWrite ${chunk.toHex()}")
                 }, (i + 1) * chunkTimeout)
                 i += 1
             }
@@ -987,7 +986,7 @@ class GattService : Service() {
                     delayedTagCharacteristic("getList()")
                 }
                 Nordic.DEVICE.LOOP -> {
-                    reliableWriteCharacteristic(byteArrayOf(
+                    delayedByteCharacteric(byteArrayOf(
                             0x02, 0x01, 0x89.toByte(), 0x88.toByte(), 0x03
                     ))
                 }
@@ -1258,12 +1257,50 @@ class GattService : Service() {
         delayedTagCharacteristic("remove(tag.get().name)")
     }
 
+    fun setSortingMode(mode: Int) {
+        when (serviceType) {
+            Nordic.DEVICE.LOOP -> {
+                delayedByteCharacteric(byteArrayOf(
+                        0x02, 0x02, 0x8a.toByte(), mode.toByte(), (0x88 + mode).toByte(), 0x03
+                ))
+            }
+            Nordic.DEVICE.LINK -> {
+                delayedByteCharacteric(byteArrayOf(0x00, 0x00, 0x10, 0x03).plus(
+                        when (mode) {
+                            1 -> byteArrayOf(
+                                    0x2F, 0x25, 0xD8.toByte(), 0x0C,
+                                    0x49, 0x42, 0xC0.toByte(), 0xD5.toByte(),
+                                    0x0B, 0x0B, 0xC6.toByte(), 0xDF.toByte(),
+                                    0xCA.toByte(), 0x60, 0x21, 0xFC.toByte()
+                            )
+                            2 -> byteArrayOf(
+                                    0xE3.toByte(), 0x96.toByte(), 0x51, 0xEC.toByte(),
+                                    0x07, 0xE7.toByte(), 0xE5.toByte(), 0x54,
+                                    0x37, 0xB6.toByte(), 0x13, 0x8E.toByte(),
+                                    0x80.toByte(), 0xC9.toByte(), 0xB3.toByte(), 0x09
+                            )
+                            else -> byteArrayOf(
+                                    0x34, 0x1F, 0x98.toByte(), 0xE8.toByte(),
+                                    0x46, 0x19, 0x85.toByte(), 0x75,
+                                    0xE3.toByte(), 0xD3.toByte(), 0xE0.toByte(), 0x42,
+                                    0x5D, 0x41, 0x89.toByte(), 0x42
+                            )
+                        }
+                ))
+            }
+            else -> {
+
+            }
+        }
+    }
+
     fun resetDevice() {
         when (serviceType) {
             Nordic.DEVICE.LOOP -> {
-                reliableWriteCharacteristic(
-                        byteArrayOf(0x12, 0x0d, 0x00, 0x02, 0x01, 0x8f.toByte(), 0x8e.toByte(), 0x03)
-                )
+                delayedByteCharacteric(byteArrayOf(
+                        0x12, 0x0d, 0x00, 0x02, 0x01, 0x8f.toByte(), 0x8e.toByte(), 0x03
+                ))
+                listener?.onProcessFinish()
             }
             Nordic.DEVICE.LINK -> {
                 delayedByteCharacteric(byteArrayOf(

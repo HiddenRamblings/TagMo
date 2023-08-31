@@ -103,6 +103,13 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
+            <Spinner
+                android:id="@+id/sort_mode_spinner"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@android:drawable/btn_dropdown"
+                android:spinnerMode="dropdown"/>
+
             <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/write_slot_file"
                 android:layout_width="match_parent"

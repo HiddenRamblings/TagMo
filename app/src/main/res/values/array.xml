@@ -40,4 +40,10 @@
         <item>W1</item>
         <item>W2</item>
     </string-array>
+
+    <string-array name="gattSortOrder" translatable="false">
+        <item>Manual</item>
+        <item>Sequential</item>
+        <item>Automatic</item>
+    </string-array>
 </resources>

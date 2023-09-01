@@ -5,9 +5,9 @@
         android:drawable="@drawable/menu_icon_circle" />
     <item
         android:gravity="center"
-        android:drawable="@mipmap/ic_foomiibo_round"
-        android:top="18dp"
-        android:bottom="18dp"
-        android:left="18dp"
-        android:right="18dp" />
+        android:drawable="@drawable/ic_foomiibo_round"
+        android:top="20dp"
+        android:bottom="20dp"
+        android:left="20dp"
+        android:right="20dp" />
 </layer-list>

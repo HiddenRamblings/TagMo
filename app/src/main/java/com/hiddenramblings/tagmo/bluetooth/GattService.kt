@@ -1296,6 +1296,9 @@ class GattService : Service() {
 
     fun resetDevice() {
         when (serviceType) {
+            Nordic.DEVICE.BLUUP, Nordic.DEVICE.FLASK, Nordic.DEVICE.SLIDE -> {
+                delayedScreenCharacteristic("reset()")
+            }
             Nordic.DEVICE.LOOP -> {
                 delayedByteCharacteric(byteArrayOf(
                         0x12, 0x0d, 0x00, 0x02, 0x01, 0x8f.toByte(), 0x8e.toByte(), 0x03
@@ -1347,8 +1350,10 @@ class GattService : Service() {
     }
 
     private fun decipherFirmware(data: ByteArray): String {
-        return data.sliceArray(3 until data[1].toInt() + 3).toString(Charset.defaultCharset()).also {
-            Debug.warn(this.javaClass, "${serviceType.logTag} $it")
+        return data.sliceArray(3 until data[1].toInt() + 3).toString(Charset.defaultCharset()).also { firmware ->
+            Debug.warn(this.javaClass, "${serviceType.logTag} $firmware")
+            val version = firmware.substring(0, firmware.lastIndexOf("-")).filter { it.isDigit() }
+            Debug.warn(this.javaClass, "${serviceType.logTag} $version")
         }
     }
 

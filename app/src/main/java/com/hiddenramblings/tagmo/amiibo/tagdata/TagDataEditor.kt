@@ -22,9 +22,9 @@ import androidx.appcompat.widget.SwitchCompat
 import androidx.appcompat.widget.Toolbar
 import androidx.core.view.isGone
 import androidx.core.view.isVisible
+import com.bumptech.glide.Glide
 import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
-import com.hiddenramblings.tagmo.GlideApp
 import com.hiddenramblings.tagmo.NFCIntent
 import com.hiddenramblings.tagmo.R
 import com.hiddenramblings.tagmo.amiibo.Amiibo
@@ -402,8 +402,8 @@ class TagDataEditor : AppCompatActivity() {
                     imageAmiibo.isVisible = true
                 }
             }
-            GlideApp.with(imageAmiibo).clear(imageAmiibo)
-            GlideApp.with(imageAmiibo).asBitmap().load(amiiboImageUrl).into(imageTarget)
+            Glide.with(imageAmiibo).clear(imageAmiibo)
+            Glide.with(imageAmiibo).asBitmap().load(amiiboImageUrl).into(imageTarget)
         }
     }
 

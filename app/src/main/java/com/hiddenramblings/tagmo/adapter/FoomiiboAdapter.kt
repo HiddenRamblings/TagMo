@@ -13,10 +13,10 @@ import androidx.appcompat.widget.AppCompatImageView
 import androidx.core.view.isGone
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.bumptech.glide.request.target.CustomTarget
 import com.hiddenramblings.tagmo.BrowserSettings
 import com.hiddenramblings.tagmo.BrowserSettings.*
-import com.hiddenramblings.tagmo.GlideApp
 import com.hiddenramblings.tagmo.R
 import com.hiddenramblings.tagmo.amiibo.Amiibo
 import com.hiddenramblings.tagmo.amiibo.AmiiboComparator
@@ -111,7 +111,7 @@ class FoomiiboAdapter(
         }.apply {
             itemView.setOnClickListener { handleClickEvent(this) }
             imageAmiibo?.setOnClickListener {
-                if (settings.amiiboView == VIEW.IMAGE.value)
+                if (viewType == VIEW.IMAGE.value)
                     handleClickEvent(this)
                 else
                     listener?.onFoomiiboImageClicked(foomiibo)
@@ -263,8 +263,8 @@ class FoomiiboAdapter(
             imageAmiibo?.let {
                 val imageTarget: CustomTarget<Bitmap?> = ImageTarget.getTarget(it)
                 if (!amiiboImageUrl.isNullOrEmpty()) {
-                    GlideApp.with(it).clear(it)
-                    GlideApp.with(it).asBitmap().load(amiiboImageUrl).into(imageTarget)
+                    Glide.with(it).clear(it)
+                    Glide.with(it).asBitmap().load(amiiboImageUrl).into(imageTarget)
                 }
             }
             val query = settings.query?.lowercase(Locale.getDefault())
@@ -349,8 +349,8 @@ class FoomiiboAdapter(
     )
 
     interface OnFoomiiboClickListener {
-        fun onFoomiiboClicked(itemView: View?, amiibo: Amiibo?)
-        fun onFoomiiboRebind(itemView: View?, amiibo: Amiibo?)
+        fun onFoomiiboClicked(itemView: View, amiibo: Amiibo?)
+        fun onFoomiiboRebind(itemView: View, amiibo: Amiibo?)
         fun onFoomiiboImageClicked(amiibo: Amiibo?)
     }
 }

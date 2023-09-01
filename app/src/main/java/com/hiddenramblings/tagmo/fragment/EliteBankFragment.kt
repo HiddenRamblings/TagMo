@@ -33,12 +33,12 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.bumptech.glide.request.target.CustomTarget
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetBehavior.BottomSheetCallback
 import com.hiddenramblings.tagmo.BrowserActivity
 import com.hiddenramblings.tagmo.BrowserSettings
-import com.hiddenramblings.tagmo.GlideApp
 import com.hiddenramblings.tagmo.ImageActivity
 import com.hiddenramblings.tagmo.NFCIntent
 import com.hiddenramblings.tagmo.Preferences
@@ -804,8 +804,8 @@ class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
                     } else {
                         ImageTarget.getTargetR(it)
                     }
-                    GlideApp.with(it).clear(it)
-                    GlideApp.with(it).asBitmap().load(amiiboImageUrl).into(imageTarget)
+                    Glide.with(it).clear(it)
+                    Glide.with(it).asBitmap().load(amiiboImageUrl).into(imageTarget)
                 }
                 it.setOnClickListener {
                     if (amiiboLongId == -1L) return@setOnClickListener

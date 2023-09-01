@@ -644,28 +644,30 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
         }
     }
 
-    override fun onFoomiiboClicked(itemView: View?, amiibo: Amiibo?) {
-        browserActivity?.let { activity ->
-            var tagData = byteArrayOf()
-            for (data in resultData) {
-                try {
-                    if (data.isNotEmpty() && Amiibo.dataToId(data) == amiibo?.id) {
-                        tagData = data
-                        break
-                    }
-                } catch (ignored: Exception) { }
-            }
-            tagData = try {
-                if (tagData.isEmpty() && null != amiibo)
-                    Foomiibo.getSignedData(amiibo.id)
-                else
-                    TagArray.getValidatedData(keyManager, tagData)
-            } catch (ignored: Exception) { byteArrayOf() }
+    private fun Amiibo?.toTagData(): ByteArray {
+        var tagData = byteArrayOf()
+        for (data in resultData) {
+            try {
+                if (data.isNotEmpty() && Amiibo.dataToId(data) == this?.id) {
+                    tagData = data
+                    break
+                }
+            } catch (ignored: Exception) { }
+        }
+        return try {
+            if (tagData.isEmpty() && null != this)
+                Foomiibo.getSignedData(Amiibo.idToHex(this.id))
+            else
+                TagArray.getValidatedData(keyManager, tagData)
+        } catch (ignored: Exception) { byteArrayOf() }
+    }
 
-            val menuOptions = itemView?.findViewById<LinearLayout>(R.id.menu_options)
-            menuOptions?.let {
-                val toolbar = it.findViewById<Toolbar>(R.id.toolbar)
-                if (settings.amiiboView != BrowserSettings.VIEW.IMAGE.value) {
+    override fun onFoomiiboClicked(itemView: View, amiibo: Amiibo?) {
+        browserActivity?.let { activity ->
+            val tagData = amiibo.toTagData()
+            if (settings.amiiboView != BrowserSettings.VIEW.IMAGE.value) {
+                itemView.findViewById<LinearLayout>(R.id.menu_options)?.let {
+                    val toolbar = it.findViewById<Toolbar>(R.id.toolbar)
                     if (!it.isVisible)
                         activity.onCreateToolbarMenu(this, toolbar, tagData, itemView)
                     it.isGone = it.isVisible
@@ -673,39 +675,28 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
                         if (isGone) getGameCompatibility(this, tagData)
                         isGone = isVisible
                     }
-                } else {
-                    activity.onCreateToolbarMenu(this, toolbar, tagData, itemView)
-                    activity.updateAmiiboView(tagData, null)
                 }
+            } else {
+                activity.updateAmiiboView(tagData, null)
+                activity.onCreateToolbarMenu(this, null, tagData, itemView)
             }
         }
     }
 
-    override fun onFoomiiboRebind(itemView: View?, amiibo: Amiibo?) {
-        var tagData = byteArrayOf()
-        for (data in resultData) {
-            try {
-                if (data.isNotEmpty() && Amiibo.dataToId(data) == amiibo?.id) {
-                    tagData = data
-                    break
-                }
-            } catch (ignored: Exception) { }
-        }
-        tagData = try {
-            if (tagData.isEmpty() && null != amiibo)
-                Foomiibo.getSignedData(Amiibo.idToHex(amiibo.id))
-            else
-                TagArray.getValidatedData(keyManager, tagData)
-        } catch (ignored: Exception) { byteArrayOf() }
-
-        if (settings.amiiboView != BrowserSettings.VIEW.IMAGE.value) {
-            browserActivity?.let { activity ->
-                itemView?.let { view ->
-                    view.findViewById<View>(R.id.menu_options).findViewById<Toolbar>(R.id.toolbar).also {
-                        activity.onCreateToolbarMenu(this, it, tagData, view)
+    override fun onFoomiiboRebind(itemView: View, amiibo: Amiibo?) {
+        browserActivity?.let { activity ->
+            val tagData = amiibo.toTagData()
+            if (settings.amiiboView != BrowserSettings.VIEW.IMAGE.value) {
+                itemView.findViewById<LinearLayout>(R.id.menu_options)?.let {
+                    val toolbar = it.findViewById<Toolbar>(R.id.toolbar)
+                    activity.onCreateToolbarMenu(this, toolbar, tagData, itemView)
+                    itemView.findViewById<TextView>(R.id.txtUsage).apply {
+                        getGameCompatibility(this, tagData)
                     }
-                    getGameCompatibility(view.findViewById(R.id.txtUsage), tagData)
                 }
+            } else {
+                activity.updateAmiiboView(tagData, null)
+                activity.onCreateToolbarMenu(this, null, tagData, itemView)
             }
         }
     }

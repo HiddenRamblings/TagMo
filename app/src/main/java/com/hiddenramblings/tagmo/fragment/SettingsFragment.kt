@@ -24,9 +24,9 @@ import androidx.preference.ListPreference
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
 import androidx.preference.SwitchPreferenceCompat
+import com.bumptech.glide.Glide
 import com.google.android.material.snackbar.Snackbar
 import com.hiddenramblings.tagmo.BrowserActivity
-import com.hiddenramblings.tagmo.GlideApp
 import com.hiddenramblings.tagmo.GlideTagModule
 import com.hiddenramblings.tagmo.NFCIntent.FilterComponent
 import com.hiddenramblings.tagmo.NFCIntent.getIntent
@@ -461,8 +461,8 @@ class SettingsFragment : PreferenceFragmentCompat() {
                     }
                 }
                 try {
-                    withContext(Dispatchers.IO) { GlideApp.get(activity).clearDiskCache() }
-                    withContext(Dispatchers.Main) { GlideApp.get(activity).clearMemory() }
+                    withContext(Dispatchers.IO) { Glide.get(activity).clearDiskCache() }
+                    withContext(Dispatchers.Main) { Glide.get(activity).clearMemory() }
                 } catch (ignored: IllegalStateException) { }
                 if (notify) withContext(Dispatchers.Main) {
                     buildSnackbar(

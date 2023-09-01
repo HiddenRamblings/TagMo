@@ -10,11 +10,11 @@ import androidx.appcompat.widget.AppCompatImageView
 import androidx.core.view.isGone
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.bumptech.glide.request.target.CustomTarget
 import com.hiddenramblings.tagmo.BrowserSettings
 import com.hiddenramblings.tagmo.BrowserSettings.BrowserSettingsListener
 import com.hiddenramblings.tagmo.BrowserSettings.VIEW
-import com.hiddenramblings.tagmo.GlideApp
 import com.hiddenramblings.tagmo.Preferences
 import com.hiddenramblings.tagmo.R
 import com.hiddenramblings.tagmo.TagMo
@@ -148,11 +148,11 @@ class EliteBankAdapter(
             }
             imageAmiibo?.let {
                 val imageTarget: CustomTarget<Bitmap?> = ImageTarget.getTarget(it)
-                GlideApp.with(it).clear(it)
+                Glide.with(it).clear(it)
                 if (amiiboImageUrl.isNullOrEmpty()) {
                     it.setImageResource(R.drawable.ic_no_image_60)
                 } else {
-                    GlideApp.with(it).asBitmap().load(amiiboImageUrl).into(imageTarget)
+                    Glide.with(it).asBitmap().load(amiiboImageUrl).into(imageTarget)
                 }
             }
             if (settings.amiiboView != VIEW.IMAGE.value) {

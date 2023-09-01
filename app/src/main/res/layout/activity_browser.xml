@@ -69,21 +69,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent" />
 
-            <FrameLayout
-                android:id="@+id/amiiboContainer"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:paddingLeft="16dp"
-                android:paddingTop="16dp"
-                android:paddingRight="16dp"
-                android:paddingBottom="92dp"
-                android:visibility="gone"
-                app:blurOverlayColor="@color/bottomSheetTint">
-
-                <include
-                    android:id="@+id/active_card_layout"
-                    layout="@layout/active_card_layout" />
-            </FrameLayout>
+            <include
+                android:id="@+id/overlay_browser"
+                layout="@layout/overlay_browser" />
 
             <com.hiddenramblings.tagmo.eightbit.widget.FABulous
                 android:id="@+id/nfc_fab"

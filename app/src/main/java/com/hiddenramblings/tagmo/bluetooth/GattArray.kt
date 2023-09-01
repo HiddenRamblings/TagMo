@@ -6,6 +6,7 @@
 package com.hiddenramblings.tagmo.bluetooth
 
 import com.hiddenramblings.tagmo.nfctech.NfcByte
+import java.util.Date
 
 object GattArray {
 
@@ -56,5 +57,9 @@ object GattArray {
             }
         }
         return sb.toString()
+    }
+
+    fun String.toMilliseconds(): Long {
+        return this.toLong() / 10
     }
 }

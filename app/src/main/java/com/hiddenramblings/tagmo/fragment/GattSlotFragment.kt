@@ -30,6 +30,7 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.bumptech.glide.request.target.CustomTarget
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetBehavior.BottomSheetCallback
@@ -93,6 +94,7 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
     private var createBlank: AppCompatButton? = null
     private var resetDevice: AppCompatButton? = null
     private var switchMenuOptions: AppCompatToggleButton? = null
+    private var sortModeSpinner: Spinner? = null
     private var writeSlotsLayout: LinearLayout? = null
     private var writeTagAdapter: WriteTagAdapter? = null
     private var statusBar: Snackbar? = null
@@ -170,6 +172,22 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
             gattStats = view.findViewById(R.id.bluup_stats)
             switchMenuOptions = view.findViewById(R.id.switch_menu_btn)
             slotOptionsMenu = view.findViewById(R.id.slot_options_menu)
+            sortModeSpinner = view.findViewById<Spinner>(R.id.sort_mode_spinner).apply {
+                this.adapter = ArrayAdapter(
+                        requireActivity(),
+                        android.R.layout.simple_spinner_item,
+                        resources.getStringArray(R.array.gattSortOrder)
+                ).apply {
+                    setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+                }
+                onItemSelectedListener = object : OnItemSelectedListener {
+                    override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+                        serviceGatt?.setSortingMode(position)
+                    }
+
+                    override fun onNothingSelected(parent: AdapterView<*>?) {}
+                }
+            }
 
             createBlank = view.findViewById<AppCompatButton>(R.id.create_blank).apply {
                 setOnClickListener {
@@ -223,7 +241,10 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
                     searchView.clearFocus()
                     writeTagAdapter?.setListener(object : WriteTagAdapter.OnAmiiboClickListener {
                         override fun onAmiiboClicked(amiiboFile: AmiiboFile?) {
-                            onBottomSheetChanged(SHEET.AMIIBO)
+                            if (isKeyFob)
+                                onBottomSheetChanged(SHEET.MENU)
+                            else
+                                onBottomSheetChanged(SHEET.AMIIBO)
                             showProcessingNotice(NOTICE.UPLOAD)
                             uploadAmiiboFile(amiiboFile)
                             settings.removeChangeListener(writeTagAdapter)
@@ -377,6 +398,7 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
             when (sheet) {
                 SHEET.LOCKED -> {
                     amiiboCard?.isGone = true
+                    sortModeSpinner?.isGone = true
                     switchMenuOptions?.isGone = true
                     slotOptionsMenu?.isGone = true
                     writeSlotsLayout?.isGone = true
@@ -389,13 +411,19 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
                 }
                 SHEET.MENU -> {
                     amiiboCard?.isGone = true
-                    switchMenuOptions?.isVisible = true
+                    sortModeSpinner?.isVisible = isKeyFob
+                    switchMenuOptions?.isGone = isKeyFob
                     slotOptionsMenu?.isVisible = true
                     writeSlotsLayout?.isGone = true
+                    writeRandom?.isGone = isKeyFob
+                    writeSlots?.isGone = isKeyFob
+                    eraseSlots?.isGone = isKeyFob
+                    gattSlotCount.isGone = isKeyFob
                 }
                 SHEET.WRITE -> {
                     bottomSheet?.isFitToContents = false
                     amiiboCard?.isGone = true
+                    sortModeSpinner?.isGone = true
                     switchMenuOptions?.isGone = true
                     slotOptionsMenu?.isGone = true
                     writeSlotsLayout?.isVisible = true
@@ -513,8 +541,8 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
                         } else {
                             ImageTarget.getTargetR(it)
                         }
-                        GlideApp.with(it).clear(it)
-                        GlideApp.with(it).asBitmap().load(amiiboImageUrl).into(imageTarget)
+                        Glide.with(it).clear(it)
+                        Glide.with(it).asBitmap().load(amiiboImageUrl).into(imageTarget)
                     }
                     it.setOnClickListener {
                         startActivity(Intent(requireContext(), ImageActivity::class.java)
@@ -699,7 +727,6 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
             return
         }
         showScanningNotice()
-        deviceProfile = null
         val devices: ArrayList<BluetoothDevice> = arrayListOf()
         if (Version.isLollipop) {
             val scanner = mBluetoothAdapter?.bluetoothLeScanner
@@ -999,7 +1026,9 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
     fun stopGattService() {
         if (null == context) return
         onBottomSheetChanged(SHEET.LOCKED)
+        deviceProfile = null
         deviceAddress = null
+        deviceType = Nordic.DEVICE.GATT
         try {
             requireContext().unbindService(gattServerConn)
             requireContext().stopService(Intent(requireContext(), GattService::class.java))
@@ -1040,6 +1069,10 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
                 putExtras(Bundle().apply { putLong(NFCIntent.EXTRA_AMIIBO_ID, it.id) })
             })
         }
+    }
+
+    private val isKeyFob: Boolean get() {
+        return deviceType == Nordic.DEVICE.LOOP || deviceType == Nordic.DEVICE.LINK
     }
 
     private val isBluetoothEnabled: Boolean
@@ -1209,32 +1242,6 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
         }
     }
 
-    private fun setBulkOptionVisibility(isVisible: Boolean) {
-        writeRandom?.isVisible = isVisible
-        writeSlots?.isVisible = isVisible
-        eraseSlots?.isVisible = isVisible
-        gattSlotCount.isVisible = isVisible
-        requireView().findViewById<Spinner>(R.id.sort_mode_spinner).apply {
-            this.isVisible = !isVisible
-            if (!isVisible) {
-                this.adapter = ArrayAdapter(
-                        requireActivity(),
-                        android.R.layout.simple_spinner_item,
-                        resources.getStringArray(R.array.gattSortOrder)
-                ).apply {
-                    setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-                }
-                onItemSelectedListener = object : OnItemSelectedListener {
-                    override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-                        serviceGatt?.setSortingMode(position)
-                    }
-
-                    override fun onNothingSelected(parent: AdapterView<*>?) {}
-                }
-            }
-        }
-    }
-
     override fun onAmiiboImageClicked(amiibo: Amiibo?) {
         amiibo?.let {
             this.startActivity(Intent(requireContext(), ImageActivity::class.java)
@@ -1286,7 +1293,6 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
                             isServiceDiscovered = true
                             onBottomSheetChanged(SHEET.MENU)
                             requireView().post {
-                                setBulkOptionVisibility(true)
                                 gattSlotCount.maxValue = maxSlotCount
                                 screenOptions?.isVisible = true
                                 createBlank?.isVisible = true
@@ -1400,7 +1406,6 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
                             isServiceDiscovered = true
                             onBottomSheetChanged(SHEET.MENU)
                             requireView().post {
-                                setBulkOptionVisibility(serviceType == Nordic.DEVICE.PIXL)
                                 gattSlotCount.maxValue = maxSlotCount
                                 screenOptions?.isGone = true
                                 createBlank?.isVisible = serviceType == Nordic.DEVICE.LOOP
@@ -1420,9 +1425,9 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
                         override fun onPixlConnected(firmware: String) {
                             dismissSnackbarNotice(true)
                             requireView().post {
-                                requireView().findViewById<TextView>(R.id.hardware_info).text = firmware
+                                gattStats?.text = firmware
+                                bottomSheet?.state = BottomSheetBehavior.STATE_EXPANDED
                             }
-                            bottomSheet?.state = BottomSheetBehavior.STATE_EXPANDED
                         }
 
                         override fun onPixlActiveChanged(jsonObject: JSONObject?) {
@@ -1455,7 +1460,6 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
                             isServiceDiscovered = true
                             onBottomSheetChanged(SHEET.MENU)
                             requireView().post {
-                                setBulkOptionVisibility(true)
                                 gattSlotCount.maxValue = maxSlotCount
                                 screenOptions?.isGone = true
                                 createBlank?.isGone = true

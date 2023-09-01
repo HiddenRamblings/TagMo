@@ -20,10 +20,18 @@
             layout="@layout/active_tile_layout"
             android:id="@+id/active_tile_layout" />
 
+        <Spinner
+            android:id="@+id/sort_mode_spinner"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@android:drawable/btn_dropdown"
+            android:spinnerMode="dropdown"
+            android:visibility="invisible"/>
+
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/bluup_content"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:clipToPadding="false"
             android:paddingHorizontal="4dp"
             android:paddingBottom="@dimen/recyclerview_padding"/>
@@ -102,13 +110,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
-
-            <Spinner
-                android:id="@+id/sort_mode_spinner"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@android:drawable/btn_dropdown"
-                android:spinnerMode="dropdown"/>
 
             <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/write_slot_file"

@@ -48,6 +48,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.ViewPager2
 import androidx.viewpager2.widget.ViewPager2.OnPageChangeCallback
+import com.bumptech.glide.Glide
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
@@ -1211,8 +1212,9 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
     }
 
     fun onCreateToolbarMenu(
-        fragment: BrowserFragment, toolbar: Toolbar, tagData: ByteArray, itemView: View
+        fragment: BrowserFragment, menubar: Toolbar?, tagData: ByteArray, itemView: View
     ) {
+        val toolbar = menubar ?: toolbar ?: return
         if (!toolbar.menu.hasVisibleItems()) toolbar.inflateMenu(R.menu.amiibo_menu)
         toolbar.menu.findItem(R.id.mnu_save).setTitle(R.string.cache)
         toolbar.menu.findItem(R.id.mnu_scan).isVisible = false
@@ -2176,8 +2178,8 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
             it.isGone = true
             if (!amiiboImageUrl.isNullOrEmpty()) {
                 val imageTarget = ImageTarget.getTargetHR(it)
-                GlideApp.with(it).clear(it)
-                GlideApp.with(it).asBitmap().load(amiiboImageUrl).into(imageTarget)
+                Glide.with(it).clear(it)
+                Glide.with(it).asBitmap().load(amiiboImageUrl).into(imageTarget)
             }
             val amiiboTagId = amiiboId
             it.setOnClickListener {

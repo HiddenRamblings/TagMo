@@ -36,6 +36,7 @@ import androidx.camera.view.PreviewView
 import androidx.core.view.isGone
 import androidx.core.view.isVisible
 import androidx.lifecycle.ViewModelProvider
+import com.bumptech.glide.Glide
 import com.google.mlkit.vision.barcode.BarcodeScanner
 import com.google.mlkit.vision.barcode.BarcodeScannerOptions
 import com.google.mlkit.vision.barcode.BarcodeScanning
@@ -138,7 +139,7 @@ class QRCodeScanner : AppCompatActivity() {
             it.amiibos[Amiibo.dataToId(qrData)]?.let { amiibo ->
                 txtMiiLabel.text = getText(R.string.qr_amiibo)
                 txtMiiValue.text = amiibo.name
-                GlideApp.with(amiiboPreview).load(Amiibo.getImageUrl(amiibo.id)).into(amiiboPreview)
+                Glide.with(amiiboPreview).load(Amiibo.getImageUrl(amiibo.id)).into(amiiboPreview)
                 amiiboPreview.setOnClickListener {
                     val view = layoutInflater.inflate(R.layout.dialog_save_item, null)
                     val dialog = AlertDialog.Builder(this@QRCodeScanner)
@@ -199,7 +200,7 @@ class QRCodeScanner : AppCompatActivity() {
 
     private fun clearPreviews(barcode : Boolean) {
         amiiboPreview.setOnClickListener(null)
-        GlideApp.with(amiiboPreview).clear(amiiboPreview)
+        Glide.with(amiiboPreview).clear(amiiboPreview)
         if (barcode) barcodePreview.setImageResource(0)
     }
 

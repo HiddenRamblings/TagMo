@@ -13,6 +13,7 @@ import androidx.appcompat.widget.AppCompatImageView
 import androidx.core.content.ContextCompat
 import androidx.core.view.isGone
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.bumptech.glide.request.target.CustomTarget
 import com.hiddenramblings.tagmo.*
 import com.hiddenramblings.tagmo.BrowserSettings.BrowserSettingsListener
@@ -301,8 +302,8 @@ class WriteTagAdapter(private val settings: BrowserSettings?) :
             imageAmiibo?.let {
                 val imageTarget: CustomTarget<Bitmap?> = ImageTarget.getTarget(it)
                 if (!amiiboImageUrl.isNullOrEmpty()) {
-                    GlideApp.with(it).clear(it)
-                    GlideApp.with(it).asBitmap().load(amiiboImageUrl).into(imageTarget)
+                    Glide.with(it).clear(it)
+                    Glide.with(it).asBitmap().load(amiiboImageUrl).into(imageTarget)
                 }
             }
             val query = settings?.query?.lowercase(Locale.getDefault())

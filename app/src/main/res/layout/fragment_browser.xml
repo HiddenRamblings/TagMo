@@ -25,10 +25,10 @@
             android:layout_height="1dp"
             android:background="?android:attr/listDivider"/>
 
-            <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-                android:id="@+id/browser_wrapper"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent">
+        <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+            android:id="@+id/browser_wrapper"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/browser_content"
@@ -40,20 +40,20 @@
                 android:scrollbars="vertical"
                 android:scrollbarSize="0dp"
                 android:scrollbarStyle="outsideOverlay"/>
-            </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+        </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/foomiibo_list"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:clipToPadding="false"
-                android:layout_marginTop="4dp"
-                android:paddingBottom="@dimen/button_height_min"
-                android:scrollbars="vertical"
-                android:scrollbarSize="0dp"
-                android:scrollbarStyle="outsideOverlay"
-                android:visibility="gone"/>
-        </LinearLayout>
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/foomiibo_list"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:clipToPadding="false"
+            android:layout_marginTop="4dp"
+            android:paddingBottom="@dimen/button_height_min"
+            android:scrollbars="vertical"
+            android:scrollbarSize="0dp"
+            android:scrollbarStyle="outsideOverlay"
+            android:visibility="invisible"/>
+    </LinearLayout>
 
     <LinearLayout
         android:id="@+id/bottom_sheet"

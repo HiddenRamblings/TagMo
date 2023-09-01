@@ -15,10 +15,10 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.isGone
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.bumptech.glide.request.target.CustomTarget
 import com.hiddenramblings.tagmo.BrowserSettings
 import com.hiddenramblings.tagmo.BrowserSettings.*
-import com.hiddenramblings.tagmo.GlideApp
 import com.hiddenramblings.tagmo.Preferences
 import com.hiddenramblings.tagmo.R
 import com.hiddenramblings.tagmo.TagMo
@@ -124,7 +124,7 @@ class BrowserAdapter(
         }.apply {
             itemView.setOnClickListener { handleClickEvent(this) }
             imageAmiibo?.setOnClickListener {
-                if (settings.amiiboView == VIEW.IMAGE.value)
+                if (viewType == VIEW.IMAGE.value)
                     handleClickEvent(this)
                 else
                     listener?.onAmiiboImageClicked(amiiboFile)
@@ -285,8 +285,8 @@ class BrowserAdapter(
             imageAmiibo?.let {
                 val imageTarget: CustomTarget<Bitmap?> = ImageTarget.getTarget(it)
                 if (!amiiboImageUrl.isNullOrEmpty()) {
-                    GlideApp.with(it).clear(it)
-                    GlideApp.with(it).asBitmap().load(amiiboImageUrl).into(imageTarget)
+                    Glide.with(it).clear(it)
+                    Glide.with(it).asBitmap().load(amiiboImageUrl).into(imageTarget)
                 }
             }
             val query = settings.query?.lowercase(Locale.getDefault())

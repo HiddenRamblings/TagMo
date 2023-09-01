@@ -14,6 +14,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.AppCompatImageView
 import androidx.appcompat.widget.Toolbar
 import androidx.core.view.isGone
+import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
@@ -113,7 +114,7 @@ class ImageActivity : AppCompatActivity() {
         }
         this@ImageActivity.amiiboManager = amiiboManager
         updateView(amiiboId)
-        GlideApp.with(imageView).load(Amiibo.getImageUrl(amiiboId)).into(imageView)
+        Glide.with(imageView).load(Amiibo.getImageUrl(amiiboId)).into(imageView)
         findViewById<View>(R.id.toggle).setOnClickListener {
             if (bottomSheetBehavior.state == BottomSheetBehavior.STATE_COLLAPSED) {
                 bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED)
@@ -191,7 +192,7 @@ class ImageActivity : AppCompatActivity() {
 
                         override fun onLoadCleared(placeholder: Drawable?) {}
                     }
-                    GlideApp.with(this@ImageActivity).asBitmap()
+                    Glide.with(this@ImageActivity).asBitmap()
                         .load(Amiibo.getImageUrl(amiiboId))
                         .skipMemoryCache(true)
                         .diskCacheStrategy(DiskCacheStrategy.NONE)

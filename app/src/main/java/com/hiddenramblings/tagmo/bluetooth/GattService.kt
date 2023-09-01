@@ -191,7 +191,7 @@ class GattService : Service() {
         fun onPuckTagReloaded()
 
         fun onFilesDownload(tagData: ByteArray)
-        fun onProcessFinish()
+        fun onProcessFinish(showMenu: Boolean)
         fun onConnectionLost()
     }
 
@@ -209,7 +209,7 @@ class GattService : Service() {
                         when {
                             hexData == "0201000103" -> {
                                 chunkNumber -= 1
-                                if (chunkNumber == 0) listener?.onProcessFinish()
+                                if (chunkNumber == 0) listener?.onProcessFinish(true)
                             }
 
                             hexData.contains("416D694C6F6F705F46575F56") -> {
@@ -256,7 +256,7 @@ class GattService : Service() {
                             }
 
                             hexData == byteArrayOf(0xDD.toByte(), 0xCC.toByte()).toHex() -> {
-                                listener?.onProcessFinish()
+                                listener?.onProcessFinish(true)
                             }
 
                             else -> {
@@ -428,7 +428,7 @@ class GattService : Service() {
                                 Debug.warn(e)
                             }
                             response = StringBuilder()
-                            if (rangeIndex == 0) listener?.onProcessFinish()
+                            if (rangeIndex == 0) listener?.onProcessFinish(false)
                         }
                     }
                     formatted.startsWith("tag.remove") -> {
@@ -1303,7 +1303,7 @@ class GattService : Service() {
                 delayedByteCharacteric(byteArrayOf(
                         0x12, 0x0d, 0x00, 0x02, 0x01, 0x8f.toByte(), 0x8e.toByte(), 0x03
                 ))
-                listener?.onProcessFinish()
+                listener?.onProcessFinish(true)
             }
             Nordic.DEVICE.LINK -> {
                 delayedByteCharacteric(byteArrayOf(

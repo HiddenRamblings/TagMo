@@ -86,6 +86,7 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
     var gattAdapter: GattSlotAdapter? = null
     private var gattStats: TextView? = null
     private lateinit var gattSlotCount: NumberPicker
+    private lateinit var switchDevices: AppCompatButton
     private var screenOptions: LinearLayout? = null
     private var writeSlots: AppCompatButton? = null
     private var writeRandom: SwitchCompat? = null
@@ -370,18 +371,21 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
         toggle.setImageResource(R.drawable.ic_expand_more_24dp)
         toolbar?.inflateMenu(R.menu.bluup_menu)
 
-        view.findViewById<View>(R.id.switch_devices).setOnClickListener {
-            bottomSheet?.state = BottomSheetBehavior.STATE_COLLAPSED
-            disconnectService()
-            if (isBluetoothEnabled) selectBluetoothDevice()
+        switchDevices = view.findViewById<AppCompatButton>(R.id.switch_devices).apply {
+            setOnClickListener {
+                bottomSheet?.state = BottomSheetBehavior.STATE_COLLAPSED
+                disconnectService()
+                if (isBluetoothEnabled) selectBluetoothDevice()
+            }
         }
+
         switchMenuOptions?.setOnClickListener {
             if (slotOptionsMenu?.isShown == true) {
                 onBottomSheetChanged(SHEET.AMIIBO)
             } else {
                 onBottomSheetChanged(SHEET.MENU)
             }
-            bottomSheet?.setState(BottomSheetBehavior.STATE_EXPANDED)
+            bottomSheet?.state = BottomSheetBehavior.STATE_EXPANDED
         }
 
         view.findViewById<View>(R.id.screen_layered)
@@ -402,12 +406,14 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
                     switchMenuOptions?.isGone = true
                     slotOptionsMenu?.isGone = true
                     writeSlotsLayout?.isGone = true
+                    switchDevices.isVisible = true
                 }
                 SHEET.AMIIBO -> {
                     amiiboCard?.isVisible = true
                     switchMenuOptions?.isVisible = true
                     slotOptionsMenu?.isGone = true
                     writeSlotsLayout?.isGone = true
+                    switchDevices.isVisible = true
                 }
                 SHEET.MENU -> {
                     amiiboCard?.isGone = true
@@ -415,6 +421,7 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
                     switchMenuOptions?.isGone = isKeyFob
                     slotOptionsMenu?.isVisible = true
                     writeSlotsLayout?.isGone = true
+                    switchDevices.isVisible = true
                     writeRandom?.isGone = isKeyFob
                     writeSlots?.isGone = isKeyFob
                     eraseSlots?.isGone = isKeyFob
@@ -427,6 +434,7 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
                     switchMenuOptions?.isGone = true
                     slotOptionsMenu?.isGone = true
                     writeSlotsLayout?.isVisible = true
+                    switchDevices.isGone = true
                 }
             }
         }
@@ -1547,10 +1555,11 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
                             }
                         }
 
-                        override fun onProcessFinish() {
+                        override fun onProcessFinish(showMenu: Boolean) {
                             processDialog?.let {
                                 if (it.isShowing) it.dismiss()
                             }
+                            if (showMenu) bottomSheet?.state = BottomSheetBehavior.STATE_EXPANDED
                         }
 
                         override fun onConnectionLost() {

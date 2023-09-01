@@ -1576,7 +1576,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                         it.query = query
                         it.notifyChanges()
                     }
-                    if (viewPager.currentItem == 0)  pagerAdapter.browser.setAmiiboStats()
+                    pagerAdapter.browser.setAmiiboStats()
                     return false
                 }
 
@@ -1585,8 +1585,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                         it.query = query
                         it.notifyChanges()
                     }
-                    if (viewPager.currentItem == 0 && query.isEmpty())
-                        pagerAdapter.browser.setAmiiboStats()
+                    if (query.isEmpty()) pagerAdapter.browser.setAmiiboStats()
                     return true
                 }
             })
@@ -1981,7 +1980,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                 it.setFilter(filter, "")
                 it.notifyChanges()
             }
-            if (viewPager.currentItem == 0) pagerAdapter.browser.setAmiiboStats()
+            pagerAdapter.browser.setAmiiboStats()
         }
     }
 

@@ -17,6 +17,7 @@ import android.app.ActivityManager
 import android.content.Context
 import com.hiddenramblings.tagmo.R
 import com.hiddenramblings.tagmo.TagMo
+import com.hiddenramblings.tagmo.eightbit.os.Version
 import java.util.Locale
 
 object Memory {
@@ -36,7 +37,7 @@ object Memory {
         with(context.getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager) {
             val memInfo = ActivityManager.MemoryInfo()
             getMemoryInfo(memInfo)
-            memInfo.totalMem
+            if (Version.isUpsideDownCake) memInfo.advertisedMem else memInfo.totalMem
         }
 
     private fun bytesToSizeUnit(size: Long): String {

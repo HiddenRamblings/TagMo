@@ -127,7 +127,7 @@ object Version {
     }
 
     /**
-     * Android 14, API 33
+     * Android 14, API 34
      */
     @JvmStatic
     val isUpsideDownCake: Boolean get() {

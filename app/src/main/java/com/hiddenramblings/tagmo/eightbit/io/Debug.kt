@@ -230,23 +230,20 @@ object Debug {
     private fun submitLogcat(context: Context, logText: String) {
         if (BuildConfig.WEAR_OS) return
         val subject = context.getString(R.string.git_issue_title, BuildConfig.COMMIT)
-        val heading = if (logText.contains("AndroidRuntime"))
+        val selectionTitle = if (logText.contains("AndroidRuntime"))
             context.getString(R.string.logcat_crash)
         else
             subject
-        with (context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager) {
-            setPrimaryClip(ClipData.newPlainText(subject, logText))
-        }
         try {
             val emailIntent = setEmailParams(Intent.ACTION_SENDTO, subject, logText)
             context.startActivity(Intent.createChooser(
-                emailIntent, heading
+                emailIntent, selectionTitle
             ).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
         } catch (anf: ActivityNotFoundException) {
             try {
                 val emailIntent = setEmailParams(Intent.ACTION_SEND, subject, logText)
                 context.startActivity(Intent.createChooser(
-                    emailIntent, heading
+                    emailIntent, selectionTitle
                 ).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
             } catch (ex: ActivityNotFoundException) {
                 try {
@@ -298,9 +295,13 @@ object Debug {
             val logText = log.toString()
             log.setLength(0)
             withContext(Dispatchers.Main) {
+                val subject = context.getString(R.string.git_issue_title, BuildConfig.COMMIT)
+                with (context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager) {
+                    setPrimaryClip(ClipData.newPlainText(subject, logText))
+                }
                 if (context is Activity) {
                     IconifiedSnackbar(context).buildSnackbar(
-                            context.getString(R.string.git_issue_title, BuildConfig.COMMIT),
+                            subject,
                             R.drawable.ic_support_required_menu,
                             Snackbar.LENGTH_INDEFINITE
                     ).also { status ->

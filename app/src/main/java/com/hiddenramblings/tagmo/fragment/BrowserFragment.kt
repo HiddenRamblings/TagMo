@@ -354,6 +354,7 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
         statsHandler.removeCallbacksAndMessages(null)
         if (isDetached) return
         browserActivity?.let { activity ->
+            if (activity.viewPager.currentItem != 0) return
             currentFolderView?.run {
                 val size = settings.amiiboFiles.size
                 if (size <= 0) return@run
@@ -403,8 +404,7 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
             }
             currentFolderView?.gravity = Gravity.CENTER_VERTICAL
             currentFolderView?.text = relativePath
-            statsHandler.postDelayed({
-                setAmiiboStats() }, 3000)
+            statsHandler.postDelayed({ setAmiiboStats() }, 3000)
         } ?: setAmiiboStats()
     }
 

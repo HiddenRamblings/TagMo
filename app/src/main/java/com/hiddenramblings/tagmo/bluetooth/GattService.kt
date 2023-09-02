@@ -223,42 +223,32 @@ class GattService : Service() {
                     }
 
                     Nordic.DEVICE.LINK -> {
-                        when {
-                            hexData.startsWith("00002013") -> {
-                                listener?.onPixlConnected(hexData.substring(8, hexData.length))
+                        when (hexData) {
+                            "00001002E346EA49B8A3B2541F1CCAB1F93FCF43" -> {
+                                listener?.onPixlConnected("00001002E346EA49B8A3B2541F1CCAB1F93FCF43")
                             }
-                            hexData == "00001002E346EA49B8A3B2541F1CCAB1F93FCF43" -> {
+                            "00001002CE9BD933FB8C34A4776E2CDA19DE1091" -> {
+                                chunkNumber -= 1
+                                if (chunkNumber == 0) listener?.onProcessFinish(true)
+                            }
+                            byteArrayOf(0xB0.toByte(), 0xA0.toByte()).toHex() -> {
 
                             }
-                            hexData == byteArrayOf(0xB0.toByte(), 0xA0.toByte()).toHex() -> {
-                                delayedByteCharacteric(byteArrayOf(
-                                        0xAC.toByte(), 0xAC.toByte(), 0x00.toByte(), 0x04.toByte(),
-                                        0x00.toByte(), 0x00.toByte(), 0x02.toByte(), 0x1C.toByte())
-                                )
-                            }
-
-                            hexData == byteArrayOf(0xCA.toByte(), 0xCA.toByte()).toHex() -> {
-                                delayedByteCharacteric(byteArrayOf(
-                                        0xAB.toByte(), 0xAB.toByte(), 0x02.toByte(), 0x1C.toByte()
-                                ))
-                            }
-
-                            hexData == byteArrayOf(0xBA.toByte(), 0xBA.toByte()).toHex() -> {
-                                processLinkUpload()
-                            }
-
-                            hexData == byteArrayOf(0xAA.toByte(), 0xDD.toByte()).toHex() -> {
+                            byteArrayOf(0xCA.toByte(), 0xCA.toByte()).toHex() -> {
 
                             }
+                            byteArrayOf(0xBA.toByte(), 0xBA.toByte()).toHex() -> {
 
-                            hexData == byteArrayOf(0xCB.toByte(), 0xCB.toByte()).toHex() -> {
-                                delayedByteCharacteric(byteArrayOf(0xCC.toByte(), 0xDD.toByte()))
                             }
+                            byteArrayOf(0xAA.toByte(), 0xDD.toByte()).toHex() -> {
 
-                            hexData == byteArrayOf(0xDD.toByte(), 0xCC.toByte()).toHex() -> {
-                                listener?.onProcessFinish(true)
                             }
+                            byteArrayOf(0xCB.toByte(), 0xCB.toByte()).toHex() -> {
 
+                            }
+                            byteArrayOf(0xDD.toByte(), 0xCC.toByte()).toHex() -> {
+
+                            }
                             else -> {
 
                             }
@@ -828,19 +818,21 @@ class GattService : Service() {
     }
 
     private fun reliableWriteCharacteristic(value: ByteArray) {
-//        mBluetoothGatt!!.beginReliableWrite()
-//        mCharacteristicTX!!.writeType =
-//                BluetoothGattCharacteristic.WRITE_TYPE_DEFAULT
-//        if (Version.isTiramisu) {
-//            mBluetoothGatt!!.writeCharacteristic(
-//                    mCharacteristicTX!!, value,
-//                    BluetoothGattCharacteristic.WRITE_TYPE_DEFAULT
-//            )
-//        } else @Suppress("DEPRECATION") {
-//            mCharacteristicTX!!.value = value
-//            mBluetoothGatt!!.writeCharacteristic(mCharacteristicTX)
-//        }
-//        mBluetoothGatt!!.executeReliableWrite()
+        /*
+        mBluetoothGatt!!.beginReliableWrite()
+        mCharacteristicTX!!.writeType =
+                BluetoothGattCharacteristic.WRITE_TYPE_DEFAULT
+        if (Version.isTiramisu) {
+            mBluetoothGatt!!.writeCharacteristic(
+                    mCharacteristicTX!!, value,
+                    BluetoothGattCharacteristic.WRITE_TYPE_DEFAULT
+            )
+        } else @Suppress("DEPRECATION") {
+            mCharacteristicTX!!.value = value
+            mBluetoothGatt!!.writeCharacteristic(mCharacteristicTX)
+        }
+        mBluetoothGatt!!.executeReliableWrite()
+        */
         delayedByteCharacteric(value)
     }
 
@@ -1031,18 +1023,6 @@ class GattService : Service() {
         return output
     }
 
-    private fun processLinkUpload() {
-        val chunks = uploadData.toPortions(0x96)
-        chunks.forEachIndexed { index, bytes ->
-            val size = if (index == chunks.lastIndex) bytes.size else 0x96
-            val tempArray = byteArrayOf(
-                    0xDD.toByte(), 0xAA.toByte(), 0x00.toByte(), size.toByte()
-            ).plus(bytes).plus(byteArrayOf(0x00.toByte(), index.toByte()))
-            delayedByteCharacteric(tempArray)
-        }
-        delayedByteCharacteric(byteArrayOf(0xBC.toByte(), 0xBC.toByte()))
-    }
-
     private fun processPuckUpload(slot: Byte) {
         val parameters: ArrayList<ByteArray> = arrayListOf()
         uploadData.toFileBytes().toPortions(maxTransmissionUnit).forEach {
@@ -1050,7 +1030,11 @@ class GattService : Service() {
         }
         parameters.add(byteArrayOf(PUCK.SAVE.bytes, slot))
         parameters.forEach {
-            delayedByteCharacteric(it)
+            commandCallbacks.add(Runnable { delayedWriteCharacteristic(it) })
+        }
+        if (commandCallbacks.size == parameters.size) {
+            commandCallbacks[0].run()
+            commandCallbacks.removeAt(0)
         }
     }
 
@@ -1087,12 +1071,12 @@ class GattService : Service() {
     }
 
     fun uploadAmiiboData(tagData: ByteArray) {
+        val byteData = tagData.toDataBytes()
         when (serviceType) {
             Nordic.DEVICE.LOOP -> {
-                val uploadData = tagData.toDataBytes()
-                uploadData[536] = 0x80.toByte()
-                uploadData[537] = 0x80.toByte()
-                val parameters = processLoopUpload(uploadData)
+                byteData[536] = 0x80.toByte()
+                byteData[537] = 0x80.toByte()
+                val parameters = processLoopUpload(byteData)
                 chunkNumber = parameters.size
                 parameters.forEach {
                     commandCallbacks.add(Runnable { delayedWriteCharacteristic(it) })
@@ -1103,8 +1087,33 @@ class GattService : Service() {
                 }
             }
             Nordic.DEVICE.LINK -> {
-                uploadData = tagData.toDataBytes()
-                delayedByteCharacteric(byteArrayOf(0xA0.toByte(), 0xB0.toByte()))
+                val parameters: ArrayList<ByteArray> = arrayListOf()
+                parameters.add(byteArrayOf(0xA0.toByte(), 0xB0.toByte()))
+                parameters.add(byteArrayOf(
+                        0xAC.toByte(), 0xAC.toByte(), 0x00.toByte(), 0x04.toByte(),
+                        0x00.toByte(), 0x00.toByte(), 0x02.toByte(), 0x1C.toByte())
+                )
+                parameters.add(byteArrayOf(
+                        0xAB.toByte(), 0xAB.toByte(), 0x02.toByte(), 0x1C.toByte()
+                ))
+                val chunks = byteData.toPortions(0x96)
+                chunks.forEachIndexed { index, bytes ->
+                    val size = if (index == chunks.lastIndex) bytes.size else 0x96
+                    val tempArray = byteArrayOf(
+                            0xDD.toByte(), 0xAA.toByte(), 0x00.toByte(), size.toByte()
+                    ).plus(bytes).plus(byteArrayOf(0x00.toByte(), index.toByte()))
+                    parameters.add(tempArray)
+                }
+                parameters.add(byteArrayOf(0xBC.toByte(), 0xBC.toByte()))
+                parameters.add(byteArrayOf(0xCC.toByte(), 0xDD.toByte()))
+                chunkNumber = chunks.lastIndex
+                parameters.forEach {
+                    commandCallbacks.add(Runnable { delayedWriteCharacteristic(it) })
+                }
+                if (commandCallbacks.size == parameters.size) {
+                    commandCallbacks[0].run()
+                    commandCallbacks.removeAt(0)
+                }
             }
             else -> {
 
@@ -1122,9 +1131,6 @@ class GattService : Service() {
             }
         }
         parameters.add(byteArrayOf(PUCK.SAVE.bytes, slot.toByte()))
-//        parameters.forEach {
-//            delayedByteCharacteric(it)
-//        }
         parameters.forEach {
             commandCallbacks.add(Runnable { delayedWriteCharacteristic(it) })
         }
@@ -1184,7 +1190,6 @@ class GattService : Service() {
     fun deleteAmiibo(amiiboName: String?, tail: String?) {
         amiiboName?.let { name ->
             if (name.startsWith("New Tag")) {
-                // delayedTagCharacteristic("remove(\"$name||$tail\")")
                 delayedTagCharacteristic("remove(\"$name|$tail|0\")")
                 return
             }

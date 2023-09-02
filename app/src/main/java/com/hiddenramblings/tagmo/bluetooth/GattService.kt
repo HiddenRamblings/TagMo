@@ -185,6 +185,7 @@ class GattService : Service() {
 
         fun onPixlServicesDiscovered()
         fun onPixlConnected(firmware: String)
+        fun onPixlUpdateRequired()
 
         fun onPuckServicesDiscovered()
         fun onPuckActiveChanged(slot: Int)
@@ -1293,6 +1294,7 @@ class GattService : Service() {
                         0x22, 0x42, 0x36, 0x7D, 0x6D,
                         0xB2.toByte(), 0x6A, 0xAC.toByte(), 0xA6.toByte(), 0xAC.toByte()
                 ))
+                listener?.onProcessFinish(true)
             }
             else -> {
 
@@ -1331,10 +1333,12 @@ class GattService : Service() {
     }
 
     private fun decipherFirmware(data: ByteArray): String {
-        return data.sliceArray(3 until data[1].toInt() + 3).toString(Charset.defaultCharset()).also { firmware ->
+        return data.sliceArray(3 until data[1].toInt() + 3)
+                .toString(Charset.defaultCharset()).also { firmware ->
             Debug.warn(this.javaClass, "${serviceType.logTag} $firmware")
-            val version = firmware.substring(0, firmware.lastIndexOf("-")).filter { it.isDigit() }
-            Debug.warn(this.javaClass, "${serviceType.logTag} $version")
+            if (firmware.substring(0, firmware.lastIndexOf("-"))
+                    .filter { it.isDigit() }.toInt() < 103)
+                listener?.onPixlUpdateRequired()
         }
     }
 

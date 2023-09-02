@@ -1452,6 +1452,10 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
                             gattButtonState
                         }
 
+                        override fun onPixlUpdateRequired() {
+                            Toasty(requireContext()).Short(R.string.firmware_obsolete)
+                        }
+
                         override fun onPuckServicesDiscovered() {
                             isServiceDiscovered = true
                             onBottomSheetChanged(SHEET.MENU)

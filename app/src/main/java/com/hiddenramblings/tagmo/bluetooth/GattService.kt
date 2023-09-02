@@ -222,34 +222,21 @@ class GattService : Service() {
                     }
 
                     Nordic.DEVICE.LINK -> {
-                        when (hexData) {
-                            "00001002E346EA49B8A3B2541F1CCAB1F93FCF43" -> {
-                                listener?.onPixlConnected("00001002E346EA49B8A3B2541F1CCAB1F93FCF43")
-                            }
-                            "00001002CE9BD933FB8C34A4776E2CDA19DE1091" -> {
-                                chunkNumber -= 1
-                                if (chunkNumber == 0) listener?.onProcessFinish(true)
-                            }
-                            byteArrayOf(0xB0.toByte(), 0xA0.toByte()).toHex() -> {
+                        if (hexData.startsWith("00002013")) {
+                            listener?.onPixlConnected(hexData.substring(8, hexData.length))
+                        } else {
+                            when (hexData) {
+                                "00001002E346EA49B8A3B2541F1CCAB1F93FCF43" -> { }
+                                "000010029AA82CA5A943CBA3304A195EA40E4691" -> { }
+                                "00001002D8F1889E45DA37E7205C1BCF497B28FD" -> { }
+                                "00001002CE9BD933FB8C34A4776E2CDA19DE1091" -> { }
+                                "00001002034068D444930159EB6E21A4202E061C" -> { }
+                                "000010029C4D9FC65E4AA40A1DA07BCAD5661703" -> {
+                                    listener?.onProcessFinish(true)
+                                }
+                                else -> {
 
-                            }
-                            byteArrayOf(0xCA.toByte(), 0xCA.toByte()).toHex() -> {
-
-                            }
-                            byteArrayOf(0xBA.toByte(), 0xBA.toByte()).toHex() -> {
-
-                            }
-                            byteArrayOf(0xAA.toByte(), 0xDD.toByte()).toHex() -> {
-
-                            }
-                            byteArrayOf(0xCB.toByte(), 0xCB.toByte()).toHex() -> {
-
-                            }
-                            byteArrayOf(0xDD.toByte(), 0xCC.toByte()).toHex() -> {
-
-                            }
-                            else -> {
-
+                                }
                             }
                         }
                     }
@@ -1093,7 +1080,6 @@ class GattService : Service() {
                 }
                 parameters.add(byteArrayOf(0xBC.toByte(), 0xBC.toByte()))
                 parameters.add(byteArrayOf(0xCC.toByte(), 0xDD.toByte()))
-                chunkNumber = chunks.lastIndex
                 parameters.forEach {
                     commandCallbacks.add(Runnable { delayedWriteCharacteristic(it) })
                 }

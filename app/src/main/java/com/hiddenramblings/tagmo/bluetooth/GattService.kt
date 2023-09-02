@@ -125,6 +125,10 @@ class GattService : Service() {
 
     private var chunkNumber = 0
 
+    enum class SORTING {
+        MANUAL, SEQUENTIAL, AUTO
+    }
+
     @Suppress("unused")
     private enum class PUCK(bytes: Int) {
         TEST(0x00),
@@ -181,7 +185,6 @@ class GattService : Service() {
 
         fun onPixlServicesDiscovered()
         fun onPixlConnected(firmware: String)
-        fun onPixlActiveChanged(jsonObject: JSONObject?)
 
         fun onPuckServicesDiscovered()
         fun onPuckActiveChanged(slot: Int)

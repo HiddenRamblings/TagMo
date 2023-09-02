@@ -24,7 +24,7 @@
             android:contentDescription="@string/imageview_amiibo"
             android:layout_width="60dp"
             android:layout_height="60dp"
-            app:srcCompat="@drawable/ic_bluetooth_searching_24dp"
+            app:srcCompat="@mipmap/amiloop"
             android:layout_gravity="center_vertical"
             android:layout_marginRight="8dp"
             android:layout_marginEnd="8dp" />
@@ -36,7 +36,7 @@
             android:layout_gravity="center_vertical">
 
             <TextView
-                android:id="@+id/device_name"
+                android:id="@+id/device_details"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="8dp"
@@ -47,50 +47,8 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal">
-
-                <TextView
-                    android:id="@+id/device_type_title"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="8dp"
-                    android:layout_marginStart="8dp"
-                    android:textColor="@color/tag_text"
-                    android:textSize="12sp"
-                    android:text="@string/device_autodetect"/>
-
-                <TextView
-                    android:id="@+id/device_type"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="4dp"
-                    android:layout_marginStart="4dp"
-                    android:textColor="@color/tag_text"
-                    android:textSize="12sp" />
-            </LinearLayout>
-
-            <TextView
-                android:id="@+id/device_address"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="8dp"
-                android:layout_marginStart="8dp"
-                android:textColor="@color/tag_text"
-                android:textSize="12sp" />
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:layout_marginTop="2dp">
-
-                <androidx.appcompat.widget.AppCompatButton
-                    android:id="@+id/connect_bluup"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:textSize="14sp"
-                    android:text="@string/device_bluup" />
 
                 <androidx.appcompat.widget.AppCompatButton
                     android:id="@+id/connect_pixl"
@@ -101,12 +59,20 @@
                     android:text="@string/device_pixl" />
 
                 <androidx.appcompat.widget.AppCompatButton
-                    android:id="@+id/connect_puck"
+                    android:id="@+id/connect_loop"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:textSize="14sp"
-                    android:text="@string/device_puck" />
+                    android:text="@string/device_loop" />
+
+                <androidx.appcompat.widget.AppCompatButton
+                    android:id="@+id/connect_link"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:textSize="14sp"
+                    android:text="@string/device_link" />
             </LinearLayout>
         </LinearLayout>
     </LinearLayout>

@@ -183,10 +183,15 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
                 }
                 onItemSelectedListener = object : OnItemSelectedListener {
                     override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+                        val bulkEnabled = position == GattService.SORTING.SEQUENTIAL.ordinal
+                        writeRandom?.isVisible = bulkEnabled
+                        writeSlots?.isVisible = bulkEnabled
+                        eraseSlots?.isVisible = bulkEnabled
+                        gattSlotCount.isVisible = bulkEnabled
                         serviceGatt?.setSortingMode(position)
                     }
 
-                    override fun onNothingSelected(parent: AdapterView<*>?) {}
+                    override fun onNothingSelected(parent: AdapterView<*>?) { }
                 }
             }
 
@@ -422,10 +427,14 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
                     slotOptionsMenu?.isVisible = true
                     writeSlotsLayout?.isGone = true
                     switchDevices.isVisible = true
-                    writeRandom?.isGone = isKeyFob
-                    writeSlots?.isGone = isKeyFob
-                    eraseSlots?.isGone = isKeyFob
-                    gattSlotCount.isGone = isKeyFob
+
+                    val bulkEnabled = sortModeSpinner
+                            ?.selectedItemPosition == GattService.SORTING.SEQUENTIAL.ordinal
+                            && isKeyFob
+                    writeRandom?.isGone = bulkEnabled
+                    writeSlots?.isGone = bulkEnabled
+                    eraseSlots?.isGone = bulkEnabled
+                    gattSlotCount.isGone = bulkEnabled
                 }
                 SHEET.WRITE -> {
                     bottomSheet?.isFitToContents = false
@@ -670,27 +679,30 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
                 deviceAddress = device.address
                 deviceType = detectedType
                 dismissGattDiscovery()
-                AlertDialog.Builder(requireContext())
-                        .setMessage(getString(R.string.pixl_type_warning, detectedType.logTag))
-                        .setPositiveButton(R.string.device_loop) { dialog: DialogInterface, _: Int ->
-                            dialog.dismiss()
-                            deviceType = Nordic.DEVICE.LOOP
-                            showConnectionNotice()
-                            startGattService()
-                        }
-                        .setNegativeButton(R.string.device_link) { dialog: DialogInterface, _: Int ->
-                            dialog.dismiss()
-                            deviceType = Nordic.DEVICE.LINK
-                            showConnectionNotice()
-                            startGattService()
-                        }
-                        .setNeutralButton(R.string.device_pixl) { dialog: DialogInterface, _: Int ->
-                            dialog.dismiss()
-                            deviceType = Nordic.DEVICE.PIXL
-                            showConnectionNotice()
-                            startGattService()
-                        }
-                        .show()
+
+                val view = layoutInflater.inflate(R.layout.device_verification, null) as CardView
+                AlertDialog.Builder(requireActivity()).setView(view).show().apply {
+                    view.findViewById<TextView>(R.id.device_details).text =
+                            getString(R.string.pixl_type_warning, detectedType.logTag)
+                    view.findViewById<AppCompatButton>(R.id.connect_pixl).setOnClickListener {
+                        this.dismiss()
+                        deviceType = Nordic.DEVICE.PIXL
+                        showConnectionNotice()
+                        startGattService()
+                    }
+                    view.findViewById<AppCompatButton>(R.id.connect_link).setOnClickListener {
+                        this.dismiss()
+                        deviceType = Nordic.DEVICE.LINK
+                        showConnectionNotice()
+                        startGattService()
+                    }
+                    view.findViewById<AppCompatButton>(R.id.connect_loop).setOnClickListener {
+                        this.dismiss()
+                        deviceType = Nordic.DEVICE.LOOP
+                        showConnectionNotice()
+                        startGattService()
+                    }
+                }
             }
         }
 
@@ -1291,8 +1303,8 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
                     maxSlotCount = when (serviceType) {
                         Nordic.DEVICE.FLASK -> 85
                         Nordic.DEVICE.SLIDE -> 40
-                        Nordic.DEVICE.LINK -> 1
-                        Nordic.DEVICE.LOOP -> 1
+                        Nordic.DEVICE.LINK -> 26
+                        Nordic.DEVICE.LOOP -> 26
                         Nordic.DEVICE.PUCK -> 32
                         else -> 50
                     }
@@ -1436,32 +1448,8 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
                                 gattStats?.text = firmware
                                 bottomSheet?.state = BottomSheetBehavior.STATE_EXPANDED
                             }
-                        }
-
-                        override fun onPixlActiveChanged(jsonObject: JSONObject?) {
-                            if (null == jsonObject) return
-                            try {
-                                val name = jsonObject.getString("name")
-                                if ("undefined" == name) {
-                                    resetActiveSlot()
-                                    return
-                                }
-                                val amiibo = getAmiiboFromTail(name.split("|"))
-                                val index = jsonObject.getString("index")
-                                getActiveAmiibo(amiibo, amiiboTile)
-                                if (bottomSheet?.state == BottomSheetBehavior.STATE_COLLAPSED)
-                                    getActiveAmiibo(amiibo, amiiboCard)
-                                prefs.gattActiveSlot(index.toInt())
-                                gattButtonState
-                                requireView().post {
-                                    gattStats?.text =
-                                            getString(R.string.gatt_count, index, currentCount)
-                                }
-                            } catch (ex: JSONException) {
-                                Debug.warn(ex)
-                            } catch (ex: NullPointerException) {
-                                Debug.warn(ex)
-                            }
+                            currentCount = 0
+                            gattButtonState
                         }
 
                         override fun onPuckServicesDiscovered() {

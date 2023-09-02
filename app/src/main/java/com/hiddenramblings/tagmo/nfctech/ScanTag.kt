@@ -9,6 +9,7 @@ import android.os.Bundle
 import androidx.appcompat.app.AlertDialog
 import com.google.android.material.snackbar.Snackbar
 import com.hiddenramblings.tagmo.BrowserActivity
+import com.hiddenramblings.tagmo.BuildConfig
 import com.hiddenramblings.tagmo.NFCIntent
 import com.hiddenramblings.tagmo.Preferences
 import com.hiddenramblings.tagmo.R
@@ -120,6 +121,17 @@ class ScanTag {
                                 closeTagSilently(mifare)
                                 dialog.dismiss()
                             }.show()
+                        }
+                    }
+                    Debug.hasException(e, "nfc.tech.BasicTagTechnology", "connect") -> {
+                        withContext(Dispatchers.Main) {
+                            if (BuildConfig.WEAR_OS) {
+                                Toasty(activity).Short(R.string.feature_unavailable)
+                            }
+                            activity.onNFCActivity.launch(
+                                    Intent(activity, NfcActivity::class.java)
+                                            .setAction(NFCIntent.ACTION_SCAN_TAG)
+                            )
                         }
                     }
                     prefs.eliteEnabled() -> {

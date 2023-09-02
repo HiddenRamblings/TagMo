@@ -4,6 +4,7 @@ import com.hiddenramblings.tagmo.R
 import com.hiddenramblings.tagmo.TagMo
 import com.hiddenramblings.tagmo.amiibo.KeyManager
 import com.hiddenramblings.tagmo.amiibo.PowerTagManager
+import com.hiddenramblings.tagmo.bluetooth.GattArray.toDataBytes
 import com.hiddenramblings.tagmo.eightbit.io.Debug
 import com.hiddenramblings.tagmo.nfctech.TagArray.isPowerTag
 import com.hiddenramblings.tagmo.nfctech.TagArray.toHex
@@ -103,7 +104,7 @@ object TagWriter {
             throw IOException(TagMo.appContext.getString(R.string.fail_read_size))
         val isPowerTag = mifare.isPowerTag
         Debug.verbose(TagWriter::class.java, R.string.power_tag_verify, isPowerTag.toString())
-        var writeData = keyManager.decrypt(tagData)
+        var writeData = keyManager.decrypt(tagData.toDataBytes())
         writeData = if (isPowerTag) {
             // use a pre-determined static id for Power Tag
             patchUid(NfcByte.POWERTAG_IDPAGES, writeData)
@@ -173,7 +174,7 @@ object TagWriter {
         mifare: NTAG215, tagData: ByteArray, ignoreUid: Boolean,
         keyManager: KeyManager, validateNtag: Boolean
     ) {
-        var restoreData = tagData
+        var restoreData = tagData.toDataBytes()
         if (!ignoreUid) TagArray.validateNtag(mifare, restoreData, validateNtag) else {
             var liveData = TagReader.readFromTag(mifare)
             if (!TagArray.compareRange(liveData, restoreData, 9)) {

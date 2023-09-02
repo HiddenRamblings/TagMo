@@ -158,7 +158,6 @@ class GattService : Service() {
         RENAME_DIR(0x19),
         META(0x1A);
 
-
         // RESTART
         val bytes: Byte
 
@@ -258,7 +257,7 @@ class GattService : Service() {
                     Nordic.DEVICE.PUCK -> {
                         when {
                             TagArray.hexToString(hexData).endsWith("DTM_PUCK_FAST") -> {
-                                delayedByteCharacteric(byteArrayOf(PUCK.INFO.bytes))
+                                queueByteCharacteristic(byteArrayOf(PUCK.INFO.bytes))
                             }
 
                             tempInfoData.isNotEmpty() -> {
@@ -269,7 +268,7 @@ class GattService : Service() {
                                     listener?.onPuckListRetrieved(puckArray)
                                 } else {
                                     val nextSlot = sliceData[1].toInt() + 1
-                                    delayedByteCharacteric(byteArrayOf(PUCK.INFO.bytes, nextSlot.toByte()))
+                                    queueByteCharacteristic(byteArrayOf(PUCK.INFO.bytes, nextSlot.toByte()))
                                 }
                             }
 
@@ -301,7 +300,7 @@ class GattService : Service() {
                             }
 
                             data[0] == PUCK.SAVE.bytes -> {
-                                delayedByteCharacteric(byteArrayOf(PUCK.NFC.bytes))
+                                queueByteCharacteristic(byteArrayOf(PUCK.NFC.bytes))
                             }
 
                             data[0] == PUCK.NFC.bytes -> {
@@ -425,7 +424,7 @@ class GattService : Service() {
                         if (formatted.endsWith(">") || formatted.endsWith("\n")) {
                             if (wipeDeviceCount > 0) {
                                 wipeDeviceCount -= 1
-                                delayedTagCharacteristic("remove(tag.get().name)")
+                                queueTagCharacteristic("remove(tag.get().name)")
                             } else {
                                 listener?.onBluupStatusChanged(null)
                             }
@@ -833,7 +832,7 @@ class GattService : Service() {
         }
         mBluetoothGatt!!.executeReliableWrite()
         */
-        delayedByteCharacteric(value)
+        queueByteCharacteristic(value)
     }
 
     private fun delayedWriteCharacteristic(value: ByteArray) {
@@ -877,10 +876,6 @@ class GattService : Service() {
         }
     }
 
-    private fun delayedByteCharacteric(value: ByteArray) {
-        queueByteCharacteristic(value)
-    }
-
     private fun delayedWriteCharacteristic(value: String) {
         val chunks = value.toPortions(maxTransmissionUnit)
         val commandQueue = commandCallbacks.size + chunks.size
@@ -922,10 +917,6 @@ class GattService : Service() {
         }
     }
 
-    private fun delayedTagCharacteristic(value: String) {
-        queueTagCharacteristic(value)
-    }
-
     private fun promptTagCharacteristic(value: String) {
         if (null == mCharacteristicTX) {
             try {
@@ -956,16 +947,12 @@ class GattService : Service() {
         }
     }
 
-    private fun delayedScreenCharacteristic(value: String) {
-        queueScreenCharacteristic(value)
-    }
-
     val deviceDetails: Unit
         get() {
             if (legacyInterface) {
-                delayedByteCharacteric(byteArrayOf(PUCK.INFO.bytes))
+                queueByteCharacteristic(byteArrayOf(PUCK.INFO.bytes))
             } else {
-                delayedByteCharacteric(byteArrayOf(
+                queueByteCharacteristic(byteArrayOf(
                         0x66, 0x61, 0x73, 0x74, 0x4D, 0x6F, 0x64, 0x65, 0x28, 0x29, 0x0A
                 ))
             }
@@ -975,15 +962,15 @@ class GattService : Service() {
         get() {
             when (serviceType) {
                 Nordic.DEVICE.BLUUP, Nordic.DEVICE.FLASK, Nordic.DEVICE.SLIDE -> {
-                    delayedTagCharacteristic("getList()")
+                    queueTagCharacteristic("getList()")
                 }
                 Nordic.DEVICE.LOOP -> {
-                    delayedByteCharacteric(byteArrayOf(
+                    queueByteCharacteristic(byteArrayOf(
                             0x02, 0x01, 0x89.toByte(), 0x88.toByte(), 0x03
                     ))
                 }
                 Nordic.DEVICE.LINK -> {
-                    delayedByteCharacteric(byteArrayOf(
+                    queueByteCharacteristic(byteArrayOf(
                             0x00, 0x00, 0x10, 0x02, 0x33,
                             0x53, 0x34, 0xAB.toByte(), 0x1F, 0xE8.toByte(),
                             0xC2.toByte(), 0x6D, 0xE5.toByte(), 0x35, 0x27,
@@ -992,7 +979,7 @@ class GattService : Service() {
                 }
                 Nordic.DEVICE.PUCK -> {
                     puckArray = ArrayList(slotsCount)
-                    delayedByteCharacteric(byteArrayOf(PUCK.INFO.bytes, 0.toByte()))
+                    queueByteCharacteristic(byteArrayOf(PUCK.INFO.bytes, 0.toByte()))
                 }
                 else ->{
 
@@ -1002,7 +989,7 @@ class GattService : Service() {
 
     val activeAmiibo: Unit
         get() {
-            delayedTagCharacteristic("get()")
+            queueTagCharacteristic("get()")
         }
 
     private fun processLoopUpload(tagData: ByteArray): ArrayList<ByteArray> {
@@ -1139,7 +1126,7 @@ class GattService : Service() {
             commandCallbacks.removeAt(0)
         }
 //        uploadData = tagData.toFileBytes()
-//        delayedByteCharacteric(byteArrayOf(PUCK.FWRITE.bytes, slot.toByte()))
+//        queueByteCharacteristic(byteArrayOf(PUCK.FWRITE.bytes, slot.toByte()))
     }
 
     fun uploadAmiiboFile(tagData: ByteArray, amiibo: Amiibo, index: Int, complete: Boolean) {
@@ -1165,38 +1152,38 @@ class GattService : Service() {
                 delayedWriteCharacteristic("tag.$it\n")
             })
         }
-        delayedTagCharacteristic("startTagUpload(${tagData.size})")
+        queueTagCharacteristic("startTagUpload(${tagData.size})")
     }
 
     fun setActiveAmiibo(amiiboName: String?, tail: String?) {
         amiiboName?.let { name ->
             if (name.startsWith("New Tag")) {
-                delayedTagCharacteristic("setTag(\"$name|$tail|0\")")
+                queueTagCharacteristic("setTag(\"$name|$tail|0\")")
                 return
             }
             tail?.let {
                 nameCompat = truncateUnicode(name.toUnicode(), it.length)
                 tailCompat = it
-                delayedTagCharacteristic("setTag(\"$nameCompat|$it|0\")")
+                queueTagCharacteristic("setTag(\"$nameCompat|$it|0\")")
             }
         }
     }
 
     fun setActiveAmiibo(slot: Int) {
-        delayedByteCharacteric(byteArrayOf(PUCK.NFC.bytes, slot.toByte()))
+        queueByteCharacteristic(byteArrayOf(PUCK.NFC.bytes, slot.toByte()))
         listener?.onPuckActiveChanged(slot)
     }
 
     fun deleteAmiibo(amiiboName: String?, tail: String?) {
         amiiboName?.let { name ->
             if (name.startsWith("New Tag")) {
-                delayedTagCharacteristic("remove(\"$name|$tail|0\")")
+                queueTagCharacteristic("remove(\"$name|$tail|0\")")
                 return
             }
             tail?.let {
                 nameCompat = truncateUnicode(name.toUnicode(), it.length)
                 tailCompat = it
-                delayedTagCharacteristic("remove(\"$nameCompat|$it|0\")")
+                queueTagCharacteristic("remove(\"$nameCompat|$it|0\")")
             }
         }
     }
@@ -1205,7 +1192,7 @@ class GattService : Service() {
         tail?.let {
             fileName?.let { file ->
                 val amiiboName = truncateUnicode(file.toUnicode(), it.length)
-                delayedTagCharacteristic("download(\"$amiiboName|$it|0\")")
+                queueTagCharacteristic("download(\"$amiiboName|$it|0\")")
             }
         }
     }
@@ -1218,18 +1205,18 @@ class GattService : Service() {
         }
         parameters.add(byteArrayOf(PUCK.READ.bytes, slot.toByte(), 0x8C.toByte(), 0x03))
         parameters.forEach {
-            delayedByteCharacteric(it)
+            queueByteCharacteristic(it)
         }
     }
 
     private fun getDeviceAmiiboRange(index: Int) {
-        delayedTagCharacteristic("getList($index,$listCount)") // 5 ... 5
+        queueTagCharacteristic("getList($index,$listCount)") // 5 ... 5
     }
 
     fun createBlankTag() {
         when (serviceType) {
             Nordic.DEVICE.BLUUP, Nordic.DEVICE.FLASK, Nordic.DEVICE.SLIDE -> {
-                delayedTagCharacteristic("createBlank()")
+                queueTagCharacteristic("createBlank()")
             }
             Nordic.DEVICE.LOOP -> {
                 val blankData = generateBlankData()
@@ -1259,18 +1246,18 @@ class GattService : Service() {
 
     fun clearStorage(count: Int) {
         wipeDeviceCount = count - 1
-        delayedTagCharacteristic("remove(tag.get().name)")
+        queueTagCharacteristic("remove(tag.get().name)")
     }
 
     fun setSortingMode(mode: Int) {
         when (serviceType) {
             Nordic.DEVICE.LOOP -> {
-                delayedByteCharacteric(byteArrayOf(
+                queueByteCharacteristic(byteArrayOf(
                         0x02, 0x02, 0x8a.toByte(), mode.toByte(), (0x88 + mode).toByte(), 0x03
                 ))
             }
             Nordic.DEVICE.LINK -> {
-                delayedByteCharacteric(byteArrayOf(0x00, 0x00, 0x10, 0x03).plus(
+                queueByteCharacteristic(byteArrayOf(0x00, 0x00, 0x10, 0x03).plus(
                         when (mode) {
                             1 -> byteArrayOf(
                                     0x2F, 0x25, 0xD8.toByte(), 0x0C,
@@ -1302,16 +1289,16 @@ class GattService : Service() {
     fun resetDevice() {
         when (serviceType) {
             Nordic.DEVICE.BLUUP, Nordic.DEVICE.FLASK, Nordic.DEVICE.SLIDE -> {
-                delayedScreenCharacteristic("reset()")
+                queueScreenCharacteristic("reset()")
             }
             Nordic.DEVICE.LOOP -> {
-                delayedByteCharacteric(byteArrayOf(
+                queueByteCharacteristic(byteArrayOf(
                         0x12, 0x0d, 0x00, 0x02, 0x01, 0x8f.toByte(), 0x8e.toByte(), 0x03
                 ))
                 listener?.onProcessFinish(true)
             }
             Nordic.DEVICE.LINK -> {
-                delayedByteCharacteric(byteArrayOf(
+                queueByteCharacteristic(byteArrayOf(
                         0x00, 0x00, 0x10, 0x02, 0xAA.toByte(),
                         0x54, 0x54, 0x2B, 0xD5.toByte(), 0xCC.toByte(),
                         0x22, 0x42, 0x36, 0x7D, 0x6D,
@@ -1325,7 +1312,7 @@ class GattService : Service() {
     }
 
     fun setFlaskFace(stacked: Boolean) {
-        delayedScreenCharacteristic("setFace(" + (if (stacked) 1 else 0) + ")")
+        queueScreenCharacteristic("setFace(" + (if (stacked) 1 else 0) + ")")
     }
 
     private fun fixBluupDetails(amiiboName: String?, tail: String?) {

@@ -108,7 +108,7 @@ class KeyManager(var context: Context) {
         val decrypted = ByteArray(NfcByte.TAG_DATA_SIZE)
         if (tool.unpack(tagData, NfcByte.TAG_DATA_SIZE, decrypted, decrypted.size) == 0)
             throw Exception(context.getString(R.string.fail_decrypt))
-        return decrypted.copyInto(tagData)
+        return if (tagData.size == NfcByte.TAG_FILE_SIZE) decrypted.copyInto(tagData) else decrypted
     }
 
     @Throws(RuntimeException::class)
@@ -123,7 +123,7 @@ class KeyManager(var context: Context) {
         val encrypted = ByteArray(NfcByte.TAG_DATA_SIZE)
         if (tool.pack(tagData, NfcByte.TAG_DATA_SIZE, encrypted, encrypted.size) == 0)
             throw RuntimeException(context.getString(R.string.fail_encrypt))
-        return encrypted.copyInto(tagData)
+        return if (tagData.size == NfcByte.TAG_FILE_SIZE) encrypted.copyInto(tagData) else encrypted
     }
 
     companion object {

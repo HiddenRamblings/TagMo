@@ -34,6 +34,7 @@ import com.hiddenramblings.tagmo.bluetooth.Nordic.isUUID
 import com.hiddenramblings.tagmo.bluetooth.Nordic.logTag
 import com.hiddenramblings.tagmo.eightbit.io.Debug
 import com.hiddenramblings.tagmo.eightbit.os.Version
+import com.hiddenramblings.tagmo.nfctech.Foomiibo
 import com.hiddenramblings.tagmo.nfctech.NfcByte
 import com.hiddenramblings.tagmo.nfctech.TagArray
 import com.hiddenramblings.tagmo.nfctech.TagArray.toHex
@@ -219,9 +220,7 @@ class GattService : Service() {
                                 listener?.onPixlConnected(decipherFirmware(data))
                             }
 
-                            else -> {
-
-                            }
+                            else -> { }
                         }
                     }
 
@@ -238,9 +237,7 @@ class GattService : Service() {
                                 "000010029C4D9FC65E4AA40A1DA07BCAD5661703" -> {
                                     listener?.onProcessFinish(true)
                                 }
-                                else -> {
-
-                                }
+                                else -> { }
                             }
                         }
                     }
@@ -299,9 +296,7 @@ class GattService : Service() {
                             }
                         }
                     }
-                    else -> {
-
-                    }
+                    else -> { }
                 }
                 if (commandCallbacks.size > 0) {
                     commandCallbacks[0].run()
@@ -486,9 +481,7 @@ class GattService : Service() {
             Nordic.DEVICE.PUCK -> {
                 getCharacteristicValue(characteristic, characteristic.value)
             }
-            else -> {
-
-            }
+            else -> { }
         }
     }
 
@@ -519,9 +512,7 @@ class GattService : Service() {
                         Nordic.DEVICE.PUCK -> {
                             listener?.onPuckServicesDiscovered()
                         }
-                        else -> {
-
-                        }
+                        else -> { }
                     }
                 }
             }
@@ -561,9 +552,7 @@ class GattService : Service() {
                 Nordic.DEVICE.PUCK -> {
                     getCharacteristicValue(characteristic, value)
                 }
-                else -> {
-
-                }
+                else -> { }
             }
         }
 
@@ -589,9 +578,7 @@ class GattService : Service() {
                 Nordic.DEVICE.PUCK -> {
                     listener?.onPuckServicesDiscovered()
                 }
-                else -> {
-
-                }
+                else -> { }
             }
         }
 
@@ -1016,38 +1003,6 @@ class GattService : Service() {
         }
     }
 
-    private fun generateBlankData(): ByteArray {
-        val blankData = ByteArray(NfcByte.TAG_FILE_SIZE)
-
-        blankData[0] = 0x04.toByte()
-        blankData[1] = Random.nextInt(256).toByte()
-        blankData[2] = Random.nextInt(256).toByte()
-        blankData[3] = (blankData[0].toInt()
-                xor blankData[1].toInt()
-                xor blankData[2].toInt()
-                xor 0x88).toByte()
-        blankData[4] = Random.nextInt(256).toByte()
-        blankData[5] = Random.nextInt(256).toByte()
-        blankData[6] = Random.nextInt(256).toByte()
-        blankData[7] = Random.nextInt(256).toByte()
-        blankData[8] = (blankData[4].toInt()
-                xor blankData[5].toInt()
-                xor blankData[6].toInt()
-                xor blankData[7].toInt()).toByte()
-
-        val static0x09 = byteArrayOf(
-                0x48, 0x00, 0x00, 0xE1.toByte(), 0x10, 0x3E, 0x00, 0x03, 0x00, 0xFE.toByte()
-        )
-        static0x09.copyInto(blankData, 9)
-
-        val static0x20B = byteArrayOf(
-                0xBD.toByte(), 0x04, 0x00, 0x00, 0xFF.toByte(), 0x00, 0x05
-        )
-        static0x20B.copyInto(blankData, 0x20B)
-
-        return blankData
-    }
-
     fun uploadAmiiboData(tagData: ByteArray) {
         val byteData = tagData.toDataBytes()
         when (serviceType) {
@@ -1092,9 +1047,7 @@ class GattService : Service() {
                     commandCallbacks.removeAt(0)
                 }
             }
-            else -> {
-
-            }
+            else -> { }
         }
     }
 
@@ -1208,29 +1161,10 @@ class GattService : Service() {
             Nordic.DEVICE.BLUUP, Nordic.DEVICE.FLASK, Nordic.DEVICE.SLIDE -> {
                 queueTagCharacteristic("createBlank()")
             }
-            Nordic.DEVICE.LOOP -> {
-                val blankData = generateBlankData()
-                val tagData = blankData.toDataBytes()
-                tagData[536] = 0x80.toByte()
-                tagData[537] = 0x80.toByte()
-
-                val parameters = processLoopUpload(tagData)
-                chunkNumber = parameters.size
-                parameters.forEach {
-                    commandCallbacks.add(Runnable { delayedWriteCharacteristic(it) })
-                }
-                if (commandCallbacks.size == chunkNumber) {
-                    commandCallbacks[0].run()
-                    commandCallbacks.removeAt(0)
-                }
+            Nordic.DEVICE.LOOP, Nordic.DEVICE.LINK -> {
+                uploadAmiiboData(GattArray.generateBlank())
             }
-            Nordic.DEVICE.LINK -> {
-                generateBlankData()
-            }
-            else -> {
-
-
-            }
+            else -> { }
         }
     }
 
@@ -1270,9 +1204,7 @@ class GattService : Service() {
                         }
                 ))
             }
-            else -> {
-
-            }
+            else -> { }
         }
     }
 
@@ -1296,9 +1228,7 @@ class GattService : Service() {
                 ))
                 listener?.onProcessFinish(true)
             }
-            else -> {
-
-            }
+            else -> { }
         }
     }
 

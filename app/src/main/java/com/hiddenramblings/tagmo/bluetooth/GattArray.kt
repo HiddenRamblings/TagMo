@@ -5,10 +5,23 @@
  */
 package com.hiddenramblings.tagmo.bluetooth
 
+import com.hiddenramblings.tagmo.nfctech.Foomiibo
 import com.hiddenramblings.tagmo.nfctech.NfcByte
 import java.util.Date
 
 object GattArray {
+
+    fun generateBlank(): ByteArray {
+        val blankData = ByteArray(NfcByte.TAG_FILE_SIZE)
+        Foomiibo.generateRandomUID().copyInto(blankData, 0x00)
+        byteArrayOf(
+                0x48, 0x00, 0x00, 0xE1.toByte(), 0x10, 0x3E, 0x00, 0x03, 0x00, 0xFE.toByte()
+        ).copyInto(blankData, 0x09)
+        byteArrayOf(
+                0xBD.toByte(), 0x04, 0x00, 0x00, 0xFF.toByte(), 0x00, 0x05
+        ).copyInto(blankData, 0x20B)
+        return blankData
+    }
 
     fun ByteArray.toDataBytes(): ByteArray {
         return this.copyOf(NfcByte.TAG_DATA_SIZE + 8)

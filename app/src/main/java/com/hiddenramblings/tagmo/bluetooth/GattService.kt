@@ -25,6 +25,7 @@ import android.os.IBinder
 import android.os.Looper
 import android.util.Base64
 import androidx.annotation.RequiresApi
+import com.hiddenramblings.tagmo.R
 import com.hiddenramblings.tagmo.amiibo.Amiibo
 import com.hiddenramblings.tagmo.bluetooth.GattArray.toDataBytes
 import com.hiddenramblings.tagmo.bluetooth.GattArray.toFileBytes
@@ -34,7 +35,6 @@ import com.hiddenramblings.tagmo.bluetooth.Nordic.isUUID
 import com.hiddenramblings.tagmo.bluetooth.Nordic.logTag
 import com.hiddenramblings.tagmo.eightbit.io.Debug
 import com.hiddenramblings.tagmo.eightbit.os.Version
-import com.hiddenramblings.tagmo.nfctech.Foomiibo
 import com.hiddenramblings.tagmo.nfctech.NfcByte
 import com.hiddenramblings.tagmo.nfctech.TagArray
 import com.hiddenramblings.tagmo.nfctech.TagArray.toHex
@@ -45,7 +45,6 @@ import org.json.JSONObject
 import java.nio.charset.Charset
 import java.util.Objects
 import java.util.UUID
-import kotlin.random.Random
 
 /**
  * Service for managing connection and data communication with a GATT server
@@ -1280,9 +1279,7 @@ class GattService : Service() {
     }
 
     private fun xorByteArray(byteArray: ByteArray): Byte {
-        if (byteArray.isEmpty()) {
-            throw IllegalArgumentException("Empty collection can't be reduced.")
-        }
+        if (byteArray.isEmpty()) throw IllegalArgumentException(getString(R.string.xor_invalid))
         var result = byteArray[0]
         for (i in 1 until byteArray.size) {
             result = (result.toInt() xor byteArray[i].toInt()).toByte()

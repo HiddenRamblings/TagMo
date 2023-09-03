@@ -7,7 +7,6 @@ package com.hiddenramblings.tagmo.bluetooth
 
 import com.hiddenramblings.tagmo.nfctech.Foomiibo
 import com.hiddenramblings.tagmo.nfctech.NfcByte
-import java.util.Date
 
 object GattArray {
 

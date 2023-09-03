@@ -16,7 +16,6 @@ import android.os.*
 import android.view.*
 import android.widget.AdapterView
 import android.widget.AdapterView.OnItemSelectedListener
-import android.widget.ArrayAdapter
 import android.widget.LinearLayout
 import android.widget.Spinner
 import android.widget.TextView
@@ -295,7 +294,7 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
                 text = getString(R.string.erase_slots, 0)
                 setOnClickListener {
                     AlertDialog.Builder(requireContext())
-                        .setMessage(getString(R.string.gatt_erase_confirm, deviceType))
+                        .setMessage(getString(R.string.gatt_erase_confirm, deviceType.logTag))
                         .setPositiveButton(R.string.cancel) { dialog: DialogInterface, _: Int ->
                             dialog.dismiss()
                         }
@@ -644,8 +643,8 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
 
     @SuppressLint("InflateParams")
     private fun displayScanResult(
-        deviceDialog: AlertDialog, device: BluetoothDevice, detectedType: Nordic.DEVICE
-    ) : View {
+        deviceDialog: AlertDialog, device: BluetoothDevice) : View {
+        val detectedType = getDeviceType(device)
         val item = this.layoutInflater.inflate(R.layout.device_bluetooth, null)
         item.findViewById<TextView>(R.id.device_name).text = device.name
         item.findViewById<TextView>(R.id.device_address).text =
@@ -665,7 +664,9 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
                     }
                 }
 
-                override fun onNothingSelected(parent: AdapterView<*>?) { }
+                override fun onNothingSelected(parent: AdapterView<*>?) {
+                    deviceType = detectedType
+                }
             }
         }
         item.findViewById<View>(R.id.connect_device).setOnClickListener {
@@ -717,7 +718,7 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
                     if (!devices.contains(result.device)) {
                         devices.add(result.device)
                         deviceDialog.findViewById<LinearLayout>(R.id.bluetooth_result)?.addView(
-                            displayScanResult(deviceDialog, result.device, getDeviceType(result.device))
+                            displayScanResult(deviceDialog, result.device)
                         )
                     }
                 }
@@ -731,7 +732,7 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
                     if (!devices.contains(result.device)) {
                         devices.add(result.device)
                         deviceDialog.findViewById<LinearLayout>(R.id.bluetooth_result)?.addView(
-                                displayScanResult(deviceDialog, result.device, getDeviceType(result.device))
+                                displayScanResult(deviceDialog, result.device)
                         )
                     }
                 }
@@ -743,7 +744,7 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
                     if (!devices.contains(device)) {
                         devices.add(device)
                         deviceDialog.findViewById<LinearLayout>(R.id.bluetooth_result)?.addView(
-                            displayScanResult(deviceDialog, device, getDeviceType(device))
+                            displayScanResult(deviceDialog, device)
                         )
                     }
                 }
@@ -754,7 +755,7 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
                         if (!devices.contains(device)) {
                             devices.add(device)
                             deviceDialog.findViewById<LinearLayout>(R.id.bluetooth_result)?.addView(
-                                    displayScanResult(deviceDialog, device, getDeviceType(device))
+                                    displayScanResult(deviceDialog, device)
                             )
                         }
                     }
@@ -785,7 +786,7 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
             mBluetoothAdapter?.bondedDevices?.forEach { device ->
                 if (null != device.name) {
                     view.findViewById<LinearLayout>(R.id.bluetooth_paired)?.addView(
-                        displayScanResult(this, device, getDeviceType(device))
+                        displayScanResult(this, device)
                     )
                 }
             }
@@ -797,7 +798,7 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
     private fun writeAmiiboDataCollection(bytesList: ArrayList<AmiiboData>) {
         settings.removeChangeListener(writeTagAdapter)
         AlertDialog.Builder(requireContext())
-            .setMessage(getString(R.string.gatt_write_confirm, deviceType))
+            .setMessage(getString(R.string.gatt_write_confirm, deviceType.logTag))
             .setPositiveButton(R.string.proceed) { dialog: DialogInterface, _: Int ->
                 showProcessingNotice(NOTICE.UPLOAD)
                 bytesList.forEachIndexed { i, byte ->
@@ -817,7 +818,7 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
 
     private fun writeAmiiboFileCollection(amiiboList: ArrayList<AmiiboFile?>) {
         AlertDialog.Builder(requireContext())
-            .setMessage(getString(R.string.gatt_write_confirm, deviceType))
+            .setMessage(getString(R.string.gatt_write_confirm, deviceType.logTag))
             .setPositiveButton(R.string.proceed) { dialog: DialogInterface, _: Int ->
                 showProcessingNotice(NOTICE.UPLOAD)
                 amiiboList.forEachIndexed { i, file ->

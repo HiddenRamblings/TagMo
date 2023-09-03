@@ -26,6 +26,9 @@
             android:layout_height="wrap_content"
             android:background="@android:drawable/btn_dropdown"
             android:spinnerMode="dropdown"
+            android:entries="@array/gattSortOrder"
+            android:theme="@style/ThemeOverlay.SpinnerTheme"
+            app:popupTheme="@style/ThemeOverlay.SpinnerPopupTheme"
             android:visibility="invisible"/>
 
         <androidx.recyclerview.widget.RecyclerView

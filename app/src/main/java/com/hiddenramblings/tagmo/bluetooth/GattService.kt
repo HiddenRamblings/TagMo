@@ -833,7 +833,7 @@ class GattService : Service() {
             var i = 0
             while (i < chunks.size) {
                 val chunk = chunks[i]
-                if (null == mCharacteristicTX) continue
+                if (null == mCharacteristicTX) break
                 gattHandler.postDelayed({
                     mCharacteristicTX!!.writeType =
                             BluetoothGattCharacteristic.WRITE_TYPE_NO_RESPONSE

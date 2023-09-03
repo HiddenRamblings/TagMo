@@ -301,8 +301,6 @@
     <string name="write_slots">Zapis %1$d slotów</string>
     <string name="erase_slots">Wymaż %1$d slotów</string>
     <string name="create_blank">Utwórz pusty wirtualny tag NFC</string>
-    <string name="gatt_erase_confirm">Wymazać wszystkie sloty z urządzenia GATT?</string>
-    <string name="gatt_write_confirm">Write selections to GATT device?</string>
     <string name="gatt_upload">Przesyłanie pliku binarnego&#8230;</string>
     <string name="gatt_remove">Wiping slot data&#8230;</string>
     <string name="fail_bluetooth_adapter">Adapter Bluetooth niedostępny!</string>

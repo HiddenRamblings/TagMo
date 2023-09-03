@@ -55,4 +55,12 @@
         <item name="windowNoTitle">true</item>
         <item name="android:background">@android:color/transparent</item>
     </style>
+
+    <style name="ThemeOverlay.SpinnerTheme" parent="ThemeOverlay.MaterialComponents">
+        <item name="android:textColor">@android:color/black</item>
+    </style>
+
+    <style name="ThemeOverlay.SpinnerPopupTheme" parent="ThemeOverlay.MaterialComponents">
+        <item name="android:textColor">@android:color/black</item>
+    </style>
 </resources>

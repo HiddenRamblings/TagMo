@@ -174,19 +174,10 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
             switchMenuOptions = view.findViewById(R.id.switch_menu_btn)
             slotOptionsMenu = view.findViewById(R.id.slot_options_menu)
             sortModeSpinner = view.findViewById<Spinner>(R.id.sort_mode_spinner).apply {
-                this.adapter = ArrayAdapter(
-                        requireActivity(),
-                        android.R.layout.simple_spinner_item,
-                        resources.getStringArray(R.array.gattSortOrder)
-                ).apply {
-                    setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-                }
                 onItemSelectedListener = object : OnItemSelectedListener {
                     override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
                         val bulkEnabled = position == GattService.SORTING.SEQUENTIAL.ordinal
-                        writeRandom?.isVisible = bulkEnabled
                         writeSlots?.isVisible = bulkEnabled
-                        eraseSlots?.isVisible = bulkEnabled
                         gattSlotCount.isVisible = bulkEnabled
                         serviceGatt?.setSortingMode(position)
                     }
@@ -304,7 +295,7 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
                 text = getString(R.string.erase_slots, 0)
                 setOnClickListener {
                     AlertDialog.Builder(requireContext())
-                        .setMessage(R.string.gatt_erase_confirm)
+                        .setMessage(getString(R.string.gatt_erase_confirm, deviceType))
                         .setPositiveButton(R.string.cancel) { dialog: DialogInterface, _: Int ->
                             dialog.dismiss()
                         }
@@ -428,12 +419,13 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
                     writeSlotsLayout?.isGone = true
                     switchDevices.isVisible = true
 
+                    writeRandom?.isGone = isKeyFob
+                    eraseSlots?.isGone = isKeyFob
+
                     val bulkEnabled = sortModeSpinner
                             ?.selectedItemPosition == GattService.SORTING.SEQUENTIAL.ordinal
                             && isKeyFob
-                    writeRandom?.isGone = bulkEnabled
                     writeSlots?.isGone = bulkEnabled
-                    eraseSlots?.isGone = bulkEnabled
                     gattSlotCount.isGone = bulkEnabled
                 }
                 SHEET.WRITE -> {
@@ -656,69 +648,33 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
     ) : View {
         val item = this.layoutInflater.inflate(R.layout.device_bluetooth, null)
         item.findViewById<TextView>(R.id.device_name).text = device.name
-        item.findViewById<TextView>(R.id.device_type).text = detectedType.logTag
         item.findViewById<TextView>(R.id.device_address).text =
             requireActivity().getString(R.string.device_address, device.address)
 
-        item.findViewById<View>(R.id.connect_bluup).run {
-            setOnClickListener {
-                deviceDialog.dismiss()
-                deviceProfile = device.name
-                deviceAddress = device.address
-                deviceType = detectedType
-                dismissGattDiscovery()
-                showConnectionNotice()
-                startGattService()
-            }
-        }
-
-        item.findViewById<View>(R.id.connect_pixl).run {
-            setOnClickListener {
-                deviceDialog.dismiss()
-                deviceProfile = device.name
-                deviceAddress = device.address
-                deviceType = detectedType
-                dismissGattDiscovery()
-
-                val view = layoutInflater.inflate(R.layout.device_verification, null) as CardView
-                AlertDialog.Builder(requireActivity()).setView(view).show().apply {
-                    view.findViewById<TextView>(R.id.device_details).text =
-                            getString(R.string.pixl_type_warning, detectedType.logTag)
-                    view.findViewById<AppCompatButton>(R.id.connect_pixl).setOnClickListener {
-                        this.dismiss()
-                        deviceType = Nordic.DEVICE.PIXL
-                        showConnectionNotice()
-                        startGattService()
-                    }
-                    view.findViewById<AppCompatButton>(R.id.connect_link).setOnClickListener {
-                        this.dismiss()
-                        deviceType = Nordic.DEVICE.LINK
-                        showConnectionNotice()
-                        startGattService()
-                    }
-                    view.findViewById<AppCompatButton>(R.id.connect_loop).setOnClickListener {
-                        this.dismiss()
-                        deviceType = Nordic.DEVICE.LOOP
-                        showConnectionNotice()
-                        startGattService()
+        item.findViewById<Spinner>(R.id.gatt_type_spinner).apply {
+            onItemSelectedListener = object : OnItemSelectedListener {
+                override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+                    deviceType = when (position) {
+                        1 -> { Nordic.DEVICE.FLASK }
+                        2 -> { Nordic.DEVICE.SLIDE }
+                        3 -> { Nordic.DEVICE.LOOP }
+                        4 -> { Nordic.DEVICE.LINK }
+                        5 -> { Nordic.DEVICE.PIXL }
+                        6 -> { Nordic.DEVICE.PUCK }
+                        else -> { detectedType }
                     }
                 }
+
+                override fun onNothingSelected(parent: AdapterView<*>?) { }
             }
         }
-
-        item.findViewById<View>(R.id.connect_puck).run {
-            setOnClickListener {
-                deviceDialog.dismiss()
-                deviceProfile = device.name
-                deviceAddress = device.address
-                deviceType = detectedType
-                isEnabled = detectedType != Nordic.DEVICE.PIXL
-                        || deviceType != Nordic.DEVICE.LOOP
-                        || deviceType != Nordic.DEVICE.LINK
-                dismissGattDiscovery()
-                showConnectionNotice()
-                startGattService()
-            }
+        item.findViewById<View>(R.id.connect_device).setOnClickListener {
+            deviceDialog.dismiss()
+            deviceProfile = device.name
+            deviceAddress = device.address
+            dismissGattDiscovery()
+            showConnectionNotice()
+            startGattService()
         }
         return item
     }
@@ -841,7 +797,7 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
     private fun writeAmiiboDataCollection(bytesList: ArrayList<AmiiboData>) {
         settings.removeChangeListener(writeTagAdapter)
         AlertDialog.Builder(requireContext())
-            .setMessage(R.string.gatt_write_confirm)
+            .setMessage(getString(R.string.gatt_write_confirm, deviceType))
             .setPositiveButton(R.string.proceed) { dialog: DialogInterface, _: Int ->
                 showProcessingNotice(NOTICE.UPLOAD)
                 bytesList.forEachIndexed { i, byte ->
@@ -861,7 +817,7 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
 
     private fun writeAmiiboFileCollection(amiiboList: ArrayList<AmiiboFile?>) {
         AlertDialog.Builder(requireContext())
-            .setMessage(R.string.gatt_write_confirm)
+            .setMessage(getString(R.string.gatt_write_confirm, deviceType))
             .setPositiveButton(R.string.proceed) { dialog: DialogInterface, _: Int ->
                 showProcessingNotice(NOTICE.UPLOAD)
                 amiiboList.forEachIndexed { i, file ->
@@ -1325,7 +1281,7 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
                             } catch (uoe: UnsupportedOperationException) {
                                 Debug.verbose(uoe)
                                 disconnectService()
-                                Toasty(requireContext()).Short(R.string.device_invalid)
+                                Toasty(requireContext()).Short(R.string.gattrx_invalid)
                             }
                         }
 
@@ -1438,7 +1394,7 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
                             } catch (uoe: UnsupportedOperationException) {
                                 Debug.verbose(uoe)
                                 disconnectService()
-                                Toasty(requireContext()).Short(R.string.device_invalid)
+                                Toasty(requireContext()).Short(R.string.gattrx_invalid)
                             }
                         }
 
@@ -1472,7 +1428,7 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
                             } catch (uoe: UnsupportedOperationException) {
                                 Debug.verbose(uoe)
                                 disconnectService()
-                                Toasty(requireContext()).Short(R.string.device_invalid)
+                                Toasty(requireContext()).Short(R.string.gattrx_invalid)
                             }
                         }
 

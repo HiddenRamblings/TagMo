@@ -309,8 +309,6 @@
     <string name="slots_full">Device 已滿</string>
     <string name="slots_empty">Device 無項目</string>
     <string name="create_blank">建立空白的虛擬 NFC tag</string>
-    <string name="gatt_erase_confirm">將GATT所有的slots進行抹除？</string>
-    <string name="gatt_write_confirm">將所有選取項目寫入GATT?</string>
     <string name="gatt_upload">正在上傳二進位檔案&#8230;</string>
     <string name="gatt_remove">正在抹除slot數據&#8230;</string>
     <string name="fail_bluetooth_adapter">沒有可用的藍牙裝置!</string>

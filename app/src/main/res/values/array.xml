@@ -30,7 +30,17 @@
         <item>W2</item>
     </string-array>
 
-    <string-array name="gattSortOrder" translatable="false">
+    <string-array name="gattDeviceType">
+        <item>Autodetect</item>
+        <item>Flask</item>
+        <item>Slide</item>
+        <item>AmiLoop</item>
+        <item>AmiiboLink</item>
+        <item>Pixl.js</item>
+        <item>Puck.js</item>
+    </string-array>
+
+    <string-array name="gattSortOrder">
         <item>Manual</item>
         <item>Sequential</item>
         <item>Automatic</item>

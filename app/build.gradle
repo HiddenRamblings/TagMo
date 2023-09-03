@@ -129,8 +129,8 @@ dependencies {
 
     implementation 'com.android.billingclient:billing:6.0.1'
 
-    implementation 'com.github.bumptech.glide:glide:4.15.1'
-    ksp 'com.github.bumptech.glide:ksp:4.15.1'
+    implementation 'com.github.bumptech.glide:glide:4.16.0'
+    ksp 'com.github.bumptech.glide:ksp:4.16.0'
 
     implementation 'com.github.8bitdream:AndroidFastScroll:4cb96477d5'
 

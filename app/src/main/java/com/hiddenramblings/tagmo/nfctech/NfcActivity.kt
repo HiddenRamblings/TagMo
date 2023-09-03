@@ -262,9 +262,9 @@ class NfcActivity : AppCompatActivity() {
         val tag = intent.parcelable<Tag>(NfcAdapter.EXTRA_TAG)
         tagTech = tag.technology()
         showMessage(R.string.tag_scanning, tagTech)
-        mifare = if (NFCIntent.ACTION_BLIND_SCAN == mode || isEliteIntent)
-            NTAG215.getBlind(tag) else NTAG215[tag]
         try {
+            mifare = if (NFCIntent.ACTION_BLIND_SCAN == mode || isEliteIntent)
+                NTAG215.getBlind(tag) else NTAG215[tag]
             mifare?.let { ntag ->
                 // ntag.connect()
                 if (!hasTestedElite) {

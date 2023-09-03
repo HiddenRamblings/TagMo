@@ -115,7 +115,7 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
     private var deviceDialog: AlertDialog? = null
 
     private var deviceType = Nordic.DEVICE.GATT
-    private val chunkTimeout = 25L
+    private var chunkTimeout = 25L
 
     private enum class STATE {
         NONE, SCANNING, CONNECT, MISSING, TIMEOUT
@@ -1260,8 +1260,14 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
                     maxSlotCount = when (serviceType) {
                         Nordic.DEVICE.FLASK -> 85
                         Nordic.DEVICE.SLIDE -> 40
-                        Nordic.DEVICE.LINK -> 26
-                        Nordic.DEVICE.LOOP -> 26
+                        Nordic.DEVICE.LINK -> {
+                            chunkTimeout = 250L
+                            26
+                        }
+                        Nordic.DEVICE.LOOP -> {
+                            chunkTimeout = 250L
+                            26
+                        }
                         Nordic.DEVICE.PUCK -> 32
                         else -> 50
                     }

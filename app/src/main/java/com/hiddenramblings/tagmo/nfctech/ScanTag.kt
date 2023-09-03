@@ -40,8 +40,9 @@ class ScanTag {
         val prefs = Preferences(activity.applicationContext)
         val tag = intent.parcelable<Tag>(NfcAdapter.EXTRA_TAG)
         val tagTech = tag.technology()
-        val mifare = NTAG215[tag]
+        var mifare: NTAG215? = null
         try {
+            mifare = NTAG215[tag]
             mifare?.let { ntag ->
                 // ntag.connect()
                 if (!hasTestedElite) {
@@ -121,17 +122,6 @@ class ScanTag {
                                 closeTagSilently(mifare)
                                 dialog.dismiss()
                             }.show()
-                        }
-                    }
-                    Debug.hasException(e, "nfc.tech.BasicTagTechnology", "connect") -> {
-                        withContext(Dispatchers.Main) {
-                            if (BuildConfig.WEAR_OS) {
-                                Toasty(activity).Short(R.string.feature_unavailable)
-                            }
-                            activity.onNFCActivity.launch(
-                                    Intent(activity, NfcActivity::class.java)
-                                            .setAction(NFCIntent.ACTION_SCAN_TAG)
-                            )
                         }
                     }
                     prefs.eliteEnabled() -> {

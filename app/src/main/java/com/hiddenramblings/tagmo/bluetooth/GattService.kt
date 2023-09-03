@@ -1151,6 +1151,10 @@ class GattService : Service() {
         }
     }
 
+    fun getAmiiboDetails() {
+        queueTagCharacteristic("getData()")
+    }
+
     private fun getDeviceAmiiboRange(index: Int) {
         queueTagCharacteristic("getList($index,$listCount)") // 5 ... 5
     }

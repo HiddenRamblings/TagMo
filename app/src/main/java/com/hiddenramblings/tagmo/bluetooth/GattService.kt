@@ -1229,6 +1229,7 @@ class GattService : Service() {
                         0x22, 0x42, 0x36, 0x7D, 0x6D,
                         0xB2.toByte(), 0x6A, 0xAC.toByte(), 0xA6.toByte(), 0xAC.toByte()
                 ))
+                queueByteCharacteristic(byteArrayOf(0xA2.toByte(), 0xB2.toByte()))
                 listener?.onProcessFinish(true)
             }
             else -> { }
@@ -1268,9 +1269,7 @@ class GattService : Service() {
     private fun decipherFirmware(data: ByteArray): String {
         return data.sliceArray(3 until data[1].toInt() + 3)
                 .toString(Charset.defaultCharset()).also { firmware ->
-            Debug.warn(this.javaClass, "${serviceType.logTag} $firmware")
-            if (firmware.substring(0, firmware.lastIndexOf("-"))
-                    .filter { it.isDigit() }.toInt() < 103)
+            if (firmware.split("-")[0].filter { it.isDigit() }.toInt() < 103)
                 listener?.onPixlUpdateRequired()
         }
     }

@@ -218,6 +218,8 @@
     <string name="menu_guides">Guides and Help</string>
     <string name="menu_settings">TagMo Settings</string>
 
+    <string name="tagmo_update">TagMo Update</string>
+
     <string name="pref_menu_return">Return to main menu</string>
     <string name="prefs_configuration">Configuration</string>
     <string name="pref_import_keys">Import crypto keys</string>

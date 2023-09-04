@@ -519,7 +519,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
 
         findViewById<CardView>(R.id.menu_qr_code).setOnClickListener {
             closePrefsDrawer()
-            onQRCodeScanner.launch(Intent(this, QRCodeScanner::class.java))
+            onReturnableIntent.launch(Intent(this, QRCodeScanner::class.java))
         }
 
         findViewById<CardView>(R.id.menu_lego).setOnClickListener {
@@ -1178,7 +1178,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                     return@setOnMenuItemClickListener true
                 }
                 R.id.mnu_share_qr -> {
-                    onQRCodeScanner.launch(Intent(this, QRCodeScanner::class.java)
+                    onReturnableIntent.launch(Intent(this, QRCodeScanner::class.java)
                         .putExtra(NFCIntent.EXTRA_TAG_DATA, tagData)
                     )
                     return@setOnMenuItemClickListener true
@@ -1282,7 +1282,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                     return@setOnMenuItemClickListener true
                 }
                 R.id.mnu_share_qr -> {
-                    onQRCodeScanner.launch(Intent(this, QRCodeScanner::class.java)
+                    onReturnableIntent.launch(Intent(this, QRCodeScanner::class.java)
                         .putExtra(NFCIntent.EXTRA_TAG_DATA, tagData)
                     )
                     return@setOnMenuItemClickListener true
@@ -1998,11 +1998,8 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
 
     private val onReturnableIntent = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
-    ) { }
-
-    private val onQRCodeScanner = registerForActivityResult(
-        ActivityResultContracts.StartActivityForResult()
     ) { result: ActivityResult ->
+        showBrowserPage()
         if (result.resultCode != RESULT_OK || null == result.data) return@registerForActivityResult
         onRootFolderChanged(true)
     }

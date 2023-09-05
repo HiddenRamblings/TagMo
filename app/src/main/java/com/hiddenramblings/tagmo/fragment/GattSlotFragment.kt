@@ -1285,10 +1285,10 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
                             try {
                                 setCharacteristicRX()
                                 deviceAmiibo
-                            } catch (uoe: UnsupportedOperationException) {
-                                Debug.verbose(uoe)
+                            } catch (e: Exception) {
+                                Debug.warn(e)
                                 disconnectService()
-                                Toasty(requireContext()).Short(R.string.gattrx_invalid)
+                                Toasty(requireContext()).Short(Debug.getExceptionCause(e))
                             }
                         }
 
@@ -1398,10 +1398,10 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
                             try {
                                 setCharacteristicRX()
                                 deviceAmiibo
-                            } catch (uoe: UnsupportedOperationException) {
-                                Debug.verbose(uoe)
+                            } catch (e: Exception) {
+                                Debug.warn(e)
                                 disconnectService()
-                                Toasty(requireContext()).Short(R.string.gattrx_invalid)
+                                Toasty(requireContext()).Short(Debug.getExceptionCause(e))
                             }
                         }
 
@@ -1432,10 +1432,10 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
                             try {
                                 setPuckServicesUUID()
                                 deviceDetails
-                            } catch (uoe: UnsupportedOperationException) {
-                                Debug.verbose(uoe)
+                            } catch (e: Exception) {
+                                Debug.warn(e)
                                 disconnectService()
-                                Toasty(requireContext()).Short(R.string.gattrx_invalid)
+                                Toasty(requireContext()).Short(Debug.getExceptionCause(e))
                             }
                         }
 

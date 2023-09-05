@@ -310,7 +310,7 @@
     <string name="shop_hardware">Shop amiibo hardware</string>
     <string name="gatt_missing">No nearby GATT devices found!</string>
     <string name="device_invalid">Not a valid GATT device!</string>
-    <string name="gattrx_invalid">Write characteristic invalid!</string>
+    <string name="gatt_write_failed">%1$s write characteristic missing!</string>
     <string name="xor_invalid">Empty collection can\'t be reduced</string>
     <string name="connect_device">Connect device</string>
     <string name="gatt_scanning">Scanning for Bluetooth GATT&#8230;</string>

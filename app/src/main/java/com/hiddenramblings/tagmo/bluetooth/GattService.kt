@@ -697,13 +697,15 @@ class GattService : Service() {
     private val supportedGattServices: List<BluetoothGattService>?
         get() = mBluetoothGatt?.services
 
-    @Throws(UnsupportedOperationException::class)
+    @Throws(IllegalAccessException::class, UnsupportedOperationException::class)
     fun setPuckServicesUUID()  {
         if (mBluetoothAdapter == null || mBluetoothGatt == null) {
-            throw UnsupportedOperationException()
+            throw IllegalAccessException(getString(R.string.fail_bluetooth_adapter))
         }
         val services = supportedGattServices
-        if (services.isNullOrEmpty()) throw UnsupportedOperationException()
+        if (services.isNullOrEmpty()) throw UnsupportedOperationException(
+                getString(R.string.gatt_write_failed, serviceType.logTag)
+        )
         for (customService in services) {
             when (customService.uuid) {
                 Nordic.NUS -> {
@@ -738,15 +740,17 @@ class GattService : Service() {
         return mReadCharacteristic
     }
 
-    @Throws(UnsupportedOperationException::class)
+    @Throws(IllegalAccessException::class, UnsupportedOperationException::class)
     fun setCharacteristicRX() {
         if (mBluetoothAdapter == null || mBluetoothGatt == null) {
-            throw UnsupportedOperationException()
+            throw IllegalAccessException(getString(R.string.fail_bluetooth_adapter))
         }
         val mCustomService = mBluetoothGatt!!.getService(GattNUS)
         if (null == mCustomService) {
             val services = supportedGattServices
-            if (services.isNullOrEmpty()) throw UnsupportedOperationException()
+            if (services.isNullOrEmpty()) throw UnsupportedOperationException(
+                    getString(R.string.gatt_write_failed, serviceType.logTag)
+            )
             for (service in services) {
                 Debug.verbose(this.javaClass, "GattReadService: ${service.uuid}")
                 mCharacteristicRX = getCharacteristicRX(service)
@@ -774,15 +778,17 @@ class GattService : Service() {
         return mWriteCharacteristic
     }
 
-    @Throws(UnsupportedOperationException::class)
+    @Throws(IllegalAccessException::class, UnsupportedOperationException::class)
     fun setCharacteristicTX() {
         if (mBluetoothAdapter == null || mBluetoothGatt == null) {
-            throw UnsupportedOperationException()
+            throw IllegalAccessException(getString(R.string.fail_bluetooth_adapter))
         }
         val mCustomService = mBluetoothGatt!!.getService(GattNUS)
         if (null == mCustomService) {
             val services = supportedGattServices
-            if (services.isNullOrEmpty()) throw UnsupportedOperationException()
+            if (services.isNullOrEmpty()) throw UnsupportedOperationException(
+                    getString(R.string.gatt_write_failed, serviceType.logTag)
+            )
             for (customService in services) {
                 Debug.verbose(this.javaClass, "GattWriteService: ${customService.uuid}")
                 mCharacteristicTX = getCharacteristicTX(customService)
@@ -842,7 +848,7 @@ class GattService : Service() {
         if (null == mCharacteristicTX) {
             try {
                 setCharacteristicTX()
-            } catch (e: UnsupportedOperationException) {
+            } catch (e: Exception) {
                 Debug.warn(e)
             }
         }
@@ -883,7 +889,7 @@ class GattService : Service() {
         if (null == mCharacteristicTX) {
             try {
                 setCharacteristicTX()
-            } catch (e: UnsupportedOperationException) {
+            } catch (e: Exception) {
                 Debug.warn(e)
             }
         }
@@ -898,7 +904,7 @@ class GattService : Service() {
         if (null == mCharacteristicTX) {
             try {
                 setCharacteristicTX()
-            } catch (e: UnsupportedOperationException) {
+            } catch (e: Exception) {
                 Debug.warn(e)
             }
         }
@@ -913,7 +919,7 @@ class GattService : Service() {
         if (null == mCharacteristicTX) {
             try {
                 setCharacteristicTX()
-            } catch (e: UnsupportedOperationException) {
+            } catch (e: Exception) {
                 Debug.warn(e)
             }
         }

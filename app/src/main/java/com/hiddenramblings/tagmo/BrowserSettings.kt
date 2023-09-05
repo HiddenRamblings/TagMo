@@ -26,7 +26,7 @@ open class BrowserSettings : Parcelable {
             fun valueOf(value: Int): SORT {
                 if (Version.isNougat) {
                     val optional = Arrays.stream(values()).filter {
-                            SORT: SORT -> SORT.value == value
+                            sort: SORT -> sort.value == value
                     }.findFirst()
                     if (optional.isPresent) return optional.get()
                 } else {
@@ -49,9 +49,9 @@ open class BrowserSettings : Parcelable {
         companion object {
             fun valueOf(value: Int): VIEW {
                 if (Version.isNougat) {
-                    val optional =
-                        Arrays.stream(values()).filter { VIEW: VIEW -> VIEW.value == value }
-                            .findFirst()
+                    val optional = Arrays.stream(values()).filter {
+                            view: VIEW -> view.value == value
+                        }.findFirst()
                     if (optional.isPresent) return optional.get()
                 } else {
                     for (view in values()) {
@@ -85,7 +85,7 @@ open class BrowserSettings : Parcelable {
     var lastUpdatedGit: Long = 0
 
     constructor() {
-        oldBrowserSettings = BrowserSettings(false)
+        oldBrowserSettings = initialize()
     }
 
     constructor(
@@ -117,12 +117,10 @@ open class BrowserSettings : Parcelable {
     }
 
     private constructor(duplicate: Boolean) {
-        if (duplicate) {
-            oldBrowserSettings = copy()
-        }
+        if (duplicate) oldBrowserSettings = copy()
     }
 
-    fun initialize(): BrowserSettings {
+    private fun initialize(): BrowserSettings {
         val prefs = Preferences(TagMo.appContext)
         query = prefs.query()
         sort = prefs.sort()
@@ -194,7 +192,7 @@ open class BrowserSettings : Parcelable {
     }
 
     private fun copy(): BrowserSettings {
-        return BrowserSettings(false).also {
+        return BrowserSettings().also {
             it.amiiboManager = amiiboManager
             it.amiiboFiles = amiiboFiles
             it.folders = folders

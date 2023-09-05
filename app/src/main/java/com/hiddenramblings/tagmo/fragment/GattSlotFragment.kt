@@ -160,7 +160,7 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
         toolbar = view.findViewById(R.id.toolbar)
 
         browserActivity?.let { activity ->
-            settings = activity.settings ?: BrowserSettings().initialize()
+            settings = activity.settings ?: BrowserSettings()
 
             gattContent = view.findViewById<RecyclerView>(R.id.bluup_content).apply {
                 layoutManager = if (settings.amiiboView == BrowserSettings.VIEW.IMAGE.value)
@@ -933,7 +933,7 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
         if (isFragmentVisible) {
             statusBar = IconifiedSnackbar(requireActivity()).buildSnackbar(
                 R.string.gatt_located,
-                R.drawable.ic_bluup_labs_24dp, Snackbar.LENGTH_INDEFINITE
+                R.drawable.ic_bluetooth_connected_24dp, Snackbar.LENGTH_INDEFINITE
             ).also {
                 it.show()
                 it.view.keepScreenOn = true

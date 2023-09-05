@@ -108,6 +108,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginVertical="4dp"
+            android:background="@drawable/rounded_button"
             android:text="@string/physical_storage_root" />
 
         <androidx.appcompat.widget.AppCompatButton
@@ -115,6 +116,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginVertical="4dp"
+            android:background="@drawable/rounded_button"
             android:text="@string/grant_file_permission" />
 
         <androidx.appcompat.widget.AppCompatButton
@@ -122,6 +124,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginVertical="4dp"
+            android:background="@drawable/rounded_button"
             android:text="@string/unzip_archive" />
 
         <TextView

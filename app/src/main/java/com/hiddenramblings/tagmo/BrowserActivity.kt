@@ -187,7 +187,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
         }
 
         Foomiibo.directory.mkdirs()
-        if (null == settings) settings = BrowserSettings().initialize()
+        if (null == settings) settings = BrowserSettings()
         settings?.addChangeListener(this)
 
         if (!BuildConfig.WEAR_OS) {
@@ -2194,13 +2194,13 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
             val columns = (getSystemService(WINDOW_SERVICE) as WindowManager).run {
                 if (Version.isSnowCone) {
                     val bounds: Rect = currentWindowMetrics.bounds
-                    ((bounds.width() / (resources.configuration.densityDpi / 160)) + 0.5) / 112
+                    ((bounds.width() / (resources.configuration.densityDpi / 160)) + 0.5) / 120
                 } else @Suppress("DEPRECATION") {
                     if (Version.isJellyBeanMR)
                         defaultDisplay.getRealMetrics(metrics)
                     else
                         defaultDisplay.getMetrics(metrics)
-                    ((metrics.widthPixels / metrics.density) + 0.5) / 112
+                    ((metrics.widthPixels / metrics.density) + 0.5) / 120
                 }
             }
             return if (columns < 1) 3 else columns.toInt()

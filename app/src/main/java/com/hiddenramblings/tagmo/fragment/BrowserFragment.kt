@@ -146,7 +146,7 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
         super.onViewCreated(view, savedInstanceState)
 
         browserActivity?.let { activity ->
-            settings = activity.settings ?: BrowserSettings().initialize()
+            settings = activity.settings ?: BrowserSettings()
 
             chipList = view.findViewById(R.id.chip_list)
             chipList?.isGone = true

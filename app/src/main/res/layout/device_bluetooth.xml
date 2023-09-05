@@ -69,6 +69,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textSize="14sp"
+                android:background="@drawable/rounded_button"
                 android:text="@string/connect_device" />
         </LinearLayout>
     </LinearLayout>

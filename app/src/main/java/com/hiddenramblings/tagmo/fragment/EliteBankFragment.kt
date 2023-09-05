@@ -127,7 +127,7 @@ class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
         super.onViewCreated(view, savedInstanceState)
 
         browserActivity?.let { activity ->
-            settings = activity.settings ?: BrowserSettings().initialize()
+            settings = activity.settings ?: BrowserSettings()
 
             eliteContent = view.findViewById<RecyclerView>(R.id.elite_content).apply {
                 layoutManager = if (settings.amiiboView == BrowserSettings.VIEW.IMAGE.value)

@@ -308,7 +308,7 @@
 
     <string name="custom_tab_back">Back to TagMo</string>
     <string name="shop_hardware">Shop amiibo hardware</string>
-    <string name="gatt_missing">No nearby GATT devices located!</string>
+    <string name="gatt_missing">No nearby GATT devices found!</string>
     <string name="device_invalid">Not a valid GATT device!</string>
     <string name="gattrx_invalid">Write characteristic invalid!</string>
     <string name="xor_invalid">Empty collection can\'t be reduced</string>

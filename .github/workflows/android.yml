@@ -17,8 +17,8 @@ jobs:
     if: ${{ github.event.workflow_run.conclusion != 'cancelled' }}
 
     steps:
-    - name: Pause for 2 minutes
-      run: sleep 120s
+    - name: Pause for 1.5 minute(s)
+      run: sleep 90s
       shell: bash
     - name: Dismiss if cancelled
       if: ${{ github.event.workflow_run.conclusion == 'cancelled' }}

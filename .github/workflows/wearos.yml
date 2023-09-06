@@ -73,7 +73,7 @@ jobs:
       with:
         repo_token: "${{ secrets.GITHUB_TOKEN }}"
         automatic_release_tag: wearos
-        prerelease: ${{ env.GIT_BRANCH != 'master' }}
+        prerelease: true
         title: TagMo-${{ env.GIT_HASH }}-WearOS
         files: |
           ${{steps.sign_wear.outputs.signedReleaseFile}}

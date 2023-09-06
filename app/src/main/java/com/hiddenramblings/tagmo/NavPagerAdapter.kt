@@ -9,7 +9,7 @@ import com.hiddenramblings.tagmo.fragment.*
 
 class NavPagerAdapter(fa: FragmentActivity?) : FragmentStateAdapter(fa!!) {
     private var mPrefs = Preferences(TagMo.appContext)
-    var hasEliteEnabled = mPrefs.eliteEnabled()
+    private var isEliteEnabled = mPrefs.eliteEnabled()
     val browser = BrowserFragment()
     val website = WebsiteFragment()
     val eliteBanks = EliteBankFragment()
@@ -19,7 +19,7 @@ class NavPagerAdapter(fa: FragmentActivity?) : FragmentStateAdapter(fa!!) {
         return when (position) {
             0 -> browser
             1 -> website
-            2 -> if (hasEliteEnabled) eliteBanks else gattSlots
+            2 -> if (isEliteEnabled) eliteBanks else gattSlots
             3 -> gattSlots
             else -> browser
         }
@@ -27,7 +27,7 @@ class NavPagerAdapter(fa: FragmentActivity?) : FragmentStateAdapter(fa!!) {
 
     override fun getItemCount(): Int {
         var viewCount = 2
-        if (hasEliteEnabled) viewCount += 1
+        if (isEliteEnabled) viewCount += 1
         if (Version.isJellyBeanMR2) viewCount += 1
         return viewCount
     }

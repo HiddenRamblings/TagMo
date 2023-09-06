@@ -237,7 +237,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
             override fun onPageSelected(position: Int) {
                 super.onPageSelected(position)
                 hideActionButton()
-                val hasEliteEnabled = prefs.eliteEnabled()
+                val isEliteEnabled = prefs.eliteEnabled()
                 if (BuildConfig.WEAR_OS) {
                     when (position) {
                         0 -> {
@@ -251,7 +251,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                             }
                         }
                         2 -> {
-                            if (hasEliteEnabled) {
+                            if (isEliteEnabled) {
                                 showActionButton()
                             } else {
                                 pagerAdapter.gattSlots.run {
@@ -287,7 +287,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                             setTitle(R.string.guides)
                         }
                         2 -> {
-                            if (hasEliteEnabled) {
+                            if (isEliteEnabled) {
                                 showActionButton()
                                 setTitle(R.string.elite_n2)
                                 pagerAdapter.eliteBanks.run {

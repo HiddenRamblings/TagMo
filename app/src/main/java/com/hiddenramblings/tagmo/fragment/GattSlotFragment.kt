@@ -1,7 +1,6 @@
 package com.hiddenramblings.tagmo.fragment
 
 import android.annotation.SuppressLint
-import android.app.Dialog
 import android.app.SearchManager
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothAdapter.LeScanCallback
@@ -9,8 +8,6 @@ import android.bluetooth.BluetoothDevice
 import android.bluetooth.le.*
 import android.content.*
 import android.graphics.Bitmap
-import android.graphics.Color
-import android.graphics.drawable.ColorDrawable
 import android.net.Uri
 import android.os.*
 import android.view.*
@@ -54,6 +51,7 @@ import com.hiddenramblings.tagmo.eightbit.io.Debug
 import com.hiddenramblings.tagmo.eightbit.material.IconifiedSnackbar
 import com.hiddenramblings.tagmo.eightbit.os.Version
 import com.hiddenramblings.tagmo.eightbit.request.ImageTarget
+import com.hiddenramblings.tagmo.eightbit.widget.ProgressAlert
 import com.hiddenramblings.tagmo.nfctech.TagArray
 import com.hiddenramblings.tagmo.nfctech.TagArray.toByteArray
 import com.hiddenramblings.tagmo.nfctech.TagArray.toHex
@@ -98,7 +96,7 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
     private var writeSlotsLayout: LinearLayout? = null
     private var writeTagAdapter: WriteTagAdapter? = null
     private var statusBar: Snackbar? = null
-    private var processDialog: Dialog? = null
+    private var processDialog: ProgressAlert? = null
     private lateinit var settings: BrowserSettings
     var bottomSheet: BottomSheetBehavior<View>? = null
         private set
@@ -958,23 +956,12 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
     }
 
     private fun showProcessingNotice(notice: NOTICE) {
-        val builder = AlertDialog.Builder(requireContext())
-        val view = layoutInflater.inflate(R.layout.dialog_process, null).apply {
-            keepScreenOn = true
-        }
-        view.findViewById<TextView>(R.id.process_text).setText(
-                when (notice) {
-                    NOTICE.REMOVE -> R.string.gatt_remove
-                    NOTICE.CREATE -> R.string.gatt_create
-                    NOTICE.FORMAT -> R.string.gatt_format
-                    else -> R.string.gatt_upload
-                }
-        )
-        builder.setView(view)
-        processDialog = builder.create().also {
-            it.show()
-            it.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-        }
+        processDialog = ProgressAlert.show(requireContext(), getString(when (notice) {
+            NOTICE.REMOVE -> R.string.gatt_remove
+            NOTICE.CREATE -> R.string.gatt_create
+            NOTICE.FORMAT -> R.string.gatt_format
+            else -> R.string.gatt_upload
+        })).apply { view?.keepScreenOn = true }
     }
 
     private fun showTimeoutNotice() {

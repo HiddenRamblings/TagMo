@@ -6,8 +6,6 @@ import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
 import android.content.res.Resources
-import android.graphics.Color
-import android.graphics.drawable.ColorDrawable
 import android.os.Build
 import android.os.Bundle
 import android.os.Environment
@@ -502,24 +500,17 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
     @RequiresApi(Build.VERSION_CODES.KITKAT)
     fun unzipArchiveFile(zipFile: File) {
         val folder = Storage.getDownloadDir("TagMo", "Archive").absolutePath
-        val builder = AlertDialog.Builder(requireContext())
-        val view = layoutInflater.inflate(R.layout.dialog_process, null).apply {
-            keepScreenOn = true
-        }
-        val progressText = view.findViewById<TextView>(R.id.process_text).apply {
-            text = getString(R.string.unzip_item, zipFile.nameWithoutExtension)
-        }
-        builder.setView(view)
-        val processDialog = builder.create().also {
-            it.show()
-            it.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-        }
+
+        val processDialog = ProgressAlert.show(
+                requireContext(), getString(R.string.unzip_item, zipFile.nameWithoutExtension)
+        ).apply { view?.keepScreenOn = true }
+
         CoroutineScope(Dispatchers.IO).launch {
             try {
                 Zip.extract(zipFile, folder) { progress ->
                     CoroutineScope(Dispatchers.Main).launch {
                         val nameProgress = "${zipFile.nameWithoutExtension} (${progress}%) "
-                        progressText.text = getString(R.string.unzip_item, nameProgress)
+                        processDialog.setMessage(getString(R.string.unzip_item, nameProgress))
                     }
                     if (progress == 100) {
                         (activity as? BrowserActivity)?.onRootFolderChanged(true)

@@ -940,6 +940,12 @@ class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
         }
     }
 
+    fun onConfigurationChanged() {
+        browserActivity?.let { activity ->
+            amiiboFilesView?.layoutManager = GridLayoutManager(activity, activity.columnCount)
+        }
+    }
+
     private fun handleImageClicked(amiibo: Amiibo?) {
         amiibo?.let {
             this.startActivity(Intent(requireContext(), ImageActivity::class.java)

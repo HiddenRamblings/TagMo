@@ -13,14 +13,14 @@ class NavPagerAdapter(fa: FragmentActivity?) : FragmentStateAdapter(fa!!) {
     val browser = BrowserFragment()
     val website = WebsiteFragment()
     val eliteBanks = EliteBankFragment()
-    val bluupSlots = GattSlotFragment()
+    val gattSlots = GattSlotFragment()
     @SuppressLint("NewApi")
     override fun createFragment(position: Int): Fragment {
         return when (position) {
             0 -> browser
             1 -> website
-            2 -> if (hasEliteEnabled) eliteBanks else bluupSlots
-            3 -> bluupSlots
+            2 -> if (hasEliteEnabled) eliteBanks else gattSlots
+            3 -> gattSlots
             else -> browser
         }
     }

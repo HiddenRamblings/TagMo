@@ -1111,6 +1111,12 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
         onFragmentLoaded()
     }
 
+    fun onConfigurationChanged() {
+        browserActivity?.let { activity ->
+            gattContent?.layoutManager = GridLayoutManager(activity, activity.columnCount)
+        }
+    }
+
     override fun onAmiiboClicked(amiibo: Amiibo?, position: Int) {
         getActiveAmiibo(amiibo, amiiboCard)
         onBottomSheetChanged(SHEET.AMIIBO)

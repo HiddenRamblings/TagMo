@@ -13,6 +13,7 @@ import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.ActivityInfo
 import android.content.pm.PackageManager
+import android.content.res.Configuration
 import android.graphics.Rect
 import android.net.Uri
 import android.os.*
@@ -253,7 +254,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                             if (hasEliteEnabled) {
                                 showActionButton()
                             } else {
-                                pagerAdapter.bluupSlots.run {
+                                pagerAdapter.gattSlots.run {
                                     delayedBluetoothEnable()
                                     amiibosView = gattContent
                                     browserSheet = bottomSheet
@@ -261,7 +262,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                             }
                         }
                         3 -> {
-                            pagerAdapter.bluupSlots.run {
+                            pagerAdapter.gattSlots.run {
                                 delayedBluetoothEnable()
                                 amiibosView = gattContent
                                 browserSheet = bottomSheet
@@ -295,7 +296,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                                 }
                             } else {
                                 setTitle(R.string.gatt_title)
-                                pagerAdapter.bluupSlots.run {
+                                pagerAdapter.gattSlots.run {
                                     delayedBluetoothEnable()
                                     amiibosView = gattContent
                                     browserSheet = bottomSheet
@@ -304,7 +305,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                         }
                         3 -> {
                             setTitle(R.string.gatt_title)
-                            pagerAdapter.bluupSlots.run {
+                            pagerAdapter.gattSlots.run {
                                 delayedBluetoothEnable()
                                 amiibosView = gattContent
                                 browserSheet = bottomSheet
@@ -2534,6 +2535,21 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
             if (packageManager.canRequestPackageInstalls())
                 updateManager?.installDownload(it)
             prefs.remove(prefs.downloadUrl)
+        }
+    }
+
+    override fun onConfigurationChanged(newConfig: Configuration) {
+        super.onConfigurationChanged(newConfig)
+        when(viewPager.currentItem) {
+            0 -> { pagerAdapter.browser.onConfigurationChanged() }
+            2 -> {
+                if (prefs.eliteEnabled()) {
+                    pagerAdapter.eliteBanks.onConfigurationChanged()
+                } else {
+                    pagerAdapter.gattSlots.onConfigurationChanged()
+                }
+            }
+            3 -> { pagerAdapter.gattSlots.onConfigurationChanged() }
         }
     }
 

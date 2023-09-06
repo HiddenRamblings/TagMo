@@ -5,7 +5,6 @@ import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
-import android.content.res.Configuration
 import android.content.res.Resources
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
@@ -17,7 +16,6 @@ import android.os.Looper
 import android.util.TypedValue
 import android.view.Gravity
 import android.view.LayoutInflater
-import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
@@ -33,9 +31,7 @@ import androidx.appcompat.widget.AppCompatButton
 import androidx.appcompat.widget.AppCompatImageView
 import androidx.appcompat.widget.Toolbar
 import androidx.core.view.isGone
-import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
-import androidx.core.view.updatePadding
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -228,6 +224,13 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
                 view.findViewById<View>(R.id.select_zip_file).isGone = true
             }
             activity.onFilterContentsLoaded()
+        }
+    }
+
+    fun onConfigurationChanged() {
+        browserActivity?.let { activity ->
+            browserContent?.layoutManager = GridLayoutManager(activity, activity.columnCount)
+            foomiiboContent?.layoutManager = GridLayoutManager(activity, activity.columnCount)
         }
     }
 

@@ -87,7 +87,7 @@ class Infinity : TagTechnology {
             BigInteger("38844225342798321268237511320137937")
         )
 
-        private fun calc_keya (uid: String) : ByteArray {
+        private fun calculateKey(uid: String) : ByteArray {
             if (!uidre.matches(uid))
                 throw NumberFormatException(TagMo.appContext.getString(R.string.fail_uid_invalid))
 
@@ -105,13 +105,9 @@ class Infinity : TagTechnology {
             )
         }
 
-        private fun andBeyond(tag: Tag) : ByteArray {
-            return calc_keya(tag.id.toHex())
-        }
-
         private fun getMifareClasssic(tag: Tag?): Infinity? {
             return MifareClassic.get(tag)?.let {
-                it.authenticateSectorWithKeyA(0, andBeyond(it.tag))
+                it.authenticateSectorWithKeyA(0, calculateKey(it.tag.id.toHex()))
                 Infinity(it)
             }
         }

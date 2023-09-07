@@ -4,10 +4,6 @@
       xmlns:tools="http://schemas.android.com/tools"
       tools:context=".BrowserActivity">
     <item
-        android:id="@+id/mnu_scan"
-        android:title="@string/scan"
-        app:showAsAction="always"/>
-    <item
         android:id="@+id/mnu_write"
         android:title="@string/write"
         app:showAsAction="always"/>
@@ -19,6 +15,10 @@
         android:id="@+id/mnu_update"
         android:title="@string/update_tag"
         android:titleCondensed="@string/update"
+        app:showAsAction="always"/>
+    <item
+        android:id="@+id/mnu_scan"
+        android:title="@string/scan_data"
         app:showAsAction="ifRoom|withText"/>
     <item
         android:id="@+id/mnu_edit"
@@ -35,6 +35,10 @@
     <item
         android:id="@+id/mnu_view_hex"
         android:title="@string/view_hex"
+        app:showAsAction="never"/>
+    <item
+        android:id="@+id/mnu_flipper"
+        android:title="@string/flipper_export"
         app:showAsAction="never"/>
     <item
         android:id="@+id/mnu_validate"

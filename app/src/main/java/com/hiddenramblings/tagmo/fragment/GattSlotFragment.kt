@@ -362,7 +362,7 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
             }
         }
         toggle.setImageResource(R.drawable.ic_expand_more_24dp)
-        toolbar?.inflateMenu(R.menu.bluup_menu)
+        toolbar?.inflateMenu(R.menu.gatt_menu)
 
         switchDevices = view.findViewById<AppCompatButton>(R.id.switch_devices).apply {
             setOnClickListener {

@@ -344,7 +344,7 @@ object TagArray {
             MediaScannerConnection.scanFile(
                 TagMo.appContext, arrayOf(binFile.canonicalPath), null, null
             )
-        } catch (e: Exception) { Debug.verbose(e) }
+        } catch (ignored: Exception) { }
         return binFile.canonicalPath
     }
 

@@ -1148,7 +1148,7 @@ class GattService : Service() {
     @Suppress("unused")
     fun downloadAmiiboData(slot: Int) {
         val parameters: ArrayList<ByteArray> = arrayListOf()
-        for (i in 0..34) {
+        for (i in 0..35) {
             parameters.add(byteArrayOf(PUCK.READ.bytes, slot.toByte(), (i * 4).toByte(), 0x04))
         }
         parameters.add(byteArrayOf(PUCK.READ.bytes, slot.toByte(), 0x8C.toByte(), 0x03))

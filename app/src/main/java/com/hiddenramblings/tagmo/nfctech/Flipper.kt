@@ -1,0 +1,60 @@
+package com.hiddenramblings.tagmo.nfctech
+
+import android.media.MediaScannerConnection
+import com.hiddenramblings.tagmo.TagMo
+import com.hiddenramblings.tagmo.bluetooth.GattArray.toDataBytes
+import com.hiddenramblings.tagmo.eightbit.io.Debug
+import com.hiddenramblings.tagmo.eightbit.os.Storage
+import com.hiddenramblings.tagmo.nfctech.TagArray.toHex
+import com.hiddenramblings.tagmo.nfctech.TagArray.toPages
+import java.io.File
+import java.io.FileOutputStream
+
+
+object Flipper {
+    private val String.hexFormat : String get() {
+        return this.replace(Regex("..(?!$)"), "$0 ")
+    }
+    val separator = System.getProperty("line.separator") ?: "\n"
+    val directory = Storage.getDownloadDir("TagMo", "Flipper")
+
+    fun ByteArray.toNFC(filename: String) {
+        val pages = this.toDataBytes().toPages()
+        val uidHex = "${pages[0]?.toHex()}${pages[1]?.toHex()}"
+        val signature = if (this.size == NfcByte.TAG_FILE_SIZE)
+            this.copyOfRange(NfcByte.SIGNATURE, NfcByte.TAG_FILE_SIZE).toHex().hexFormat
+        else
+            ByteArray(32).toHex().hexFormat
+        val contents = StringBuilder("Filetype: Flipper NFC device")
+                .append(separator).append("Version: 2")
+                .append(separator).append("Device type: NTAG215")
+                .append(separator).append("UID: ")
+                .append(uidHex.substring(0, uidHex.length - 2).hexFormat)
+                .append(separator).append("ATQA: 44 00")
+                .append(separator).append("SAK: 00")
+                .append(separator).append("Signature: ").append(signature)
+                .append(separator).append("Mifare version: 00 04 04 02 01 00 11 03")
+                .append(separator).append("Counter 0: 0")
+                .append(separator).append("Tearing 0: 00")
+                .append(separator).append("Counter 1: 0")
+                .append(separator).append("Tearing 1: 00")
+                .append(separator).append("Counter 2: 0")
+                .append(separator).append("Tearing 2: 00")
+                .append(separator).append("Pages total: 135")
+        pages.forEachIndexed{ index, bytes ->
+            bytes?.let {
+                contents.append(separator).append("Page $index: ${it.toHex().hexFormat}")
+            }
+        }
+        val nfcFile = File(directory, "$filename.nfc")
+        FileOutputStream(nfcFile).use { stream ->
+            stream.write(contents.toString().toByteArray())
+            stream.flush()
+        }
+        try {
+            MediaScannerConnection.scanFile(
+                    TagMo.appContext, arrayOf(nfcFile.canonicalPath), null, null
+            )
+        } catch (ignored: Exception) { }
+    }
+}

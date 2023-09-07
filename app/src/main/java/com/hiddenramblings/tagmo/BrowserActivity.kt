@@ -76,6 +76,7 @@ import com.hiddenramblings.tagmo.eightbit.widget.FABulous
 import com.hiddenramblings.tagmo.fragment.BrowserFragment
 import com.hiddenramblings.tagmo.fragment.SettingsFragment
 import com.hiddenramblings.tagmo.hexcode.HexCodeViewer
+import com.hiddenramblings.tagmo.nfctech.Flipper.toNFC
 import com.hiddenramblings.tagmo.nfctech.Foomiibo
 import com.hiddenramblings.tagmo.nfctech.NfcActivity
 import com.hiddenramblings.tagmo.nfctech.ScanTag
@@ -1050,6 +1051,14 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
         copierDialog.show()
     }
 
+    private fun writeFlipperFile(amiiboId: Long, tagData: ByteArray?) {
+        tagData?.toNFC(
+                settings?.amiiboManager?.amiibos?.get(amiiboId)?.name ?: amiiboId.toString()
+        ) ?: IconifiedSnackbar(this, viewPager).buildSnackbar(
+                getString(R.string.fail_save_file), Snackbar.LENGTH_SHORT
+        ).show()
+    }
+
     private fun onCreateToolbarMenu(itemView: View?, tagData: ByteArray?, amiiboFile: AmiiboFile?) {
         val toolbar = when (itemView) {
             is Toolbar -> itemView
@@ -1071,6 +1080,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
         toolbar.menu.findItem(R.id.mnu_edit).isVisible = available
         toolbar.menu.findItem(R.id.mnu_view_hex).isVisible = available
         toolbar.menu.findItem(R.id.mnu_share_qr).isVisible = available
+        toolbar.menu.findItem(R.id.mnu_flipper).isVisible = available
         toolbar.menu.findItem(R.id.mnu_validate).isVisible = available
         toolbar.menu.findItem(R.id.mnu_ignore_tag_id).isVisible = available
         toolbar.menu.findItem(R.id.mnu_random).apply {
@@ -1184,6 +1194,10 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                     )
                     return@setOnMenuItemClickListener true
                 }
+                R.id.mnu_flipper -> {
+                    writeFlipperFile(amiiboFile?.id ?: Amiibo.dataToId(tagData), tagData)
+                    return@setOnMenuItemClickListener true
+                }
                 R.id.mnu_validate -> {
                     try {
                         TagArray.validateData(tagData)
@@ -1227,6 +1241,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
         toolbar.menu.findItem(R.id.mnu_edit).isVisible = available
         toolbar.menu.findItem(R.id.mnu_view_hex).isVisible = available
         toolbar.menu.findItem(R.id.mnu_share_qr).isVisible = available
+        toolbar.menu.findItem(R.id.mnu_flipper).isVisible = available
         toolbar.menu.findItem(R.id.mnu_validate).isVisible = available
         toolbar.menu.findItem(R.id.mnu_delete).isVisible = available
         toolbar.menu.findItem(R.id.mnu_ignore_tag_id).isVisible = available
@@ -1286,6 +1301,10 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                     onReturnableIntent.launch(Intent(this, QRCodeScanner::class.java)
                         .putExtra(NFCIntent.EXTRA_TAG_DATA, tagData)
                     )
+                    return@setOnMenuItemClickListener true
+                }
+                R.id.mnu_flipper -> {
+                    writeFlipperFile(Amiibo.dataToId(tagData), tagData)
                     return@setOnMenuItemClickListener true
                 }
                 R.id.mnu_validate -> {

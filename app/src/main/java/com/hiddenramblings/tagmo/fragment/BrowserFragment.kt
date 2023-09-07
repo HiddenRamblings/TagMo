@@ -54,6 +54,7 @@ import com.hiddenramblings.tagmo.eightbit.os.Storage
 import com.hiddenramblings.tagmo.eightbit.os.Version
 import com.hiddenramblings.tagmo.eightbit.util.Zip
 import com.hiddenramblings.tagmo.eightbit.widget.ProgressAlert
+import com.hiddenramblings.tagmo.nfctech.Flipper.toNFC
 import com.hiddenramblings.tagmo.nfctech.Foomiibo
 import com.hiddenramblings.tagmo.nfctech.TagArray
 import com.hiddenramblings.tagmo.widget.Toasty

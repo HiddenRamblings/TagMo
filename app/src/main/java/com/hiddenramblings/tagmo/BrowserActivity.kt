@@ -550,7 +550,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
         onCreateMainMenuLayout()
     }
 
-    private fun requestStoragePermission() {
+    fun requestStoragePermission() {
         if (Version.isRedVelvet) {
             if (BuildConfig.GOOGLE_PLAY) {
                 onDocumentEnabled()

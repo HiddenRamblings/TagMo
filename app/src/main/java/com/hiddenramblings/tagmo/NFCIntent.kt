@@ -37,13 +37,4 @@ object NFCIntent {
     const val EXTRA_ACTIVE_BANK = BuildConfig.APPLICATION_ID + ".EXTRA_ACTIVE_BANK"
     const val EXTRA_BANK_COUNT = BuildConfig.APPLICATION_ID + ".EXTRA_BANK_COUNT"
     const val EXTRA_CURRENT_BANK = BuildConfig.APPLICATION_ID + ".EXTRA_CURRENT_BANK"
-
-    @JvmStatic
-    fun getIntent(intent: Intent): Intent {
-        return if (Version.isNougat)
-            intent.addCategory(Intent.CATEGORY_OPENABLE).setType("*/*")
-            .addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-            .addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
-        else intent.addCategory(Intent.CATEGORY_OPENABLE).setType("*/*")
-    }
 }

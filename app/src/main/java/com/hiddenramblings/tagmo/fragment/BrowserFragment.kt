@@ -54,7 +54,6 @@ import com.hiddenramblings.tagmo.eightbit.os.Storage
 import com.hiddenramblings.tagmo.eightbit.os.Version
 import com.hiddenramblings.tagmo.eightbit.util.Zip
 import com.hiddenramblings.tagmo.eightbit.widget.ProgressAlert
-import com.hiddenramblings.tagmo.nfctech.Flipper.toNFC
 import com.hiddenramblings.tagmo.nfctech.Foomiibo
 import com.hiddenramblings.tagmo.nfctech.TagArray
 import com.hiddenramblings.tagmo.widget.Toasty
@@ -116,11 +115,37 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
     private val onSelectArchiveFile = registerForActivityResult(
             ActivityResultContracts.OpenDocument()
     ) { uri -> uri?.let {
-        val tempZip = File(TagMo.downloadDir, "archive.zip")
-        tempZip.outputStream().use { fileOut ->
-            requireActivity().contentResolver.openInputStream(uri)?.copyTo(fileOut)
+        bottomSheet?.state = BottomSheetBehavior.STATE_COLLAPSED
+        val zipFile = File(requireActivity().externalCacheDir, "archive.zip")
+        zipFile.outputStream().use { fileOut ->
+            requireActivity().contentResolver.openInputStream(it)?.copyTo(fileOut)
         }
-        unzipArchiveFile(tempZip)
+        val folder = Storage.getDownloadDir("TagMo", "Archive")
+        val processDialog = ProgressAlert.show(
+                requireContext(), getString(R.string.unzip_item, zipFile.nameWithoutExtension)
+        ).apply { view?.keepScreenOn = true }
+
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                Zip.extract(zipFile, folder.absolutePath) { progress ->
+                    CoroutineScope(Dispatchers.Main).launch {
+                        val nameProgress = "${zipFile.nameWithoutExtension} (${progress}%) "
+                        processDialog.setMessage(getString(R.string.unzip_item, nameProgress))
+                    }
+                    if (progress == 100) {
+                        zipFile.delete()
+                        CoroutineScope(Dispatchers.Main).launch {
+                            processDialog.dismiss()
+                        }
+                        (activity as? BrowserActivity)?.requestStoragePermission()
+                    }
+                }
+            } catch (iae: IllegalArgumentException) {
+                Debug.error(iae)
+                Toasty(requireContext()).Short(R.string.error_archive_format)
+                if (zipFile.exists()) zipFile.delete()
+            }
+        }
     } }
 
     private var browserActivity: BrowserActivity? = null
@@ -496,36 +521,6 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
     fun setFoomiiboVisibility(isActive: Boolean) {
         browserWrapper?.isVisible = !isActive
         foomiiboContent?.isVisible = isActive
-    }
-
-    @RequiresApi(Build.VERSION_CODES.KITKAT)
-    fun unzipArchiveFile(zipFile: File) {
-        val folder = Storage.getDownloadDir("TagMo", "Archive").absolutePath
-
-        val processDialog = ProgressAlert.show(
-                requireContext(), getString(R.string.unzip_item, zipFile.nameWithoutExtension)
-        ).apply { view?.keepScreenOn = true }
-
-        CoroutineScope(Dispatchers.IO).launch {
-            try {
-                Zip.extract(zipFile, folder) { progress ->
-                    CoroutineScope(Dispatchers.Main).launch {
-                        val nameProgress = "${zipFile.nameWithoutExtension} (${progress}%) "
-                        processDialog.setMessage(getString(R.string.unzip_item, nameProgress))
-                    }
-                    if (progress == 100) {
-                        (activity as? BrowserActivity)?.onRootFolderChanged(true)
-                        zipFile.delete()
-                        CoroutineScope(Dispatchers.Main).launch {
-                            processDialog.dismiss()
-                        }
-                    }
-                }
-            } catch (iae: IllegalArgumentException) {
-                Debug.error(iae)
-                Toasty(requireContext()).Short(R.string.error_archive_format)
-            }
-        }
     }
 
     fun deleteFoomiiboFile(tagData: ByteArray?) {

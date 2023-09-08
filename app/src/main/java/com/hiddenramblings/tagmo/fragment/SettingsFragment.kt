@@ -29,7 +29,6 @@ import com.google.android.material.snackbar.Snackbar
 import com.hiddenramblings.tagmo.BrowserActivity
 import com.hiddenramblings.tagmo.GlideTagModule
 import com.hiddenramblings.tagmo.NFCIntent.FilterComponent
-import com.hiddenramblings.tagmo.NFCIntent.getIntent
 import com.hiddenramblings.tagmo.Preferences
 import com.hiddenramblings.tagmo.R
 import com.hiddenramblings.tagmo.TagMo
@@ -549,22 +548,27 @@ class SettingsFragment : PreferenceFragmentCompat() {
                 Debug.verbose(ex)
             }
         } else {
-            Intent(Intent.ACTION_GET_CONTENT).apply {
-                putExtra("android.content.extra.SHOW_ADVANCED", true)
-                putExtra("android.content.extra.FANCY", true)
-                try {
-                    when (resultCode) {
-                        RESULT_KEYS -> {
-                            if (Version.isJellyBeanMR2) putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true)
-                            onLoadKeys.launch(Intent.createChooser(getIntent(this), title))
-                        }
-                        RESULT_IMPORT_AMIIBO_DATABASE -> {
-                            onImportAmiiboDB.launch(Intent.createChooser(getIntent(this), title))
-                        }
+            val selection = Intent(
+                    if (Version.isKitKat) Intent.ACTION_OPEN_DOCUMENT else Intent.ACTION_GET_CONTENT
+            )
+                    .setType("*/*").addCategory(Intent.CATEGORY_OPENABLE)
+                    .addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                    .addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
+                    .putExtra("android.content.extra.SHOW_ADVANCED", true)
+                    .putExtra("android.content.extra.FANCY", true)
+            try {
+                when (resultCode) {
+                    RESULT_KEYS -> {
+                        if (Version.isJellyBeanMR2)
+                            selection.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true)
+                        onLoadKeys.launch(Intent.createChooser(selection, title))
                     }
-                } catch (ex: ActivityNotFoundException) {
-                    Debug.verbose(ex)
+                    RESULT_IMPORT_AMIIBO_DATABASE -> {
+                        onImportAmiiboDB.launch(Intent.createChooser(selection, title))
+                    }
                 }
+            } catch (ex: ActivityNotFoundException) {
+                Debug.verbose(ex)
             }
         }
     }

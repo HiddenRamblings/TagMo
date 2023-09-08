@@ -220,9 +220,7 @@ class WebsiteFragment : Fragment() {
     private fun saveBinFile(tagData: ByteArray, name: String) {
         try {
             val filePath = File(
-                Storage.getDownloadDir(
-                    "TagMo", "Downloads"
-                ), "$name.bin"
+                Storage.getDownloadDir("TagMo", "Downloads"), "$name.bin"
             )
             val os = FileOutputStream(filePath, false)
             os.write(tagData)

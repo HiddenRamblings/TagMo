@@ -272,9 +272,9 @@ object TagArray {
             val name = amiibo.name?.replace(File.separatorChar, '-')
             val uidHex = (tagData?.copyOfRange(0, 9))?.toHex()
             return if (verified) String.format(
-                Locale.ROOT, "%1\$s[%2\$s]-%3\$s.bin", name, uidHex, status
+                Locale.ROOT, "%1\$s[%2\$s]-%3\$s", name, uidHex, status
             ) else String.format(
-                Locale.ROOT, "%1\$s[%2\$s].bin", name, uidHex
+                Locale.ROOT, "%1\$s[%2\$s]", name, uidHex
             )
         } catch (ex: Exception) {
             Debug.warn(ex)
@@ -338,7 +338,7 @@ object TagArray {
     @JvmStatic
     @Throws(IOException::class)
     fun writeBytesToFile(directory: File?, name: String, tagData: ByteArray?): String {
-        val binFile = File(directory, name)
+        val binFile = File(directory, "$name.bin")
         FileOutputStream(binFile).use { it.write(tagData) }
         try {
             MediaScannerConnection.scanFile(
@@ -362,7 +362,7 @@ object TagArray {
         return newFile?.name
     }
 
-    fun writeBytesWithName(context: Context, fileName: String?, tagData: ByteArray?) : String? {
+    fun writeBytesWithName(context: Context, fileName: String?, directory: String, tagData: ByteArray?) : String? {
         return with (Preferences(context.applicationContext)) {
             fileName?.let { name ->
                 if (isDocumentStorage) {
@@ -371,15 +371,15 @@ object TagArray {
                     } ?: throw NullPointerException()
                     writeBytesToDocument(context, rootDocument, name, tagData)
                 } else {
-                    writeBytesToFile(
-                        Storage.getDownloadDir("TagMo", "Backups"), name, tagData
-                    )
+                    val destination = Storage.getDownloadDir("TagMo", directory)
+                    destination.mkdirs()
+                    writeBytesToFile(destination, name, tagData)
                 }
             }
         }
     }
 
     fun writeBytesWithName(context: Context, input: Editable?, tagData: ByteArray?) : String? {
-        return writeBytesWithName(context, input?.toString(), tagData)
+        return writeBytesWithName(context, input?.toString(), "Backups", tagData)
     }
 }

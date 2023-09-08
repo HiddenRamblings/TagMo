@@ -38,7 +38,7 @@
         app:showAsAction="never"/>
     <item
         android:id="@+id/mnu_flipper"
-        android:title="@string/flipper_export"
+        android:title="@string/flipper_save"
         app:showAsAction="never"/>
     <item
         android:id="@+id/mnu_validate"

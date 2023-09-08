@@ -97,7 +97,7 @@
     <string name="edit_props">Edit Properties</string>
     <string name="bin_random">Bin Randomizer</string>
     <string name="download_slot">Download Slot</string>
-    <string name="flipper_export">Flipper Exporter</string>
+    <string name="flipper_save">Save as Flipper</string>
     <string name="delete_binary">Delete Tag File</string>
     <string name="ignore_tag_id">Ignore Tag ID #</string>
     <string name="random_serial">Random Serial Number</string>
@@ -108,6 +108,7 @@
     <string name="format_app_data">Format</string>
     <string name="game_titles_view">View Compatible Games</string>
     <string name="game_titles_hide">Hide Compatible Games</string>
+    <string name="export_flipper_files">Export as Flipper Files</string>
 
     <string name="properties">Properties</string>
     <string name="mii" translatable="false">Mii</string>

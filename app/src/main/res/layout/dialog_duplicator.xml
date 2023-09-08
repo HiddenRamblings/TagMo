@@ -39,6 +39,15 @@
         app:np_wrapSelectorWheel="true"
         app:np_orientation="horizontal"/>
 
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/button_export"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:textSize="14sp"
+        android:background="@drawable/rounded_button"
+        android:text="@string/export_flipper_files" />
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

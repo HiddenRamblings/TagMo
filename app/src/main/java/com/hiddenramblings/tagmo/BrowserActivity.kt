@@ -608,20 +608,10 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                 findViewById<View>(R.id.button_save).setOnClickListener { _: View? ->
                     try {
                         val outputData = TagArray.getValidatedData(keyManager, tagData)
-                        val fileName = input.text?.toString()?.let { file ->
-                            if (prefs.isDocumentStorage) {
-                                val rootDocument = settings?.browserRootDocument?.let {
-                                    DocumentFile.fromTreeUri(this@BrowserActivity, it)
-                                } ?: throw NullPointerException()
-                                TagArray.writeBytesToDocument(
-                                    this@BrowserActivity, rootDocument, file, outputData
-                                )
-                            } else {
-                                TagArray.writeBytesToFile(
-                                    Storage.getDownloadDir("TagMo", "Backups"),
-                                    file, outputData
-                                )
-                            }
+                        val fileName = input.text?.toString()?.let { name ->
+                            TagArray.writeBytesWithName(
+                                    this@BrowserActivity, name, "Backups", outputData
+                            )
                         }
                         IconifiedSnackbar(this@BrowserActivity, viewPager).buildSnackbar(
                             getString(R.string.wrote_file, fileName), Snackbar.LENGTH_SHORT
@@ -979,6 +969,25 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
         false
     }
 
+    private fun exportWithRandomSerial(amiiboFile: AmiiboFile?, tagData: ByteArray?, count: Int) {
+        CoroutineScope(Dispatchers.IO).launch {
+            val amiiboList = amiiboFile?.withRandomSerials(keyManager, count)
+            amiiboList?.forEachIndexed { index, amiiboData ->
+                try {
+                    val outputData = keyManager.encrypt(amiiboData.array)
+                    writeFlipperFile(index, outputData)
+                } catch (ex: Exception) {
+                    Debug.warn(ex)
+                    withContext(Dispatchers.Main) {
+                        IconifiedSnackbar(this@BrowserActivity, viewPager).buildSnackbar(
+                                getString(R.string.fail_randomize), Snackbar.LENGTH_SHORT
+                        ).show()
+                    }
+                }
+            }
+        }
+    }
+
     private fun cloneWithRandomSerial(amiiboFile: AmiiboFile?, tagData: ByteArray?, count: Int) {
         CoroutineScope(Dispatchers.IO).launch {
             val cached = amiiboFile?.let {
@@ -1001,14 +1010,14 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
             val fileName = TagArray.decipherFilename(settings?.amiiboManager, tagData, true)
             val amiiboList = amiiboFile?.withRandomSerials(keyManager, count)
             amiiboList?.forEachIndexed { index, amiiboData ->
-                val name = fileName.replace(".bin", "_$index.bin")
+                val name = "${fileName}_$index"
                 try {
                     val outputData = keyManager.encrypt(amiiboData.array)
                     val outputFile: AmiiboFile? = if (cached) {
                         val path = TagArray.writeBytesToFile(directory, name, outputData)
                         AmiiboFile(File(path), amiiboData.amiiboID, outputData)
                     } else {
-                        TagArray.writeBytesWithName(this@BrowserActivity, name, outputData)?.let {
+                        TagArray.writeBytesWithName(this@BrowserActivity, name, "Duplicates", outputData)?.let {
                             if (prefs.isDocumentStorage)
                                 AmiiboFile(DocumentFile.fromTreeUri(
                                     this@BrowserActivity, Uri.parse(it)
@@ -1041,6 +1050,10 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
         val dialog = AlertDialog.Builder(this)
         val copierDialog: Dialog = dialog.setView(view).create()
         val count = view.findViewById<NumberPicker>(R.id.number_picker_bin)
+        view.findViewById<View>(R.id.button_export).setOnClickListener {
+            exportWithRandomSerial(amiiboFile, tagData, count.value)
+            copierDialog.dismiss()
+        }
         view.findViewById<View>(R.id.button_save).setOnClickListener {
             cloneWithRandomSerial(amiiboFile, tagData, count.value)
             copierDialog.dismiss()
@@ -1051,12 +1064,12 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
         copierDialog.show()
     }
 
-    private fun writeFlipperFile(amiiboId: Long, tagData: ByteArray?) {
-        tagData?.toNFC(
-                settings?.amiiboManager?.amiibos?.get(amiiboId)?.name ?: amiiboId.toString()
-        ) ?: IconifiedSnackbar(this, viewPager).buildSnackbar(
-                getString(R.string.fail_save_file), Snackbar.LENGTH_SHORT
-        ).show()
+    private fun writeFlipperFile(index: Int?, tagData: ByteArray?) {
+        val fileName = TagArray.decipherFilename(settings?.amiiboManager, tagData, false)
+        tagData?.toNFC(if (null != index) "${fileName}_$index" else fileName)
+                ?: IconifiedSnackbar(this, viewPager).buildSnackbar(
+                        getString(R.string.fail_save_file), Snackbar.LENGTH_SHORT
+                ).show()
     }
 
     private fun onCreateToolbarMenu(itemView: View?, tagData: ByteArray?, amiiboFile: AmiiboFile?) {
@@ -1195,7 +1208,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                     return@setOnMenuItemClickListener true
                 }
                 R.id.mnu_flipper -> {
-                    writeFlipperFile(amiiboFile?.id ?: Amiibo.dataToId(tagData), tagData)
+                    writeFlipperFile(null, tagData)
                     return@setOnMenuItemClickListener true
                 }
                 R.id.mnu_validate -> {
@@ -1304,7 +1317,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                     return@setOnMenuItemClickListener true
                 }
                 R.id.mnu_flipper -> {
-                    writeFlipperFile(Amiibo.dataToId(tagData), tagData)
+                    writeFlipperFile(null, tagData)
                     return@setOnMenuItemClickListener true
                 }
                 R.id.mnu_validate -> {

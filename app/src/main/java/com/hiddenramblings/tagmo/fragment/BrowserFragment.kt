@@ -531,7 +531,7 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
                 File(Foomiibo.directory, it.name)
             } ?: Foomiibo.directory
             val amiiboFile = File(
-                directory, TagArray.decipherFilename(amiibo, tagData, false)
+                directory, "${TagArray.decipherFilename(amiibo, tagData, false)}.bin"
             )
             AlertDialog.Builder(requireContext())
                 .setMessage(getString(R.string.warn_delete_file, amiiboFile.name))
@@ -584,9 +584,7 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
             directory.mkdirs()
             val foomiiboData = Foomiibo.getSignedData(tagData)
             TagArray.writeBytesToFile(
-                directory, TagArray.decipherFilename(
-                    amiibo, foomiiboData, false
-                ), foomiiboData
+                directory, TagArray.decipherFilename(amiibo, foomiiboData, false), foomiiboData
             )
             IconifiedSnackbar(requireActivity(), browserWrapper).buildSnackbar(
                 getString(R.string.wrote_foomiibo, amiibo.name), Snackbar.LENGTH_SHORT

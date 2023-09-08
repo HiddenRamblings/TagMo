@@ -8,22 +8,25 @@
         android:title="@string/write"
         app:showAsAction="always"/>
     <item
-        android:id="@+id/mnu_save"
-        android:title="@string/save"
-        app:showAsAction="always"/>
-    <item
         android:id="@+id/mnu_update"
         android:title="@string/update_tag"
         android:titleCondensed="@string/update"
         app:showAsAction="always"/>
     <item
-        android:id="@+id/mnu_scan"
-        android:title="@string/scan_data"
-        app:showAsAction="ifRoom|withText"/>
-    <item
         android:id="@+id/mnu_edit"
         android:title="@string/edit_props"
-        app:showAsAction="never"/>
+        android:titleCondensed="@string/edit"
+        app:showAsAction="always"/>
+    <item
+        android:id="@+id/mnu_save"
+        android:title="@string/amiibo_backup"
+        android:titleCondensed="@string/save"
+        app:showAsAction="ifRoom|withText"/>
+    <item
+        android:id="@+id/mnu_scan"
+        android:title="@string/scan_data"
+        android:titleCondensed="@string/scan"
+        app:showAsAction="ifRoom|withText"/>
     <item
         android:id="@+id/mnu_random"
         android:title="@string/bin_random"

@@ -1136,6 +1136,24 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                     })
                     return@setOnMenuItemClickListener true
                 }
+                R.id.mnu_update -> {
+                    onUpdateTagResult.launch(scan.apply {
+                        action = NFCIntent.ACTION_WRITE_TAG_DATA
+                        putExtras(Bundle().apply {
+                            putBoolean(NFCIntent.EXTRA_IGNORE_TAG_ID, ignoreTagId)
+                            putByteArray(NFCIntent.EXTRA_TAG_DATA, tagData)
+                        })
+                    })
+                    return@setOnMenuItemClickListener true
+                }
+                R.id.mnu_edit -> {
+                    onUpdateTagResult.launch(Intent(this, TagDataEditor::class.java)
+                            .putExtras(Bundle().apply {
+                                putByteArray(NFCIntent.EXTRA_TAG_DATA, tagData)
+                            })
+                    )
+                    return@setOnMenuItemClickListener true
+                }
                 R.id.mnu_save -> {
                     if (cached) {
                         if (tagData != null) {
@@ -1171,24 +1189,6 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                         }
                         backupDialog.show()
                     }
-                    return@setOnMenuItemClickListener true
-                }
-                R.id.mnu_update -> {
-                    onUpdateTagResult.launch(scan.apply {
-                        action = NFCIntent.ACTION_WRITE_TAG_DATA
-                        putExtras(Bundle().apply {
-                            putBoolean(NFCIntent.EXTRA_IGNORE_TAG_ID, ignoreTagId)
-                            putByteArray(NFCIntent.EXTRA_TAG_DATA, tagData)
-                        })
-                    })
-                    return@setOnMenuItemClickListener true
-                }
-                R.id.mnu_edit -> {
-                    onUpdateTagResult.launch(Intent(this, TagDataEditor::class.java)
-                        .putExtras(Bundle().apply {
-                            putByteArray(NFCIntent.EXTRA_TAG_DATA, tagData)
-                        })
-                    )
                     return@setOnMenuItemClickListener true
                 }
                 R.id.mnu_random -> {
@@ -1284,16 +1284,6 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                     }
                     return@setOnMenuItemClickListener true
                 }
-                R.id.mnu_save -> {
-                    if (tagData.isNotEmpty()) {
-                        fragment.buildFoomiiboFile(tagData)
-                        itemView.callOnClick()
-                        onRootFolderChanged(true)
-                    } else {
-                        Toasty(this).Short(R.string.fail_save_data)
-                    }
-                    return@setOnMenuItemClickListener true
-                }
                 R.id.mnu_edit -> {
                     args.putByteArray(NFCIntent.EXTRA_TAG_DATA, tagData)
                     val tagEdit = Intent(this, TagDataEditor::class.java)
@@ -1301,6 +1291,16 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                         fragment.onUpdateTagResult.launch(tagEdit.putExtras(args))
                     } catch (ex: IllegalStateException) {
                         viewPager.adapter = pagerAdapter
+                    }
+                    return@setOnMenuItemClickListener true
+                }
+                R.id.mnu_save -> {
+                    if (tagData.isNotEmpty()) {
+                        fragment.buildFoomiiboFile(tagData)
+                        itemView.callOnClick()
+                        onRootFolderChanged(true)
+                    } else {
+                        Toasty(this).Short(R.string.fail_save_data)
                     }
                     return@setOnMenuItemClickListener true
                 }

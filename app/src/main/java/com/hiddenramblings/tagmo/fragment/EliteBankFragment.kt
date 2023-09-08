@@ -54,6 +54,7 @@ import com.hiddenramblings.tagmo.amiibo.KeyManager
 import com.hiddenramblings.tagmo.amiibo.tagdata.AmiiboData
 import com.hiddenramblings.tagmo.amiibo.tagdata.TagDataEditor
 import com.hiddenramblings.tagmo.eightbit.io.Debug
+import com.hiddenramblings.tagmo.eightbit.os.Version
 import com.hiddenramblings.tagmo.eightbit.request.ImageTarget
 import com.hiddenramblings.tagmo.hexcode.HexCodeViewer
 import com.hiddenramblings.tagmo.nfctech.NfcActivity
@@ -152,7 +153,7 @@ class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
                 else
                     LinearLayoutManager(activity)
                 writeTagAdapter = WriteTagAdapter(settings).also { adapter = it }
-                FastScrollerBuilder(this).build()
+                if (Version.isJellyBeanMR2) FastScrollerBuilder(this).build()
             }
 
             securityOptions = view.findViewById(R.id.security_options)

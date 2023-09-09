@@ -16,9 +16,8 @@ import com.hiddenramblings.tagmo.nfctech.TagArray.toHex
 import com.hiddenramblings.tagmo.nfctech.TagArray.toHexByteArray
 import java.io.IOException
 import java.math.BigInteger
-import java.security.MessageDigest
 
-class Infinity : TagTechnology {
+class Skylanders  : TagTechnology {
 
     private val tagMifare: MifareClassic?
     private val tagNfcA: NfcA?
@@ -55,10 +54,6 @@ class Infinity : TagTechnology {
         return tagMifare?.isConnected ?: tagNfcA?.isConnected ?: false
     }
 
-    fun isClassic1K() : Boolean {
-        return (tagMifare?.size == MifareClassic.SIZE_1K)
-    }
-
     @Throws(IOException::class)
     override fun close() {
         tagMifare?.close() ?: tagNfcA?.close()
@@ -67,6 +62,8 @@ class Infinity : TagTechnology {
     override fun getTag(): Tag? {
         return tagMifare?.tag ?: tagNfcA?.tag
     }
+
+
 
     fun transceive(data: ByteArray?): ByteArray? {
         return try {
@@ -81,49 +78,65 @@ class Infinity : TagTechnology {
 
         private infix fun Short.equals(i: Int): Boolean = this == i.toShort()
 
-        private val uidre = Regex("^04[0-9a-f]{12}\$", RegexOption.IGNORE_CASE)
-        private val magicNumbers: Array<BigInteger> = arrayOf(
-            BigInteger("3"), BigInteger("5"),
-            BigInteger("7"), BigInteger("23"),
-            BigInteger("9985861487287759675192201655940647"),
-            BigInteger("38844225342798321268237511320137937")
-        )
+        private val uidre = Regex("^[0-9a-f]{8}\$", RegexOption.IGNORE_CASE)
+        private val magicNumbers = listOf(2, 3, 73, 1103, 2017, 560381651, 12868356821)
 
-        private fun keyInfinity(uid: String) : ByteArray {
-            if (!uidre.matches(uid))
-                throw NumberFormatException(TagMo.appContext.getString(R.string.fail_uid_invalid, 7))
-
-            val sha1 = MessageDigest.getInstance("SHA-1")
-            val textBytes: ByteArray = "${String.format(
-                "%032X", magicNumbers[0] * magicNumbers[1] * magicNumbers[3] * magicNumbers[5]
-            )}$uid${String.format(
-                "%030X", magicNumbers[0] * magicNumbers[2] * magicNumbers[4]
-            )}".toHexByteArray()
-            sha1.update(textBytes, 0, textBytes.size)
-            val key = sha1.digest()
-
-            return key.copyOfRange(0, 3).reversed().toByteArray().plus(
-                key.copyOfRange(5, 7).reversed().toByteArray()
-            )
+        private fun pseudoCrc48(crc: Long, data: List<Int>): Long {
+            val poly = 0x42f0e1eba9ea3693
+            val msb = 0x800000000000
+            val trim = 0xffffffffffff
+            var currentCrc = crc
+            for (x in data) {
+                currentCrc = currentCrc xor (x.toLong() shl 40)
+                for (k in 0 until 8) {
+                    currentCrc = if (currentCrc and msb != 0L)
+                        (currentCrc shl 1) xor poly
+                    else
+                        currentCrc shl 1
+                    currentCrc = currentCrc and trim
+                }
+            }
+            return currentCrc
         }
 
-        private fun getMifareClasssic(tag: Tag?): Infinity? {
+        private fun keySkylanders(uid: String, sector: Int): ByteArray {
+            if (sector == 0)
+                return String.format("%012x", magicNumbers[2] * magicNumbers[4] * magicNumbers[5]).toHexByteArray()
+
+            if (!uidre.matches(uid))
+                throw NumberFormatException(TagMo.appContext.getString(R.string.fail_uid_invalid, 4))
+
+            if (sector < 0 || sector > 15)
+                throw NumberFormatException(TagMo.appContext.getString(R.string.fail_sector_invalid))
+
+            val key = pseudoCrc48((
+                    magicNumbers[0] * magicNumbers[0] * magicNumbers[1] * magicNumbers[3] * magicNumbers[6]),
+                    uid.chunked(2).map { it.toInt(16) } + sector
+            )
+
+            return (BigInteger.valueOf(key).toByteArray().take(6)
+                    .joinToString("") { "%02x".format(it) }).toHexByteArray()
+        }
+
+        private fun getMifareClasssic(tag: Tag?): Skylanders? {
             return MifareClassic.get(tag)?.let {
-                it.authenticateSectorWithKeyA(0, keyInfinity(it.tag.id.toHex()))
-                Infinity(it)
+                for (sector in 0 until 16) {
+                    it.authenticateSectorWithKeyA(sector, keySkylanders(it.tag.id.toHex(), sector))
+                }
+                Skylanders(it)
             }
         }
 
-        private fun getNfcA(tag: Tag?): Infinity? {
+        private fun getNfcA(tag: Tag?): Skylanders? {
             return NfcA.get(tag)?.let {
                 if (it.sak equals 0x09 && it.atqa.equals(byteArrayOf(0x00, 0x44)))
-                    Infinity(it)
+                    Skylanders(it)
                 else
                     null
             }
         }
 
-        operator fun get(tag: Tag?): Infinity? {
+        operator fun get(tag: Tag?): Skylanders? {
             return try {
                 getMifareClasssic(tag)?.also { it.connect() }
             } catch (e: IOException) {

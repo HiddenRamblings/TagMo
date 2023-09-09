@@ -49,7 +49,7 @@ class NTAG215 : TagTechnology {
     }
 
     override fun isConnected(): Boolean {
-        return tagNfcA?.isConnected == true
+        return tagMifare?.isConnected ?: tagNfcA?.isConnected ?: false
     }
 
     @Throws(IOException::class)

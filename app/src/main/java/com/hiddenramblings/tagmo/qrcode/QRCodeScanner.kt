@@ -454,10 +454,12 @@ class QRCodeScanner : AppCompatActivity() {
                     analysisUseCase?.let { cameraProvider?.unbind(it) }
                     cameraPreview?.isGone = true
                 }
-                val text = if (!txtRawBytes.text.isNullOrEmpty())
-                    TagArray.hexToString(txtRawBytes.text.toString().trim())
-                else txtRawValue.text?.toString()
-
+                var text = txtRawValue.text?.toString()
+                if (!txtRawBytes.text.isNullOrEmpty()) {
+                    val bytes = txtRawBytes.text.toString().trim()
+                    if (bytes.length % 2 == 0)
+                        text = TagArray.hexToString(bytes)
+                }
                 try {
                     encodeQR(text, Barcode.TYPE_TEXT)?.let {
                         barcodePreview.setImageBitmap(it)

@@ -36,22 +36,21 @@ class KeyManager(var context: Context) {
     }
 
     fun hasFixedKey(): Boolean {
-        if (hasLocalFile(FIXED_KEY_MD5))
-            fixedKey = loadKeyFromStorage(FIXED_KEY_MD5)
+        if (hasLocalFile(FIXED_KEY_MD5)) fixedKey = loadKeyFromStorage(FIXED_KEY_MD5)
         return null != fixedKey
     }
 
     fun hasUnFixedKey(): Boolean {
-        if (hasLocalFile(UNFIXED_KEY_MD5))
-            unfixedKey = loadKeyFromStorage(UNFIXED_KEY_MD5)
+        if (hasLocalFile(UNFIXED_KEY_MD5)) unfixedKey = loadKeyFromStorage(UNFIXED_KEY_MD5)
         return null != unfixedKey
     }
 
     val isKeyMissing: Boolean get() = run { return !hasFixedKey() || !hasUnFixedKey() }
 
     @Throws(IOException::class)
-    fun saveKeyFile(file: String?, key: ByteArray?) {
+    fun saveKeyFile(file: String, key: ByteArray?): ByteArray? {
         context.openFileOutput(file, Context.MODE_PRIVATE).use { fos -> fos.write(key) }
+        return loadKeyFromStorage(file)
     }
 
     @Throws(IOException::class, NoSuchAlgorithmException::class)
@@ -59,11 +58,9 @@ class KeyManager(var context: Context) {
         val md5 = MessageDigest.getInstance("MD5")
         val hex = md5.digest(data).toHex().uppercase()
         if (FIXED_KEY_MD5 == hex) {
-            saveKeyFile(FIXED_KEY_MD5, data)
-            fixedKey = loadKeyFromStorage(FIXED_KEY_MD5)
+            fixedKey = saveKeyFile(FIXED_KEY_MD5, data)
         } else if (UNFIXED_KEY_MD5 == hex) {
-            saveKeyFile(UNFIXED_KEY_MD5, data)
-            unfixedKey = loadKeyFromStorage(UNFIXED_KEY_MD5)
+            unfixedKey = saveKeyFile(UNFIXED_KEY_MD5, data)
         } else {
             throw IOException(context.getString(R.string.key_signature_error))
         }
@@ -108,7 +105,10 @@ class KeyManager(var context: Context) {
         val decrypted = ByteArray(NfcByte.TAG_DATA_SIZE)
         if (tool.unpack(tagData, NfcByte.TAG_DATA_SIZE, decrypted, decrypted.size) == 0)
             throw Exception(context.getString(R.string.fail_decrypt))
-        return if (tagData.size == NfcByte.TAG_FILE_SIZE) decrypted.copyInto(tagData) else decrypted
+        return if (tagData.size == NfcByte.TAG_FILE_SIZE)
+            ByteArray(8).copyInto(decrypted.copyInto(tagData), NfcByte.TAG_DATA_SIZE)
+        else
+            decrypted
     }
 
     @Throws(RuntimeException::class)
@@ -123,7 +123,10 @@ class KeyManager(var context: Context) {
         val encrypted = ByteArray(NfcByte.TAG_DATA_SIZE)
         if (tool.pack(tagData, NfcByte.TAG_DATA_SIZE, encrypted, encrypted.size) == 0)
             throw RuntimeException(context.getString(R.string.fail_encrypt))
-        return if (tagData.size == NfcByte.TAG_FILE_SIZE) encrypted.copyInto(tagData) else encrypted
+        return if (tagData.size == NfcByte.TAG_FILE_SIZE)
+            ByteArray(8).copyInto(encrypted.copyInto(tagData), NfcByte.TAG_DATA_SIZE)
+        else
+            encrypted
     }
 
     companion object {

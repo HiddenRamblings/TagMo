@@ -1,6 +1,7 @@
 /*
  * ====================================================================
  * SSBU_Amiibo Copyright (c) 2021 odwdinc
+ * SSBU_Amiibo_format_fixer Copyright (c) 2019 BenCat07
  * smash-amiibo-editor Copyright (c) 2021 jozz024
  * Copyright (C) 2022 AbandonedCart @ TagMo
  * ====================================================================
@@ -153,7 +154,15 @@ open class AmiiboData : Parcelable {
     }
 
     fun writeCrc32() {
-        checksum.forEachIndexed { x, byte -> tagData.put(0x130 + x, byte) }
+        checksum.forEachIndexed { x, byte -> tagData.put(0xDC + x, byte) }
+        if (tagData[0xA].toInt() == 0x00 && tagData[0xB].toInt() == 0x00) {
+            tagData.put(0xA, 0x0F)
+            tagData.put(0xB, 0xE0.toByte())
+        }
+        if (tagData[0x208].toInt() == 0x00 && tagData[0x20A].toInt() == 0x00) {
+            tagData.put(0x208, 0x01)
+            tagData.put(0x20A, 0x0F)
+        }
     }
 
     fun initializeSSBU() {

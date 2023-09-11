@@ -193,7 +193,7 @@ class QRCodeScanner : AppCompatActivity() {
                 else
                     IvParameterSpec(ivSpec)
         )
-        val content = cipher.doFinal(qrData, 8, 0x58)
+        val content = cipher.doFinal(qrData, 0, 0x58)
         txtMiiValue.text = content.copyOfRange(0, 12).plus(nonce)
                 .plus(content.copyOfRange(12, content.size)).toHex()
     }

@@ -6,6 +6,7 @@ object NfcByte {
     const val KEY_RETAIL_SZ = 160 // Both keys read together
     const val TAG_DATA_SIZE = 532 // 540, 572 with signature
     const val TAG_FILE_SIZE = 572 // 540 + 32 byte signature
+    const val C1K_DATA_SIZE = 1024
     const val SIGNATURE = 0x21C // 540
     const val PAGE_SIZE = 4
     const val CMD_GET_VERSION = 0x60

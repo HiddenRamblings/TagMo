@@ -72,6 +72,7 @@
     <string name="mifare_pro" translatable="false">Mifare Pro</string>
     <string name="mifare_ultralight" translatable="false">Mifare UltraLight</string>
     <string name="mifare_ultralight_c" translatable="false">Mifare UltraLight C</string>
+    <string name="nfciso" translatable="false">Nfc%1$s</string>
     <string name="isodep" translatable="false">IsoDep</string>
     <string name="ndef" translatable="false">Ndef</string>
     <string name="ndef_formatable" translatable="false">NdefFormatable</string>

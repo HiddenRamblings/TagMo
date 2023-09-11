@@ -1,9 +1,6 @@
 /*
  * ====================================================================
  * SSBU_Amiibo Copyright (c) 2021 odwdinc
- * src/ssbu_amiibo/amiibo_class.py
- * smash-amiibo-editor Copyright (c) 2021 jozz024
- * utils/ssbu_amiibo.py
  * Copyright (C) 2022 AbandonedCart @ TagMo
  * ====================================================================
  */

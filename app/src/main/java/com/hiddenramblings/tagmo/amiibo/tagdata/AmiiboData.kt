@@ -1,3 +1,10 @@
+/*
+ * ====================================================================
+ * SSBU_Amiibo Copyright (c) 2021 odwdinc
+ * smash-amiibo-editor Copyright (c) 2021 jozz024
+ * Copyright (C) 2022 AbandonedCart @ TagMo
+ * ====================================================================
+ */
 package com.hiddenramblings.tagmo.amiibo.tagdata
 
 import android.os.Parcel
@@ -7,35 +14,34 @@ import com.hiddenramblings.tagmo.TagMo
 import com.hiddenramblings.tagmo.eightbit.charset.CharsetCompat
 import com.hiddenramblings.tagmo.nfctech.NfcByte
 import com.hiddenramblings.tagmo.nfctech.TagArray
+import com.hiddenramblings.tagmo.nfctech.TagArray.toByteArray
 import com.hiddenramblings.tagmo.nfctech.TagArray.toHexByteArray
 import java.io.IOException
 import java.io.UnsupportedEncodingException
 import java.nio.ByteBuffer
-import java.nio.ByteOrder
 import java.nio.charset.Charset
 import java.util.*
 
 open class AmiiboData : Parcelable {
     private val context = TagMo.appContext
     private val tagData: ByteBuffer
-    private val u0: ByteArray
+    private var u0: ByteArray
 
     val array: ByteArray
         get() = tagData.array()
 
     init {
-        var p0 = 0xEDB88320 or 0x80000000
-        p0 = p0 shr 0
+        val p0 = 0xEDB88320 or 0x80000000
         u0 = ByteArray(0x100)
         var i = 0x1
         while (i and 0xFF != 0) {
             var t0 = i
-            for (x in 0..0x7) {
-                val b = t0 and 0x1 shr 0
-                t0 = t0 shr 0x1 shr 0
-                if (b == 0x1) t0 = t0 xor p0.toInt() shr 0
+            for (j in 0 until 0x8) {
+                val b = t0 and 0x1 != 0
+                t0 = t0 ushr 1
+                if (b) t0 = t0 xor p0.toInt()
             }
-            u0[i] = (t0 shr 0).toByte()
+            u0[i] = t0.toByte()
             i += 0x1
         }
     }
@@ -124,27 +130,22 @@ open class AmiiboData : Parcelable {
         }
 
     private val checksum: ByteArray get() = run {
-        var t = 0xFFFFFFFF.toInt()
-        array.copyOfRange(0x134, 0x208).forEach { // 0xE0 + 0xD4
-            t = ((t shr 0x8) xor u0[(it.toInt() xor t) and 0xFF].toInt()) shr 0
+        var t = 0xFFFFFFFF
+        array.copyOfRange(0xE0, 0xD4 + 0xE0).forEach {
+            t = (t ushr 0x8) xor u0[(it.toInt() xor t.toInt()) and 0xFF].toLong()
         }
-        ByteBuffer.allocate(4).apply {
-            order(ByteOrder.LITTLE_ENDIAN)
-            putInt((t xor 0xFFFFFFFF.toInt()) shr 0)
-        }.array()
+        return (t xor 0xFFFFFFFF).toByteArray()
     }
 
     val miiChecksum get() = run {
         var crc = 0x0000
         array.copyOfRange(0xA0, 0xFE).forEach {
-            val byte = ByteBuffer.allocate(4).apply {
-                order(ByteOrder.BIG_ENDIAN)
-                putInt(it.toInt())
-            }
-            crc = crc xor (byte.int shr 8)
+            val byteValue = it.toInt() and 0xFF
+            crc = crc xor (byteValue shl 8)
             for (i in 0 until 8) {
-                crc = crc shr 1
-                if ((crc and 0x10000) > 0) crc = crc xor 0x1021
+                crc = crc shl 1
+                if ((crc and 0x10000) > 0)
+                    crc = crc xor 0x1021
             }
         }
         val crc16 = String.format("%04X", crc and 0xFFFF)

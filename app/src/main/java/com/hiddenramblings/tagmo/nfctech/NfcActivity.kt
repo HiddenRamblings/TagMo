@@ -66,7 +66,9 @@ class NfcActivity : AppCompatActivity() {
 
     private var isEliteIntent = false
     private var isEliteDevice = false
-    private var mifare: NTAG215? = null
+    private var ntag215: NTAG215? = null
+    private var skylanders: Skylanders? = null
+    private var infinity: Infinity? = null
     private var writeCount = 0
     private var tagTech: String? = null
     private var hasTestedElite = false
@@ -214,65 +216,60 @@ class NfcActivity : AppCompatActivity() {
         imgNfcBar.animation = nfcAnimation
     }
 
-    private fun closeTagSilently(mifare: NTAG215?) {
+    private fun closeTagSilently(ntag215: NTAG215?) {
         try {
-            mifare?.close()
+            ntag215?.close()
         } catch (ignored: Exception) { }
     }
 
-    private fun writeCollection(ntag: NTAG215, commandIntent: Intent) {
+    private fun writeCollection(ntag215: NTAG215, command: Intent) {
         when {
-            commandIntent.hasExtra(NFCIntent.EXTRA_AMIIBO_DATA) -> {
-                val amiiboList = commandIntent.parcelableArrayList<AmiiboData>(
+            command.hasExtra(NFCIntent.EXTRA_AMIIBO_DATA) -> {
+                val amiiboList = command.parcelableArrayList<AmiiboData>(
                     NFCIntent.EXTRA_AMIIBO_DATA
                 )
                 amiiboList?.forEachIndexed { x, amiiboData ->
                     showMessage(R.string.bank_writing, x + 1, amiiboList.size)
-                    TagWriter.writeEliteAuto(ntag, amiiboData.array, x)
+                    TagWriter.writeEliteAuto(ntag215, amiiboData.array, x)
                 }
             }
-            commandIntent.hasExtra(NFCIntent.EXTRA_AMIIBO_BYTES) -> {
-                val amiiboList = commandIntent.parcelableArrayList<AmiiboFile>(
+            command.hasExtra(NFCIntent.EXTRA_AMIIBO_BYTES) -> {
+                val amiiboList = command.parcelableArrayList<AmiiboFile>(
                     NFCIntent.EXTRA_AMIIBO_BYTES
                 )
                 amiiboList?.forEachIndexed { x, amiiboFile ->
                     val tagData = amiiboFile.data ?: Foomiibo.getSignedData(amiiboFile.id)
                     showMessage(R.string.bank_writing, x + 1, amiiboList.size)
-                    TagWriter.writeEliteAuto(ntag, tagData, x)
+                    TagWriter.writeEliteAuto(ntag215, tagData, x)
                 }
             }
-            commandIntent.hasExtra(NFCIntent.EXTRA_AMIIBO_LIST) -> {
-                val amiiboList = commandIntent.parcelableArrayList<EliteTag>(
+            command.hasExtra(NFCIntent.EXTRA_AMIIBO_LIST) -> {
+                val amiiboList = command.parcelableArrayList<EliteTag>(
                     NFCIntent.EXTRA_AMIIBO_LIST
                 )
                 amiiboList?.forEachIndexed { x, eliteTag ->
                     val tagData = eliteTag.data ?: Foomiibo.getSignedData(eliteTag.id)
                     showMessage(R.string.bank_writing, x + 1, amiiboList.size)
-                    TagWriter.writeEliteAuto(ntag, tagData, x)
+                    TagWriter.writeEliteAuto(ntag215, tagData, x)
                 }
             }
         }
     }
 
-    private suspend fun onTagDiscovered(intent: Intent) = withContext(Dispatchers.IO) {
-        val commandIntent = getIntent()
-        val mode = commandIntent.action
-        setResult(RESULT_CANCELED)
+    private suspend fun onMifareUltralight(tag: Tag?) = withContext(Dispatchers.IO) {
+        val command = intent
+        val mode = command.action
         var update: ByteArray? = ByteArray(0)
-        val tag = intent.parcelable<Tag>(NfcAdapter.EXTRA_TAG)
-        tagTech = tag.technology()
-        showMessage(R.string.tag_scanning, tagTech)
         try {
-            mifare = if (NFCIntent.ACTION_BLIND_SCAN == mode || isEliteIntent)
+            ntag215 = if (NFCIntent.ACTION_BLIND_SCAN == mode || isEliteIntent)
                 NTAG215.getBlind(tag) else NTAG215[tag]
-            mifare?.let { ntag ->
-                // ntag.connect()
+            ntag215?.let { mifare ->
                 if (!hasTestedElite) {
                     hasTestedElite = true
-                    if (ntag.isPowerTag) {
+                    if (mifare.isPowerTag) {
                         showMessage(R.string.tag_scanning, getString(R.string.power_tag))
                     } else if (prefs.eliteEnabled()) {
-                        isEliteDevice = (isEliteIntent || ntag.isElite
+                        isEliteDevice = (isEliteIntent || mifare.isElite
                                 || NFCIntent.ACTION_UNLOCK_UNIT == mode
                                 || NFCIntent.ACTION_BLIND_SCAN == mode)
                         if (isEliteDevice) showMessage(R.string.tag_scanning, getString(R.string.elite_n2))
@@ -282,17 +279,17 @@ class NfcActivity : AppCompatActivity() {
                 var bankCount = -1
                 var activeBank = -1
                 if (isEliteDevice && NFCIntent.ACTION_UNLOCK_UNIT != mode) {
-                    if (TagReader.needsFirmware(ntag)) {
-                        if (TagWriter.updateFirmware(ntag)) showMessage(R.string.firmware_update)
-                        closeTagSilently(ntag)
+                    if (TagReader.needsFirmware(mifare)) {
+                        if (TagWriter.updateFirmware(mifare)) showMessage(R.string.firmware_update)
+                        closeTagSilently(mifare)
                         finish()
                     }
-                    val bankParams = TagReader.getBankParams(ntag)
+                    val bankParams = TagReader.getBankParams(mifare)
                     bankCount = bankParams?.get(1)?.toInt()?.and(0xFF) ?: bankCount
                     activeBank = bankParams?.get(0)?.toInt()?.and(0xFF) ?: activeBank
                     if (NFCIntent.ACTION_WRITE_ALL_TAGS != mode
-                        && NFCIntent.ACTION_ERASE_ALL_TAGS != mode
-                        && NFCIntent.ACTION_SET_BANK_COUNT != mode
+                            && NFCIntent.ACTION_ERASE_ALL_TAGS != mode
+                            && NFCIntent.ACTION_SET_BANK_COUNT != mode
                     ) {
                         bankNumber = bankPicker.getPositionByValue(bankPicker.value)
                         if (bankNumber > bankCount)
@@ -301,15 +298,15 @@ class NfcActivity : AppCompatActivity() {
                 }
                 try {
                     var data: ByteArray? = ByteArray(0)
-                    if (commandIntent.hasExtra(NFCIntent.EXTRA_TAG_DATA)) {
-                        data = commandIntent.getByteArrayExtra(NFCIntent.EXTRA_TAG_DATA)
+                    if (command.hasExtra(NFCIntent.EXTRA_TAG_DATA)) {
+                        data = command.getByteArrayExtra(NFCIntent.EXTRA_TAG_DATA)
                         if (null == data || data.size <= 1)
                             throw IOException(getString(R.string.error_no_data))
                     }
                     when (mode) {
                         NFCIntent.ACTION_WRITE_TAG_RAW -> {
-                            update = TagReader.readFromTag(ntag)
-                            TagWriter.writeToTagRaw(ntag, data!!, prefs.tagTypeValidation())
+                            update = TagReader.readFromTag(mifare)
+                            TagWriter.writeToTagRaw(mifare, data!!, prefs.tagTypeValidation())
                             setResult(RESULT_OK)
                         }
                         NFCIntent.ACTION_WRITE_TAG_FULL -> {
@@ -321,94 +318,94 @@ class NfcActivity : AppCompatActivity() {
                                         bankPicker.isEnabled = true
                                         bankTextView.isVisible = true
                                     }
-                                    setIntent(commandIntent)
+                                    intent = command
                                     hasTestedElite = false
                                     return@withContext
                                 }
-                                TagWriter.writeEliteAuto(ntag, data, bankNumber)
+                                TagWriter.writeEliteAuto(mifare, data, bankNumber)
                                 setResult(RESULT_OK, Intent(NFCIntent.ACTION_NFC_SCANNED).apply {
                                     putExtras(Bundle().apply {
                                         putString(
-                                            NFCIntent.EXTRA_SIGNATURE,
-                                            TagReader.getBankSignature(ntag)
+                                                NFCIntent.EXTRA_SIGNATURE,
+                                                TagReader.getBankSignature(mifare)
                                         )
                                         putInt(NFCIntent.EXTRA_BANK_COUNT, bankCount)
                                         putInt(NFCIntent.EXTRA_ACTIVE_BANK, activeBank)
                                         putInt(NFCIntent.EXTRA_CURRENT_BANK, bankNumber)
                                         putStringArrayList(
-                                            NFCIntent.EXTRA_AMIIBO_LIST,
-                                            TagReader.readTagTitles(ntag, bankCount)
+                                                NFCIntent.EXTRA_AMIIBO_LIST,
+                                                TagReader.readTagTitles(mifare, bankCount)
                                         )
                                         putByteArray(NFCIntent.EXTRA_TAG_DATA, data)
                                     })
                                 })
                             } else {
-                                update = TagReader.readFromTag(ntag)
-                                TagWriter.writeToTagAuto(ntag, data!!, keyManager, prefs.tagTypeValidation())
+                                update = TagReader.readFromTag(mifare)
+                                TagWriter.writeToTagAuto(mifare, data!!, keyManager, prefs.tagTypeValidation())
                                 setResult(RESULT_OK)
                             }
                         }
                         NFCIntent.ACTION_WRITE_TAG_DATA -> {
-                            val ignoreUid = commandIntent.getBooleanExtra(
-                                NFCIntent.EXTRA_IGNORE_TAG_ID, false
+                            val ignoreUid = command.getBooleanExtra(
+                                    NFCIntent.EXTRA_IGNORE_TAG_ID, false
                             )
                             TagWriter.restoreTag(
-                                ntag, data!!, ignoreUid, keyManager, prefs.tagTypeValidation()
+                                    mifare, data!!, ignoreUid, keyManager, prefs.tagTypeValidation()
                             )
                             setResult(RESULT_OK)
                         }
                         NFCIntent.ACTION_WRITE_ALL_TAGS -> {
-                            ntag.setBankCount(writeCount)
-                            if (activeBank <= writeCount) ntag.activateBank(activeBank)
-                            writeCollection(ntag, commandIntent)
+                            mifare.setBankCount(writeCount)
+                            if (activeBank <= writeCount) mifare.activateBank(activeBank)
+                            writeCollection(mifare, intent)
                             setResult(RESULT_OK, Intent(NFCIntent.ACTION_NFC_SCANNED).apply {
                                 putExtras(Bundle().apply {
                                     putInt(NFCIntent.EXTRA_BANK_COUNT, writeCount)
                                     putStringArrayList(
-                                        NFCIntent.EXTRA_AMIIBO_LIST,
-                                        TagReader.readTagTitles(ntag, bankCount)
+                                            NFCIntent.EXTRA_AMIIBO_LIST,
+                                            TagReader.readTagTitles(mifare, bankCount)
                                     )
                                 })
                             })
                         }
                         NFCIntent.ACTION_BACKUP_AMIIBO -> {
                             setResult(RESULT_OK, Intent(NFCIntent.ACTION_NFC_SCANNED).apply {
-                                if (commandIntent.hasExtra(NFCIntent.EXTRA_CURRENT_BANK)) {
+                                if (command.hasExtra(NFCIntent.EXTRA_CURRENT_BANK)) {
                                     putExtras(Bundle().apply {
                                         putByteArray(
-                                            NFCIntent.EXTRA_TAG_DATA,
-                                            TagReader.scanTagToBytes(ntag, bankNumber)
+                                                NFCIntent.EXTRA_TAG_DATA,
+                                                TagReader.scanTagToBytes(mifare, bankNumber)
                                         )
                                         putInt(NFCIntent.EXTRA_CURRENT_BANK, bankNumber)
                                     })
                                 } else {
                                     putExtras(Bundle().apply {
                                         putByteArray(
-                                            NFCIntent.EXTRA_TAG_DATA,
-                                            TagReader.scanTagToBytes(ntag, activeBank)
+                                                NFCIntent.EXTRA_TAG_DATA,
+                                                TagReader.scanTagToBytes(mifare, activeBank)
                                         )
                                     })
                                 }
                             })
                         }
                         NFCIntent.ACTION_ERASE_BANK -> {
-                            TagWriter.wipeBankData(ntag, bankNumber)
+                            TagWriter.wipeBankData(mifare, bankNumber)
                             setResult(RESULT_OK, Intent(NFCIntent.ACTION_NFC_SCANNED).apply {
                                 putExtras(Bundle().apply {
                                     putStringArrayList(
-                                        NFCIntent.EXTRA_AMIIBO_LIST,
-                                        TagReader.readTagTitles(ntag, bankCount)
+                                            NFCIntent.EXTRA_AMIIBO_LIST,
+                                            TagReader.readTagTitles(mifare, bankCount)
                                     )
                                 })
                             })
                         }
                         NFCIntent.ACTION_ERASE_ALL_TAGS -> {
-                            ntag.setBankCount(writeCount)
-                            ntag.activateBank(0)
+                            mifare.setBankCount(writeCount)
+                            mifare.activateBank(0)
                             var x = 1
                             while (x < writeCount) {
                                 showMessage(R.string.bank_erasing, x + 1, writeCount)
-                                TagWriter.wipeBankData(ntag, x)
+                                TagWriter.wipeBankData(mifare, x)
                                 x++
                             }
                             setResult(RESULT_OK, Intent(NFCIntent.ACTION_NFC_SCANNED).apply {
@@ -417,8 +414,8 @@ class NfcActivity : AppCompatActivity() {
                                     putInt(NFCIntent.EXTRA_ACTIVE_BANK, 0)
                                     putInt(NFCIntent.EXTRA_CURRENT_BANK, 0)
                                     putStringArrayList(
-                                        NFCIntent.EXTRA_AMIIBO_LIST,
-                                        TagReader.readTagTitles(ntag, bankCount)
+                                            NFCIntent.EXTRA_AMIIBO_LIST,
+                                            TagReader.readTagTitles(mifare, bankCount)
                                     )
                                 })
                             })
@@ -427,20 +424,20 @@ class NfcActivity : AppCompatActivity() {
                         NFCIntent.ACTION_SCAN_TAG -> {
                             setResult(RESULT_OK, Intent(NFCIntent.ACTION_NFC_SCANNED).apply {
                                 if (isEliteDevice) {
-                                    if (commandIntent.hasExtra(NFCIntent.EXTRA_CURRENT_BANK)) {
+                                    if (intent.hasExtra(NFCIntent.EXTRA_CURRENT_BANK)) {
                                         data = TagArray.getValidatedData(
-                                            keyManager, TagReader.scanBankToBytes(ntag, bankNumber)
+                                                keyManager, TagReader.scanBankToBytes(mifare, bankNumber)
                                         )
                                         putExtras(Bundle().apply {
                                             putByteArray(NFCIntent.EXTRA_TAG_DATA, data)
                                             putInt(NFCIntent.EXTRA_CURRENT_BANK, bankNumber)
                                         })
                                     } else {
-                                        val titles = TagReader.readTagTitles(ntag, bankCount)
+                                        val titles = TagReader.readTagTitles(mifare, bankCount)
                                         putExtras(Bundle().apply {
                                             putString(
-                                                NFCIntent.EXTRA_SIGNATURE,
-                                                TagReader.getBankSignature(ntag)
+                                                    NFCIntent.EXTRA_SIGNATURE,
+                                                    TagReader.getBankSignature(mifare)
                                             )
                                             putInt(NFCIntent.EXTRA_BANK_COUNT, bankCount)
                                             putInt(NFCIntent.EXTRA_ACTIVE_BANK, activeBank)
@@ -449,24 +446,24 @@ class NfcActivity : AppCompatActivity() {
                                     }
                                 } else {
                                     putExtras(Bundle().apply {
-                                        putByteArray(NFCIntent.EXTRA_TAG_DATA, TagReader.readFromTag(ntag))
+                                        putByteArray(NFCIntent.EXTRA_TAG_DATA, TagReader.readFromTag(mifare))
                                     })
                                 }
                             })
                         }
                         NFCIntent.ACTION_ACTIVATE_BANK -> {
-                            ntag.activateBank(bankNumber)
+                            mifare.activateBank(bankNumber)
                             setResult(RESULT_OK, Intent(NFCIntent.ACTION_NFC_SCANNED).apply {
                                 putExtra(
-                                    NFCIntent.EXTRA_ACTIVE_BANK,
-                                    TagReader.getBankParams(ntag)?.get(0)?.toInt()?.and(0xFF)
+                                        NFCIntent.EXTRA_ACTIVE_BANK,
+                                        TagReader.getBankParams(mifare)?.get(0)?.toInt()?.and(0xFF)
                                 )
                             })
                         }
                         NFCIntent.ACTION_SET_BANK_COUNT -> {
-                            ntag.setBankCount(writeCount)
-                            ntag.activateBank(activeBank)
-                            val list = TagReader.readTagTitles(ntag, writeCount)
+                            mifare.setBankCount(writeCount)
+                            mifare.activateBank(activeBank)
+                            val list = TagReader.readTagTitles(mifare, writeCount)
                             setResult(RESULT_OK, Intent(NFCIntent.ACTION_NFC_SCANNED).apply {
                                 putExtras(Bundle().apply {
                                     putInt(NFCIntent.EXTRA_BANK_COUNT, writeCount)
@@ -476,20 +473,20 @@ class NfcActivity : AppCompatActivity() {
                         }
                         NFCIntent.ACTION_LOCK_AMIIBO -> {
                             try {
-                                TagArray.getValidatedData(keyManager, TagReader.scanBankToBytes(ntag, activeBank))
+                                TagArray.getValidatedData(keyManager, TagReader.scanBankToBytes(mifare, activeBank))
                             } catch (ex: Exception) {
                                 throw Exception(getString(R.string.fail_lock))
                             }
-                            ntag.amiiboLock()
+                            mifare.amiiboLock()
                             setResult(RESULT_OK)
                         }
                         NFCIntent.ACTION_UNLOCK_UNIT -> {
-                            if (null == ntag.amiiboPrepareUnlock()) {
+                            if (null == mifare.amiiboPrepareUnlock()) {
                                 val unlockBar = IconifiedSnackbar(
-                                    this@NfcActivity, findViewById(R.id.coordinator)
+                                        this@NfcActivity, findViewById(R.id.coordinator)
                                 ).buildTickerBar(R.string.progress_unlock)
                                 unlockBar.setAction(R.string.proceed) {
-                                    ntag.amiiboUnlock()
+                                    mifare.amiiboUnlock()
                                 }.show()
                                 while (unlockBar.isShown) setResult(RESULT_OK)
                             } else {
@@ -501,11 +498,11 @@ class NfcActivity : AppCompatActivity() {
                         }
                     }
                 } finally {
-                    closeTagSilently(ntag)
+                    closeTagSilently(mifare)
                 }
                 finish()
             } ?: if (prefs.eliteEnabled()) {
-                onEliteVerificationFailed(commandIntent)
+                onEliteVerificationFailed(intent)
             } else {
                 throw Exception(getString(R.string.error_tag_protocol, tagTech))
             }
@@ -516,9 +513,9 @@ class NfcActivity : AppCompatActivity() {
                     getString(R.string.error_tag_rewrite) == error -> {
                         withContext(Dispatchers.Main) {
                             getErrorDialog(
-                                this@NfcActivity, R.string.error_tag_rewrite, R.string.tag_update_only
+                                    this@NfcActivity, R.string.error_tag_rewrite, R.string.tag_update_only
                             ).setPositiveButton(R.string.update) { dialog: DialogInterface, _: Int ->
-                                closeTagSilently(mifare)
+                                closeTagSilently(ntag215)
                                 setResult(RESULT_OK, Intent(NFCIntent.ACTION_UPDATE_TAG).apply {
                                     putExtras(Bundle().apply {
                                         putByteArray(NFCIntent.EXTRA_TAG_DATA, update)
@@ -527,73 +524,82 @@ class NfcActivity : AppCompatActivity() {
                                 dialog.dismiss()
                                 finish()
                             }.setNegativeButton(R.string.cancel) { dialog: DialogInterface, _: Int ->
-                                closeTagSilently(mifare)
+                                closeTagSilently(ntag215)
                                 dialog.dismiss()
                                 finish()
                             }.show()
                         }
                     }
+
                     getString(R.string.uid_key_missing) == error -> {
                         withContext(Dispatchers.Main) {
                             getErrorDialog(
-                                this@NfcActivity, R.string.uid_key_missing, R.string.power_tag_reset
+                                    this@NfcActivity, R.string.uid_key_missing, R.string.power_tag_reset
                             ).setPositiveButton(R.string.proceed) { dialog: DialogInterface, _: Int ->
-                                closeTagSilently(mifare)
+                                closeTagSilently(ntag215)
                                 dialog.dismiss()
                                 finish()
                             }.show()
                         }
                     }
+
                     getString(R.string.fail_encrypt) == error -> {
                         withContext(Dispatchers.Main) {
                             getErrorDialog(
-                                this@NfcActivity, R.string.fail_encrypt, R.string.encryption_fault
+                                    this@NfcActivity, R.string.fail_encrypt, R.string.encryption_fault
                             ).setPositiveButton(R.string.proceed) { dialog: DialogInterface, _: Int ->
-                                closeTagSilently(mifare)
+                                closeTagSilently(ntag215)
                                 dialog.dismiss()
                                 finish()
                             }.show()
                         }
                     }
+
                     prefs.eliteEnabled() -> {
                         when {
                             e is TagLostException -> {
                                 showMessage(R.string.speed_scan)
-                                closeTagSilently(mifare)
+                                closeTagSilently(ntag215)
                             }
+
                             isEliteLockedCause(error) -> {
                                 withContext(Dispatchers.Main) {
                                     getErrorDialog(
-                                        this@NfcActivity, R.string.possible_lock, R.string.prepare_unlock
+                                            this@NfcActivity, R.string.possible_lock, R.string.prepare_unlock
                                     ).setPositiveButton(R.string.unlock) { dialog: DialogInterface, _: Int ->
-                                        closeTagSilently(mifare)
+                                        closeTagSilently(ntag215)
                                         dialog.dismiss()
-                                        getIntent().action = NFCIntent.ACTION_UNLOCK_UNIT
+                                        intent.action = NFCIntent.ACTION_UNLOCK_UNIT
                                         recreate()
                                     }.setNegativeButton(R.string.cancel) { dialog: DialogInterface, _: Int ->
-                                        closeTagSilently(mifare)
+                                        closeTagSilently(ntag215)
                                         dialog.dismiss()
                                         finish()
                                     }.show()
                                 }
                             }
+
                             Debug.hasException(e, NTAG215::class.java.name, "connect") -> {
                                 withContext(Dispatchers.Main) {
-                                    onEliteVerificationFailed(commandIntent)
+                                    onEliteVerificationFailed(intent)
                                 }
                             }
+
                             else -> {}
                         }
                     }
+
                     else -> {
                         when {
                             e is TagLostException -> {
-                                closeTagSilently(mifare)
+                                closeTagSilently(ntag215)
                                 showError("${getString(R.string.tag_disconnect)}\n\n$error")
                             }
+
                             Debug.hasException(e, NTAG215::class.java.name, "connect") -> {
                                 showError("${getString(R.string.error_tag_faulty)}\n\n$error")
                             }
+
                             else -> {
                                 showError(error)
                                 val exception = StringWriter().apply {
@@ -601,7 +607,8 @@ class NfcActivity : AppCompatActivity() {
                                 }
                                 try {
                                     Debug.setClipboardException(this@NfcActivity, exception.toString())
-                                } catch (ignored: Exception) { }
+                                } catch (ignored: Exception) {
+                                }
                             }
                         }
                     }
@@ -610,8 +617,59 @@ class NfcActivity : AppCompatActivity() {
                 showError(getString(R.string.error_unknown))
                 try {
                     Debug.processLogcat(this@NfcActivity)
-                } catch (ignored: IOException) { }
+                } catch (ignored: IOException) {
+                }
             }
+        }
+    }
+
+    private suspend fun onMifareClassic(tag: Tag?) = withContext(Dispatchers.IO) {
+        val command = intent
+        val mode = command.action
+        try {
+            skylanders = Skylanders[tag]
+            infinity = Infinity[tag]
+            skylanders?.let { mifare ->
+                when(mode) {
+                    NFCIntent.ACTION_SCAN_TAG -> {
+                        mifare.authenticate()
+                    }
+                }
+                mifare.close()
+            } ?: infinity?.let { mifare ->
+                when(mode) {
+                    NFCIntent.ACTION_SCAN_TAG -> {
+                        mifare.authenticate()
+                    }
+                }
+                mifare.close()
+            } ?: {
+                showError(getString(R.string.error_nxp_required))
+            }
+        } catch (e: Exception) {
+            Debug.warn(e)
+            Debug.getExceptionCause(e)?.let { error ->
+
+            } ?: {
+                showError(getString(R.string.error_unknown))
+                try {
+                    Debug.processLogcat(this@NfcActivity)
+                } catch (ignored: IOException) {
+                }
+            }
+        }
+    }
+
+    private suspend fun onTagDiscovered(intent: Intent) = withContext(Dispatchers.IO) {
+        setResult(RESULT_CANCELED)
+        val tag = intent.parcelable<Tag>(NfcAdapter.EXTRA_TAG)
+        tagTech = tag.technology()
+        showMessage(R.string.tag_scanning, tagTech)
+        when (tagTech) {
+            getString(R.string.mifare_ultralight) -> onMifareUltralight(tag)
+            getString(R.string.mifare_classic) -> onMifareClassic(tag)
+            getString(R.string.nfciso, "A") -> onMifareUltralight(tag)
+            else -> { }
         }
     }
 
@@ -715,7 +773,7 @@ class NfcActivity : AppCompatActivity() {
     }
 
     private fun cancelAction() {
-        closeTagSilently(mifare)
+        closeTagSilently(ntag215)
         setResult(RESULT_CANCELED)
         finish()
     }

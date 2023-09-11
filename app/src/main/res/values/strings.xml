@@ -378,6 +378,8 @@
     <string name="error_auth_null">Auth result was null</string>
     <string name="error_archive_format">Zip encoding not supported</string>
     <string name="error_unknown">An unknown error has occurred.</string>
+    <string name="error_tag_format">Mifare Classic 1K required!</string>
+    <string name="error_nxp_required">NXP chipset is required!</string>
 
     <string name="fail_update_git">Unable to contact update server!</string>
     <string name="fail_update_url">Update invalid! Please try again.</string>
@@ -387,7 +389,8 @@
     <string name="fail_read_size">Read failed! Unexpected read size.</string>
     <string name="fail_read_uid">Could not read old UID</string>
     <string name="fail_mismatch_uid">Source UID does not match the target!</string>
-    <string name="fail_uid_invalid">Invalid UID (%1$d hex bytes)</string>
+    <string name="fail_uid_invalid">Invalid UID (%1$d byte hex)</string>
+    <string name="fail_primary_key">Sector 0 authentication failed!</string>
     <string name="fail_sector_invalid">Invalid sector (0 – 15)</string>
     <string name="fail_invalid_size">Invalid read result size</string>
     <string name="fail_powertag_keys">Failed to load Power Tag keys</string>

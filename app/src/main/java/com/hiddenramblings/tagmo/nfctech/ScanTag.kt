@@ -9,7 +9,6 @@ import android.os.Bundle
 import androidx.appcompat.app.AlertDialog
 import com.google.android.material.snackbar.Snackbar
 import com.hiddenramblings.tagmo.BrowserActivity
-import com.hiddenramblings.tagmo.BuildConfig
 import com.hiddenramblings.tagmo.NFCIntent
 import com.hiddenramblings.tagmo.Preferences
 import com.hiddenramblings.tagmo.R
@@ -44,7 +43,6 @@ class ScanTag {
         try {
             mifare = NTAG215[tag]
             mifare?.let { ntag ->
-                // ntag.connect()
                 if (!hasTestedElite) {
                     hasTestedElite = true
                     if (ntag.isPowerTag && prefs.eliteEnabled()) isEliteDevice = ntag.isElite

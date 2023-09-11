@@ -55,6 +55,8 @@ object TagArray {
                         }
                         return type
                     }
+                    NfcA::class.java.name == it -> { return getString(R.string.nfciso, "A") }
+                    NfcB::class.java.name == it -> { return getString(R.string.nfciso, "B") }
                     IsoDep::class.java.name == it -> { return getString(R.string.isodep) }
                     Ndef::class.java.name == it -> { return getString(R.string.ndef) }
                     NdefFormatable::class.java.name == it -> { return getString(R.string.ndef_formatable) }

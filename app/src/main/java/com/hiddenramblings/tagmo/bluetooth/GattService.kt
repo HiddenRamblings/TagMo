@@ -46,53 +46,6 @@ import java.nio.charset.Charset
 import java.util.Objects
 import java.util.UUID
 
-/**
- * Service for managing connection and data communication with a GATT server
- * hosted on a given Bluetooth LE device based on core/java/android/bluetooth
- *
- * Android Bluetooth Low Energy Status Codes
- *
- * 0	0x00	BLE_HCI_STATUS_CODE_SUCCESS
- * 1	0x01	BLE_HCI_STATUS_CODE_UNKNOWN_BTLE_COMMAND
- * 2	0x02	BLE_HCI_STATUS_CODE_UNKNOWN_CONNECTION_IDENTIFIER
- * 5	0x05	BLE_HCI_AUTHENTICATION_FAILURE
- * 6	0x06	BLE_HCI_STATUS_CODE_PIN_OR_KEY_MISSING
- * 7	0x07	BLE_HCI_MEMORY_CAPACITY_EXCEEDED
- * 8	0x08	BLE_HCI_CONNECTION_TIMEOUT
- * 12	0x0C	BLE_HCI_STATUS_CODE_COMMAND_DISALLOWED
- * 18	0x12	BLE_HCI_STATUS_CODE_INVALID_BTLE_COMMAND_PARAMETERS
- * 19	0x13	BLE_HCI_REMOTE_USER_TERMINATED_CONNECTION
- * 20	0x14	BLE_HCI_REMOTE_DEV_TERMINATION_DUE_TO_LOW_RESOURCES
- * 21	0x15	BLE_HCI_REMOTE_DEV_TERMINATION_DUE_TO_POWER_OFF
- * 22	0x16	BLE_HCI_LOCAL_HOST_TERMINATED_CONNECTION
- * 26	0x1A	BLE_HCI_UNSUPPORTED_REMOTE_FEATURE
- * 30	0x1E	BLE_HCI_STATUS_CODE_INVALID_LMP_PARAMETERS
- * 31	0x1F	BLE_HCI_STATUS_CODE_UNSPECIFIED_ERROR
- * 34	0x22	BLE_HCI_STATUS_CODE_LMP_RESPONSE_TIMEOUT
- * 36	0x24	BLE_HCI_STATUS_CODE_LMP_PDU_NOT_ALLOWED
- * 40	0x28	BLE_HCI_INSTANT_PASSED
- * 41	0x29	BLE_HCI_PAIRING_WITH_UNIT_KEY_UNSUPPORTED
- * 42	0x2A	BLE_HCI_DIFFERENT_TRANSACTION_COLLISION
- * 58	0x3A	BLE_HCI_CONTROLLER_BUSY
- * 59	0x3B	BLE_HCI_CONN_INTERVAL_UNACCEPTABLE
- * 60	0x3C	BLE_HCI_DIRECTED_ADVERTISER_TIMEOUT
- * 61	0x3D	BLE_HCI_CONN_TERMINATED_DUE_TO_MIC_FAILURE
- * 62	0x3E	BLE_HCI_CONN_FAILED_TO_BE_ESTABLISHED
- * 128	0x80	GATT_NO_RESSOURCES
- * 129	0x81	GATT_INTERNAL_ERROR
- * 130	0x82	GATT_WRONG_STATE
- * 131	0x83	GATT_DB_FULL
- * 132	0x84	GATT_BUSY
- * 133	0x85	GATT_ERROR
- * 135	0x87	GATT_ILLEGAL_PARAMETER
- * 137	0x89	GATT_AUTH_FAIL
- * 138	0x8A	GATT_MORE
- * 139	0x8B	GATT_INVALID_CFG
- * 140	0x8C	GATT_SERVICE_STARTED
- * 141	0x8D	GATT_ENCRYPED_NO_MITM
- * 142	0x8E	GATT_NOT_ENCRYPTED
- **/
-
 @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
 @SuppressLint("MissingPermission")
 class GattService : Service() {
@@ -703,9 +656,11 @@ class GattService : Service() {
             throw IllegalAccessException(getString(R.string.fail_bluetooth_adapter))
         }
         val services = supportedGattServices
-        if (services.isNullOrEmpty()) throw UnsupportedOperationException(
-                getString(R.string.gatt_write_failed, serviceType.logTag)
-        )
+        if (services.isNullOrEmpty()) {
+            throw UnsupportedOperationException(
+                    getString(R.string.gatt_services_null, serviceType.logTag)
+            )
+        }
         for (customService in services) {
             when (customService.uuid) {
                 Nordic.NUS -> {
@@ -714,6 +669,34 @@ class GattService : Service() {
                 }
                 Nordic.LegacyNUS -> {
                     legacyInterface = true
+                    break
+                }
+                else -> {
+                    continue
+                }
+            }
+        }
+        setCharacteristicRX()
+    }
+
+    fun setOmllboServicesUUID()  {
+        if (mBluetoothAdapter == null || mBluetoothGatt == null) {
+            throw IllegalAccessException(getString(R.string.fail_bluetooth_adapter))
+        }
+        val services = supportedGattServices
+        if (services.isNullOrEmpty()) {
+            throw UnsupportedOperationException(
+                    getString(R.string.gatt_services_null, serviceType.logTag)
+            )
+        }
+        for (customService in services) {
+            when (customService.uuid) {
+                Nordic.NUS -> {
+                    omllboInterface = false
+                    break
+                }
+                Nordic.OmllboNUS -> {
+                    omllboInterface = true
                     break
                 }
                 else -> {
@@ -748,9 +731,11 @@ class GattService : Service() {
         val mCustomService = mBluetoothGatt!!.getService(GattNUS)
         if (null == mCustomService) {
             val services = supportedGattServices
-            if (services.isNullOrEmpty()) throw UnsupportedOperationException(
-                    getString(R.string.gatt_write_failed, serviceType.logTag)
-            )
+            if (services.isNullOrEmpty()) {
+                throw UnsupportedOperationException(
+                        getString(R.string.gatt_services_null, serviceType.logTag)
+                )
+            }
             for (service in services) {
                 Debug.verbose(this.javaClass, "GattReadService: ${service.uuid}")
                 mCharacteristicRX = getCharacteristicRX(service)
@@ -786,9 +771,11 @@ class GattService : Service() {
         val mCustomService = mBluetoothGatt!!.getService(GattNUS)
         if (null == mCustomService) {
             val services = supportedGattServices
-            if (services.isNullOrEmpty()) throw UnsupportedOperationException(
-                    getString(R.string.gatt_write_failed, serviceType.logTag)
-            )
+            if (services.isNullOrEmpty()) {
+                throw UnsupportedOperationException(
+                        getString(R.string.gatt_services_null, serviceType.logTag)
+                )
+            }
             for (customService in services) {
                 Debug.verbose(this.javaClass, "GattWriteService: ${customService.uuid}")
                 mCharacteristicTX = getCharacteristicTX(customService)
@@ -1298,8 +1285,24 @@ class GattService : Service() {
 
     companion object {
         private var legacyInterface = false
-        val GattNUS: UUID = if (legacyInterface) Nordic.LegacyNUS else Nordic.NUS
-        val GattTX: UUID = if (legacyInterface) Nordic.LegacyTX else Nordic.TX
-        val GattRX: UUID = if (legacyInterface) Nordic.LegacyRX else Nordic.RX
+        private var omllboInterface = false
+        val GattNUS: UUID = if (legacyInterface)
+            Nordic.LegacyNUS
+        else if (omllboInterface)
+            Nordic.OmllboNUS
+        else
+            Nordic.NUS
+        val GattTX: UUID = if (legacyInterface)
+            Nordic.LegacyTX
+        else if (omllboInterface)
+            Nordic.OmllboTX
+        else
+            Nordic.TX
+        val GattRX: UUID = if (legacyInterface)
+            Nordic.LegacyRX
+        else if (omllboInterface)
+            Nordic.OmllboRX
+        else
+            Nordic.RX
     }
 }

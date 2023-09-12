@@ -67,6 +67,8 @@ import org.json.JSONException
 import org.json.JSONObject
 import java.io.IOException
 import java.text.ParseException
+import java.util.UUID
+
 
 @SuppressLint("NewApi")
 open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener, BluetoothListener {
@@ -128,6 +130,8 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
     private enum class SHEET {
         LOCKED, AMIIBO, MENU, WRITE
     }
+
+    val separator = System.getProperty("line.separator") ?: "\n"
 
     private var browserActivity: BrowserActivity? = null
     private val fragmentHandler = Handler(Looper.getMainLooper())
@@ -641,12 +645,24 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
 
     @SuppressLint("InflateParams")
     private fun displayScanResult(
-        deviceDialog: AlertDialog, device: BluetoothDevice) : View {
+        deviceDialog: AlertDialog, device: BluetoothDevice, services: List<UUID> = listOf()) : View {
         val detectedType = getDeviceType(device)
         val item = this.layoutInflater.inflate(R.layout.device_bluetooth, null)
         item.findViewById<TextView>(R.id.device_name).text = device.name
-        item.findViewById<TextView>(R.id.device_address).text =
-            requireActivity().getString(R.string.device_address, device.address)
+        if (services.isNotEmpty()) {
+            val serviceList = StringBuilder()
+            services.forEachIndexed { index, uuid ->
+                if (services.lastIndex == index)
+                    serviceList.append(uuid)
+                else
+                    serviceList.append(separator).append(uuid)
+            }
+            item.findViewById<TextView>(R.id.device_address).text =
+                    requireActivity().getString(R.string.device_services, serviceList.toString())
+        } else {
+            item.findViewById<TextView>(R.id.device_address).text =
+                    requireActivity().getString(R.string.device_address, device.address)
+        }
 
         item.findViewById<Spinner>(R.id.gatt_type_spinner).apply {
             onItemSelectedListener = object : OnItemSelectedListener {
@@ -692,6 +708,14 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
         }
     }
 
+    private fun getServiceUUIDs(scanResult: ScanResult): List<UUID> {
+        val serviceList: MutableList<UUID> = ArrayList()
+        scanResult.scanRecord!!.serviceUuids.forEach {
+            if (!serviceList.contains(it.uuid)) serviceList.add(it.uuid)
+        }
+        return serviceList
+    }
+
     @SuppressLint("MissingPermission", "NewApi")
     private fun scanBluetoothServices(deviceDialog: AlertDialog) {
         mBluetoothAdapter = mBluetoothAdapter
@@ -716,7 +740,7 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
                     if (!devices.contains(result.device)) {
                         devices.add(result.device)
                         deviceDialog.findViewById<LinearLayout>(R.id.bluetooth_result)?.addView(
-                            displayScanResult(deviceDialog, result.device)
+                            displayScanResult(deviceDialog, result.device, getServiceUUIDs(result))
                         )
                     }
                 }
@@ -730,7 +754,7 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
                     if (!devices.contains(result.device)) {
                         devices.add(result.device)
                         deviceDialog.findViewById<LinearLayout>(R.id.bluetooth_result)?.addView(
-                                displayScanResult(deviceDialog, result.device)
+                                displayScanResult(deviceDialog, result.device, getServiceUUIDs(result))
                         )
                     }
                 }

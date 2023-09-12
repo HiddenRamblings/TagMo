@@ -17,9 +17,9 @@ object Nordic {
     val LegacyTX = UUID.fromString("78290002-d52e-473f-a9f4-f03da7c67dd1")
     val LegacyRX = UUID.fromString("78290003-d52e-473f-a9f4-f03da7c67dd1")
 
-    val omllboNUS: UUID = UUID.fromString("0000ff10-0000-1000-8000-00805f9b34fb")
-    val omllboTX: UUID = UUID.fromString("0000ff11-0000-1000-8000-00805f9b34fb")
-    val omllboRX: UUID = UUID.fromString("0000ff12-0000-1000-8000-00805f9b34fb")
+    val OmllboNUS: UUID = UUID.fromString("0000ff10-0000-1000-8000-00805f9b34fb")
+    val OmllboTX: UUID = UUID.fromString("0000ff11-0000-1000-8000-00805f9b34fb")
+    val OmllboRX: UUID = UUID.fromString("0000ff12-0000-1000-8000-00805f9b34fb")
 
     fun UUID.isUUID(uuid: UUID): Boolean {
        return this.compareTo(uuid) == 0

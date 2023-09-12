@@ -153,7 +153,7 @@ class UpdateManager internal constructor(activity: BrowserActivity) {
                             session.commit(pi.intentSender)
                         }
                     } else {
-                        @Suppress("DEPRECATION")
+                        @Suppress("deprecation")
                         Intent(Intent.ACTION_INSTALL_PACKAGE).apply {
                             setDataAndType(Storage.getFileUri(apk),
                                 browserActivity.getString(R.string.mimetype_apk)

@@ -29,7 +29,7 @@ class ScaledContext(base: Context) : ContextWrapper(base) {
                 intArrayOf(metrics.width(), metrics.height())
             } else {
                 val displayMetrics = DisplayMetrics()
-                @Suppress("DEPRECATION")
+                @Suppress("deprecation")
                 defaultDisplay.getMetrics(displayMetrics)
                 intArrayOf(displayMetrics.widthPixels, displayMetrics.heightPixels)
             }

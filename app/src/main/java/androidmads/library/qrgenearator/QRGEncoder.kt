@@ -121,7 +121,7 @@ class QRGEncoder(data: String?, bundle: Bundle?, type: Int, private var dimensio
                     displayContents = if (Version.isLollipop)
                         PhoneNumberUtils.formatNumber(phone, Locale.getDefault().country)
                     else
-                        @Suppress("DEPRECATION") PhoneNumberUtils.formatNumber(phone)
+                        @Suppress("deprecation") PhoneNumberUtils.formatNumber(phone)
                     title = "Phone"
                 }
             }
@@ -132,7 +132,7 @@ class QRGEncoder(data: String?, bundle: Bundle?, type: Int, private var dimensio
                     displayContents = if (Version.isLollipop)
                         PhoneNumberUtils.formatNumber(sms, Locale.getDefault().country)
                     else
-                        @Suppress("DEPRECATION") PhoneNumberUtils.formatNumber(sms)
+                        @Suppress("deprecation") PhoneNumberUtils.formatNumber(sms)
                     title = "SMS"
                 }
             }
@@ -164,7 +164,7 @@ class QRGEncoder(data: String?, bundle: Bundle?, type: Int, private var dimensio
                         if (Version.isLollipop)
                             PhoneNumberUtils.formatNumber(it, Locale.getDefault().country)
                         else
-                            @Suppress("DEPRECATION") PhoneNumberUtils.formatNumber(it)
+                            @Suppress("deprecation") PhoneNumberUtils.formatNumber(it)
                     )
                 }
                 val uniqueEmails: MutableCollection<String> = HashSet(keysEmail.size)

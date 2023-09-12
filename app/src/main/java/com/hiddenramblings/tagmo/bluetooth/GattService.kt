@@ -154,7 +154,7 @@ class GattService : Service() {
     private fun getCharacteristicValue(characteristic: BluetoothGattCharacteristic, data: ByteArray?) {
         if (data?.isNotEmpty() == true) {
             Debug.warn(this.javaClass, "${characteristic.uuid.logTag} ${data.toHex()}")
-            if (characteristic.uuid.isUUID(GattRX)) {
+            if (characteristic.uuid.isUUID(mCharacteristicRX?.uuid)) {
                 val hexData = data.toHex()
                 when (serviceType) {
                     Nordic.DEVICE.PIXL -> {
@@ -261,7 +261,7 @@ class GattService : Service() {
     private fun getCharacteristicValue(characteristic: BluetoothGattCharacteristic, output: String?) {
         if (!output.isNullOrEmpty()) {
             Debug.warn(this.javaClass, "${characteristic.uuid.logTag} $output")
-            if (characteristic.uuid.isUUID(GattRX)) {
+            if (characteristic.uuid.isUUID(mCharacteristicRX?.uuid)) {
                 if (output.contains(">tag.")) {
                     response = StringBuilder()
                     response.append(output.split(">".toRegex()).toTypedArray()[1])
@@ -470,15 +470,14 @@ class GattService : Service() {
             }
         }
 
+        @RequiresApi(Build.VERSION_CODES.TIRAMISU)
         override fun onCharacteristicRead(
                 gatt: BluetoothGatt, characteristic: BluetoothGattCharacteristic, value: ByteArray, status: Int
         ) {
             if (status == BluetoothGatt.GATT_SUCCESS)
                 getCharacteristicValue(characteristic, value)
         }
-
-
-        @Deprecated("Deprecated in Java", ReplaceWith(""))
+        
         override fun onCharacteristicRead(
                 gatt: BluetoothGatt, characteristic: BluetoothGattCharacteristic, status: Int
         ) {
@@ -491,6 +490,7 @@ class GattService : Service() {
             Debug.info(this.javaClass, "${characteristic.uuid.logTag} onCharacteristicWrite $status")
         }
 
+        @RequiresApi(Build.VERSION_CODES.TIRAMISU)
         override fun onCharacteristicChanged(
                 gatt: BluetoothGatt, characteristic: BluetoothGattCharacteristic, value: ByteArray
         ) {
@@ -507,8 +507,7 @@ class GattService : Service() {
                 else -> { }
             }
         }
-
-        @Deprecated("Deprecated in Java", ReplaceWith(""))
+        
         override fun onCharacteristicChanged(
                 gatt: BluetoothGatt, characteristic: BluetoothGattCharacteristic
         ) {
@@ -619,7 +618,7 @@ class GattService : Service() {
             val value = BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE
             if (Version.isTiramisu) {
                 mBluetoothGatt?.writeDescriptor(descriptorTX, value)
-            } else @Suppress("DEPRECATION") {
+            } else @Suppress("deprecation") {
                 descriptorTX.value = value
                 mBluetoothGatt?.writeDescriptor(descriptorTX)
             }
@@ -707,60 +706,21 @@ class GattService : Service() {
         setCharacteristicRX()
     }
 
-    private fun getCharacteristicRX(mCustomService: BluetoothGattService): BluetoothGattCharacteristic {
-        var mReadCharacteristic = mCustomService.getCharacteristic(GattRX)
-        if (mBluetoothGatt?.readCharacteristic(mReadCharacteristic) != true) run breaking@{
-            mCustomService.characteristics.forEach {
-                val customUUID = it.uuid
-                /*get the read characteristic from the service*/
-                if (customUUID.isUUID(GattRX)) {
-                    Debug.verbose(this.javaClass, "GattReadCharacteristic: $customUUID")
-                    mReadCharacteristic = mCustomService.getCharacteristic(customUUID)
-                    return@breaking
-                }
-            }
-        }
-        return mReadCharacteristic
-    }
-
     @Throws(IllegalAccessException::class, UnsupportedOperationException::class)
     fun setCharacteristicRX() {
         if (mBluetoothAdapter == null || mBluetoothGatt == null) {
             throw IllegalAccessException(getString(R.string.fail_bluetooth_adapter))
         }
-        val mCustomService = mBluetoothGatt!!.getService(GattNUS)
-        if (null == mCustomService) {
-            val services = supportedGattServices
-            if (services.isNullOrEmpty()) {
-                throw UnsupportedOperationException(
-                        getString(R.string.gatt_services_null, serviceType.logTag)
-                )
-            }
-            for (service in services) {
-                Debug.verbose(this.javaClass, "GattReadService: ${service.uuid}")
-                mCharacteristicRX = getCharacteristicRX(service)
-                break
-            }
-        } else {
-            mCharacteristicRX = getCharacteristicRX(mCustomService)
-        }
-        mCharacteristicRX?.let { setCharacteristicNotification(it, true) }
-    }
-
-    private fun getCharacteristicTX(mCustomService: BluetoothGattService): BluetoothGattCharacteristic {
-        var mWriteCharacteristic = mCustomService.getCharacteristic(GattTX)
-        if (!mCustomService.characteristics.contains(mWriteCharacteristic)) {
-            for (characteristic in mCustomService.characteristics) {
-                val customUUID = characteristic.uuid
-                if (customUUID.isUUID(GattTX)) {
-                    Debug.verbose(this.javaClass, "GattWriteCharacteristic: $customUUID")
-                    mWriteCharacteristic = mCustomService.getCharacteristic(customUUID)
-                    break
+        mCharacteristicRX = mBluetoothGatt!!.getService(GattNUS).getCharacteristic(GattRX)
+                ?: mBluetoothGatt!!.services.find { service ->
+                    service.characteristics.any {
+                        it.properties == BluetoothGattCharacteristic.PROPERTY_NOTIFY
+                    }
+                }?.characteristics?.find {
+                    it.properties == BluetoothGattCharacteristic.PROPERTY_NOTIFY
                 }
-
-            }
-        }
-        return mWriteCharacteristic
+                ?: throw UnsupportedOperationException(getString(R.string.characteristic_null))
+        mCharacteristicRX?.let { setCharacteristicNotification(it, true) }
     }
 
     @Throws(IllegalAccessException::class, UnsupportedOperationException::class)
@@ -768,21 +728,15 @@ class GattService : Service() {
         if (mBluetoothAdapter == null || mBluetoothGatt == null) {
             throw IllegalAccessException(getString(R.string.fail_bluetooth_adapter))
         }
-        val mCustomService = mBluetoothGatt!!.getService(GattNUS)
-        if (null == mCustomService) {
-            val services = supportedGattServices
-            if (services.isNullOrEmpty()) {
-                throw UnsupportedOperationException(
-                        getString(R.string.gatt_services_null, serviceType.logTag)
-                )
-            }
-            for (customService in services) {
-                Debug.verbose(this.javaClass, "GattWriteService: ${customService.uuid}")
-                mCharacteristicTX = getCharacteristicTX(customService)
-            }
-        } else {
-            mCharacteristicTX = getCharacteristicTX(mCustomService)
-        }
+        mCharacteristicTX = mBluetoothGatt!!.getService(GattNUS).getCharacteristic(GattTX)
+                ?: mBluetoothGatt!!.services.find { service ->
+                    service.characteristics.any {
+                        it.properties == BluetoothGattCharacteristic.PROPERTY_WRITE_NO_RESPONSE
+                    }
+                }?.characteristics?.find {
+                    it.properties == BluetoothGattCharacteristic.PROPERTY_WRITE_NO_RESPONSE
+                }
+                ?: throw UnsupportedOperationException(getString(R.string.characteristic_null))
         mCharacteristicTX?.let { setCharacteristicNotification(it, true) }
     }
 
@@ -796,7 +750,7 @@ class GattService : Service() {
                     mCharacteristicTX!!, value,
                     BluetoothGattCharacteristic.WRITE_TYPE_DEFAULT
             )
-        } else @Suppress("DEPRECATION") {
+        } else @Suppress("deprecation") {
             mCharacteristicTX!!.value = value
             mBluetoothGatt!!.writeCharacteristic(mCharacteristicTX)
         }
@@ -821,7 +775,7 @@ class GattService : Service() {
                                 mCharacteristicTX!!, chunk,
                                 BluetoothGattCharacteristic.WRITE_TYPE_NO_RESPONSE
                         )
-                    } else @Suppress("DEPRECATION") {
+                    } else @Suppress("deprecation") {
                         mCharacteristicTX!!.value = chunk
                         mBluetoothGatt!!.writeCharacteristic(mCharacteristicTX)
                     }
@@ -860,7 +814,7 @@ class GattService : Service() {
                                     mCharacteristicTX!!, chunk.encodeToByteArray(),
                                     BluetoothGattCharacteristic.WRITE_TYPE_NO_RESPONSE
                             )
-                        } else @Suppress("DEPRECATION") {
+                        } else @Suppress("deprecation") {
                             mCharacteristicTX!!.value = chunk.encodeToByteArray()
                             mBluetoothGatt!!.writeCharacteristic(mCharacteristicTX)
                         }

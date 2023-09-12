@@ -2228,7 +2228,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                 if (Version.isSnowCone) {
                     val bounds: Rect = currentWindowMetrics.bounds
                     ((bounds.width() / (resources.configuration.densityDpi / 160)) + 0.5) / 120
-                } else @Suppress("DEPRECATION") {
+                } else @Suppress("deprecation") {
                     if (Version.isJellyBeanMR)
                         defaultDisplay.getRealMetrics(metrics)
                     else

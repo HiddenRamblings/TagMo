@@ -27,7 +27,7 @@ class GlideTagModule : AppGlideModule() {
                     }
                 }
             } else {
-                @Suppress("DEPRECATION")
+                @Suppress("deprecation")
                 activeNetworkInfo?.run {
                     result = type == ConnectivityManager.TYPE_WIFI
                             || type == ConnectivityManager.TYPE_ETHERNET

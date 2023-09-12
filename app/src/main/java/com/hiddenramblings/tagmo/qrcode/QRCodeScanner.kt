@@ -250,7 +250,7 @@ class QRCodeScanner : AppCompatActivity() {
                     )
                     ImageDecoder.decodeBitmap(source)
                 } else {
-                    @Suppress("DEPRECATION")
+                    @Suppress("deprecation")
                     MediaStore.Images.Media.getBitmap(contentResolver, photoUri)
                 }
                 contentResolver.query(
@@ -279,7 +279,7 @@ class QRCodeScanner : AppCompatActivity() {
                 val bounds: Rect = windowManager.currentWindowMetrics.bounds
                 width = bounds.width()
                 height = bounds.height()
-            } else @Suppress("DEPRECATION") {
+            } else @Suppress("deprecation") {
                 if (Version.isRedVelvet)
                     display?.getRealMetrics(metrics)
                         ?: windowManager.defaultDisplay.getRealMetrics(metrics)
@@ -377,7 +377,7 @@ class QRCodeScanner : AppCompatActivity() {
                 bounds.width()
             else bounds.height()
             ((params * 3 / 4) / (resources.configuration.densityDpi / 160)) + 0.5
-        } else @Suppress("DEPRECATION") {
+        } else @Suppress("deprecation") {
             if (Version.isRedVelvet)
                 display?.getRealMetrics(metrics)
                     ?: windowManager.defaultDisplay.getRealMetrics(metrics)

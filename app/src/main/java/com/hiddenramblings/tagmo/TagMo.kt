@@ -19,16 +19,16 @@ import kotlin.system.exitProcess
 
 inline fun <reified T : Parcelable> Intent.parcelable(key: String): T? = when {
     Version.isTiramisu -> getParcelableExtra(key, T::class.java)
-    else -> @Suppress("DEPRECATION") getParcelableExtra(key) as? T
+    else -> @Suppress("deprecation") getParcelableExtra(key) as? T
 }
 inline fun <reified T : Parcelable> Intent.parcelableArrayList(key: String): ArrayList<T>? = when {
     Version.isTiramisu -> getParcelableArrayListExtra(key, T::class.java)
-    else -> @Suppress("DEPRECATION") getParcelableArrayListExtra(key)
+    else -> @Suppress("deprecation") getParcelableArrayListExtra(key)
 }
 
 inline fun <reified T : Serializable> Intent.serializable(key: String): T? = when {
     Version.isTiramisu -> getSerializableExtra(key, T::class.java)
-    else -> @Suppress("DEPRECATION") getSerializableExtra(key) as? T
+    else -> @Suppress("deprecation") getSerializableExtra(key) as? T
 }
 
 class TagMo : Application() {

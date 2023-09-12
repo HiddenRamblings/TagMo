@@ -195,7 +195,7 @@ class BluetoothHandler(
                 listener.onAdapterMissing()
             } else {
                 try {
-                    @Suppress("DEPRECATION")
+                    @Suppress("deprecation")
                     it.enable()
                 } catch (se: SecurityException) { listener.onPermissionsFailed() }
             }
@@ -210,7 +210,7 @@ class BluetoothHandler(
                 ?: enableBluetoothAdapter(context, if (Version.isJellyBeanMR2) {
                     (context.getSystemService(Context.BLUETOOTH_SERVICE) as BluetoothManager).adapter
                 } else {
-                    @Suppress("DEPRECATION") BluetoothAdapter.getDefaultAdapter()
+                    @Suppress("deprecation") BluetoothAdapter.getDefaultAdapter()
                 })
         } catch (ex: SecurityException) {
             Debug.warn(ex)

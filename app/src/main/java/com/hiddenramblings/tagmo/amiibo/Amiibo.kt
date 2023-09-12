@@ -152,7 +152,7 @@ open class Amiibo : Comparable<Amiibo>, Parcelable {
         releaseDates = if (Version.isTiramisu)
             parcel.readSerializable(null, AmiiboReleaseDates::class.java)
         else
-            @Suppress("DEPRECATION") parcel.readSerializable() as AmiiboReleaseDates?
+            @Suppress("deprecation") parcel.readSerializable() as AmiiboReleaseDates?
     }
 
     companion object {

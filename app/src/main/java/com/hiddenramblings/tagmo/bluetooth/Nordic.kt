@@ -21,7 +21,7 @@ object Nordic {
     val OmllboTX: UUID = UUID.fromString("0000ff11-0000-1000-8000-00805f9b34fb")
     val OmllboRX: UUID = UUID.fromString("0000ff12-0000-1000-8000-00805f9b34fb")
 
-    fun UUID.isUUID(uuid: UUID): Boolean {
+    fun UUID.isUUID(uuid: UUID?): Boolean {
        return this.compareTo(uuid) == 0
     }
 

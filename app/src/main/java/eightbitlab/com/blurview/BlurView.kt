@@ -142,7 +142,7 @@ class BlurView : FrameLayout {
         val algorithm: BlurAlgorithm = if (Version.isSnowCone) {
             RenderEffectBlur()
         } else {
-            @Suppress("DEPRECATION") RenderScriptBlur(context)
+            @Suppress("deprecation") RenderScriptBlur(context)
         }
         return algorithm
     }

@@ -242,7 +242,7 @@ open class BrowserSettings : Parcelable {
         if (Version.isTiramisu)
             parcel.readList(folders, File::class.java.classLoader, File::class.java)
         else
-            @Suppress("DEPRECATION") parcel.readList(folders, File::class.java.classLoader)
+            @Suppress("deprecation") parcel.readList(folders, File::class.java.classLoader)
         query = parcel.readString()
         sort = parcel.readInt()
         filterCharacter = parcel.readString()
@@ -255,7 +255,7 @@ open class BrowserSettings : Parcelable {
         browserRootFolder = if (Version.isTiramisu)
             parcel.readSerializable(File::class.java.classLoader, File::class.java)
         else
-            @Suppress("DEPRECATION") parcel.readSerializable() as? File
+            @Suppress("deprecation") parcel.readSerializable() as? File
         val docs = parcel.readString()
         browserRootDocument = if (!docs.isNullOrEmpty()) Uri.parse(docs) else null
         isRecursiveEnabled = parcel.readByte().toInt() != 0

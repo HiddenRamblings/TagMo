@@ -760,7 +760,7 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
                 }
             }
             scanner?.startScan(listOf(filterLegacy), settings, scanCallbackLegacyLP)
-        } else @Suppress("DEPRECATION") {
+        } else @Suppress("deprecation") {
             scanCallbackNordic =
                 LeScanCallback { device: BluetoothDevice, _: Int, _: ByteArray? ->
                     if (!devices.contains(device)) {
@@ -1044,7 +1044,7 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
                     adapter.bluetoothLeScanner.stopScan(it)
                     adapter.bluetoothLeScanner.flushPendingScanResults(it)
                 }
-            } else @Suppress("DEPRECATION") {
+            } else @Suppress("deprecation") {
                 scanCallbackNordic?.let { adapter.stopLeScan(it) }
                 scanCallbackLegacy?.let { adapter.stopLeScan(it) }
             }

@@ -156,7 +156,7 @@ class HexCodeViewer : AppCompatActivity() {
                 )
                 if (Version.isPie) {
                     bitmapCache.put(i.toString(), holder.itemView.drawToBitmap())
-                } else @Suppress("DEPRECATION") {
+                } else @Suppress("deprecation") {
                     holder.itemView.isDrawingCacheEnabled = true
                     holder.itemView.buildDrawingCache()
                     val drawingCache = holder.itemView.drawingCache

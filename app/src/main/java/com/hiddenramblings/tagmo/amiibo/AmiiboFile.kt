@@ -50,7 +50,7 @@ open class AmiiboFile : Parcelable {
         filePath = if (Version.isTiramisu)
             parcel.readSerializable(null, File::class.java)
         else
-            @Suppress("DEPRECATION") parcel.readSerializable() as File?
+            @Suppress("deprecation") parcel.readSerializable() as File?
         id = parcel.readLong()
         data = ByteArray(parcel.readInt()).also { parcel.readByteArray(it) }
     }

@@ -1020,6 +1020,7 @@ class GattService : Service() {
 
     fun uploadAmiiboFile(tagData: ByteArray, amiibo: Amiibo, index: Int, complete: Boolean) {
         val parameters: ArrayList<String> = arrayListOf()
+        parameters.add("startTagUpload(${tagData.size})")
         for (chunk in tagData.toPortions(128)) {
             val byteString = Base64.encodeToString(
                     chunk, Base64.NO_PADDING or Base64.NO_CLOSE or Base64.NO_WRAP
@@ -1041,7 +1042,10 @@ class GattService : Service() {
                 delayedWriteCharacteristic("tag.$it\n")
             })
         }
-        queueTagCharacteristic("startTagUpload(${tagData.size})")
+        if (commandCallbacks.size == parameters.size) {
+            commandCallbacks[0].run()
+            commandCallbacks.removeAt(0)
+        }
     }
 
     fun setActiveAmiibo(amiiboName: String?, tail: String?) {

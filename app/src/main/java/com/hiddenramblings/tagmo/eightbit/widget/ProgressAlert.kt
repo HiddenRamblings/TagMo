@@ -15,26 +15,24 @@
 package com.hiddenramblings.tagmo.eightbit.widget
 
 import android.content.Context
-import android.content.res.Resources
 import android.graphics.Color
+import android.graphics.drawable.AnimationDrawable
 import android.graphics.drawable.ColorDrawable
-import android.util.TypedValue
 import android.view.LayoutInflater
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
+import androidx.core.view.isVisible
+import com.bumptech.glide.Glide
 import com.hiddenramblings.tagmo.R
 import java.lang.ref.SoftReference
 
 object ProgressAlert {
-    private val Number.toPx get() = TypedValue.applyDimension(
-        TypedValue.COMPLEX_UNIT_DIP, this.toFloat(),
-        Resources.getSystem().displayMetrics
-    ).toInt()
-
     private var dialog: AlertDialog? = null
     private var messageText: SoftReference<TextView>? = null
+    private var uploading: AnimationDrawable? = null
 
-    fun show(context: Context, message: String) : ProgressAlert {
+    fun show(context: Context, message: String, imageUrk: String? = null) : ProgressAlert {
         if (dialog == null) {
             val builder = AlertDialog.Builder(context)
             val view = LayoutInflater.from(context).inflate(R.layout.dialog_progressalert, null).apply {
@@ -43,6 +41,14 @@ object ProgressAlert {
             messageText = SoftReference(view.findViewById<TextView>(R.id.process_text).apply {
                 text = message
             })
+            view.findViewById<ImageView>(R.id.process_image)?.apply {
+                isVisible = imageUrk != null
+                imageUrk?.let {
+                    Glide.with(this).clear(this)
+                    Glide.with(this).load(it).into(this)
+                }
+
+            }
             builder.setView(view)
             dialog = builder.create().also {
                 it.show()

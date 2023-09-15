@@ -985,7 +985,13 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
             NOTICE.CREATE -> R.string.gatt_create
             NOTICE.FORMAT -> R.string.gatt_format
             else -> R.string.gatt_upload
-        })).apply { view?.keepScreenOn = true }
+        }), if (notice == NOTICE.UPLOAD)
+            "https://i.giphy.com/media/hu4jUtEAN0PgL2YY0D/giphy.gif"
+        else
+            null
+        ).apply {
+            view?.keepScreenOn = true
+        }
     }
 
     private fun showTimeoutNotice() {

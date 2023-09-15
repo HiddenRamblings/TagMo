@@ -162,9 +162,11 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
         if (BuildConfig.WEAR_OS) {
             supportActionBar?.hide()
         } else {
-            supportActionBar?.setDisplayShowHomeEnabled(true)
-            supportActionBar?.setDisplayHomeAsUpEnabled(true)
-            supportActionBar?.setHomeAsUpIndicator(R.drawable.ic_menu_24)
+            supportActionBar?.let {
+                it.setDisplayShowHomeEnabled(true)
+                it.setDisplayHomeAsUpEnabled(true)
+                it.setHomeAsUpIndicator(R.drawable.ic_menu_24)
+            }
         }
         setContentView(R.layout.activity_browser)
 

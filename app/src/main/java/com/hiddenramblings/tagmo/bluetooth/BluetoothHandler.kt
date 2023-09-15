@@ -42,7 +42,7 @@ class BluetoothHandler(
 ) {
     private var mBluetoothAdapter: BluetoothAdapter? = null
     private val listener: BluetoothListener
-    private var onRequestLocationQ: ActivityResultLauncher<Array<String>>
+    private var onRequestLocationQ: ActivityResultLauncher<String>
     private var onRequestBluetoothS: ActivityResultLauncher<Array<String>>
     private var onRequestBluetooth: ActivityResultLauncher<Intent>
     private var onRequestLocation: ActivityResultLauncher<String>
@@ -50,14 +50,9 @@ class BluetoothHandler(
 
     init {
         onRequestLocationQ = registry.register(
-            "LocationQ", ActivityResultContracts.RequestMultiplePermissions()
-        ) { permissions: Map<String, Boolean> ->
-            var isLocationAvailable = false
-            permissions.entries.forEach {
-                if (it.key == Manifest.permission.ACCESS_FINE_LOCATION)
-                    isLocationAvailable = it.value
-            }
-            if (isLocationAvailable) requestBluetooth(context) else listener.onPermissionsFailed()
+                "LocationQ", ActivityResultContracts.RequestPermission()
+        ) { granted ->
+            if (granted) requestBluetooth(context) else listener.onPermissionsFailed()
         }
         onRequestBluetoothS = registry.register(
             "BluetoothS", ActivityResultContracts.RequestMultiplePermissions()
@@ -110,7 +105,7 @@ class BluetoothHandler(
             .setPositiveButton(R.string.accept) { dialog: DialogInterface, _: Int ->
                 dialog.dismiss()
                 if (Version.isQuinceTart)
-                    onRequestLocationQ.launch(PERMISSIONS_LOCATION)
+                    onRequestLocationQ.launch(PERMISSION_FINE_LOCATION)
                 else
                     onRequestLocation.launch(PERMISSION_COURSE_LOCATION)
             }
@@ -143,7 +138,7 @@ class BluetoothHandler(
                         if (BuildConfig.GOOGLE_PLAY)
                             showLocationRequest(activity)
                         else
-                            onRequestLocationQ.launch(PERMISSIONS_LOCATION)
+                            onRequestLocationQ.launch(PERMISSION_FINE_LOCATION)
                     }
                 }
             }
@@ -229,10 +224,6 @@ class BluetoothHandler(
     companion object {
         private const val PERMISSION_COURSE_LOCATION = Manifest.permission.ACCESS_COARSE_LOCATION
         private const val PERMISSION_FINE_LOCATION = Manifest.permission.ACCESS_FINE_LOCATION
-        private val PERMISSIONS_LOCATION = arrayOf(
-            PERMISSION_FINE_LOCATION,
-            PERMISSION_COURSE_LOCATION
-        )
         @RequiresApi(Build.VERSION_CODES.S)
         private val PERMISSIONS_BLUETOOTH = arrayOf(
             Manifest.permission.BLUETOOTH_SCAN,

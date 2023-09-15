@@ -39,24 +39,6 @@ object GattArray {
     }
 
     @JvmStatic
-    fun String.toPortions(sizePerPortion: Int): ArrayList<String> {
-        val stringPortions: ArrayList<String> = arrayListOf()
-        val size = this.length
-        if (size <= sizePerPortion) {
-            stringPortions.add(this)
-        } else {
-            var index = 0
-            while (index < size) {
-                stringPortions.add(this.substring(index,
-                    (index + sizePerPortion).coerceAtMost(this.length)
-                ))
-                index += sizePerPortion
-            }
-        }
-        return stringPortions
-    }
-
-    @JvmStatic
     fun String.toUnicode(): String {
         val sb = StringBuilder(this.length * 3)
         for (c in this.toCharArray()) {

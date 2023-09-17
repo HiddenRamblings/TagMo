@@ -21,26 +21,34 @@ class GamesManager {
     private val games = HashMap<String, GameTitles>()
 
     fun getGamesCompatibility(amiiboId: Long): String {
-        val usage = StringBuilder()
+        val usage = StringBuilder(Debug.separator)
         val amiibo3DS = games3DS[amiiboId]
-        if (amiibo3DS?.games?.isNotEmpty() == true) {
-            usage.append("\n3DS:")
+        if (amiibo3DS?.stringList?.isNotBlank() == true) {
+            usage.append(TagMo.appContext.getString(R.string.games_ds))
+            usage.append(Debug.separator).append(Debug.separator)
             usage.append(amiibo3DS.stringList)
-            usage.append("\n")
+        } else {
+            usage.append(TagMo.appContext.getString(R.string.no_games_ds))
         }
+        usage.append(Debug.separator).append(Debug.separator)
         val amiiboWiiU = gamesWiiU[amiiboId]
-        if (amiiboWiiU?.games?.isNotEmpty() == true) {
-            usage.append("\nWiiU:")
+        if (amiiboWiiU?.stringList?.isNotBlank() == true) {
+            usage.append(TagMo.appContext.getString(R.string.games_wiiu))
+            usage.append(Debug.separator).append(Debug.separator)
             usage.append(amiiboWiiU.stringList)
-            usage.append("\n")
+        } else {
+            usage.append(TagMo.appContext.getString(R.string.no_games_wiiu))
         }
+        usage.append(Debug.separator).append(Debug.separator)
         val amiiboSwitch = gamesSwitch[amiiboId]
-        if (amiiboSwitch?.games?.isNotEmpty() == true) {
-            usage.append("\nSwitch:")
+        if (amiiboSwitch?.stringList?.isNotBlank() == true) {
+            usage.append(TagMo.appContext.getString(R.string.games_switch))
+            usage.append(Debug.separator).append(Debug.separator)
             usage.append(amiiboSwitch.stringList)
-            usage.append("\n")
+        } else {
+            usage.append(TagMo.appContext.getString(R.string.no_games_switch))
         }
-        return usage.toString()
+        return usage.append(Debug.separator).toString()
     }
 
     val gameTitles: Collection<GameTitles>

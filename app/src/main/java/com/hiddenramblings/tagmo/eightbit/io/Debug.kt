@@ -52,6 +52,8 @@ object Debug {
         }
     }
 
+    val separator = System.getProperty("line.separator") ?: "\n"
+
     private fun hasDebugging(): Boolean {
         return !mPrefs.disableDebug()
     }
@@ -194,7 +196,6 @@ object Debug {
             + "labels=logcat&template=bug_report.yml&title=[Bug]%3A+")
 
     private fun getDeviceProfile(context: Context): StringBuilder {
-        val separator = System.getProperty("line.separator") ?: "\n"
         val log = StringBuilder(separator)
         log.append(TagMo.versionLabel)
         log.append(separator)
@@ -256,7 +257,6 @@ object Debug {
     @JvmStatic
     fun setClipboardException(context: Context, exception: String?) {
         if (BuildConfig.WEAR_OS) return
-        val separator = System.getProperty("line.separator") ?: "\n"
         val log = getDeviceProfile(context)
         log.append(separator).append(separator).append(exception)
         val subject = context.getString(R.string.git_issue_title, BuildConfig.COMMIT)
@@ -267,7 +267,6 @@ object Debug {
 
     @JvmStatic
     fun processException(context: Context, exception: String?) {
-        val separator = System.getProperty("line.separator") ?: "\n"
         val log = getDeviceProfile(context)
         log.append(separator).append(separator).append(exception)
         submitLogcat(context, log.toString())
@@ -277,7 +276,6 @@ object Debug {
     @Throws(IOException::class)
     fun processLogcat(context: Context) {
         CoroutineScope(Dispatchers.IO).launch(Dispatchers.IO) {
-            val separator = System.getProperty("line.separator") ?: "\n"
             val log = getDeviceProfile(context)
             val mLogcatProc = Runtime.getRuntime().exec(arrayOf(
                 "logcat", "-d", "-t", "256", "--pid=${android.os.Process.myPid()}",

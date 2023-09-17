@@ -192,13 +192,18 @@
                         android:gravity="center"
                         tools:ignore="SmallSp"/>
 
-                    <TextView
-                        android:id="@+id/txtUsage"
+                    <ScrollView
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:textColor="@color/tag_text"
-                        android:textSize="10sp"
-                        tools:ignore="SmallSp"/>
+                        android:layout_height="match_parent">
+
+                        <TextView
+                            android:id="@+id/txtUsage"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:textColor="@color/tag_text"
+                            android:textSize="10sp"
+                            tools:ignore="SmallSp"/>
+                    </ScrollView>
                 </LinearLayout>
             </LinearLayout>
 

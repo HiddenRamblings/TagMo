@@ -131,8 +131,6 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
         LOCKED, AMIIBO, MENU, WRITE
     }
 
-    val separator = System.getProperty("line.separator") ?: "\n"
-
     private var browserActivity: BrowserActivity? = null
     private val fragmentHandler = Handler(Looper.getMainLooper())
 
@@ -655,7 +653,7 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
                 if (services.lastIndex == index)
                     serviceList.append(uuid)
                 else
-                    serviceList.append(separator).append(uuid)
+                    serviceList.append(Debug.separator).append(uuid)
             }
             item.findViewById<TextView>(R.id.device_address).text =
                     requireActivity().getString(R.string.device_services, serviceList.toString())

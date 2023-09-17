@@ -66,6 +66,7 @@
     <string name="write">Write</string>
     <string name="erase">Erase</string>
     <string name="cancel">Cancel</string>
+    <string name="dismiss">Dismiss</string>
     <string name="accept">Accept</string>
     <string name="submit">Submit</string>
     <string name="deny">Deny</string>
@@ -110,6 +111,13 @@
     <string name="game_titles_view">View Compatible Games</string>
     <string name="game_titles_hide">Hide Compatible Games</string>
     <string name="export_flipper_files">Export as Flipper Files</string>
+
+    <string name="games_ds">3DS Compatibility</string>
+    <string name="games_wiiu">WiiU Compatibility</string>
+    <string name="games_switch">Switch Compatibility</string>
+    <string name="no_games_ds">No 3DS compatibility</string>
+    <string name="no_games_wiiu">No WiiU compatibility</string>
+    <string name="no_games_switch">No Switch compatibility</string>
 
     <string name="properties">Properties</string>
     <string name="mii" translatable="false">Mii</string>

@@ -15,7 +15,6 @@ object Flipper {
     private val String.hexFormat : String get() {
         return this.replace(Regex("..(?!$)"), "$0 ")
     }
-    val separator = System.getProperty("line.separator") ?: "\n"
     val directory = Storage.getDownloadDir("TagMo", "Flipper")
 
     fun ByteArray.toNFC(filename: String) {
@@ -26,24 +25,24 @@ object Flipper {
         else
             ByteArray(32).toHex().hexFormat
         val contents = StringBuilder("Filetype: Flipper NFC device")
-                .append(separator).append("Version: 2")
-                .append(separator).append("Device type: NTAG215")
-                .append(separator).append("UID: ")
+                .append(Debug.separator).append("Version: 2")
+                .append(Debug.separator).append("Device type: NTAG215")
+                .append(Debug.separator).append("UID: ")
                 .append(uidHex.substring(0, uidHex.length - 2).hexFormat)
-                .append(separator).append("ATQA: 44 00")
-                .append(separator).append("SAK: 00")
-                .append(separator).append("Signature: ").append(signature)
-                .append(separator).append("Mifare version: 00 04 04 02 01 00 11 03")
-                .append(separator).append("Counter 0: 0")
-                .append(separator).append("Tearing 0: 00")
-                .append(separator).append("Counter 1: 0")
-                .append(separator).append("Tearing 1: 00")
-                .append(separator).append("Counter 2: 0")
-                .append(separator).append("Tearing 2: 00")
-                .append(separator).append("Pages total: 135")
+                .append(Debug.separator).append("ATQA: 44 00")
+                .append(Debug.separator).append("SAK: 00")
+                .append(Debug.separator).append("Signature: ").append(signature)
+                .append(Debug.separator).append("Mifare version: 00 04 04 02 01 00 11 03")
+                .append(Debug.separator).append("Counter 0: 0")
+                .append(Debug.separator).append("Tearing 0: 00")
+                .append(Debug.separator).append("Counter 1: 0")
+                .append(Debug.separator).append("Tearing 1: 00")
+                .append(Debug.separator).append("Counter 2: 0")
+                .append(Debug.separator).append("Tearing 2: 00")
+                .append(Debug.separator).append("Pages total: 135")
         pages.forEachIndexed{ index, bytes ->
             bytes?.let {
-                contents.append(separator).append("Page $index: ${it.toHex().hexFormat}")
+                contents.append(Debug.separator).append("Page $index: ${it.toHex().hexFormat}")
             }
         }
         val nfcFile = File(directory, "$filename.nfc")

@@ -2,6 +2,7 @@ package com.hiddenramblings.tagmo.adapter
 
 import android.annotation.SuppressLint
 import android.graphics.Bitmap
+import android.text.TextUtils
 import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
@@ -111,6 +112,13 @@ class BrowserAdapter(
     private fun handleClickEvent(holder: AmiiboViewHolder) {
         if (null != holder.listener) {
             holder.isExpanded = !holder.isExpanded
+            holder.txtPath?.let {
+                it.ellipsize = if (holder.isExpanded)
+                    TextUtils.TruncateAt.MARQUEE
+                else
+                    TextUtils.TruncateAt.START
+                it.isSelected = holder.isExpanded
+            }
             holder.listener.onAmiiboClicked(holder.itemView, holder.amiiboFile)
         }
     }

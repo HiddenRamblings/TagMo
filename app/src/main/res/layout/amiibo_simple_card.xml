@@ -121,6 +121,7 @@
                 android:textSize="10sp"
                 android:singleLine="true"
                 android:ellipsize="start"
+                android:marqueeRepeatLimit="marquee_forever"
                 android:visibility="gone"/>
         </LinearLayout>
 

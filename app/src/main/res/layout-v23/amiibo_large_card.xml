@@ -141,6 +141,9 @@
                     android:text="@string/amiibo_path_caps"
                     android:textColor="@color/tag_text"
                     android:textSize="10sp"
+                    android:singleLine="true"
+                    android:ellipsize="start"
+                    android:marqueeRepeatLimit="marquee_forever"
                     android:visibility="gone"/>
 
                 <TextView

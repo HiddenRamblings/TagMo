@@ -553,21 +553,6 @@ class GattService : Service() {
     private val mBinder: IBinder = LocalBinder()
 
     /**
-     * Initializes a reference to the local Bluetooth adapter.
-     *
-     * @return Return true if the initialization is successful.
-     */
-    fun initialize(): Boolean {
-        // For API level 18 and above, get a reference to BluetoothAdapter through BluetoothManager.
-        mBluetoothAdapter = if (Version.isJellyBeanMR2) {
-            with (getSystemService(Context.BLUETOOTH_SERVICE) as BluetoothManager) { adapter }
-        } else {
-            @Suppress("deprecation") BluetoothAdapter.getDefaultAdapter()
-        }
-        return mBluetoothAdapter != null
-    }
-
-    /**
      * Connects to the GATT server hosted on the Bluetooth LE device.
      *
      * @param address The device address of the destination device.
@@ -577,10 +562,16 @@ class GattService : Service() {
      * callback.
      */
     fun connect(address: String?): Boolean {
+        mBluetoothAdapter = if (Version.isJellyBeanMR2) {
+            with (getSystemService(Context.BLUETOOTH_SERVICE) as BluetoothManager) { adapter }
+        } else {
+            @Suppress("deprecation") BluetoothAdapter.getDefaultAdapter()
+        }
         if (emptyAdapater || address == null) return false
 
         // Previously connected device.  Try to reconnect.
-        if (address == mBluetoothDeviceAddress) mBluetoothGatt?.let { return it.connect() }
+        if (Version.isJellyBeanMR2 && address == mBluetoothDeviceAddress)
+            mBluetoothGatt?.let { return it.connect() }
         val device = mBluetoothAdapter?.getRemoteDevice(address) ?: return false
         // We want to directly connect to the device, so we are setting the autoConnect
         // parameter to false.

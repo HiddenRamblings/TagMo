@@ -1775,9 +1775,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
     private fun loadAmiiboFiles(rootFolder: File?, recursiveFiles: Boolean) {
         setSnackbarListener(object: SnackbarListener {
             override fun onSnackbarHidden(fakeSnackbar: AnimatedLinearLayout) {
-                viewPager.postDelayed({
-                    nfcFab.loadSavedPosition(prefs)
-                }, TagMo.uiDelay.toLong())
+                nfcFab.loadSavedPosition(prefs)
                 snackbarListener = null
             }
         })
@@ -1799,9 +1797,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
     private fun loadAmiiboDocuments(rootFolder: DocumentFile?, recursiveFiles: Boolean) {
         setSnackbarListener(object: SnackbarListener {
             override fun onSnackbarHidden(fakeSnackbar: AnimatedLinearLayout) {
-                viewPager.postDelayed({
-                    nfcFab.loadSavedPosition(prefs)
-                }, TagMo.uiDelay.toLong())
+                nfcFab.loadSavedPosition(prefs)
                 snackbarListener = null
             }
         })

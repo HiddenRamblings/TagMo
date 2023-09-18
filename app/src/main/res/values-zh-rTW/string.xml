@@ -298,7 +298,7 @@
 
     <string name="custom_tab_back">返回 TagMo</string>
     <string name="gatt_missing">附近沒有可用的GATT設備！</string>
-    <string name="device_invalid">無效的GATT設備！</string>
+    <string name="gatt_connect_fail">無效的GATT設備！</string>
     <string name="gatt_scanning">正在掃描Bluetooth GATT&#8230;</string>
     <string name="gatt_located">正在連接Bluetooth GATT&#8230;</string>
     <string name="gatt_disconnect">GATT連線無法使用！</string>

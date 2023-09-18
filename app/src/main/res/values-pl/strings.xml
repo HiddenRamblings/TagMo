@@ -292,7 +292,7 @@
 
     <string name="custom_tab_back">Powrót do TagMo</string>
     <string name="gatt_missing">Brak urządzeń GATT w pobliżu!</string>
-    <string name="device_invalid">Nieprawidłowe urządzenie GATT!</string>
+    <string name="gatt_connect_fail">Nieprawidłowe urządzenie GATT!</string>
     <string name="gatt_scanning">Skanowanie w poszukiwaniu Bluetooth GATT&#8230;</string>
     <string name="gatt_located">Łączenie z Bluetooth GATT&#8230;</string>
     <string name="gatt_disconnect">Utracono połączenie z urządzeniem GATT!</string>

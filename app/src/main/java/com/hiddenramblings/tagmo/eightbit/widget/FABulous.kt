@@ -26,6 +26,7 @@ import android.view.View.OnTouchListener
 import android.view.ViewGroup.MarginLayoutParams
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.hiddenramblings.tagmo.Preferences
+import com.hiddenramblings.tagmo.TagMo
 import kotlin.math.abs
 
 class FABulous : FloatingActionButton, OnTouchListener {
@@ -130,12 +131,19 @@ class FABulous : FloatingActionButton, OnTouchListener {
 
     override fun onConfigurationChanged(newConfig: Configuration?) {
         super.onConfigurationChanged(newConfig)
-        val bounds = getViewCoordinates(this, x, y)
-        animate().x(bounds[0]).y(bounds[1]).setDuration(0).start()
+        postDelayed({
+            val bounds = getViewCoordinates(this, x, y)
+            animate().x(bounds[0]).y(bounds[1]).setDuration(0).start()
+        }, TagMo.uiDelay.toLong())
     }
 
     fun loadSavedPosition(prefs: Preferences) {
-        animate().x(prefs.fabulousX(this)).y(prefs.fabulousY(this)).setDuration(0).start()
+        postDelayed({
+            val bounds = getViewCoordinates(
+                    this, prefs.fabulousX(this), prefs.fabulousY(this)
+            )
+            animate().x(bounds[0]).y(bounds[1]).setDuration(0).start()
+        }, TagMo.uiDelay.toLong())
     }
 
     companion object {

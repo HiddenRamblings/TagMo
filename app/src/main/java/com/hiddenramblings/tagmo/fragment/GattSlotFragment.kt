@@ -685,9 +685,9 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
             deviceDialog.dismiss()
             deviceProfile = device.name
             deviceAddress = device.address
-            dismissGattDiscovery()
             showConnectionNotice()
             startGattService()
+            dismissGattDiscovery()
         }
         return item
     }
@@ -1276,7 +1276,7 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
         override fun onServiceConnected(component: ComponentName, binder: IBinder) {
             val localBinder = binder as GattService.LocalBinder
             serviceGatt = localBinder.service.apply {
-                if (initialize() && connect(deviceAddress)) {
+                if (connect(deviceAddress)) {
                     serviceType = deviceType
                     maxSlotCount = when (serviceType) {
                         Nordic.DEVICE.FLASK -> 85
@@ -1548,7 +1548,7 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
                     })
                 } else {
                     stopGattService()
-                    Toasty(requireContext()).Short(R.string.device_invalid)
+                    Toasty(requireContext()).Short(R.string.gatt_connect_fail)
                 }
             }
         }

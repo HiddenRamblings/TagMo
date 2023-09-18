@@ -154,7 +154,7 @@ class GattService : Service() {
 
     private fun getCharacteristicValue(characteristic: BluetoothGattCharacteristic, data: ByteArray?) {
         if (data?.isNotEmpty() == true) {
-            Debug.warn(this.javaClass, "${characteristic.uuid.logTag} ${data.toHex()}")
+            Debug.info(this.javaClass, "${characteristic.uuid.logTag} ${data.toHex()}")
             if (characteristic.uuid.isUUID(mCharacteristicRX?.uuid)) {
                 val hexData = data.toHex()
                 when (serviceType) {
@@ -261,7 +261,7 @@ class GattService : Service() {
 
     private fun getCharacteristicValue(characteristic: BluetoothGattCharacteristic, output: String?) {
         if (!output.isNullOrEmpty()) {
-            Debug.warn(this.javaClass, "${characteristic.uuid.logTag} $output")
+            Debug.info(this.javaClass, "${characteristic.uuid.logTag} $output")
             if (characteristic.uuid.isUUID(mCharacteristicRX?.uuid)) {
                 if (output.contains(">tag.")) {
                     response = StringBuilder()
@@ -451,7 +451,7 @@ class GattService : Service() {
         }
 
         override fun onServicesDiscovered(gatt: BluetoothGatt, status: Int) {
-            Debug.warn(this.javaClass, "${serviceType.logTag} onServicesDiscovered $status")
+            Debug.info(this.javaClass, "${serviceType.logTag} onServicesDiscovered $status")
             if (status == BluetoothGatt.GATT_SUCCESS) {
                 if (Version.isLollipop) {
                     gatt.requestMtu(247) // Nordic
@@ -472,7 +472,7 @@ class GattService : Service() {
         }
 
         override fun onMtuChanged(gatt: BluetoothGatt, mtu: Int, status: Int) {
-            Debug.warn(this.javaClass, "${serviceType.logTag} onMtuChange $mtu $status")
+            Debug.info(this.javaClass, "${serviceType.logTag} onMtuChange $mtu $status")
             if (status == BluetoothGatt.GATT_SUCCESS)
                 maxTransmissionUnit = mtu - 3
         }

@@ -51,7 +51,8 @@ class DimensionActivity : AppCompatActivity() {
             Intent(this, javaClass).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP),
             if (Version.isSnowCone)
                 PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_MUTABLE
-            else PendingIntent.FLAG_UPDATE_CURRENT
+            else
+                PendingIntent.FLAG_UPDATE_CURRENT
         )
         try {
             mFilters = arrayOf(IntentFilter("android.nfc.action.NDEF_DISCOVERED").apply {

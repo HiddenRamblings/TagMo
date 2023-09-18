@@ -148,7 +148,8 @@ class UpdateManager internal constructor(activity: BrowserActivity) {
                                 Intent(applicationContext, UpdateReceiver::class.java),
                                 if (Version.isSnowCone)
                                     PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_MUTABLE
-                                else PendingIntent.FLAG_UPDATE_CURRENT
+                                else
+                                    PendingIntent.FLAG_UPDATE_CURRENT
                             )
                             session.commit(pi.intentSender)
                         }

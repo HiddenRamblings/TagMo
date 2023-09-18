@@ -21,7 +21,7 @@ class GamesManager {
     private val games = HashMap<String, GameTitles>()
 
     fun getGamesCompatibility(amiiboId: Long): String {
-        val usage = StringBuilder(Debug.separator)
+        val usage = StringBuilder()
         val amiibo3DS = games3DS[amiiboId]
         if (amiibo3DS?.stringList?.isNotBlank() == true) {
             usage.append(TagMo.appContext.getString(R.string.games_ds))

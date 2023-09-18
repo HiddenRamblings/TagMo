@@ -1,7 +1,7 @@
 <resources>
     <string name="topCenterTextMessage">Place the tag under the phone</string>
 
-    <string name="key_download">Do NOT store keys in root Download folder.</string>
+    <string name="warn_key_download">Do NOT load keys from Download folder.</string>
     <string name="fixed_key_found">&#171;locked-secret&#187; stored / loaded.</string>
     <string name="fixed_key_missing">&#171;locked-secret&#187; missing!</string>
     <string name="unfixed_key_found">&#171;unfixed-info&#187; stored / loaded.</string>
@@ -234,7 +234,7 @@
 
     <string name="pref_menu_return">Return to main menu</string>
     <string name="prefs_configuration">Configuration</string>
-    <string name="pref_import_keys">Import crypto keys</string>
+    <string name="pref_import_keys">Import amitool keys</string>
     <string name="image_loading_details">Image data access</string>
     <string name="enable_tag_validation">NTAG215 validation</string>
     <string name="tag_validation_details">Not all NFC chipsets correctly verify tags.\nDisable to bypass tag compatibility checks.</string>
@@ -271,7 +271,7 @@
     <string name="removing_amiibo_info">Clearing database cache&#8230;</string>
     <string name="update_amiibo_api">AmiiboAPI database updated!</string>
 
-    <string name="locating_keys">Locating Crypto Keys&#8230;</string>
+    <string name="locating_keys">Locating amitool Keys&#8230;</string>
     <string name="refreshing_list">Searching for amiibo&#8230;</string>
     <string name="device_not_found">No device or tags available!</string>
 

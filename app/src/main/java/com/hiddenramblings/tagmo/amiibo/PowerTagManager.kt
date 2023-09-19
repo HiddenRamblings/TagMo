@@ -3,7 +3,6 @@ package com.hiddenramblings.tagmo.amiibo
 import android.util.Base64
 import com.hiddenramblings.tagmo.R
 import com.hiddenramblings.tagmo.TagMo
-import com.hiddenramblings.tagmo.nfctech.TagArray
 import com.hiddenramblings.tagmo.nfctech.TagArray.toHex
 import org.json.JSONException
 import org.json.JSONObject

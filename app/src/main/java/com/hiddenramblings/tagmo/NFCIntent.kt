@@ -1,8 +1,6 @@
 package com.hiddenramblings.tagmo
 
 import android.content.ComponentName
-import android.content.Intent
-import com.hiddenramblings.tagmo.eightbit.os.Version
 
 object NFCIntent {
     @JvmStatic

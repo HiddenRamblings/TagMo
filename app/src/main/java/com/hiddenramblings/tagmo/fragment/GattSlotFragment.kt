@@ -55,6 +55,7 @@ import com.hiddenramblings.tagmo.eightbit.widget.ProgressAlert
 import com.hiddenramblings.tagmo.nfctech.TagArray
 import com.hiddenramblings.tagmo.nfctech.TagArray.toByteArray
 import com.hiddenramblings.tagmo.nfctech.TagArray.toHex
+import com.hiddenramblings.tagmo.nfctech.TagArray.withRandomSerials
 import com.hiddenramblings.tagmo.widget.Toasty
 import com.shawnlin.numberpicker.NumberPicker
 import kotlinx.coroutines.CoroutineScope
@@ -277,7 +278,8 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
                             override fun onAmiiboDataClicked(amiiboFile: AmiiboFile?, count: Int) {
                                 CoroutineScope(Dispatchers.IO).launch {
                                     amiiboFile?.let {
-                                        val amiiboData = it.withRandomSerials(keyManager, count)
+                                        val amiiboData = TagArray.getValidatedAmiibo(keyManager, it)
+                                                .withRandomSerials(count, keyManager)
                                         withContext(Dispatchers.Main) {
                                             writeAmiiboDataCollection(amiiboData)
                                         }

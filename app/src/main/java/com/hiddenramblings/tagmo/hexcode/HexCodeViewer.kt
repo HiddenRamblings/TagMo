@@ -24,7 +24,6 @@ import com.hiddenramblings.tagmo.R
 import com.hiddenramblings.tagmo.TagMo
 import com.hiddenramblings.tagmo.amiibo.Amiibo
 import com.hiddenramblings.tagmo.amiibo.KeyManager
-import com.hiddenramblings.tagmo.amiibo.tagdata.AmiiboData
 import com.hiddenramblings.tagmo.eightbit.io.Debug
 import com.hiddenramblings.tagmo.eightbit.os.Storage
 import com.hiddenramblings.tagmo.eightbit.os.Version

@@ -81,6 +81,7 @@ import com.hiddenramblings.tagmo.nfctech.Foomiibo
 import com.hiddenramblings.tagmo.nfctech.NfcActivity
 import com.hiddenramblings.tagmo.nfctech.ScanTag
 import com.hiddenramblings.tagmo.nfctech.TagArray
+import com.hiddenramblings.tagmo.nfctech.TagArray.withRandomSerials
 import com.hiddenramblings.tagmo.nfctech.TagReader
 import com.hiddenramblings.tagmo.qrcode.QRCodeScanner
 import com.hiddenramblings.tagmo.update.UpdateManager
@@ -973,19 +974,20 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
 
     private fun exportWithRandomSerial(amiiboFile: AmiiboFile?, tagData: ByteArray?, count: Int) {
         CoroutineScope(Dispatchers.IO).launch {
-            val amiiboList = amiiboFile?.withRandomSerials(keyManager, count)
+            val amiiboList = amiiboFile?.let {
+                TagArray.getValidatedAmiibo(keyManager, it).withRandomSerials(count, keyManager)
+            } ?: tagData?.withRandomSerials(count, keyManager)
             amiiboList?.forEachIndexed { index, amiiboData ->
                 try {
                     val outputData = keyManager.encrypt(amiiboData.array)
                     writeFlipperFile(index, outputData)
                 } catch (ex: Exception) {
                     Debug.warn(ex)
-                    withContext(Dispatchers.Main) {
-                        IconifiedSnackbar(this@BrowserActivity, viewPager).buildSnackbar(
-                                getString(R.string.fail_randomize), Snackbar.LENGTH_SHORT
-                        ).show()
-                    }
                 }
+            } ?: withContext(Dispatchers.Main) {
+                IconifiedSnackbar(this@BrowserActivity, viewPager).buildSnackbar(
+                        getString(R.string.fail_randomize), Snackbar.LENGTH_SHORT
+                ).show()
             }
         }
     }
@@ -1010,12 +1012,14 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
             var needsReload = false
 
             val fileName = TagArray.decipherFilename(settings?.amiiboManager, tagData, true)
-            val amiiboList = amiiboFile?.withRandomSerials(keyManager, count)
+            val amiiboList = amiiboFile?.let {
+                TagArray.getValidatedAmiibo(keyManager, it).withRandomSerials(count, keyManager)
+            } ?: tagData?.withRandomSerials(count, keyManager)
             amiiboList?.forEachIndexed { index, amiiboData ->
                 val name = "${fileName}_$index"
                 try {
                     val outputData = keyManager.encrypt(amiiboData.array)
-                    val outputFile: AmiiboFile? = if (cached) {
+                    if (cached) {
                         val path = TagArray.writeBytesToFile(directory, name, outputData)
                         AmiiboFile(File(path), amiiboData.amiiboID, outputData)
                     } else {
@@ -1028,21 +1032,16 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                                 AmiiboFile(File(it), amiiboData.amiiboID, amiiboData.array)
                         }
                     }
-                    if (!needsReload) needsReload = null != outputFile
                 } catch (ex: Exception) {
                     Debug.warn(ex)
                 }
-            }
-            if (needsReload) {
-                withContext(Dispatchers.Main) {
-                    onRootFolderChanged(true)
-                }
-            } else {
-                withContext(Dispatchers.Main) {
-                    IconifiedSnackbar(this@BrowserActivity, viewPager).buildSnackbar(
+            } ?:  withContext(Dispatchers.Main) {
+                IconifiedSnackbar(this@BrowserActivity, viewPager).buildSnackbar(
                         getString(R.string.fail_randomize), Snackbar.LENGTH_SHORT
-                    ).show()
-                }
+                ).show()
+            }
+            withContext(Dispatchers.Main) {
+                onRootFolderChanged(true)
             }
         }
     }
@@ -2403,22 +2402,18 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                 hideFakeSnackbar()
                 onShowSettingsFragment()
             } else {
-                coroutineScope {
-                    uris.map { uri ->
-                        async(Dispatchers.IO) {
+                coroutineScope { uris.map { uri -> async(Dispatchers.IO) {
+                    try {
+                        contentResolver.openInputStream(uri)?.use { inputStream ->
                             try {
-                                contentResolver.openInputStream(uri)?.use { inputStream ->
-                                    try {
-                                        keyManager.evaluateKey(inputStream)
-                                    } catch (ex: Exception) {
-                                        onShowSettingsFragment()
-                                    }
-                                    hideFakeSnackbar()
-                                }
-                            } catch (e: Exception) { Debug.warn(e) }
+                                keyManager.evaluateKey(inputStream)
+                            } catch (ex: Exception) {
+                                onShowSettingsFragment()
+                            }
+                            hideFakeSnackbar()
                         }
-                    }.awaitAll()
-                }
+                    } catch (e: Exception) { Debug.warn(e) }
+                } }.awaitAll() }
                 if (keyManager.isKeyMissing) {
                     onShowSettingsFragment()
                     hideFakeSnackbar()
@@ -2442,30 +2437,22 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                                 onShowSettingsFragment()
                             }
                         } else {
-                            coroutineScope {
-                                directories.map {
-                                    async(Dispatchers.IO) {
-                                        if (it.isDirectory) locateKeyFilesRecursive(it, false)
-                                    }
-                                }.awaitAll()
-                            }
+                            coroutineScope { directories.map { file -> async(Dispatchers.IO) {
+                                if (file.isDirectory) locateKeyFilesRecursive(file, false)
+                            } }.awaitAll() }
                         }
                     }
                 } else {
-                    coroutineScope {
-                        files.map { file ->
-                            async(Dispatchers.IO) {
+                    coroutineScope { files.map { file -> async(Dispatchers.IO) {
+                        try {
+                            FileInputStream(file).use { inputStream ->
                                 try {
-                                    FileInputStream(file).use { inputStream ->
-                                        try {
-                                            keyManager.evaluateKey(inputStream)
-                                        } catch (ignored: Exception) { }
-                                    }
-                                } catch (e: Exception) { Debug.warn(e) }
+                                    keyManager.evaluateKey(inputStream)
+                                } catch (ignored: Exception) { }
                             }
-                        }
-                    }.awaitAll()
-                }
+                        } catch (e: Exception) { Debug.warn(e) }
+                    }
+                    } }.awaitAll() }
                 if (keyManager.isKeyMissing) {
                     onShowSettingsFragment()
                     hideFakeSnackbar()
@@ -2490,21 +2477,17 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                     else
                         locateKeyFilesRecursive(Storage.getFile(prefs.preferEmulated()), true)
                 } else {
-                    coroutineScope {
-                        files.map { file ->
-                            async(Dispatchers.IO) {
+                    coroutineScope { files.map { file -> async(Dispatchers.IO) {
+                        try {
+                            FileInputStream(file).use { inputStream ->
                                 try {
-                                    FileInputStream(file).use { inputStream ->
-                                        try {
-                                            keyManager.evaluateKey(inputStream)
-                                        } catch (ignored: Exception) { }
-                                    }
-                                } catch (e: Exception) {
-                                    Debug.warn(e)
-                                }
+                                    keyManager.evaluateKey(inputStream)
+                                } catch (ignored: Exception) { }
                             }
-                        }.awaitAll()
-                    }
+                        } catch (e: Exception) {
+                            Debug.warn(e)
+                        }
+                    } }.awaitAll() }
                     if (keyManager.isKeyMissing) {
                         onShowSettingsFragment()
                         hideFakeSnackbar()

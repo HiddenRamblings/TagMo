@@ -3,15 +3,7 @@ package com.hiddenramblings.tagmo.amiibo
 import android.os.Parcel
 import android.os.Parcelable
 import androidx.documentfile.provider.DocumentFile
-import com.hiddenramblings.tagmo.amiibo.tagdata.AmiiboData
-import com.hiddenramblings.tagmo.eightbit.io.Debug
 import com.hiddenramblings.tagmo.eightbit.os.Version
-import com.hiddenramblings.tagmo.nfctech.Foomiibo
-import com.hiddenramblings.tagmo.nfctech.TagArray
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
-import kotlinx.coroutines.awaitAll
-import kotlinx.coroutines.coroutineScope
 import java.io.File
 
 open class AmiiboFile : Parcelable {
@@ -53,49 +45,6 @@ open class AmiiboFile : Parcelable {
             @Suppress("deprecation") parcel.readSerializable() as File?
         id = parcel.readLong()
         data = ByteArray(parcel.readInt()).also { parcel.readByteArray(it) }
-    }
-
-    suspend fun withRandomSerials(keyManager: KeyManager, count: Int) : ArrayList<AmiiboData> {
-        val dataList: ArrayList<AmiiboData> = arrayListOf()
-        coroutineScope {
-            val tagData = TagArray.getValidatedAmiibo(keyManager, this@AmiiboFile)
-            (0 until count).map {
-                async(Dispatchers.IO) {
-                    try {
-                        AmiiboData(keyManager.decrypt(tagData)).apply {
-                            uID = Foomiibo.generateRandomUID()
-                        }.also {
-                            dataList.add(it)
-                        }
-                    } catch (e: Exception) {
-                        Debug.warn(e)
-                    }
-                }
-            }.awaitAll()
-        }
-        return dataList
-    }
-
-    suspend fun withRandomSerials(count: Int) : ArrayList<AmiiboData> {
-        val dataList: ArrayList<AmiiboData> = arrayListOf()
-        this@AmiiboFile.data?.let { tagData ->
-            coroutineScope {
-                (0 until count).map {
-                    async(Dispatchers.IO) {
-                        try {
-                            AmiiboData(tagData).apply {
-                                uID = Foomiibo.generateRandomUID()
-                            }.also {
-                                dataList.add(it)
-                            }
-                        } catch (e: Exception) {
-                            Debug.warn(e)
-                        }
-                    }
-                }.awaitAll()
-            }
-        }
-        return dataList
     }
 
     companion object {

@@ -324,22 +324,18 @@ object AmiiboManager {
         val amiiboFiles = ArrayList<AmiiboFile?>()
         val files = rootFolder?.listFiles { _: File?, name: String -> binFileMatches(name) }
         if (!files.isNullOrEmpty()) {
-            coroutineScope {
-                files.map { file ->
-                    async(Dispatchers.IO) {
-                        try {
-                            TagArray.getValidatedFile(keyManager, file).also { data ->
-                                amiiboFiles.add(AmiiboFile(file, Amiibo.dataToId(data), data))
-                            }
-                        } catch (e: Exception) {
-                            if (Debug.getExceptionClass(e) == IOException().javaClass.name)
-                                Debug.verbose(e)
-                            else
-                                Debug.info(e)
-                        }
+            coroutineScope { files.map { file -> async(Dispatchers.IO) {
+                try {
+                    TagArray.getValidatedFile(keyManager, file).also { data ->
+                        amiiboFiles.add(AmiiboFile(file, Amiibo.dataToId(data), data))
                     }
-                }.awaitAll()
-            }
+                } catch (e: Exception) {
+                    if (Debug.getExceptionClass(e) == IOException().javaClass.name)
+                        Debug.verbose(e)
+                    else
+                        Debug.info(e)
+                }
+            } }.awaitAll() }
         } else if (recursiveFiles) {
             val directories = rootFolder?.listFiles()
             if (directories.isNullOrEmpty()) return amiiboFiles
@@ -360,24 +356,20 @@ object AmiiboManager {
         return arrayListOf<AmiiboFile?>().apply {
             val uris = context?.let { AmiiboDocument(it).listFiles(rootFolder.uri, recursiveFiles) }
             if (uris.isNullOrEmpty()) return this
-            coroutineScope {
-                uris.map { uri ->
-                    async(Dispatchers.IO) {
-                        try {
-                            TagArray.getValidatedDocument(keyManager, uri).also { data ->
-                                DocumentFile.fromSingleUri(context, uri).also {
-                                    add(AmiiboFile(it, Amiibo.dataToId(data), data))
-                                }
-                            }
-                        } catch (e: Exception) {
-                            if (Debug.getExceptionClass(e) == IOException().javaClass.name)
-                                Debug.verbose(e)
-                            else
-                                Debug.info(e)
+            coroutineScope { uris.map { uri -> async(Dispatchers.IO) {
+                try {
+                    TagArray.getValidatedDocument(keyManager, uri).also { data ->
+                        DocumentFile.fromSingleUri(context, uri).also {
+                            add(AmiiboFile(it, Amiibo.dataToId(data), data))
                         }
                     }
-                }.awaitAll()
-            }
+                } catch (e: Exception) {
+                    if (Debug.getExceptionClass(e) == IOException().javaClass.name)
+                        Debug.verbose(e)
+                    else
+                        Debug.info(e)
+                }
+            } }.awaitAll() }
         }
     }
 }

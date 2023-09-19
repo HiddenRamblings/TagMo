@@ -7,8 +7,6 @@
  */
 package com.hiddenramblings.tagmo.amiibo.tagdata
 
-import com.hiddenramblings.tagmo.nfctech.TagArray
-
 class AppDataMLPaperJam(appData: ByteArray?) : AppData(appData!!) {
 
     private val sparkleCardHex = "FF FF FF FF FF FF FF"

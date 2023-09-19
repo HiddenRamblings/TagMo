@@ -20,9 +20,14 @@ import com.hiddenramblings.tagmo.amiibo.Amiibo
 import com.hiddenramblings.tagmo.amiibo.AmiiboFile
 import com.hiddenramblings.tagmo.amiibo.AmiiboManager
 import com.hiddenramblings.tagmo.amiibo.KeyManager
+import com.hiddenramblings.tagmo.amiibo.tagdata.AmiiboData
 import com.hiddenramblings.tagmo.eightbit.io.Debug
 import com.hiddenramblings.tagmo.eightbit.os.Storage
 import com.hiddenramblings.tagmo.eightbit.os.Version
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.coroutineScope
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
@@ -136,6 +141,24 @@ object TagArray {
             j++
         }
         return pages
+    }
+
+    suspend fun ByteArray?.withRandomSerials(count: Int, keyManager: KeyManager? = null) : ArrayList<AmiiboData> {
+        val dataList: ArrayList<AmiiboData> = arrayListOf()
+        (keyManager?.decrypt(this) ?: this)?.let { tagData ->
+            coroutineScope { (0 until count).map { async(Dispatchers.IO) {
+                try {
+                    AmiiboData(tagData).apply {
+                        uID = Foomiibo.generateRandomUID()
+                    }.also {
+                        dataList.add(it)
+                    }
+                } catch (e: Exception) {
+                    Debug.warn(e)
+                }
+            } }.awaitAll() }
+        }
+        return dataList
     }
 
     fun Long.toByteArray(): ByteArray {
@@ -355,8 +378,10 @@ object TagArray {
     fun writeBytesToDocument(
         context: Context, directory: DocumentFile, name: String, tagData: ByteArray?
     ): String? {
+        // displayName – name of new document, without any file extension appended; the underlying provider may choose to append the extension
+        // The underlying provider does NOT provide an extension, therefore one IS appended
         val newFile = directory.createFile(
-            context.resources.getStringArray(R.array.mimetype_bin)[0], name
+            context.resources.getStringArray(R.array.mimetype_bin)[0], "$name.bin"
         )
         newFile?.let { file ->
             context.contentResolver.openOutputStream(file.uri).use { it?.write(tagData) }

@@ -488,4 +488,6 @@
     <string name="conversion_message">GitHub and Google Play builds are now universal.\nPlease click continue to resolve installation conflicts.</string>
 
     <string name="disclaimer_general">No statues were harmed in making this product.</string>
+
+    <string name="duplicate_reports">Duplicate bug reports are not required</string>
 </resources>

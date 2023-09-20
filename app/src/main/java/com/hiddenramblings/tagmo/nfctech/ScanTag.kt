@@ -179,7 +179,7 @@ class ScanTag {
                                     e.printStackTrace(PrintWriter(this))
                                 }
                                 try {
-                                    Debug.setClipboardException(activity, exception.toString())
+                                    Debug.clipException(activity, exception.toString())
                                 } catch (ignored: Exception) { }
                             }
                         }

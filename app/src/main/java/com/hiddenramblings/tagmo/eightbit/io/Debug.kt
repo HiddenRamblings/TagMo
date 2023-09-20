@@ -40,6 +40,8 @@ object Debug {
         get() = TagMo.appContext
     private val mPrefs = Preferences(context)
 
+    private var lastBugReport = 0L
+
     private val manufacturer: String by lazy {
         try {
             @SuppressLint("PrivateApi")
@@ -229,7 +231,7 @@ object Debug {
     }
 
     private fun submitLogcat(context: Context, logText: String) {
-        if (BuildConfig.WEAR_OS) return
+        lastBugReport = System.currentTimeMillis()
         val subject = context.getString(R.string.git_issue_title, BuildConfig.COMMIT)
         val selectionTitle = if (logText.contains("AndroidRuntime"))
             context.getString(R.string.logcat_crash)
@@ -254,15 +256,19 @@ object Debug {
         }
     }
 
+    private fun setClipboard(context: Context, subject: String, logText: String) {
+        with (context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager) {
+            setPrimaryClip(ClipData.newPlainText(subject, logText))
+        }
+    }
+
     @JvmStatic
-    fun setClipboardException(context: Context, exception: String?) {
+    fun clipException(context: Context, exception: String?) {
         if (BuildConfig.WEAR_OS) return
         val log = getDeviceProfile(context)
         log.append(separator).append(separator).append(exception)
         val subject = context.getString(R.string.git_issue_title, BuildConfig.COMMIT)
-        with (context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager) {
-            setPrimaryClip(ClipData.newPlainText(subject, log.toString()))
-        }
+        setClipboard(context, subject, log.toString())
     }
 
     @JvmStatic
@@ -294,9 +300,25 @@ object Debug {
             log.setLength(0)
             withContext(Dispatchers.Main) {
                 val subject = context.getString(R.string.git_issue_title, BuildConfig.COMMIT)
-                with (context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager) {
-                    setPrimaryClip(ClipData.newPlainText(subject, logText))
+                if (System.currentTimeMillis() < lastBugReport + 900000) {
+                    if (context is Activity) {
+                        IconifiedSnackbar(context).buildSnackbar(
+                                R.string.duplicate_reports,
+                                R.drawable.ic_support_required_menu,
+                                Snackbar.LENGTH_LONG
+                        ).also { status ->
+                            status.addCallback(object: Snackbar.Callback() {
+                                override fun onDismissed(transientBottomBar: Snackbar?, event: Int) {
+                                    setClipboard(context, subject, logText)
+                                }
+                            })
+                            status.show()
+                        }
+                    }
+                    return@withContext
                 }
+                setClipboard(context, subject, logText)
+                if (BuildConfig.WEAR_OS) return@withContext
                 if (context is Activity) {
                     IconifiedSnackbar(context).buildSnackbar(
                             subject,

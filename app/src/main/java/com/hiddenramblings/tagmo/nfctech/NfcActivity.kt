@@ -606,7 +606,7 @@ class NfcActivity : AppCompatActivity() {
                                     e.printStackTrace(PrintWriter(this))
                                 }
                                 try {
-                                    Debug.setClipboardException(this@NfcActivity, exception.toString())
+                                    Debug.clipException(this@NfcActivity, exception.toString())
                                 } catch (ignored: Exception) {
                                 }
                             }

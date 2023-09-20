@@ -64,17 +64,11 @@ class FABulous : FloatingActionButton, OnTouchListener {
         val parentWidth = viewParent.width
         val parentHeight = viewParent.height
 
-        var newX = x
-        // Don't allow the FAB past the left hand side of the parent
-        newX = layoutParams.leftMargin.toFloat().coerceAtLeast(newX)
-        // Don't allow the FAB past the right hand side of the parent
-        newX = (parentWidth - viewWidth - layoutParams.rightMargin).toFloat().coerceAtMost(newX)
+        val newX = (parentWidth - viewWidth - layoutParams.rightMargin).toFloat()
+                .coerceAtMost(layoutParams.leftMargin.toFloat().coerceAtLeast(x))
 
-        var newY = y
-        // Don't allow the FAB past the top of the parent
-        newY = layoutParams.topMargin.toFloat().coerceAtLeast(newY)
-        // Don't allow the FAB past the bottom of the parent
-        newY = (parentHeight - viewHeight - layoutParams.bottomMargin).toFloat().coerceAtMost(newY)
+        val newY = (parentHeight - viewHeight - layoutParams.bottomMargin).toFloat()
+                .coerceAtMost(layoutParams.topMargin.toFloat().coerceAtLeast(y))
 
         return floatArrayOf(newX, newY)
     }

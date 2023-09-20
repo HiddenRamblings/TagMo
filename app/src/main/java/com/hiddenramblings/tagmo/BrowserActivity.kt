@@ -216,6 +216,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
         }
 
         nfcFab = findViewById<FABulous>(R.id.nfc_fab).apply {
+            (behavior as FloatingActionButton.Behavior).isAutoHideEnabled = false
             loadSavedPosition(prefs)
             setOnMoveListener(object : FABulous.OnViewMovedListener {
                 override fun onActionMove(x: Float, y: Float) {
@@ -240,12 +241,12 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
             @SuppressLint("NewApi")
             override fun onPageSelected(position: Int) {
                 super.onPageSelected(position)
-                hideActionButton()
+                nfcFab.hide()
                 val isEliteEnabled = prefs.eliteEnabled()
                 if (BuildConfig.WEAR_OS) {
                     when (position) {
                         0 -> {
-                            showActionButton()
+                            nfcFab.show()
                             pagerAdapter.browser.run {
                                 amiibosView = browserContent
                                 foomiiboView = foomiiboContent?.apply {
@@ -256,7 +257,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                         }
                         2 -> {
                             if (isEliteEnabled) {
-                                showActionButton()
+                                nfcFab.show()
                             } else {
                                 pagerAdapter.gattSlots.run {
                                     delayedBluetoothEnable()
@@ -277,7 +278,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                 } else {
                     when (position) {
                         0 -> {
-                            showActionButton()
+                            nfcFab.show()
                             setTitle(R.string.tagmo)
                             pagerAdapter.browser.run {
                                 amiibosView = browserContent
@@ -292,7 +293,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                         }
                         2 -> {
                             if (isEliteEnabled) {
-                                showActionButton()
+                                nfcFab.show()
                                 setTitle(R.string.elite_n2)
                                 pagerAdapter.eliteBanks.run {
                                     amiibosView = eliteContent
@@ -1008,8 +1009,6 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
 
             val directory = File(Foomiibo.directory, "Duplicates")
             if (cached) directory.mkdirs()
-
-            var needsReload = false
 
             val fileName = TagArray.decipherFilename(settings?.amiiboManager, tagData, true)
             val amiiboList = amiiboFile?.let {
@@ -2287,18 +2286,6 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                 }
             }
         }
-    }
-
-    private fun hideActionButton() {
-        val behavior = nfcFab.behavior as? FloatingActionButton.Behavior
-        behavior?.isAutoHideEnabled = false
-        nfcFab.hide()
-    }
-
-    private fun showActionButton() {
-        nfcFab.show()
-        val behavior = nfcFab.behavior as? FloatingActionButton.Behavior
-        behavior?.isAutoHideEnabled = true
     }
 
     fun showDonationPanel() {

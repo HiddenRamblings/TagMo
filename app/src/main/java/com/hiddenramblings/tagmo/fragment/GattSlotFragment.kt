@@ -687,9 +687,9 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
             deviceDialog.dismiss()
             deviceProfile = device.name
             deviceAddress = device.address
+            dismissGattDiscovery()
             showConnectionNotice()
             startGattService()
-            dismissGattDiscovery()
         }
         return item
     }

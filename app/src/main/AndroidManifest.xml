@@ -18,7 +18,6 @@
         tools:ignore="ScopedStorage" />
     <uses-permission android:name="${installPermission}" />
     <uses-permission android:name="android.permission.REQUEST_DELETE_PACKAGES" />
-    <!-- uses-permission android:name="android.permission.BLUETOOTH" android:maxSdkVersion="30" / -->
     <uses-permission android:name="android.permission.BLUETOOTH" tools:remove="android:maxSdkVersion" />
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" android:maxSdkVersion="30" />
     <uses-permission android:name="android.permission.BLUETOOTH_SCAN"

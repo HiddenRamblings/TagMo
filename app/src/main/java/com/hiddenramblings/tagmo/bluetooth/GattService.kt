@@ -27,11 +27,12 @@ import android.util.Base64
 import androidx.annotation.RequiresApi
 import com.hiddenramblings.tagmo.R
 import com.hiddenramblings.tagmo.amiibo.Amiibo
+import com.hiddenramblings.tagmo.bluetooth.GattArray.getCharacteristicByProperty
+import com.hiddenramblings.tagmo.bluetooth.GattArray.hasProperty
 import com.hiddenramblings.tagmo.bluetooth.GattArray.toDataBytes
 import com.hiddenramblings.tagmo.bluetooth.GattArray.toFileBytes
 import com.hiddenramblings.tagmo.bluetooth.GattArray.toPortions
 import com.hiddenramblings.tagmo.bluetooth.GattArray.toUnicode
-import com.hiddenramblings.tagmo.bluetooth.Nordic.isUUID
 import com.hiddenramblings.tagmo.bluetooth.Nordic.logTag
 import com.hiddenramblings.tagmo.eightbit.io.Debug
 import com.hiddenramblings.tagmo.eightbit.os.Version
@@ -154,8 +155,8 @@ class GattService : Service() {
 
     private fun getCharacteristicValue(characteristic: BluetoothGattCharacteristic, data: ByteArray?) {
         if (data?.isNotEmpty() == true) {
-            Debug.info(this.javaClass, "${characteristic.uuid.logTag} ${data.toHex()}")
-            if (characteristic.uuid.isUUID(mCharacteristicRX?.uuid)) {
+            Debug.info(Companion::class.java, "${characteristic.uuid.logTag} ${data.toHex()}")
+            if (characteristic.hasProperty(BluetoothGattCharacteristic.PROPERTY_NOTIFY)) {
                 val hexData = data.toHex()
                 when (serviceType) {
                     Nordic.DEVICE.PIXL -> {
@@ -261,8 +262,8 @@ class GattService : Service() {
 
     private fun getCharacteristicValue(characteristic: BluetoothGattCharacteristic, output: String?) {
         if (!output.isNullOrEmpty()) {
-            Debug.info(this.javaClass, "${characteristic.uuid.logTag} $output")
-            if (characteristic.uuid.isUUID(mCharacteristicRX?.uuid)) {
+            Debug.info(Companion::class.java, "${characteristic.uuid.logTag} $output")
+            if (characteristic.hasProperty(BluetoothGattCharacteristic.PROPERTY_NOTIFY)) {
                 if (output.contains(">tag.")) {
                     response = StringBuilder()
                     response.append(output.split(">".toRegex()).toTypedArray()[1])
@@ -379,7 +380,7 @@ class GattService : Service() {
                                     if (dataString.startsWith("tag.download")
                                             && dataString.endsWith("=")
                                     ) continue
-                                    Debug.info(this.javaClass, dataString)
+                                    Debug.info(Companion::class.java, dataString)
                                     try {
                                         it.onFilesDownload(dataString.substring(
                                                 1, dataString.lastIndexOf(")")
@@ -451,10 +452,11 @@ class GattService : Service() {
         }
 
         override fun onServicesDiscovered(gatt: BluetoothGatt, status: Int) {
-            Debug.info(this.javaClass, "${serviceType.logTag} onServicesDiscovered $status")
+            Debug.info(Companion::class.java, "${serviceType.logTag} onServicesDiscovered $status")
             if (status == BluetoothGatt.GATT_SUCCESS) {
                 if (Version.isLollipop) {
                     gatt.requestMtu(247) // Nordic
+                    return
                 }
                 when (serviceType) {
                     Nordic.DEVICE.BLUUP, Nordic.DEVICE.FLASK, Nordic.DEVICE.SLIDE -> {
@@ -472,12 +474,23 @@ class GattService : Service() {
         }
 
         override fun onMtuChanged(gatt: BluetoothGatt, mtu: Int, status: Int) {
-            Debug.info(this.javaClass, "${serviceType.logTag} onMtuChange $mtu $status")
+            Debug.info(Companion::class.java, "${serviceType.logTag} onMtuChange $mtu $status")
             if (status == BluetoothGatt.GATT_SUCCESS)
                 maxTransmissionUnit = mtu - 3
+            when (serviceType) {
+                Nordic.DEVICE.BLUUP, Nordic.DEVICE.FLASK, Nordic.DEVICE.SLIDE -> {
+                    listener?.onBluupServicesDiscovered()
+                }
+                Nordic.DEVICE.PIXL, Nordic.DEVICE.LOOP, Nordic.DEVICE.LINK -> {
+                    listener?.onPixlServicesDiscovered()
+                }
+                Nordic.DEVICE.PUCK -> {
+                    listener?.onPuckServicesDiscovered()
+                }
+                else -> { }
+            }
         }
 
-        @RequiresApi(Build.VERSION_CODES.TIRAMISU)
         override fun onCharacteristicRead(
                 gatt: BluetoothGatt, characteristic: BluetoothGattCharacteristic, value: ByteArray, status: Int
         ) {
@@ -496,10 +509,9 @@ class GattService : Service() {
         override fun onCharacteristicWrite(
                 gatt: BluetoothGatt, characteristic: BluetoothGattCharacteristic, status: Int
         ) {
-            Debug.info(this.javaClass, "${characteristic.uuid.logTag} onCharacteristicWrite $status")
+            Debug.info(Companion::class.java, "${characteristic.uuid.logTag} onCharacteristicWrite $status")
         }
-
-        @RequiresApi(Build.VERSION_CODES.TIRAMISU)
+        
         override fun onCharacteristicChanged(
                 gatt: BluetoothGatt, characteristic: BluetoothGattCharacteristic, value: ByteArray
         ) {
@@ -562,16 +574,11 @@ class GattService : Service() {
      * callback.
      */
     fun connect(address: String?): Boolean {
-        mBluetoothAdapter = if (Version.isJellyBeanMR2) {
-            with (getSystemService(Context.BLUETOOTH_SERVICE) as BluetoothManager) { adapter }
-        } else {
-            @Suppress("deprecation") BluetoothAdapter.getDefaultAdapter()
-        }
+        mBluetoothAdapter = with (getSystemService(Context.BLUETOOTH_SERVICE) as BluetoothManager) { adapter }
         if (emptyAdapater || address == null) return false
 
         // Previously connected device.  Try to reconnect.
-        if (Version.isJellyBeanMR2 && address == mBluetoothDeviceAddress)
-            mBluetoothGatt?.let { return it.connect() }
+        if (address == mBluetoothDeviceAddress) mBluetoothGatt?.let { return it.connect() }
         val device = mBluetoothAdapter?.getRemoteDevice(address) ?: return false
         // We want to directly connect to the device, so we are setting the autoConnect
         // parameter to false.
@@ -605,7 +612,7 @@ class GattService : Service() {
         characteristic?.let {
             mBluetoothGatt?.setCharacteristicNotification(it, enabled)
             try {
-                val descriptor = characteristic.getDescriptor(
+                val descriptor = it.getDescriptor(
                         UUID.fromString("00002902-0000-1000-8000-00805f9b34fb")
                 )
                 val value = BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE
@@ -644,13 +651,8 @@ class GattService : Service() {
             throw IllegalAccessException(getString(R.string.fail_bluetooth_adapter))
         mBluetoothGatt?.let { gatt ->
             mCharacteristicRX = gatt.getService(GattNUS).getCharacteristic(GattRX)
-                    ?: gatt.services.find { service ->
-                        service.characteristics.any {
-                            it.properties == BluetoothGattCharacteristic.PROPERTY_NOTIFY
-                        }
-                    }?.characteristics?.find {
-                        it.properties == BluetoothGattCharacteristic.PROPERTY_NOTIFY
-                    } ?: throw UnsupportedOperationException(getString(R.string.characteristic_null))
+                    ?: gatt.getCharacteristicByProperty(BluetoothGattCharacteristic.PROPERTY_NOTIFY)
+                    ?: throw UnsupportedOperationException(getString(R.string.characteristic_null))
         } ?: throw IllegalAccessException(getString(R.string.fail_bluetooth_adapter))
         setCharacteristicNotification(mCharacteristicRX, true)
     }
@@ -661,13 +663,8 @@ class GattService : Service() {
             throw IllegalAccessException(getString(R.string.fail_bluetooth_adapter))
         mBluetoothGatt?.let { gatt ->
             mCharacteristicTX = gatt.getService(GattNUS).getCharacteristic(GattTX)
-                    ?: gatt.services.find { service ->
-                        service.characteristics.any {
-                            it.properties == BluetoothGattCharacteristic.PROPERTY_WRITE_NO_RESPONSE
-                        }
-                    }?.characteristics?.find {
-                        it.properties == BluetoothGattCharacteristic.PROPERTY_WRITE_NO_RESPONSE
-                    } ?: throw UnsupportedOperationException(getString(R.string.characteristic_null))
+                    ?: gatt.getCharacteristicByProperty(BluetoothGattCharacteristic.PROPERTY_WRITE_NO_RESPONSE)
+                    ?: throw UnsupportedOperationException(getString(R.string.characteristic_null))
         } ?: throw IllegalAccessException(getString(R.string.fail_bluetooth_adapter))
         setCharacteristicNotification(mCharacteristicTX, true)
 
@@ -716,6 +713,10 @@ class GattService : Service() {
         }, commandQueue * chunkTimeout)
     }
 
+    private fun delayedWriteCharacteristic(value: String) {
+        delayedWriteCharacteristic(value.encodeToByteArray())
+    }
+
     private fun queueByteCharacteristic(value: ByteArray) {
         if (null == mCharacteristicTX) {
             try {
@@ -729,10 +730,6 @@ class GattService : Service() {
             commandCallbacks[0].run()
             commandCallbacks.removeAt(0)
         }
-    }
-
-    private fun delayedWriteCharacteristic(value: String) {
-        delayedWriteCharacteristic(value.encodeToByteArray())
     }
 
     private fun queueTagCharacteristic(value: String) {

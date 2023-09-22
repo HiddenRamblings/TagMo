@@ -392,6 +392,20 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
         gattButtonState
     }
 
+    fun getWritableArguments() {
+        arguments?.let { extras ->
+            if (extras.containsKey(NFCIntent.EXTRA_TAG_DATA)) {
+                try {
+                    extras.getByteArray(NFCIntent.EXTRA_TAG_DATA)?.let {
+                        uploadAmiiboData(AmiiboData(it))
+                    }
+                } catch (ignored: Exception) {
+
+                }
+            }
+        }
+    }
+
     private fun onBottomSheetChanged(sheet: SHEET) {
         bottomSheet?.state = BottomSheetBehavior.STATE_COLLAPSED
         bottomSheet?.isFitToContents = true

@@ -28,6 +28,7 @@ import com.hiddenramblings.tagmo.eightbit.io.Debug
 import com.hiddenramblings.tagmo.eightbit.os.Storage
 import com.hiddenramblings.tagmo.eightbit.os.Version
 import com.hiddenramblings.tagmo.nfctech.TagArray
+import com.hiddenramblings.tagmo.nfctech.TagArray.toDecryptedTag
 import com.hiddenramblings.tagmo.nfctech.TagArray.toHex
 import com.hiddenramblings.tagmo.nfctech.TagArray.toHexByteArray
 import com.hiddenramblings.tagmo.widget.Toasty
@@ -51,15 +52,11 @@ class HexCodeViewer : AppCompatActivity() {
         }
         val tagData = intent.getByteArrayExtra(NFCIntent.EXTRA_TAG_DATA)
         val amiiboData = try {
-            keyManager.decrypt(tagData)
-        } catch (e: Exception) {
-            try {
-                keyManager.decrypt(TagArray.getValidatedData(keyManager, tagData))
-            } catch (ex: Exception) {
-                Debug.warn(e)
-                showErrorDialog(R.string.fail_display)
-                return
-            }
+            tagData.toDecryptedTag(keyManager)
+        } catch (ex: Exception) {
+            Debug.warn(ex)
+            showErrorDialog(R.string.fail_display)
+            return
         }
         val listView = findViewById<RecyclerView>(R.id.gridView).apply {
             layoutManager = LinearLayoutManager(this@HexCodeViewer)
@@ -177,10 +174,6 @@ class HexCodeViewer : AppCompatActivity() {
                     }
                 }
             }
-        }
-        if (null == viewBitmap) {
-            Toasty(this@HexCodeViewer).Short(getString(R.string.fail_bitmap))
-            return
         }
         val dir = File(TagMo.downloadDir, "HexCode")
         if (!dir.exists() && !dir.mkdirs()) {

@@ -24,6 +24,7 @@ import com.hiddenramblings.tagmo.amiibo.tagdata.AmiiboData
 import com.hiddenramblings.tagmo.eightbit.io.Debug
 import com.hiddenramblings.tagmo.eightbit.os.Storage
 import com.hiddenramblings.tagmo.eightbit.os.Version
+import com.hiddenramblings.tagmo.nfctech.TagArray.toTagArray
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
@@ -128,6 +129,22 @@ object TagArray {
             } catch (bue: BufferUnderflowException) {
                 buffer.short.toLong()
             }
+        }
+    }
+
+    fun ByteArray.toTagArray(): ByteArray {
+        return this.copyOf(NfcByte.TAG_DATA_SIZE + 8)
+    }
+
+    fun ByteArray.toSignedArray(): ByteArray {
+        return this.copyOf(NfcByte.TAG_FULL_SIZE)
+    }
+
+    fun ByteArray?.toDecryptedTag(keyManager: KeyManager): ByteArray {
+        return try {
+            keyManager.decrypt(this)
+        } catch (e: Exception) {
+            keyManager.decrypt(getValidatedData(keyManager, this))
         }
     }
 

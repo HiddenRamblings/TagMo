@@ -105,7 +105,7 @@ class KeyManager(var context: Context) {
         val decrypted = ByteArray(NfcByte.TAG_DATA_SIZE)
         if (tool.unpack(tagData, NfcByte.TAG_DATA_SIZE, decrypted, decrypted.size) == 0)
             throw Exception(context.getString(R.string.fail_decrypt))
-        return if (tagData.size == NfcByte.TAG_FILE_SIZE)
+        return if (tagData.size == NfcByte.TAG_FULL_SIZE)
             ByteArray(8).copyInto(decrypted.copyInto(tagData), NfcByte.TAG_DATA_SIZE)
         else
             decrypted
@@ -123,7 +123,7 @@ class KeyManager(var context: Context) {
         val encrypted = ByteArray(NfcByte.TAG_DATA_SIZE)
         if (tool.pack(tagData, NfcByte.TAG_DATA_SIZE, encrypted, encrypted.size) == 0)
             throw RuntimeException(context.getString(R.string.fail_encrypt))
-        return if (tagData.size == NfcByte.TAG_FILE_SIZE)
+        return if (tagData.size == NfcByte.TAG_FULL_SIZE)
             ByteArray(8).copyInto(encrypted.copyInto(tagData), NfcByte.TAG_DATA_SIZE)
         else
             encrypted

@@ -101,8 +101,8 @@ class BrowserAdapter(
     }
 
     init {
-        filteredData = data
         setHasStableIds(true)
+        filteredData = data
     }
 
     override fun getItemViewType(position: Int): Int {

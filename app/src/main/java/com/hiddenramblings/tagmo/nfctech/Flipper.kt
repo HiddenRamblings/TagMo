@@ -2,11 +2,11 @@ package com.hiddenramblings.tagmo.nfctech
 
 import android.media.MediaScannerConnection
 import com.hiddenramblings.tagmo.TagMo
-import com.hiddenramblings.tagmo.bluetooth.GattArray.toDataBytes
 import com.hiddenramblings.tagmo.eightbit.io.Debug
 import com.hiddenramblings.tagmo.eightbit.os.Storage
 import com.hiddenramblings.tagmo.nfctech.TagArray.toHex
 import com.hiddenramblings.tagmo.nfctech.TagArray.toPages
+import com.hiddenramblings.tagmo.nfctech.TagArray.toTagArray
 import java.io.File
 import java.io.FileOutputStream
 
@@ -18,10 +18,10 @@ object Flipper {
     val directory = Storage.getDownloadDir("TagMo", "Flipper")
 
     fun ByteArray.toNFC(filename: String) {
-        val pages = this.toDataBytes().toPages()
+        val pages = this.toTagArray().toPages()
         val uidHex = "${pages[0]?.toHex()}${pages[1]?.toHex()}"
-        val signature = if (this.size == NfcByte.TAG_FILE_SIZE)
-            this.copyOfRange(NfcByte.SIGNATURE, NfcByte.TAG_FILE_SIZE).toHex().hexFormat
+        val signature = if (this.size == NfcByte.TAG_FULL_SIZE)
+            this.copyOfRange(NfcByte.SIGNATURE, NfcByte.TAG_FULL_SIZE).toHex().hexFormat
         else
             ByteArray(32).toHex().hexFormat
         val contents = StringBuilder("Filetype: Flipper NFC device")

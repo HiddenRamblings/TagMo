@@ -27,7 +27,7 @@ object GattArray {
     }
 
     fun generateBlank(): ByteArray {
-        val blankData = ByteArray(NfcByte.TAG_FILE_SIZE)
+        val blankData = ByteArray(NfcByte.TAG_FULL_SIZE)
         Foomiibo.generateRandomUID().plus(byteArrayOf(
                 0x48, 0x00, 0x00, 0xE1.toByte(), 0x10, 0x3E, 0x00, 0x03, 0x00, 0xFE.toByte()
         )).copyInto(blankData, 0x00)
@@ -35,14 +35,6 @@ object GattArray {
                 0xBD.toByte(), 0x04, 0x00, 0x00, 0xFF.toByte(), 0x00, 0x05
         ).copyInto(blankData, 0x20B)
         return blankData
-    }
-
-    fun ByteArray.toDataBytes(): ByteArray {
-        return this.copyOf(NfcByte.TAG_DATA_SIZE + 8)
-    }
-
-    fun ByteArray.toFileBytes(): ByteArray {
-        return this.copyOf(NfcByte.TAG_FILE_SIZE)
     }
 
     @JvmStatic

@@ -29,8 +29,6 @@ import com.hiddenramblings.tagmo.R
 import com.hiddenramblings.tagmo.amiibo.Amiibo
 import com.hiddenramblings.tagmo.bluetooth.GattArray.getCharacteristicByProperty
 import com.hiddenramblings.tagmo.bluetooth.GattArray.hasProperty
-import com.hiddenramblings.tagmo.bluetooth.GattArray.toDataBytes
-import com.hiddenramblings.tagmo.bluetooth.GattArray.toFileBytes
 import com.hiddenramblings.tagmo.bluetooth.GattArray.toPortions
 import com.hiddenramblings.tagmo.bluetooth.GattArray.toUnicode
 import com.hiddenramblings.tagmo.bluetooth.Nordic.logTag
@@ -40,6 +38,8 @@ import com.hiddenramblings.tagmo.nfctech.NfcByte
 import com.hiddenramblings.tagmo.nfctech.TagArray
 import com.hiddenramblings.tagmo.nfctech.TagArray.toHex
 import com.hiddenramblings.tagmo.nfctech.TagArray.toPages
+import com.hiddenramblings.tagmo.nfctech.TagArray.toSignedArray
+import com.hiddenramblings.tagmo.nfctech.TagArray.toTagArray
 import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
@@ -842,7 +842,7 @@ class GattService : Service() {
 
     private fun processPuckUpload(slot: Byte) {
         val parameters: ArrayList<ByteArray> = arrayListOf()
-        uploadData.toFileBytes().toPortions(maxTransmissionUnit).forEach {
+        uploadData.toSignedArray().toPortions(maxTransmissionUnit).forEach {
             parameters.add(it)
         }
         parameters.add(byteArrayOf(PUCK.SAVE.bytes, slot))
@@ -856,7 +856,7 @@ class GattService : Service() {
     }
 
     fun uploadAmiiboData(tagData: ByteArray) {
-        val byteData = tagData.toDataBytes()
+        val byteData = tagData.toTagArray()
         when (serviceType) {
             Nordic.DEVICE.LOOP -> {
                 byteData[536] = 0x80.toByte()
@@ -905,7 +905,7 @@ class GattService : Service() {
 
     fun uploadPuckAmiibo(tagData: ByteArray, slot: Int) {
         val parameters: ArrayList<ByteArray> = arrayListOf()
-        tagData.toFileBytes().toPages().forEachIndexed { index, bytes ->
+        tagData.toSignedArray().toPages().forEachIndexed { index, bytes ->
             bytes?.let {
                 parameters.add(byteArrayOf(
                         PUCK.WRITE.bytes, slot.toByte(), (index * NfcByte.PAGE_SIZE).toByte()

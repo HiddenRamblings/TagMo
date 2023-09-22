@@ -60,10 +60,6 @@ class GattSlotAdapter(
         return gattAmiibo.count { it?.id == amiibo.id }
     }
 
-    init {
-        setHasStableIds(true)
-    }
-
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BluupViewHolder {
         return when (VIEW.valueOf(viewType)) {
             VIEW.COMPACT -> CompactViewHolder(parent, settings, listener)

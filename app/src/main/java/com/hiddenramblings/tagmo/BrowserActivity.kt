@@ -578,7 +578,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
         if (result.resultCode != RESULT_OK) return@registerForActivityResult
         result.data?.let { intent ->
             if (NFCIntent.ACTION_NFC_SCANNED != intent.action) return@registerForActivityResult
-            if (intent.hasExtra(NFCIntent.EXTRA_SIGNATURE)) {
+            if (prefs.eliteEnabled() && intent.hasExtra(NFCIntent.EXTRA_SIGNATURE)) {
                 val signature = intent.getStringExtra(NFCIntent.EXTRA_SIGNATURE)
                 prefs.eliteSignature(signature)
                 val activeBank = intent.getIntExtra(
@@ -1091,6 +1091,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
         toolbar.menu.findItem(R.id.mnu_write).isVisible = available
         toolbar.menu.findItem(R.id.mnu_update).isVisible = available
         toolbar.menu.findItem(R.id.mnu_edit).isVisible = available
+        toolbar.menu.findItem(R.id.mnu_gatt).isVisible = available
         toolbar.menu.findItem(R.id.mnu_view_hex).isVisible = available
         toolbar.menu.findItem(R.id.mnu_share_qr).isVisible = available
         toolbar.menu.findItem(R.id.mnu_flipper).isVisible = available
@@ -1152,6 +1153,12 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                                 putByteArray(NFCIntent.EXTRA_TAG_DATA, tagData)
                             })
                     )
+                    return@setOnMenuItemClickListener true
+                }
+                R.id.mnu_gatt -> {
+                    showGattPage(Bundle().apply {
+                        putByteArray(NFCIntent.EXTRA_TAG_DATA, tagData)
+                    })
                     return@setOnMenuItemClickListener true
                 }
                 R.id.mnu_save -> {
@@ -1252,6 +1259,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
         toolbar.menu.findItem(R.id.mnu_write).isVisible = available
         toolbar.menu.findItem(R.id.mnu_update).isVisible = available
         toolbar.menu.findItem(R.id.mnu_edit).isVisible = available
+        toolbar.menu.findItem(R.id.mnu_gatt).isVisible = available
         toolbar.menu.findItem(R.id.mnu_view_hex).isVisible = available
         toolbar.menu.findItem(R.id.mnu_share_qr).isVisible = available
         toolbar.menu.findItem(R.id.mnu_flipper).isVisible = available
@@ -1292,6 +1300,11 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                     } catch (ex: IllegalStateException) {
                         viewPager.adapter = pagerAdapter
                     }
+                    return@setOnMenuItemClickListener true
+                }
+                R.id.mnu_gatt -> {
+                    args.putByteArray(NFCIntent.EXTRA_TAG_DATA, tagData)
+                    showGattPage(args)
                     return@setOnMenuItemClickListener true
                 }
                 R.id.mnu_save -> {
@@ -2331,6 +2344,11 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
     fun showBrowserPage() {
         if (viewPager.currentItem != 0) viewPager.setCurrentItem(0, false)
         pagerAdapter.browser.setFoomiiboVisibility(false)
+    }
+
+    fun showGattPage(extras: Bundle) {
+        val index = if (prefs.eliteEnabled()) 3 else 2
+        if (viewPager.currentItem != index) viewPager.setCurrentItem(index, false)
     }
 
     fun showElitePage(extras: Bundle) {

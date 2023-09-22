@@ -41,8 +41,8 @@ class WriteTagAdapter(private val settings: BrowserSettings?) :
     private val amiiboList: ArrayList<AmiiboFile?> = arrayListOf()
 
     init {
-        filteredData = amiiboFiles
         setHasStableIds(true)
+        filteredData = amiiboFiles
     }
 
     @SuppressLint("NotifyDataSetChanged")

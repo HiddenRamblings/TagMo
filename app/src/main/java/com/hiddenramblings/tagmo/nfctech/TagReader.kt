@@ -26,8 +26,8 @@ object TagReader {
             NfcByte.KEY_FILE_SIZE, NfcByte.KEY_RETAIL_SZ -> {
                 throw IOException(TagMo.appContext.getString(R.string.invalid_tag_key))
             }
-            NfcByte.TAG_FILE_SIZE -> {
-                val signed = ByteArray(NfcByte.TAG_FILE_SIZE)
+            NfcByte.TAG_FULL_SIZE -> {
+                val signed = ByteArray(NfcByte.TAG_FULL_SIZE)
                 DataInputStream(inputStream).readFully(signed)
                 Foomiibo.getDataSignature(signed)
                 signed.copyOfRange(0, NfcByte.TAG_DATA_SIZE)

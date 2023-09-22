@@ -34,6 +34,7 @@ import com.hiddenramblings.tagmo.eightbit.io.Debug
 import com.hiddenramblings.tagmo.eightbit.os.Version
 import com.hiddenramblings.tagmo.nfctech.Foomiibo
 import com.hiddenramblings.tagmo.nfctech.TagArray
+import com.hiddenramblings.tagmo.nfctech.TagArray.toDecryptedTag
 import com.hiddenramblings.tagmo.nfctech.TagArray.toHex
 import com.hiddenramblings.tagmo.nfctech.TagArray.toHexByteArray
 import com.hiddenramblings.tagmo.widget.Toasty
@@ -185,16 +186,11 @@ class TagDataEditor : AppCompatActivity() {
 
         tagData = intent.getByteArrayExtra(NFCIntent.EXTRA_TAG_DATA)
         amiiboData = try {
-            AmiiboData(keyManager.decrypt(tagData))
-        } catch (e: Exception) {
-            try {
-                tagData = TagArray.getValidatedData(keyManager, tagData)
-                AmiiboData(keyManager.decrypt(tagData))
-            } catch (ex: Exception) {
-                Debug.warn(e)
-                showErrorDialog(R.string.fail_display)
-                return
-            }
+            AmiiboData(tagData.toDecryptedTag(keyManager))
+        } catch (ex: Exception) {
+            Debug.warn(ex)
+            showErrorDialog(R.string.fail_display)
+            return
         }
         findViewById<Toolbar>(R.id.toolbar).apply {
             setTitle(R.string.edit_props)

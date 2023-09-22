@@ -91,8 +91,8 @@ class FoomiiboAdapter(
     }
 
     init {
-        filteredData = data
         setHasStableIds(true)
+        filteredData = data
     }
 
     private fun handleClickEvent(holder: FoomiiboViewHolder) {

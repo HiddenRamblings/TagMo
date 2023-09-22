@@ -27,7 +27,7 @@ import java.util.*
 class EliteBankAdapter(
     private val settings: BrowserSettings, private val listener: OnAmiiboClickListener
     ) : RecyclerView.Adapter<EliteBankAdapter.AmiiboViewHolder>(), BrowserSettingsListener {
-    var mPrefs = Preferences(TagMo.appContext)
+    private var mPrefs = Preferences(TagMo.appContext)
     private var amiibos: ArrayList<EliteTag?> = arrayListOf()
     fun setAmiibos(amiibos: ArrayList<EliteTag?>) {
         this.amiibos = amiibos

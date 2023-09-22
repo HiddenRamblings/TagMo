@@ -27,7 +27,9 @@
         android:title="@string/scan_data"
         android:titleCondensed="@string/scan"
         app:showAsAction="ifRoom|withText"/>
-    <item android:title="@string/share_export"
+    <item
+        android:id="@+id/share_export"
+        android:title="@string/share_export"
         app:showAsAction="ifRoom|withText">
         <menu>
             <item

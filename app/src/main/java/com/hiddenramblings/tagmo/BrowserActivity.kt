@@ -1120,7 +1120,11 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
         if (cached) backup.setTitle(R.string.cache)
         toolbar.setOnMenuItemClickListener { menuItem ->
             clickedAmiibo = amiiboFile
-            itemView.performClick()
+            if (menuItem.itemId != R.id.mnu_ignore_tag_id
+                && menuItem.itemId != R.id.mnu_validate
+                && menuItem.itemId != R.id.share_export) {
+                itemView.performClick()
+            }
             val scan = Intent(this, NfcActivity::class.java)
             when (menuItem.itemId) {
                 R.id.mnu_scan -> {

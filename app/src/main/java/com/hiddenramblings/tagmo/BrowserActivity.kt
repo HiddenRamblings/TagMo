@@ -17,6 +17,7 @@ import android.content.res.Configuration
 import android.graphics.Rect
 import android.net.Uri
 import android.os.*
+import android.provider.OpenableColumns
 import android.provider.Settings
 import android.text.method.LinkMovementMethod
 import android.util.DisplayMetrics
@@ -37,6 +38,7 @@ import androidx.appcompat.widget.Toolbar
 import androidx.cardview.widget.CardView
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.content.ContextCompat
+import androidx.core.database.getStringOrNull
 import androidx.core.view.GravityCompat
 import androidx.core.view.MenuCompat
 import androidx.core.view.isGone
@@ -81,6 +83,7 @@ import com.hiddenramblings.tagmo.hexcode.HexCodeViewer
 import com.hiddenramblings.tagmo.nfctech.Flipper.toNFC
 import com.hiddenramblings.tagmo.nfctech.Foomiibo
 import com.hiddenramblings.tagmo.nfctech.NfcActivity
+import com.hiddenramblings.tagmo.nfctech.NfcByte
 import com.hiddenramblings.tagmo.nfctech.ScanTag
 import com.hiddenramblings.tagmo.nfctech.TagArray
 import com.hiddenramblings.tagmo.nfctech.TagArray.withRandomSerials
@@ -423,40 +426,20 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
         }
 
         if (null != intent && null != intent.action) {
-            val binFile = resources.getStringArray(R.array.mimetype_bin)
             if (intent.action == Intent.ACTION_SEND) {
-                if (binFile.contains(intent.type)) {
-                    onLoadSettingsFragment()
-                    fragmentSettings?.validateKeys(intent.parcelable(Intent.EXTRA_STREAM) as Uri?)
-                } else if (intent.type == getString(R.string.mimetype_zip)) {
-                    decompressArchive(intent.parcelable(Intent.EXTRA_STREAM) as Uri?)
-                }
+                processIncomingUri(intent, intent.parcelable(Intent.EXTRA_STREAM) as Uri?)
             } else if (Intent.ACTION_VIEW == intent.action) {
                 try {
                     if (null != intent.clipData) {
                         intent.clipData?.run {
                             for (i in 0 until this.itemCount) {
                                 val uri = this.getItemAt(i).uri
-                                if (binFile.contains(intent.type)) {
-                                    val data = TagReader.readTagDocument(uri)
-                                    updateAmiiboView(data, AmiiboFile(
-                                        uri.path?.let { File(it) }, Amiibo.dataToId(data), data
-                                    ))
-                                } else if (intent.type == getString(R.string.mimetype_zip)) {
-                                    decompressArchive(uri)
-                                }
+                                processIncomingUri(intent, uri)
                             }
                         }
                     } else {
                         intent.data?.let { uri ->
-                            if (binFile.contains(intent.type)) {
-                                val data = TagReader.readTagDocument(uri)
-                                updateAmiiboView(data, AmiiboFile(
-                                    uri.path?.let { File(it) }, Amiibo.dataToId(data), data
-                                ))
-                            } else if (intent.type == getString(R.string.mimetype_zip)) {
-                                decompressArchive(uri)
-                            }
+                            processIncomingUri(intent, uri)
                         }
                     }
                 } catch (ignored: Exception) { }
@@ -1867,6 +1850,19 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
         }
     }
 
+    private fun getUriFIleSize(uri: Uri): Long {
+        return if (uri.scheme.equals("file")) {
+            uri.path?.let { File(it).length() } ?: 0
+        } else if (uri.scheme.equals("content")) {
+            this.contentResolver.query(uri, null, null, null, null)?.use {
+                it.moveToFirst()
+                it.getStringOrNull(it.getColumnIndex(OpenableColumns.SIZE))?.toLong() ?: 0
+            } ?: 0
+        } else {
+            0
+        }
+    }
+
     fun decompressArchive(uri: Uri?) {
         if (Version.isLowerThan(Build.VERSION_CODES.KITKAT) || null == uri) {
             Toasty(this@BrowserActivity).Short(R.string.error_archive_invalid)
@@ -1903,6 +1899,30 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                 Toasty(this@BrowserActivity).Short(R.string.error_archive_format)
                 if (zipFile.exists()) zipFile.delete()
             }
+        }
+    }
+
+    private fun processIncomingUri(intent: Intent, uri: Uri?) {
+        if (null == uri) {
+            Toasty(this@BrowserActivity).Short(R.string.error_uri_unknown)
+            return
+        }
+        val binFile = resources.getStringArray(R.array.mimetype_bin)
+        if (binFile.contains(intent.type)) {
+            val length = getUriFIleSize(uri)
+            if (length >= NfcByte.TAG_DATA_SIZE) {
+                val data = TagReader.readTagDocument(uri)
+                updateAmiiboView(data, AmiiboFile(
+                    uri.path?.let { File(it) }, Amiibo.dataToId(data), data
+                ))
+            } else if (getUriFIleSize(uri) > NfcByte.KEY_FILE_SIZE) {
+                onLoadSettingsFragment()
+                fragmentSettings?.validateKeys(intent.parcelable(Intent.EXTRA_STREAM) as Uri?)
+            } else {
+                Toasty(this@BrowserActivity).Short(R.string.error_uri_size)
+            }
+        } else if (intent.type == getString(R.string.mimetype_zip)) {
+            decompressArchive(uri)
         }
     }
 

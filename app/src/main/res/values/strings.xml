@@ -391,6 +391,7 @@
     <string name="error_amiitool_init">Failed to initialize amiitool</string>
     <string name="error_auth_null">Auth result was null</string>
     <string name="error_archive_format">Zip encoding not supported</string>
+    <string name="error_archive_invalid">Archive extraction failed!</string>
     <string name="error_unknown">An unknown error has occurred.</string>
     <string name="error_tag_format">Mifare Classic 1K required!</string>
     <string name="error_nxp_required">NXP chipset is required!</string>

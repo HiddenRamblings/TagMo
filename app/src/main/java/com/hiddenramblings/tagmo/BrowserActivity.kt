@@ -71,8 +71,10 @@ import com.hiddenramblings.tagmo.eightbit.material.IconifiedSnackbar
 import com.hiddenramblings.tagmo.eightbit.os.Storage
 import com.hiddenramblings.tagmo.eightbit.os.Version
 import com.hiddenramblings.tagmo.eightbit.request.ImageTarget
+import com.hiddenramblings.tagmo.eightbit.util.Zip
 import com.hiddenramblings.tagmo.eightbit.view.AnimatedLinearLayout
 import com.hiddenramblings.tagmo.eightbit.widget.FABulous
+import com.hiddenramblings.tagmo.eightbit.widget.ProgressAlert
 import com.hiddenramblings.tagmo.fragment.BrowserFragment
 import com.hiddenramblings.tagmo.fragment.SettingsFragment
 import com.hiddenramblings.tagmo.hexcode.HexCodeViewer
@@ -97,6 +99,7 @@ import java.io.FileInputStream
 import java.io.IOException
 import java.text.ParseException
 import java.util.*
+
 
 class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
     BrowserAdapter.OnAmiiboClickListener {
@@ -419,27 +422,45 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
             amiiboContainer?.isGone = true
         }
 
-        if (null != intent && null != intent.action && Intent.ACTION_VIEW == intent.action) {
-            try {
-                if (null != intent.clipData) {
-                    intent.clipData?.run {
-                        for (i in 0 until this.itemCount) {
-                            val uri = this.getItemAt(i).uri
-                            val data = TagReader.readTagDocument(uri)
-                            updateAmiiboView(data, AmiiboFile(
-                                uri.path?.let { File(it) }, Amiibo.dataToId(data), data
-                            ))
+        if (null != intent && null != intent.action) {
+            val binFile = resources.getStringArray(R.array.mimetype_bin)
+            if (intent.action == Intent.ACTION_SEND) {
+                if (binFile.contains(intent.type)) {
+                    onLoadSettingsFragment()
+                    fragmentSettings?.validateKeys(intent.parcelable(Intent.EXTRA_STREAM) as Uri?)
+                } else if (intent.type == getString(R.string.mimetype_zip)) {
+                    decompressArchive(intent.parcelable(Intent.EXTRA_STREAM) as Uri?)
+                }
+            } else if (Intent.ACTION_VIEW == intent.action) {
+                try {
+                    if (null != intent.clipData) {
+                        intent.clipData?.run {
+                            for (i in 0 until this.itemCount) {
+                                val uri = this.getItemAt(i).uri
+                                if (binFile.contains(intent.type)) {
+                                    val data = TagReader.readTagDocument(uri)
+                                    updateAmiiboView(data, AmiiboFile(
+                                        uri.path?.let { File(it) }, Amiibo.dataToId(data), data
+                                    ))
+                                } else if (intent.type == getString(R.string.mimetype_zip)) {
+                                    decompressArchive(uri)
+                                }
+                            }
+                        }
+                    } else {
+                        intent.data?.let { uri ->
+                            if (binFile.contains(intent.type)) {
+                                val data = TagReader.readTagDocument(uri)
+                                updateAmiiboView(data, AmiiboFile(
+                                    uri.path?.let { File(it) }, Amiibo.dataToId(data), data
+                                ))
+                            } else if (intent.type == getString(R.string.mimetype_zip)) {
+                                decompressArchive(uri)
+                            }
                         }
                     }
-                } else {
-                    intent.data?.let { uri ->
-                        val data = TagReader.readTagDocument(uri)
-                        updateAmiiboView(data, AmiiboFile(
-                            uri.path?.let { File(it) }, Amiibo.dataToId(data), data
-                        ))
-                    }
-                }
-            } catch (ignored: Exception) { }
+                } catch (ignored: Exception) { }
+            }
         }
 
         loadPTagKeyManager()
@@ -1843,6 +1864,45 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
             loadAmiiboDocuments(rootDocument, settings?.isRecursiveEnabled == true)
         } else {
             loadAmiiboFiles(settings?.browserRootFolder, settings?.isRecursiveEnabled == true)
+        }
+    }
+
+    fun decompressArchive(uri: Uri?) {
+        if (Version.isLowerThan(Build.VERSION_CODES.KITKAT) || null == uri) {
+            Toasty(this@BrowserActivity).Short(R.string.error_archive_invalid)
+            return
+        }
+        val zipFile = File(externalCacheDir, "archive.zip")
+        zipFile.outputStream().use { fileOut ->
+            contentResolver.openInputStream(uri)?.use {
+                it.copyTo(fileOut)
+            }
+        }
+        val folder = Storage.getDownloadDir("TagMo", "Archive")
+        val processDialog = ProgressAlert.show(
+            this, getString(R.string.unzip_item, zipFile.nameWithoutExtension)
+        )
+
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                Zip.extract(zipFile, folder.absolutePath) { progress ->
+                    CoroutineScope(Dispatchers.Main).launch {
+                        val nameProgress = "${zipFile.nameWithoutExtension} (${progress}%) "
+                        processDialog.setMessage(getString(R.string.unzip_item, nameProgress))
+                    }
+                    if (progress == 100) {
+                        zipFile.delete()
+                        CoroutineScope(Dispatchers.Main).launch {
+                            processDialog.dismiss()
+                        }
+                       requestStoragePermission()
+                    }
+                }
+            } catch (iae: IllegalArgumentException) {
+                Debug.error(iae)
+                Toasty(this@BrowserActivity).Short(R.string.error_archive_format)
+                if (zipFile.exists()) zipFile.delete()
+            }
         }
     }
 

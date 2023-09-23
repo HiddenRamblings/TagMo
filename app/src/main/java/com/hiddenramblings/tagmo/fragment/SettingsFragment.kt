@@ -295,7 +295,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
         }
     }
 
-    private fun validateKeys(data: Uri?) {
+    fun validateKeys(data: Uri?) {
         CoroutineScope(Dispatchers.IO).launch {
             try {
                 data?.let {

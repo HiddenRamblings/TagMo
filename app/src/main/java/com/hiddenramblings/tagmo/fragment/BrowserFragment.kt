@@ -52,7 +52,6 @@ import com.hiddenramblings.tagmo.eightbit.io.Debug
 import com.hiddenramblings.tagmo.eightbit.material.IconifiedSnackbar
 import com.hiddenramblings.tagmo.eightbit.os.Storage
 import com.hiddenramblings.tagmo.eightbit.os.Version
-import com.hiddenramblings.tagmo.eightbit.util.Zip
 import com.hiddenramblings.tagmo.eightbit.widget.ProgressAlert
 import com.hiddenramblings.tagmo.nfctech.Foomiibo
 import com.hiddenramblings.tagmo.nfctech.TagArray
@@ -114,39 +113,10 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
     @RequiresApi(Build.VERSION_CODES.KITKAT)
     private val onSelectArchiveFile = registerForActivityResult(
             ActivityResultContracts.OpenDocument()
-    ) { uri -> uri?.let {
+    ) { uri ->
         bottomSheet?.state = BottomSheetBehavior.STATE_COLLAPSED
-        val zipFile = File(requireActivity().externalCacheDir, "archive.zip")
-        zipFile.outputStream().use { fileOut ->
-            requireActivity().contentResolver.openInputStream(it)?.copyTo(fileOut)
-        }
-        val folder = Storage.getDownloadDir("TagMo", "Archive")
-        val processDialog = ProgressAlert.show(
-                requireContext(), getString(R.string.unzip_item, zipFile.nameWithoutExtension)
-        ).apply { view?.keepScreenOn = true }
-
-        CoroutineScope(Dispatchers.IO).launch {
-            try {
-                Zip.extract(zipFile, folder.absolutePath) { progress ->
-                    CoroutineScope(Dispatchers.Main).launch {
-                        val nameProgress = "${zipFile.nameWithoutExtension} (${progress}%) "
-                        processDialog.setMessage(getString(R.string.unzip_item, nameProgress))
-                    }
-                    if (progress == 100) {
-                        zipFile.delete()
-                        CoroutineScope(Dispatchers.Main).launch {
-                            processDialog.dismiss()
-                        }
-                        (activity as? BrowserActivity)?.requestStoragePermission()
-                    }
-                }
-            } catch (iae: IllegalArgumentException) {
-                Debug.error(iae)
-                Toasty(requireContext()).Short(R.string.error_archive_format)
-                if (zipFile.exists()) zipFile.delete()
-            }
-        }
-    } }
+        (requireActivity() as BrowserActivity).decompressArchive(uri)
+    }
 
     private var browserActivity: BrowserActivity? = null
 

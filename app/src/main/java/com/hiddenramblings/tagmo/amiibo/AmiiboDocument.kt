@@ -12,6 +12,7 @@ import com.hiddenramblings.tagmo.Preferences
 import com.hiddenramblings.tagmo.R
 import com.hiddenramblings.tagmo.TagMo
 import java.util.ArrayDeque
+import java.util.Arrays
 import java.util.Queue
 
 @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
@@ -29,10 +30,10 @@ class AmiiboDocument(context: Context) {
         rootUri: Uri, documentId: String, queue: Queue<String>,
         fileCount: MutableInteger, recursiveFiles: Boolean
     ) {
-        val binFiles = listOf(*resources.getStringArray(R.array.mimetype_bin))
+        val binFiles = resources.getStringArray(R.array.mimetype_bin).asList()
         val childrenUri = DocumentsContract.buildChildDocumentsUriUsingTree(rootUri, documentId)
         val cursor: Cursor = try {
-            val selectionArgs = ArrayList(binFiles).apply{
+            val selectionArgs = ArrayList(binFiles).apply {
                 add(DocumentsContract.Document.MIME_TYPE_DIR)
             }.toTypedArray()
             contentResolver.query(

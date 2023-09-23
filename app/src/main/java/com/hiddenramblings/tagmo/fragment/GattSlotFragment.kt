@@ -392,20 +392,6 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
         gattButtonState
     }
 
-    fun getWritableArguments() {
-        arguments?.let { extras ->
-            if (extras.containsKey(NFCIntent.EXTRA_TAG_DATA)) {
-                try {
-                    extras.getByteArray(NFCIntent.EXTRA_TAG_DATA)?.let {
-                        uploadAmiiboData(AmiiboData(it))
-                    }
-                } catch (ignored: Exception) {
-
-                }
-            }
-        }
-    }
-
     private fun onBottomSheetChanged(sheet: SHEET) {
         bottomSheet?.state = BottomSheetBehavior.STATE_COLLAPSED
         bottomSheet?.isFitToContents = true
@@ -1116,6 +1102,23 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
         super.onDestroy()
     }
 
+    fun processArguments() {
+            arguments?.let { extras ->
+                if (extras.containsKey(NFCIntent.EXTRA_TAG_DATA)) {
+                    if (isServiceDiscovered) {
+                        try {
+                            extras.getByteArray(NFCIntent.EXTRA_TAG_DATA)?.let {
+                                uploadAmiiboData(AmiiboData(it))
+                            }
+                        } catch (ignored: Exception) { }
+                    } else {
+                        Toasty(requireActivity()).Long(R.string.fail_no_device)
+                    }
+                }
+            }
+            arguments = null
+    }
+
     private fun onFragmentLoaded() {
         if (statusBar?.isShown != true) {
             fragmentHandler.postDelayed({
@@ -1287,8 +1290,8 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
         selectBluetoothDevice()
     }
 
+    private var isServiceDiscovered = false
     private var gattServerConn: ServiceConnection = object : ServiceConnection {
-        var isServiceDiscovered = false
         override fun onServiceConnected(component: ComponentName, binder: IBinder) {
             val localBinder = binder as GattService.LocalBinder
             serviceGatt = localBinder.service.apply {

@@ -2430,26 +2430,32 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
         pagerAdapter.browser.setFoomiiboVisibility(false)
     }
 
-    fun showGattPage(extras: Bundle) {
+    private fun showGattPage(extras: Bundle) {
         val index = if (prefs.eliteEnabled()) 3 else 2
-        if (viewPager.currentItem != index) viewPager.setCurrentItem(index, false)
+        pagerAdapter.gattSlots.arguments = extras
+        if (viewPager.currentItem != index) {
+            viewPager.setCurrentItem(index, false)
+        } else {
+            pagerAdapter.gattSlots.processArguments()
+        }
     }
 
     fun showElitePage(extras: Bundle) {
+        pagerAdapter.eliteBanks.arguments = extras
         if (viewPager.currentItem == 2) {
-            pagerAdapter.eliteBanks.onHardwareLoaded(extras)
+            pagerAdapter.eliteBanks.processArguments()
             return
         }
         if (TagMo.isUserInputEnabled) {
             setScrollListener(object : ScrollListener {
                 override fun onScrollComplete() {
-                    pagerAdapter.eliteBanks.onHardwareLoaded(extras)
+                    pagerAdapter.eliteBanks.processArguments()
                     scrollListener = null
                 }
             })
         } else {
             viewPager.postDelayed({
-                pagerAdapter.eliteBanks.onHardwareLoaded(extras)
+                pagerAdapter.eliteBanks.processArguments()
             }, TagMo.uiDelay.toLong())
         }
         viewPager.setCurrentItem(2, false)

@@ -907,38 +907,40 @@ class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
             .show()
     }
 
-    fun onHardwareLoaded(extras: Bundle) {
-        try {
-            val bankCount = extras.getInt(
-                NFCIntent.EXTRA_BANK_COUNT, prefs.eliteBankCount()
-            )
-            val activeBank = extras.getInt(
-                NFCIntent.EXTRA_ACTIVE_BANK, prefs.eliteActiveBank()
-            )
-            requireView().findViewById<TextView>(R.id.hardware_info).text = getString(
-                R.string.elite_signature, extras.getString(NFCIntent.EXTRA_SIGNATURE)
-            )
-            eliteBankCount.value = bankCount
-            setRefreshListener(object : RefreshListener {
-                override fun onListRefreshed(amiibos: ArrayList<EliteTag?>) {
-                    refreshListener = null
-                    amiibos[activeBank]?.id?.let {
-                        onBottomSheetChanged(SHEET.AMIIBO)
-                        updateAmiiboView(amiiboTile, null, it, activeBank)
-                        updateAmiiboView(amiiboCard, null, it, activeBank)
-                        Handler(Looper.getMainLooper()).postDelayed({
-                            bottomSheet?.state = BottomSheetBehavior.STATE_EXPANDED
-                        }, 125)
-                    } ?: onBottomSheetChanged(SHEET.MENU)
-                }
-            })
-            updateEliteAdapter(extras.getStringArrayList(NFCIntent.EXTRA_AMIIBO_LIST))
-            bankStats?.text = getString(
-                R.string.bank_stats, eliteBankCount.getValueByPosition(activeBank), bankCount
-            )
-            updateNumberedText(bankCount)
-        } catch (ignored: Exception) {
-            if (amiibos.isEmpty()) onBottomSheetChanged(SHEET.LOCKED)
+    fun processArguments() {
+        arguments?.let { extras ->
+            try {
+                val bankCount = extras.getInt(
+                    NFCIntent.EXTRA_BANK_COUNT, prefs.eliteBankCount()
+                )
+                val activeBank = extras.getInt(
+                    NFCIntent.EXTRA_ACTIVE_BANK, prefs.eliteActiveBank()
+                )
+                requireView().findViewById<TextView>(R.id.hardware_info).text =
+                    getString(R.string.elite_signature, extras.getString(NFCIntent.EXTRA_SIGNATURE))
+                eliteBankCount.value = bankCount
+                setRefreshListener(object : RefreshListener {
+                    override fun onListRefreshed(amiibos: ArrayList<EliteTag?>) {
+                        refreshListener = null
+                        amiibos[activeBank]?.id?.let {
+                            onBottomSheetChanged(SHEET.AMIIBO)
+                            updateAmiiboView(amiiboTile, null, it, activeBank)
+                            updateAmiiboView(amiiboCard, null, it, activeBank)
+                            Handler(Looper.getMainLooper()).postDelayed({
+                                bottomSheet?.state = BottomSheetBehavior.STATE_EXPANDED
+                            }, 125)
+                        } ?: onBottomSheetChanged(SHEET.MENU)
+                    }
+                })
+                updateEliteAdapter(extras.getStringArrayList(NFCIntent.EXTRA_AMIIBO_LIST))
+                bankStats?.text = getString(
+                    R.string.bank_stats, eliteBankCount.getValueByPosition(activeBank), bankCount
+                )
+                updateNumberedText(bankCount)
+            } catch (ignored: Exception) {
+                if (amiibos.isEmpty()) onBottomSheetChanged(SHEET.LOCKED)
+            }
+            arguments = null
         }
     }
 

@@ -2,6 +2,7 @@
 <androidx.wear.widget.drawer.WearableDrawerLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/drawer_layout"
     android:layout_height="match_parent"
     android:layout_width="match_parent">
 
@@ -13,27 +14,6 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:background="?attr/colorPrimary">
-
-                <androidx.appcompat.widget.Toolbar
-                    android:id="@+id/drawer_layout"
-                    android:layout_width="wrap_content"
-                    android:layout_height="@dimen/button_height_min"
-                    app:contentInsetLeft="0dp"
-                    app:contentInsetStart="0dp"
-                    app:contentInsetRight="0dp"
-                    app:contentInsetEnd="0dp"
-                    android:minHeight="?attr/actionBarSize"
-                    android:gravity="center"
-                    android:layout_gravity="center"
-                    android:theme="@style/ThemeOverlay.Popup"
-                    app:popupTheme="@style/ThemeOverlay.PopupTheme" />
-            </LinearLayout>
 
             <com.hiddenramblings.tagmo.eightbit.view.AnimatedLinearLayout
                 android:id="@+id/fake_snackbar"

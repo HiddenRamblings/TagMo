@@ -1540,31 +1540,9 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
     }
 
     fun onCreateWearOptionsMenu() {
-        val toolbar = findViewById<Toolbar>(R.id.drawer_layout)
-        if (!toolbar.menu.hasVisibleItems()) {
-            toolbar.inflateMenu(R.menu.browser_menu)
-            menuSortId = toolbar.menu.findItem(R.id.sort_id)
-            menuSortName = toolbar.menu.findItem(R.id.sort_name)
-            menuSortCharacter = toolbar.menu.findItem(R.id.sort_character)
-            menuSortGameSeries = toolbar.menu.findItem(R.id.sort_game_series)
-            menuSortAmiiboSeries = toolbar.menu.findItem(R.id.sort_amiibo_series)
-            menuSortAmiiboType = toolbar.menu.findItem(R.id.sort_amiibo_type)
-            menuSortFilePath = toolbar.menu.findItem(R.id.sort_file_path)
-            menuFilterGameSeries = toolbar.menu.findItem(R.id.filter_game_series)
-            menuFilterCharacter = toolbar.menu.findItem(R.id.filter_character)
-            menuFilterAmiiboSeries = toolbar.menu.findItem(R.id.filter_amiibo_series)
-            menuFilterAmiiboType = toolbar.menu.findItem(R.id.filter_amiibo_type)
-            menuFilterGameTitles = toolbar.menu.findItem(R.id.filter_game_titles)
-            menuViewSimple = toolbar.menu.findItem(R.id.view_simple)
-            menuViewCompact = toolbar.menu.findItem(R.id.view_compact)
-            menuViewLarge = toolbar.menu.findItem(R.id.view_large)
-            menuViewImage = toolbar.menu.findItem(R.id.view_image)
-            menuRecursiveFiles = toolbar.menu.findItem(R.id.recursive)
-        }
         onSortChanged()
         onViewChanged()
         onRecursiveFilesChanged()
-        toolbar.setOnMenuItemClickListener { item: MenuItem -> onMenuItemClicked(item) }
     }
 
     @SuppressLint("RestrictedApi")

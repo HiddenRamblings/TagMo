@@ -63,7 +63,9 @@
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme" >
+        android:theme="@style/AppTheme"
+        tools:targetApi="TIRAMISU"
+        tools:ignore="RtlEnabled">
         <activity
             android:name=".BrowserActivity"
             android:configChanges="orientation|screenLayout|screenSize|smallestScreenSize"

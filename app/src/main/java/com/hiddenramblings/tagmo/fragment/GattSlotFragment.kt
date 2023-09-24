@@ -109,6 +109,7 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
     private var scanCallbackNordic: LeScanCallback? = null
     private var scanCallbackLegacy: LeScanCallback? = null
     private var serviceGatt: GattService? = null
+    private var isServiceDiscovered = false
     private var deviceProfile: String? = null
     private var deviceAddress: String? = null
     private var maxSlotCount = 0
@@ -1020,6 +1021,7 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
     fun stopGattService() {
         if (null == context) return
         onBottomSheetChanged(SHEET.LOCKED)
+        isServiceDiscovered = false
         deviceProfile = null
         deviceAddress = null
         deviceType = Nordic.DEVICE.GATT
@@ -1290,7 +1292,6 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
         selectBluetoothDevice()
     }
 
-    private var isServiceDiscovered = false
     private var gattServerConn: ServiceConnection = object : ServiceConnection {
         override fun onServiceConnected(component: ComponentName, binder: IBinder) {
             val localBinder = binder as GattService.LocalBinder

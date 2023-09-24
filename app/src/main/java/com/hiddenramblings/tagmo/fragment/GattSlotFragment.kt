@@ -1095,13 +1095,13 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
         super.onPause()
     }
 
-    override fun onDestroy() {
+    override fun onDestroyView() {
         try {
             dismissGattDiscovery()
         } catch (ignored: NullPointerException) { }
         disconnectService()
         bluetoothHandler?.unregisterResultContracts()
-        super.onDestroy()
+        super.onDestroyView()
     }
 
     fun processArguments() {

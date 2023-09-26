@@ -452,7 +452,7 @@ class GattService : Service() {
         }
 
         override fun onServicesDiscovered(gatt: BluetoothGatt, status: Int) {
-            Debug.info(Companion::class.java, "${serviceType.logTag} onServicesDiscovered $status")
+            Debug.verbose(Companion::class.java, "${serviceType.logTag} onServicesDiscovered $status")
             if (status == BluetoothGatt.GATT_SUCCESS) {
                 if (Version.isLollipop) {
                     gatt.requestMtu(247) // Nordic
@@ -474,7 +474,7 @@ class GattService : Service() {
         }
 
         override fun onMtuChanged(gatt: BluetoothGatt, mtu: Int, status: Int) {
-            Debug.info(Companion::class.java, "${serviceType.logTag} onMtuChange $mtu $status")
+            Debug.verbose(Companion::class.java, "${serviceType.logTag} onMtuChange $mtu $status")
             if (status == BluetoothGatt.GATT_SUCCESS)
                 maxTransmissionUnit = mtu - 3
             when (serviceType) {
@@ -509,7 +509,7 @@ class GattService : Service() {
         override fun onCharacteristicWrite(
                 gatt: BluetoothGatt, characteristic: BluetoothGattCharacteristic, status: Int
         ) {
-            Debug.info(Companion::class.java, "${characteristic.uuid.logTag} onCharacteristicWrite $status")
+            Debug.verbose(Companion::class.java, "${characteristic.uuid.logTag} onCharacteristicWrite $status")
         }
         
         override fun onCharacteristicChanged(

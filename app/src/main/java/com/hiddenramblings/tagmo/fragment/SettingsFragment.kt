@@ -259,7 +259,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
                         summary = total.toString()
                     }
                 }
-            } catch (e: Exception) { Debug.info(e) }
+            } catch (e: Exception) { Debug.verbose(e) }
         }
         findPreference<Preference>(getString(R.string.disclaimer_tagmo))?.apply {
             try {
@@ -273,7 +273,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
                         summary = total.toString()
                     }
                 }
-            } catch (e: Exception) { Debug.info(e) }
+            } catch (e: Exception) { Debug.verbose(e) }
         }
     }
 

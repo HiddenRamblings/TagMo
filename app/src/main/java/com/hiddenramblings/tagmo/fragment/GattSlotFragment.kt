@@ -639,7 +639,7 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
                 if (it.amiibos.containsKey(amiiboId)) {
                     selectedAmiibo = it.amiibos[amiiboId]
                 }
-            } catch (e: Exception) { Debug.info(e) }
+            } catch (e: Exception) { Debug.verbose(e) }
         }
         return selectedAmiibo
     }

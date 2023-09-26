@@ -133,7 +133,7 @@ class WebsiteFragment : Fragment() {
         webView.addJavascriptInterface(download, "Android")
         webView.setDownloadListener { url: String, _: String?, _: String?, mimeType: String, _: Long ->
             if (url.startsWith("blob") || url.startsWith("data")) {
-                Debug.verbose(WebsiteFragment::class.java, url)
+                Debug.info(WebsiteFragment::class.java, url)
                 webView.loadUrl(download.getBase64StringFromBlob(url, mimeType))
             }
         }

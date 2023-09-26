@@ -333,7 +333,7 @@ object AmiiboManager {
                     if (Debug.getExceptionClass(e) == IOException().javaClass.name)
                         Debug.verbose(e)
                     else
-                        Debug.info(e)
+                        Debug.warn(e)
                 }
             } }.awaitAll() }
         } else if (recursiveFiles) {
@@ -367,7 +367,7 @@ object AmiiboManager {
                     if (Debug.getExceptionClass(e) == IOException().javaClass.name)
                         Debug.verbose(e)
                     else
-                        Debug.info(e)
+                        Debug.warn(e)
                 }
             } }.awaitAll() }
         }

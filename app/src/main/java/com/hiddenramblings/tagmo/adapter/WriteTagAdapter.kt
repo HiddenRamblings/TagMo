@@ -141,7 +141,6 @@ class WriteTagAdapter(private val settings: BrowserSettings?) :
             VIEW.COMPACT -> CompactViewHolder(parent, settings)
             VIEW.LARGE -> LargeViewHolder(parent, settings)
             VIEW.IMAGE -> ImageViewHolder(parent, settings)
-            VIEW.SIMPLE -> SimpleViewHolder(parent, settings)
         }.apply {
             itemView.setOnClickListener {
                 handleClickEvent(this, bindingAdapterPosition)
@@ -387,14 +386,6 @@ class WriteTagAdapter(private val settings: BrowserSettings?) :
             }
         }
     }
-
-    internal class SimpleViewHolder(parent: ViewGroup, settings: BrowserSettings?) :
-        AmiiboViewHolder(
-            LayoutInflater.from(parent.context).inflate(
-                R.layout.amiibo_simple_card, parent, false
-            ),
-            settings
-        )
 
     internal class CompactViewHolder(parent: ViewGroup, settings: BrowserSettings?) :
         AmiiboViewHolder(

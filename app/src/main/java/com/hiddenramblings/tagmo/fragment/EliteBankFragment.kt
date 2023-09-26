@@ -102,13 +102,13 @@ class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
     private var refreshListener: RefreshListener? = null
 
     private enum class CLICKED {
-        NOTHING, WRITE_DATA, EDIT_DATA, HEX_CODE, BANK_BACKUP, VERIFY_TAG, ERASE_BANK
+        NOTHING, WRITE_DATA, EDIT_DATA, HEX_CODE, BANK_BACKUP, VERIFY_TAG, ERASE_BANK;
     }
 
     private var status = CLICKED.NOTHING
 
     private enum class SHEET {
-        LOCKED, AMIIBO, MENU, WRITE
+        LOCKED, AMIIBO, MENU, WRITE;
     }
 
     private var browserActivity: BrowserActivity? = null

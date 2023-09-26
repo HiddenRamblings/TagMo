@@ -106,9 +106,6 @@
         <menu>
             <group android:checkableBehavior="single">
                 <item
-                    android:id="@+id/view_simple"
-                    android:title="@string/simple"/>
-                <item
                     android:id="@+id/view_compact"
                     android:title="@string/compact"/>
                 <item

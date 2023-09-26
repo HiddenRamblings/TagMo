@@ -40,11 +40,11 @@ open class BrowserSettings : Parcelable {
     }
 
     enum class FILTER {
-        CHARACTER, GAME_SERIES, AMIIBO_SERIES, AMIIBO_TYPE, GAME_TITLES
+        CHARACTER, GAME_SERIES, AMIIBO_SERIES, AMIIBO_TYPE, GAME_TITLES;
     }
 
     enum class VIEW(val value: Int) {
-        SIMPLE(0), COMPACT(1), LARGE(2), IMAGE(3);
+        COMPACT(1), LARGE(2), IMAGE(3);
 
         companion object {
             fun valueOf(value: Int): VIEW {

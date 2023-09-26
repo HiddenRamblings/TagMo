@@ -79,7 +79,7 @@ class GattService : Service() {
     private var chunkNumber = 0
 
     enum class SORTING {
-        MANUAL, SEQUENTIAL, AUTO
+        MANUAL, SEQUENTIAL, AUTO;
     }
 
     @Suppress("unused")

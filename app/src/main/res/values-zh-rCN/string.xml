@@ -45,7 +45,6 @@
 
     <string name="recursive_folders">搜索子文件夹</string>
 
-    <string name="simple">紧凑列表</string>
     <string name="compact">标准列表</string>
     <string name="large">较大列表</string>
     <string name="image">仅图标</string>

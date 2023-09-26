@@ -6,7 +6,7 @@ import java.util.UUID
 
 object Nordic {
     enum class DEVICE {
-        FLASK, SLIDE, BLUUP, LINK, LOOP, PIXL, PUCK, GATT
+        FLASK, SLIDE, BLUUP, LINK, LOOP, PIXL, PUCK, GATT;
     }
 
     val NUS  = UUID.fromString("6e400001-b5a3-f393-e0a9-e50e24dcca9e")

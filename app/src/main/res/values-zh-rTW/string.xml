@@ -41,7 +41,6 @@
 
     <string name="recursive_folders">一併搜尋子目錄</string>
 
-    <string name="simple">僅文字顯示</string>
     <string name="compact">縮圖+文字顯示</string>
     <string name="large">大圖+文字顯示</string>
     <string name="image">圖示+名稱</string>

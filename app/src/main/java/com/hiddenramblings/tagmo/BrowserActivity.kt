@@ -144,7 +144,6 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
     private var menuFilterAmiiboSeries: MenuItem? = null
     private var menuFilterAmiiboType: MenuItem? = null
     private var menuFilterGameTitles: MenuItem? = null
-    private var menuViewSimple: MenuItem? = null
     private var menuViewCompact: MenuItem? = null
     private var menuViewLarge: MenuItem? = null
     private var menuViewImage: MenuItem? = null
@@ -558,7 +557,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
         onCreateMainMenuLayout()
     }
 
-    fun requestStoragePermission() {
+    private fun requestStoragePermission() {
         if (Version.isRedVelvet) {
             if (BuildConfig.GOOGLE_PLAY) {
                 onDocumentEnabled()
@@ -1474,14 +1473,6 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                     it.notifyChanges()
                 }
             }
-            R.id.view_simple -> {
-                amiibosView?.layoutManager = LinearLayoutManager(this)
-                foomiiboView?.layoutManager = LinearLayoutManager(this)
-                settings?.let {
-                    it.amiiboView = VIEW.SIMPLE.value
-                    it.notifyChanges()
-                }
-            }
             R.id.view_compact -> {
                 amiibosView?.layoutManager = LinearLayoutManager(this)
                 foomiiboView?.layoutManager = LinearLayoutManager(this)
@@ -1569,7 +1560,6 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
         menuFilterAmiiboSeries = menu.findItem(R.id.filter_amiibo_series)
         menuFilterAmiiboType = menu.findItem(R.id.filter_amiibo_type)
         menuFilterGameTitles = menu.findItem(R.id.filter_game_titles)
-        menuViewSimple = menu.findItem(R.id.view_simple)
         menuViewCompact = menu.findItem(R.id.view_compact)
         menuViewLarge = menu.findItem(R.id.view_large)
         menuViewImage = menu.findItem(R.id.view_image)
@@ -2040,10 +2030,9 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
     }
 
     private fun onViewChanged() {
-        if (null == menuViewSimple) return
+        if (null == menuViewCompact) return
         settings?.let {
             when (VIEW.valueOf(it.amiiboView)) {
-                VIEW.SIMPLE -> menuViewSimple?.isChecked = true
                 VIEW.COMPACT -> menuViewCompact?.isChecked = true
                 VIEW.LARGE -> menuViewLarge?.isChecked = true
                 VIEW.IMAGE -> menuViewImage?.isChecked = true

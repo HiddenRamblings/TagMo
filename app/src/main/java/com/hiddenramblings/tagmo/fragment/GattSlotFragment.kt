@@ -120,17 +120,17 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
     private var chunkTimeout = 25L
 
     private enum class STATE {
-        NONE, SCANNING, CONNECT, MISSING, TIMEOUT
+        NONE, SCANNING, CONNECT, MISSING, TIMEOUT;
     }
 
     private var deviceState = STATE.NONE
 
     private enum class NOTICE {
-        UPLOAD, REMOVE, CREATE, FORMAT
+        UPLOAD, REMOVE, CREATE, FORMAT;
     }
 
     private enum class SHEET {
-        LOCKED, AMIIBO, MENU, WRITE
+        LOCKED, AMIIBO, MENU, WRITE;
     }
 
     private var browserActivity: BrowserActivity? = null

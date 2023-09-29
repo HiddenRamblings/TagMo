@@ -318,6 +318,16 @@ class Preferences(context: Context) {
         putLong(lastUpdatedGit, value)
     }
 
+    private val lastBugReport = "lastBugReport"
+
+    fun lastBugReport(): Long {
+        return getLong(lastBugReport, 0)
+    }
+
+    fun lastBugReport(value: Long) {
+        putLong(lastBugReport, value)
+    }
+
     val isDocumentStorage : Boolean get() = run {
         Version.isLollipop && browserRootDocument()?.let {
             try {

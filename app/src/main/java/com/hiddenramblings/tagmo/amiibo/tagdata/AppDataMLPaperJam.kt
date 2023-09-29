@@ -7,10 +7,12 @@
  */
 package com.hiddenramblings.tagmo.amiibo.tagdata
 
+import com.hiddenramblings.tagmo.nfctech.TagArray.toHexByteArray
+
 class AppDataMLPaperJam(appData: ByteArray?) : AppData(appData!!) {
 
     private val sparkleCardHex = "FF FF FF FF FF FF FF"
-    private val sparkleCardBytes = sparkleCardHex.toByteArray()
+    private val sparkleCardBytes = sparkleCardHex.toHexByteArray()
 
     fun checkSparkleCards(): Boolean {
         val sparkleCardData = appData.array().copyOfRange(SPARKLE_CARD_OFFSET, sparkleCardBytes.size)

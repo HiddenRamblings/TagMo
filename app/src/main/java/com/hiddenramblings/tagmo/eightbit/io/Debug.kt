@@ -40,8 +40,6 @@ object Debug {
         get() = TagMo.appContext
     private val mPrefs = Preferences(context)
 
-    private var lastBugReport = 0L
-
     private val manufacturer: String by lazy {
         try {
             @SuppressLint("PrivateApi")
@@ -231,7 +229,7 @@ object Debug {
     }
 
     private fun submitLogcat(context: Context, logText: String) {
-        lastBugReport = System.currentTimeMillis()
+        mPrefs.lastBugReport(System.currentTimeMillis())
         val subject = context.getString(R.string.git_issue_title, BuildConfig.COMMIT)
         val selectionTitle = if (logText.contains("AndroidRuntime"))
             context.getString(R.string.logcat_crash)
@@ -300,7 +298,7 @@ object Debug {
             log.setLength(0)
             withContext(Dispatchers.Main) {
                 val subject = context.getString(R.string.git_issue_title, BuildConfig.COMMIT)
-                if (System.currentTimeMillis() < lastBugReport + 900000) {
+                if (System.currentTimeMillis() < mPrefs.lastBugReport() + 900000) {
                     if (context is Activity) {
                         IconifiedSnackbar(context).buildSnackbar(
                                 R.string.duplicate_reports,
@@ -344,9 +342,7 @@ object Debug {
                                 }
                             }
                         })
-                        status.setAction(R.string.submit) {
-                            submitLogcat(context, logText)
-                        }
+                        status.setAction(R.string.submit) { submitLogcat(context, logText) }
                         status.show()
                     }
                 } else {

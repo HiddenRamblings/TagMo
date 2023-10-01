@@ -27,6 +27,7 @@ import com.hiddenramblings.tagmo.R
 import com.hiddenramblings.tagmo.TagMo
 import com.hiddenramblings.tagmo.amiibo.KeyManager
 import com.hiddenramblings.tagmo.eightbit.material.IconifiedSnackbar
+import com.hiddenramblings.tagmo.widget.Toasty
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -276,6 +277,24 @@ object Debug {
         submitLogcat(context, log.toString())
     }
 
+    private fun showGuideBanner(context: Context) {
+        if (context is BrowserActivity) {
+            IconifiedSnackbar(context).buildSnackbar(
+                R.string.menu_guides,
+                R.drawable.ic_support_required_menu,
+                Snackbar.LENGTH_LONG
+            ).also { guides ->
+                guides.setAction(R.string.view) {
+                    context.showWebsite(null)
+                    guides.dismiss()
+                }
+                guides.show()
+            }
+        } else {
+            Toasty(context).Long(R.string.guide_suggested)
+        }
+    }
+
     @JvmStatic
     @Throws(IOException::class)
     fun processLogcat(context: Context) {
@@ -298,55 +317,45 @@ object Debug {
             log.setLength(0)
             withContext(Dispatchers.Main) {
                 val subject = context.getString(R.string.git_issue_title, BuildConfig.COMMIT)
-                if (System.currentTimeMillis() < mPrefs.lastBugReport() + 900000) {
-                    if (context is Activity) {
-                        IconifiedSnackbar(context).buildSnackbar(
+                setClipboard(context, subject, logText)
+                when {
+                    BuildConfig.WEAR_OS -> {  }
+                    KeyManager(context).isKeyMissing -> { showGuideBanner(context) }
+                    System.currentTimeMillis() < mPrefs.lastBugReport() + 900000 -> {
+                        if (context is Activity) {
+                            IconifiedSnackbar(context).buildSnackbar(
                                 R.string.duplicate_reports,
                                 R.drawable.ic_support_required_menu,
                                 Snackbar.LENGTH_LONG
-                        ).also { status ->
-                            status.addCallback(object: Snackbar.Callback() {
-                                override fun onDismissed(transientBottomBar: Snackbar?, event: Int) {
-                                    setClipboard(context, subject, logText)
-                                }
-                            })
-                            status.show()
+                            ).also { status ->
+                                status.addCallback(object: Snackbar.Callback() {
+                                    override fun onDismissed(snackbar: Snackbar?, event: Int) {
+                                        setClipboard(context, subject, logText)
+                                    }
+                                })
+                                status.show()
+                            }
                         }
                     }
-                    return@withContext
-                }
-                setClipboard(context, subject, logText)
-                if (BuildConfig.WEAR_OS) return@withContext
-                if (context is Activity) {
-                    IconifiedSnackbar(context).buildSnackbar(
+                    context is Activity -> {
+                        IconifiedSnackbar(context).buildSnackbar(
                             subject,
                             R.drawable.ic_support_required_menu,
                             Snackbar.LENGTH_INDEFINITE
-                    ).also { status ->
-                        status.addCallback(object: Snackbar.Callback() {
-                            override fun onDismissed(transientBottomBar: Snackbar?, event: Int) {
-                                if (event != DISMISS_EVENT_ACTION
-                                        && !logText.contains("AndroidRuntime")
-                                        && context is BrowserActivity) {
-                                    IconifiedSnackbar(context).buildSnackbar(
-                                            R.string.menu_guides,
-                                            R.drawable.ic_support_required_menu,
-                                            Snackbar.LENGTH_LONG
-                                    ).also { guides ->
-                                        guides.setAction(R.string.view) {
-                                            context.showWebsite(null)
-                                            guides.dismiss()
-                                        }
-                                        guides.show()
+                        ).also { status ->
+                            status.addCallback(object: Snackbar.Callback() {
+                                override fun onDismissed(snackbar: Snackbar?, event: Int) {
+                                    if (event != DISMISS_EVENT_ACTION
+                                        && !logText.contains("AndroidRuntime")) {
+                                        showGuideBanner(context)
                                     }
                                 }
-                            }
-                        })
-                        status.setAction(R.string.submit) { submitLogcat(context, logText) }
-                        status.show()
+                            })
+                            status.setAction(R.string.submit) { submitLogcat(context, logText) }
+                            status.show()
+                        }
                     }
-                } else {
-                    submitLogcat(Debug.context, logText)
+                    else -> { submitLogcat(Debug.context, logText) }
                 }
             }
         }

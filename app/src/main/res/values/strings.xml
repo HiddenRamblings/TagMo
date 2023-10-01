@@ -207,6 +207,7 @@
     <string name="feature_unavailable">Feature not implemented!</string>
     <string name="activity_unavailable">Please try again later.</string>
     <string name="storage_unavailable">Device storage inaccessible!</string>
+    <string name="guide_suggested">View the guide for more help</string>
     <string name="allow">Allow</string>
 
     <string name="camera">Camera</string>

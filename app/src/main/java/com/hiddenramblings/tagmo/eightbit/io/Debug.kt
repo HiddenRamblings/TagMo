@@ -37,6 +37,7 @@ import java.util.*
 
 @Suppress("unused")
 object Debug {
+    private val guideUri = Uri.parse("https://tagmo.gitlab.io")
     private val context: Context
         get() = TagMo.appContext
     private val mPrefs = Preferences(context)
@@ -278,20 +279,25 @@ object Debug {
     }
 
     private fun showGuideBanner(context: Context) {
-        if (context is BrowserActivity) {
+        if (context is Activity) {
             IconifiedSnackbar(context).buildSnackbar(
                 R.string.menu_guides,
                 R.drawable.ic_support_required_menu,
                 Snackbar.LENGTH_LONG
             ).also { guides ->
                 guides.setAction(R.string.view) {
-                    context.showWebsite(null)
+                    if (context is BrowserActivity) {
+                        context.showWebsite(null)
+                    } else {
+                        context.startActivity(Intent(Intent.ACTION_VIEW, guideUri))
+                    }
                     guides.dismiss()
                 }
                 guides.show()
             }
         } else {
             Toasty(context).Long(R.string.guide_suggested)
+            context.startActivity(Intent(Intent.ACTION_VIEW, guideUri))
         }
     }
 

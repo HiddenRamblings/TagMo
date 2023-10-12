@@ -258,6 +258,7 @@
     <string name="sync_amiibo_info">Sync database with AmiiboAPI</string>
     <string name="import_json_details">Load amiibo database (JSON)</string>
     <string name="reset_amiibo_info">Reset amiibo database cache</string>
+    <string name="database_stats">Database Statistics</string>
     <string name="number_character">%1$d Character(s)</string>
     <string name="number_type">%1$d amiibo Type(s)</string>
     <string name="number_titles">%1$d Enabled Game(s)</string>

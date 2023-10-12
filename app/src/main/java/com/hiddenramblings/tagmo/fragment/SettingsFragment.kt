@@ -8,6 +8,7 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Color
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.text.Spannable
 import android.text.SpannableStringBuilder
@@ -377,8 +378,10 @@ class SettingsFragment : PreferenceFragmentCompat() {
             )
         }
         val keySummary = SpannableStringBuilder()
-        keySummary.append(getString(R.string.warn_key_download))
-        keySummary.append("\n")
+        if (Version.isLowerThan(Build.VERSION_CODES.TIRAMISU)) {
+            keySummary.append(getString(R.string.warn_key_download))
+            keySummary.append("\n")
+        }
         keySummary.append(unfixedBuilder)
         keySummary.append("\n")
         keySummary.append(fixedBuilder)

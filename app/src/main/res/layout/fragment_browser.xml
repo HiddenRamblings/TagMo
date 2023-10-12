@@ -128,6 +128,18 @@
             android:text="@string/unzip_archive" />
 
         <TextView
+            android:id="@+id/stats_heading"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:singleLine="true"
+            android:textColor="@android:color/white"
+            android:textSize="12sp"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="12dp"
+            android:text="@string/database_stats"/>
+
+        <TextView
             android:id="@+id/stats_character"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -135,7 +147,6 @@
             android:singleLine="true"
             android:textColor="@android:color/white"
             android:textSize="16sp"
-            android:layout_marginTop="8dp"
             android:layout_marginBottom="12dp" />
 
         <TextView

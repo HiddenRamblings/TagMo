@@ -326,7 +326,9 @@ object Debug {
                 setClipboard(context, subject, logText)
                 when {
                     BuildConfig.WEAR_OS -> {  }
-                    KeyManager(context).isKeyMissing -> { showGuideBanner(context) }
+                    KeyManager(context).isKeyMissing || !hasDebugging() -> {
+                        showGuideBanner(context)
+                    }
                     System.currentTimeMillis() < mPrefs.lastBugReport() + 900000 -> {
                         if (context is Activity) {
                             IconifiedSnackbar(context).buildSnackbar(

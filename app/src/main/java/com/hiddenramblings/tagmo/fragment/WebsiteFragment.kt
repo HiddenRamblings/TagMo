@@ -10,6 +10,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.webkit.*
 import android.widget.EditText
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.webkit.*
@@ -21,6 +22,7 @@ import com.hiddenramblings.tagmo.amiibo.AmiiboManager.getAmiiboManager
 import com.hiddenramblings.tagmo.eightbit.io.Debug
 import com.hiddenramblings.tagmo.eightbit.os.Storage
 import com.hiddenramblings.tagmo.eightbit.os.Version
+import com.hiddenramblings.tagmo.eightbit.util.UnZip
 import com.hiddenramblings.tagmo.eightbit.widget.ProgressAlert
 import com.hiddenramblings.tagmo.nfctech.TagArray
 import com.hiddenramblings.tagmo.security.SecurityHandler
@@ -38,7 +40,6 @@ import java.util.zip.ZipFile
 class WebsiteFragment : Fragment() {
     private val webHandler = Handler(Looper.getMainLooper())
     private var mWebView: WebView? = null
-    private var dialog: ProgressAlert? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -165,58 +166,6 @@ class WebsiteFragment : Fragment() {
         }
     }
 
-    private inner class UnZip(var archive: File, var outputDir: File) : Runnable {
-        @Throws(IOException::class)
-        private fun decompress() {
-            val zipFile = ZipFile(archive)
-            val entries = zipFile.entries()
-            while (entries.hasMoreElements()) {
-                // get the zip entry
-                val finalEntry = entries.nextElement()
-                webHandler.post {
-                    dialog?.setMessage(getString(R.string.unzip_item, finalEntry.name))
-                }
-                if (finalEntry.isDirectory) {
-                    val dir = File(
-                        outputDir, finalEntry.name.replace(File.separator, "")
-                    )
-                    if (!dir.exists() && !dir.mkdirs())
-                        throw RuntimeException(getString(R.string.mkdir_failed, dir.name))
-                } else {
-                    val zipInStream = zipFile.getInputStream(finalEntry)
-                    if (Version.isOreo) {
-                        Files.copy(zipInStream, Paths.get(outputDir.absolutePath, finalEntry.name))
-                    } else {
-                        val fileOut = FileOutputStream(
-                            File(outputDir, finalEntry.name)
-                        )
-                        val buffer = ByteArray(8192)
-                        var len: Int
-                        while (zipInStream.read(buffer).also { len = it } != -1) fileOut.write(
-                            buffer,
-                            0,
-                            len
-                        )
-                        fileOut.close()
-                    }
-                    zipInStream.close()
-                }
-            }
-            zipFile.close()
-        }
-
-        override fun run() {
-            try {
-                decompress()
-            } catch (e: IOException) {
-                Debug.warn(e)
-            } finally {
-                dialog?.dismiss()
-                archive.delete()
-            }
-        }
-    }
-
     private fun saveBinFile(tagData: ByteArray, name: String) {
         try {
             val filePath = File(
@@ -295,9 +244,10 @@ class WebsiteFragment : Fragment() {
                     ), 0))
                     it.flush()
                 }
-                webHandler.post { dialog = ProgressAlert.show(requireContext(), "") }
                 Thread(UnZip(
-                        filePath, Storage.getDownloadDir("TagMo", "Downloads")
+                    requireContext(),
+                    filePath,
+                    Storage.getDownloadDir("TagMo", "Downloads")
                 )).start()
             } else {
                 resources.getStringArray(R.array.mimetype_bin).find { binType ->

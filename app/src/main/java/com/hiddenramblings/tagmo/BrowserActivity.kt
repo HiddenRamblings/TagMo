@@ -1878,16 +1878,20 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
         val binFile = resources.getStringArray(R.array.mimetype_bin)
         if (binFile.contains(intent.type)) {
             val length = getUriFIleSize(uri)
-            if (length >= NfcByte.TAG_DATA_SIZE) {
-                val data = TagReader.readTagDocument(uri)
-                updateAmiiboView(data, AmiiboFile(
-                    uri.path?.let { File(it) }, Amiibo.dataToId(data), data
-                ))
-            } else if (getUriFIleSize(uri) > NfcByte.KEY_FILE_SIZE) {
-                onLoadSettingsFragment()
-                fragmentSettings?.validateKeys(intent.parcelable(Intent.EXTRA_STREAM) as Uri?)
-            } else {
-                Toasty(this@BrowserActivity).Short(R.string.error_uri_size)
+            when {
+                length >= NfcByte.TAG_DATA_SIZE -> {
+                    val data = TagReader.readTagDocument(uri)
+                    updateAmiiboView(data, AmiiboFile(
+                        uri.path?.let { File(it) }, Amiibo.dataToId(data), data
+                    ))
+                }
+                length >= NfcByte.KEY_FILE_SIZE -> {
+                    onLoadSettingsFragment()
+                    fragmentSettings?.validateKeys(intent.parcelable(Intent.EXTRA_STREAM) as Uri?)
+                }
+                else -> {
+                    Toasty(this@BrowserActivity).Short(R.string.error_uri_size)
+                }
             }
         } else if (intent.type == getString(R.string.mimetype_zip)) {
             decompressArchive(uri)

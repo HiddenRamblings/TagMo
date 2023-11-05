@@ -578,7 +578,9 @@ class GattService : Service() {
         if (emptyAdapater || address == null) return false
 
         // Previously connected device.  Try to reconnect.
-        if (address == mBluetoothDeviceAddress) mBluetoothGatt?.let { return it.connect() }
+        mBluetoothGatt?.let {
+            if (address == mBluetoothDeviceAddress && it.connect()) return true
+        }
         val device = mBluetoothAdapter?.getRemoteDevice(address) ?: return false
         // We want to directly connect to the device, so we are setting the autoConnect
         // parameter to false.

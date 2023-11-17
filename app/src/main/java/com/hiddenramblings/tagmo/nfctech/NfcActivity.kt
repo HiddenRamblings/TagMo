@@ -732,10 +732,7 @@ class NfcActivity : AppCompatActivity() {
                 .show()
         } else {
             // monitor nfc status
-            if (Version.isJellyBeanMR2) {
-                val filter = IntentFilter(NfcAdapter.ACTION_ADAPTER_STATE_CHANGED)
-                this.registerReceiver(mReceiver, filter)
-            }
+            this.registerReceiver(mReceiver, IntentFilter(NfcAdapter.ACTION_ADAPTER_STATE_CHANGED))
             listenForTags()
         }
     }
@@ -744,11 +741,9 @@ class NfcActivity : AppCompatActivity() {
         try {
             nfcAdapter?.disableForegroundDispatch(this)
         } catch (ignored: RuntimeException) { }
-        if (Version.isJellyBeanMR2) {
-            try {
-                unregisterReceiver(mReceiver)
-            } catch (ignored: IllegalArgumentException) { }
-        }
+        try {
+            unregisterReceiver(mReceiver)
+        } catch (ignored: IllegalArgumentException) { }
     }
 
     private fun listenForTags() {

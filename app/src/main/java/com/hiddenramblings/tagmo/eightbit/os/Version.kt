@@ -23,30 +23,6 @@ object Version {
     }
 
     /**
-     * Android 4.2, API 17
-     */
-    @JvmStatic
-    val isJellyBeanMR: Boolean get() {
-        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1
-    }
-
-    /**
-     * Android 4.3, API 18
-     */
-    @JvmStatic
-    val isJellyBeanMR2: Boolean get() {
-        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2
-    }
-
-    /**
-     * Android 4.4, API 19
-     */
-    @JvmStatic
-    val isKitKat: Boolean get() {
-        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT
-    }
-
-    /**
      * Android 5.0, API 21
      */
     @JvmStatic

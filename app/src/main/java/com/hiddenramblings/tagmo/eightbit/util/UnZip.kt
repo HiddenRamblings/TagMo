@@ -20,7 +20,6 @@ class UnZip(var context: Context, var archive: File, var outputDir: File) : Runn
     private val zipHandler = Handler(Looper.getMainLooper())
     private var dialog: ProgressAlert? = null
 
-    @RequiresApi(Build.VERSION_CODES.KITKAT)
     private fun decompress() {
         ZipFile(archive).use { zipFile ->
             val entries = zipFile.entries()
@@ -56,47 +55,11 @@ class UnZip(var context: Context, var archive: File, var outputDir: File) : Runn
             }
         }
     }
-    @Throws(IOException::class)
-    private fun decompressLegacy() {
-        val zipFile = ZipFile(archive)
-        val entries = zipFile.entries()
-        while (entries.hasMoreElements()) {
-            // get the zip entry
-            val finalEntry = entries.nextElement()
-            zipHandler.post {
-                dialog?.setMessage(context.getString(R.string.unzip_item, finalEntry.name))
-            }
-            if (finalEntry.isDirectory) {
-                val dir = File(
-                    outputDir, finalEntry.name.replace(File.separator, "")
-                )
-                if (!dir.exists() && !dir.mkdirs())
-                    throw RuntimeException(context.getString(R.string.mkdir_failed, dir.name))
-            } else {
-                val zipInStream = zipFile.getInputStream(finalEntry)
-                if (Version.isOreo) {
-                    Files.copy(zipInStream, Paths.get(outputDir.absolutePath, finalEntry.name))
-                } else {
-                    val fileOut = FileOutputStream(File(outputDir, finalEntry.name))
-                    val buffer = ByteArray(8192)
-                    var len: Int
-                    while (zipInStream.read(buffer).also { len = it } != -1)
-                        fileOut.write(buffer, 0, len)
-                    fileOut.close()
-                }
-                zipInStream.close()
-            }
-        }
-        zipFile.close()
-    }
 
     override fun run() {
         zipHandler.post { dialog = ProgressAlert.show(context, "") }
         try {
-            if (Version.isKitKat)
-                decompress()
-            else
-                decompressLegacy()
+            decompress()
         } catch (e: IOException) {
             Debug.warn(e)
         } finally {

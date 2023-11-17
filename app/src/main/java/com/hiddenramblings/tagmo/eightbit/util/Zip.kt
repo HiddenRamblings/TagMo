@@ -17,7 +17,6 @@ object Zip {
      * @param destDirectory
      * @throws IOException
      */
-    @RequiresApi(Build.VERSION_CODES.KITKAT)
     @Throws(IllegalArgumentException::class, IOException::class)
     fun extract(
             archiveFile: File,

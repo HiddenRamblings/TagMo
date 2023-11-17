@@ -154,7 +154,7 @@ class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
                 else
                     LinearLayoutManager(activity)
                 writeTagAdapter = WriteTagAdapter(settings).also { adapter = it }
-                if (Version.isJellyBeanMR2) FastScrollerBuilder(this).build()
+                FastScrollerBuilder(this).build()
             }
 
             securityOptions = view.findViewById(R.id.security_options)

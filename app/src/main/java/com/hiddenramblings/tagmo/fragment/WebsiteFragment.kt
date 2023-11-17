@@ -80,9 +80,6 @@ class WebsiteFragment : Fragment() {
         webViewSettings.javaScriptEnabled = true
         webViewSettings.domStorageEnabled = true
         webViewSettings.cacheMode = WebSettings.LOAD_NO_CACHE
-        if (Version.isLowerThan(Build.VERSION_CODES.KITKAT))
-            @Suppress("deprecation")
-            webViewSettings.pluginState = WebSettings.PluginState.ON
         if (Version.isLollipop) {
             val assetLoader = WebViewAssetLoader.Builder().addPathHandler(
                 "/assets/",

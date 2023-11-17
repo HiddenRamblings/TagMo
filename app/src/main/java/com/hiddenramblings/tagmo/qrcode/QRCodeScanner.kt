@@ -187,11 +187,8 @@ class QRCodeScanner : AppCompatActivity() {
         val ivSpec = nonce.plus(byteArrayOf(0, 0, 0, 0))
         val cipher = Cipher.getInstance("AES/CCM/NoPadding")
         cipher.init(
-                Cipher.DECRYPT_MODE, keySpec,
-                if (Version.isKitKat)
-                    GCMParameterSpec(ivSpec.size * Byte.SIZE_BITS, ivSpec)
-                else
-                    IvParameterSpec(ivSpec)
+            Cipher.DECRYPT_MODE, keySpec,
+            GCMParameterSpec(ivSpec.size * Byte.SIZE_BITS, ivSpec)
         )
         val content = cipher.doFinal(qrData, 0, 0x58)
         txtMiiValue.text = content.copyOfRange(0, 12).plus(nonce)
@@ -283,10 +280,8 @@ class QRCodeScanner : AppCompatActivity() {
                 if (Version.isRedVelvet)
                     display?.getRealMetrics(metrics)
                         ?: windowManager.defaultDisplay.getRealMetrics(metrics)
-                else if (Version.isJellyBeanMR)
-                    windowManager.defaultDisplay.getRealMetrics(metrics)
                 else
-                    windowManager.defaultDisplay.getMetrics(metrics)
+                    windowManager.defaultDisplay.getRealMetrics(metrics)
                 width = metrics.widthPixels
                 height = metrics.heightPixels
             }
@@ -381,10 +376,8 @@ class QRCodeScanner : AppCompatActivity() {
             if (Version.isRedVelvet)
                 display?.getRealMetrics(metrics)
                     ?: windowManager.defaultDisplay.getRealMetrics(metrics)
-            else if (Version.isJellyBeanMR)
-                windowManager.defaultDisplay.getRealMetrics(metrics)
             else
-                windowManager.defaultDisplay.getMetrics(metrics)
+                windowManager.defaultDisplay.getRealMetrics(metrics)
             val params = if (metrics.widthPixels < metrics.heightPixels)
                 metrics.widthPixels
             else metrics.heightPixels
@@ -436,11 +429,7 @@ class QRCodeScanner : AppCompatActivity() {
                     cameraPreview?.isGone = true
                 }
                 onPickImage.launch(
-                    Intent.createChooser(Intent(
-                        if (Version.isKitKat)
-                            Intent.ACTION_OPEN_DOCUMENT
-                        else Intent.ACTION_GET_CONTENT
-                    )
+                    Intent.createChooser(Intent(Intent.ACTION_OPEN_DOCUMENT)
                         .setType("image/*").addCategory(Intent.CATEGORY_OPENABLE)
                         .addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
                         .addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION)

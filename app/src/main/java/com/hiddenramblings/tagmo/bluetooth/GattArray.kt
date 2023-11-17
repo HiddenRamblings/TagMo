@@ -7,19 +7,14 @@ package com.hiddenramblings.tagmo.bluetooth
 
 import android.bluetooth.BluetoothGatt
 import android.bluetooth.BluetoothGattCharacteristic
-import android.os.Build
-import androidx.annotation.RequiresApi
 import com.hiddenramblings.tagmo.nfctech.Foomiibo
 import com.hiddenramblings.tagmo.nfctech.NfcByte
 
-
 object GattArray {
-    @RequiresApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
     fun BluetoothGattCharacteristic.hasProperty(property: Int): Boolean {
         return this.properties and property != 0
     }
 
-    @RequiresApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
     fun BluetoothGatt.getCharacteristicByProperty(property: Int): BluetoothGattCharacteristic? {
        return services.find { service ->
            service.characteristics.any { it.hasProperty(property) }

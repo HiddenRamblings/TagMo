@@ -71,9 +71,6 @@ class DimensionActivity : AppCompatActivity() {
         webViewSettings.javaScriptEnabled = true
         webViewSettings.domStorageEnabled = true
         webViewSettings.cacheMode = WebSettings.LOAD_NO_CACHE
-        if (Version.isLowerThan(Build.VERSION_CODES.KITKAT))
-            @Suppress("deprecation")
-            webViewSettings.pluginState = WebSettings.PluginState.ON
         val assetLoader = WebViewAssetLoader.Builder().addPathHandler(
             "/assets/", WebViewAssetLoader.AssetsPathHandler(this)
         ).build()

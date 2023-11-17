@@ -47,13 +47,9 @@ class IconifiedSnackbar @JvmOverloads constructor(activity: Activity, layout: Vi
         val textView = snackbarLayout.findViewById<TextView>(
             com.google.android.material.R.id.snackbar_text
         ).apply {
-            if (Version.isJellyBeanMR) {
-                setCompoundDrawablesRelativeWithIntrinsicBounds(drawable, 0, 0, 0)
-            } else {
-                setCompoundDrawablesWithIntrinsicBounds(drawable, 0, 0, 0)
-            }
+            setCompoundDrawablesRelativeWithIntrinsicBounds(drawable, 0, 0, 0)
             gravity = Gravity.CENTER_VERTICAL
-            if (Version.isJellyBeanMR) textAlignment = View.TEXT_ALIGNMENT_CENTER
+            textAlignment = View.TEXT_ALIGNMENT_CENTER
             compoundDrawablePadding = resources.getDimensionPixelOffset(R.dimen.snackbar_icon_padding)
             maxLines = 3
         }

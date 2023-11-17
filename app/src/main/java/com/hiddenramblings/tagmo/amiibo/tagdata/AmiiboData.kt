@@ -12,7 +12,6 @@ import android.os.Parcel
 import android.os.Parcelable
 import com.hiddenramblings.tagmo.R
 import com.hiddenramblings.tagmo.TagMo
-import com.hiddenramblings.tagmo.eightbit.charset.CharsetCompat
 import com.hiddenramblings.tagmo.nfctech.NfcByte
 import com.hiddenramblings.tagmo.nfctech.TagArray
 import com.hiddenramblings.tagmo.nfctech.TagArray.toByteArray
@@ -21,6 +20,7 @@ import java.io.IOException
 import java.io.UnsupportedEncodingException
 import java.nio.ByteBuffer
 import java.nio.charset.Charset
+import java.nio.charset.StandardCharsets
 import java.util.*
 
 open class AmiiboData : Parcelable {
@@ -174,23 +174,23 @@ open class AmiiboData : Parcelable {
 
     @get:Throws(UnsupportedEncodingException::class)
     var nickname: String
-        get() = getString(tagData, NICKNAME_OFFSET, NICKNAME_LENGTH, CharsetCompat.UTF_16BE)
+        get() = getString(tagData, NICKNAME_OFFSET, NICKNAME_LENGTH, StandardCharsets.UTF_16BE)
         set(value) {
-            putString(tagData, NICKNAME_OFFSET, NICKNAME_LENGTH, CharsetCompat.UTF_16BE, value)
+            putString(tagData, NICKNAME_OFFSET, NICKNAME_LENGTH, StandardCharsets.UTF_16BE, value)
         }
 
     @get:Throws(UnsupportedEncodingException::class)
     var miiName: String
-        get() = getString(tagData, MII_NAME_OFFSET, MII_TEXT_LENGTH, CharsetCompat.UTF_16LE)
+        get() = getString(tagData, MII_NAME_OFFSET, MII_TEXT_LENGTH, StandardCharsets.UTF_16LE)
         set(value) {
-            putString(tagData, MII_NAME_OFFSET, MII_TEXT_LENGTH, CharsetCompat.UTF_16LE, value)
+            putString(tagData, MII_NAME_OFFSET, MII_TEXT_LENGTH, StandardCharsets.UTF_16LE, value)
         }
 
     @get:Throws(UnsupportedEncodingException::class)
     var miiAuthor: String
-        get() = getString(tagData, MII_AUTHOR_OFFSET, MII_TEXT_LENGTH, CharsetCompat.UTF_16LE)
+        get() = getString(tagData, MII_AUTHOR_OFFSET, MII_TEXT_LENGTH, StandardCharsets.UTF_16LE)
         set(value) {
-            putString(tagData, MII_AUTHOR_OFFSET, MII_TEXT_LENGTH, CharsetCompat.UTF_16LE, value)
+            putString(tagData, MII_AUTHOR_OFFSET, MII_TEXT_LENGTH, StandardCharsets.UTF_16LE, value)
         }
 
     @Suppress("unused")
@@ -456,7 +456,7 @@ open class AmiiboData : Parcelable {
 
             // Find the position of the first null terminator
             var i: Int
-            if (charset === CharsetCompat.UTF_16BE || charset === CharsetCompat.UTF_16LE) {
+            if (charset === StandardCharsets.UTF_16BE || charset === StandardCharsets.UTF_16LE) {
                 i = 0
                 while (i < length / 2 && bb.short.toInt() != 0) {
                     i++

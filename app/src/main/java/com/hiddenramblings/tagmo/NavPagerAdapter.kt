@@ -26,9 +26,8 @@ class NavPagerAdapter(fa: FragmentActivity?) : FragmentStateAdapter(fa!!) {
     }
 
     override fun getItemCount(): Int {
-        var viewCount = 2
+        var viewCount = 3
         if (isEliteEnabled) viewCount += 1
-        if (Version.isJellyBeanMR2) viewCount += 1
         return viewCount
     }
 }

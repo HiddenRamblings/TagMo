@@ -18,7 +18,7 @@
         tools:ignore="ScopedStorage" />
     <uses-permission android:name="${installPermission}" />
     <uses-permission android:name="android.permission.REQUEST_DELETE_PACKAGES" />
-    <uses-permission android:name="android.permission.BLUETOOTH" tools:remove="android:maxSdkVersion" />
+    <uses-permission android:name="android.permission.BLUETOOTH" />
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" android:maxSdkVersion="30" />
     <uses-permission android:name="android.permission.BLUETOOTH_SCAN"
         android:usesPermissionFlags="neverForLocation" tools:targetApi="S" />
@@ -36,15 +36,6 @@
     <uses-feature android:name="${wearUsesFeature}" android:required="false" />
 
     <uses-sdk tools:overrideLibrary="androidx.wear,
-     com.google.mlkit.vision.barcode.bundled,
-     com.google.mlkit.vision.barcode.common,
-     com.google.mlkit.vision.common,
-     com.google.mlkit.common,
-     com.google.mlkit.vision.interfaces,
-     androidx.camera.camera2,
-     androidx.camera.core,
-     androidx.camera.view,
-     androidx.camera.lifecycle,
      androidx.core.splashscreen" />
 
     <queries>

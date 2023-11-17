@@ -26,8 +26,8 @@ import com.google.mlkit.vision.barcode.common.Barcode
 import com.google.zxing.BarcodeFormat
 import com.google.zxing.EncodeHintType
 import com.google.zxing.MultiFormatWriter
-import com.hiddenramblings.tagmo.eightbit.charset.CharsetCompat
 import com.hiddenramblings.tagmo.eightbit.os.Version
+import java.nio.charset.StandardCharsets
 import java.util.*
 
 class QRGEncoder(data: String?, bundle: Bundle?, type: Int, private var dimension: Int) {
@@ -293,7 +293,7 @@ class QRGEncoder(data: String?, bundle: Bundle?, type: Int, private var dimensio
         // Very crude at the moment
         if (contents != null) {
             for (element in contents) {
-                if (element.code > 0xFF) return CharsetCompat.UTF_8.name()
+                if (element.code > 0xFF) return StandardCharsets.UTF_8.name()
             }
         }
         return null

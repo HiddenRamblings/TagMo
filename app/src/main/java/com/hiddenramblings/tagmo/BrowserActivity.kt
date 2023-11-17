@@ -341,7 +341,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
         }
 
         findViewById<CoordinatorLayout>(R.id.coordinator).apply {
-            if (Version.isJellyBeanMR && amiiboContainer is BlurView) {
+            if (amiiboContainer is BlurView) {
                 (amiiboContainer as BlurView).setupWith(this)
                     .setFrameClearDrawable(window.decorView.background)
                     .setBlurRadius(2f).setBlurAutoUpdate(true)
@@ -523,7 +523,6 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                 }
 
             }
-            isVisible = Version.isJellyBeanMR2
         }
 
         findViewById<CardView>(R.id.menu_qr_code).setOnClickListener {
@@ -1832,10 +1831,6 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
     }
 
     fun decompressArchive(uri: Uri?) {
-        if (Version.isLowerThan(Build.VERSION_CODES.KITKAT) || null == uri) {
-            Toasty(this@BrowserActivity).Short(R.string.error_archive_invalid)
-            return
-        }
         val zipFile = File(externalCacheDir, "archive.zip")
         zipFile.outputStream().use { fileOut ->
             contentResolver.openInputStream(uri)?.use {
@@ -1903,11 +1898,10 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
     ) { result: ActivityResult ->
         if (result.resultCode != RESULT_OK || result.data == null) return@registerForActivityResult
         val treeUri = result.data?.data
-        if (Version.isKitKat)
-            contentResolver.takePersistableUriPermission(treeUri!!,
-                Intent.FLAG_GRANT_READ_URI_PERMISSION
-                        or Intent.FLAG_GRANT_WRITE_URI_PERMISSION
-            )
+        contentResolver.takePersistableUriPermission(treeUri!!,
+            Intent.FLAG_GRANT_READ_URI_PERMISSION
+                    or Intent.FLAG_GRANT_WRITE_URI_PERMISSION
+        )
         val pickedDir = DocumentFile.fromTreeUri(this, treeUri!!)
 
         // List all existing files inside picked directory
@@ -2293,10 +2287,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                     val bounds: Rect = currentWindowMetrics.bounds
                     ((bounds.width() / (resources.configuration.densityDpi / 160)) + 0.5) / 120
                 } else @Suppress("deprecation") {
-                    if (Version.isJellyBeanMR)
-                        defaultDisplay.getRealMetrics(metrics)
-                    else
-                        defaultDisplay.getMetrics(metrics)
+                    defaultDisplay.getRealMetrics(metrics)
                     ((metrics.widthPixels / metrics.density) + 0.5) / 120
                 }
             }

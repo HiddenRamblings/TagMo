@@ -110,7 +110,6 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
         }
     }
 
-    @RequiresApi(Build.VERSION_CODES.KITKAT)
     private val onSelectArchiveFile = registerForActivityResult(
             ActivityResultContracts.OpenDocument()
     ) { uri ->
@@ -155,8 +154,7 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
                 adapter = BrowserAdapter(settings, activity).also {
                     settings.addChangeListener(it)
                 }
-                if (Version.isJellyBeanMR2)
-                    FastScrollerBuilder(this).build().setPadding(0, (-2).toPx, 0, 0)
+                FastScrollerBuilder(this).build().setPadding(0, (-2).toPx, 0, 0)
             }
 
             foomiiboContent = view.findViewById<RecyclerView>(R.id.foomiibo_list).apply {
@@ -167,7 +165,7 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
                 adapter = FoomiiboAdapter(settings, this@BrowserFragment).also {
                     settings.addChangeListener(it)
                 }
-                if (Version.isJellyBeanMR2) FastScrollerBuilder(this).build()
+                FastScrollerBuilder(this).build()
             }
 
             currentFolderView = view.findViewById(R.id.current_folder)
@@ -210,13 +208,8 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
             foomiiboOptions.findViewById<View>(R.id.build_foomiibo_set).setOnClickListener {
                 buildFoomiiboSet(activity)
             }
-
-            if (Version.isKitKat) {
-                view.findViewById<View>(R.id.select_zip_file).setOnClickListener {
-                    onSelectArchiveFile.launch(arrayOf(getString(R.string.mimetype_zip)))
-                }
-            } else {
-                view.findViewById<View>(R.id.select_zip_file).isGone = true
+            view.findViewById<View>(R.id.select_zip_file).setOnClickListener {
+                onSelectArchiveFile.launch(arrayOf(getString(R.string.mimetype_zip)))
             }
             activity.onFilterContentsLoaded()
         }

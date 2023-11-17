@@ -18,7 +18,6 @@ import com.hiddenramblings.tagmo.BrowserActivity
 import com.hiddenramblings.tagmo.GlideTagModule
 import com.hiddenramblings.tagmo.Preferences
 import com.hiddenramblings.tagmo.amiibo.AmiiboManager
-import com.hiddenramblings.tagmo.eightbit.charset.CharsetCompat
 import com.hiddenramblings.tagmo.eightbit.io.Debug
 import com.hiddenramblings.tagmo.security.SecurityHandler
 import kotlinx.coroutines.CoroutineScope
@@ -31,6 +30,7 @@ import java.io.InputStreamReader
 import java.net.ConnectException
 import java.net.URL
 import java.net.UnknownHostException
+import java.nio.charset.StandardCharsets
 import javax.net.ssl.HttpsURLConnection
 
 class JSONExecutor(activity: Activity, server: String, path: String? = null) {
@@ -107,7 +107,7 @@ class JSONExecutor(activity: Activity, server: String, path: String? = null) {
                 }
                 conn.inputStream.use { inStream ->
                     BufferedReader(
-                        InputStreamReader(inStream, CharsetCompat.UTF_8)
+                        InputStreamReader(inStream, StandardCharsets.UTF_8)
                     ).use { streamReader ->
                         val responseStrBuilder = StringBuilder()
                         var inputStr: String?

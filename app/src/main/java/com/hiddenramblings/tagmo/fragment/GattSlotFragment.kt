@@ -327,7 +327,7 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
                 else
                     LinearLayoutManager(activity)
                 writeTagAdapter = WriteTagAdapter(settings).also { adapter = it }
-                if (Version.isJellyBeanMR2) FastScrollerBuilder(this).build()
+                FastScrollerBuilder(this).build()
             }
         }
 

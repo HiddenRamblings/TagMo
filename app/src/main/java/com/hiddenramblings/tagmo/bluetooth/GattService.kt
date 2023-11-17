@@ -4,7 +4,6 @@
  * Flask Copyright (C) 2022 withgallantry @ BluupLabs
  * ====================================================================
  */
-
 package com.hiddenramblings.tagmo.bluetooth
 
 import android.annotation.SuppressLint
@@ -47,7 +46,6 @@ import java.nio.charset.Charset
 import java.util.Objects
 import java.util.UUID
 
-@RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
 @SuppressLint("MissingPermission")
 class GattService : Service() {
     private var listener: BluetoothGattListener? = null

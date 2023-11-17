@@ -4,7 +4,6 @@ import android.app.Dialog
 import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.DialogInterface
-import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Color
 import android.net.Uri
@@ -16,7 +15,6 @@ import android.text.style.ForegroundColorSpan
 import android.view.View
 import android.widget.EditText
 import android.widget.TextView
-import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -64,31 +62,10 @@ class SettingsFragment : PreferenceFragmentCompat() {
     private var importKeys: Preference? = null
     var imageNetworkSetting: ListPreference? = null
 
-    private val onLoadKeys = registerForActivityResult(
-        ActivityResultContracts.StartActivityForResult()
-    ) { result: ActivityResult ->
-        if (result.resultCode != AppCompatActivity.RESULT_OK || null == result.data) {
-            return@registerForActivityResult
-        } else if (null != result.data?.clipData) {
-            result.data?.clipData?.let {
-                for (i in 0 until it.itemCount) { validateKeys(it.getItemAt(i).uri) }
-            }
-        } else {
-            result.data?.let { validateKeys(it.data) }
-        }
-    }
-
     private val onLoadKeyDocuments = registerForActivityResult(
         ActivityResultContracts.OpenMultipleDocuments()
     ) { documents: List<Uri> ->
         if (documents.isNotEmpty()) { documents.forEach { validateKeys(it) } }
-    }
-
-    private val onImportAmiiboDB = registerForActivityResult(
-        ActivityResultContracts.StartActivityForResult()
-    ) { result: ActivityResult ->
-        if (result.resultCode != AppCompatActivity.RESULT_OK) return@registerForActivityResult
-        result.data?.let { intent -> updateAmiiboDatabase(intent.data) }
     }
 
     private val onImportAmiiboDBDocument = registerForActivityResult(
@@ -214,7 +191,6 @@ class SettingsFragment : PreferenceFragmentCompat() {
         findPreference<Preference>(getString(R.string.settings_import_info))?.apply {
             onPreferenceClickListener = Preference.OnPreferenceClickListener {
                 showFileChooser(
-                    getString(R.string.import_json_details),
                     RESULT_IMPORT_AMIIBO_DATABASE
                 )
                 super@SettingsFragment.onPreferenceTreeClick(it)
@@ -278,7 +254,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
         }
     }
 
-    private fun onImportKeysClicked() { showFileChooser(getString(R.string.decryption_keys), RESULT_KEYS) }
+    private fun onImportKeysClicked() { showFileChooser(RESULT_KEYS) }
 
     private fun onImageNetworkChange(imageNetworkSetting: ListPreference?, newValue: String?) {
         val index = imageNetworkSetting?.findIndexOfValue(newValue)
@@ -536,43 +512,18 @@ class SettingsFragment : PreferenceFragmentCompat() {
         })
     }
 
-    private fun showFileChooser(title: String, resultCode: Int) {
-        if (Version.isKitKat) {
-            try {
-                when (resultCode) {
-                    RESULT_KEYS -> {
-                        onLoadKeyDocuments.launch(resources.getStringArray(R.array.mimetype_bin))
-                    }
-                    RESULT_IMPORT_AMIIBO_DATABASE -> {
-                        onImportAmiiboDBDocument.launch(resources.getStringArray(R.array.mimetype_json))
-                    }
+    private fun showFileChooser(resultCode: Int) {
+        try {
+            when (resultCode) {
+                RESULT_KEYS -> {
+                    onLoadKeyDocuments.launch(resources.getStringArray(R.array.mimetype_bin))
                 }
-            } catch (ex: ActivityNotFoundException) {
-                Debug.verbose(ex)
-            }
-        } else {
-            val selection = Intent(
-                    if (Version.isKitKat) Intent.ACTION_OPEN_DOCUMENT else Intent.ACTION_GET_CONTENT
-            )
-                    .setType("*/*").addCategory(Intent.CATEGORY_OPENABLE)
-                    .addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-                    .addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
-                    .putExtra("android.content.extra.SHOW_ADVANCED", true)
-                    .putExtra("android.content.extra.FANCY", true)
-            try {
-                when (resultCode) {
-                    RESULT_KEYS -> {
-                        if (Version.isJellyBeanMR2)
-                            selection.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true)
-                        onLoadKeys.launch(Intent.createChooser(selection, title))
-                    }
-                    RESULT_IMPORT_AMIIBO_DATABASE -> {
-                        onImportAmiiboDB.launch(Intent.createChooser(selection, title))
-                    }
+                RESULT_IMPORT_AMIIBO_DATABASE -> {
+                    onImportAmiiboDBDocument.launch(resources.getStringArray(R.array.mimetype_json))
                 }
-            } catch (ex: ActivityNotFoundException) {
-                Debug.verbose(ex)
             }
+        } catch (ex: ActivityNotFoundException) {
+            Debug.verbose(ex)
         }
     }
 

@@ -263,19 +263,28 @@ object Debug {
     }
 
     @JvmStatic
-    fun clipException(context: Context, exception: String?) {
-        if (BuildConfig.WEAR_OS) return
+    fun processException(context: Context, exception: String?, clipboard: Boolean) {
         val log = getDeviceProfile(context)
         log.append(separator).append(separator).append(exception)
         val subject = context.getString(R.string.git_issue_title, BuildConfig.COMMIT)
         setClipboard(context, subject, log.toString())
+        when {
+            clipboard -> {}
+            System.currentTimeMillis() < mPrefs.lastBugReport() + 900000 -> {
+                Toasty(context).Long(R.string.duplicate_reports)
+            }
+            else -> { submitLogcat(context, log.toString()) }
+        }
     }
 
     @JvmStatic
-    fun processException(context: Context, exception: String?) {
-        val log = getDeviceProfile(context)
-        log.append(separator).append(separator).append(exception)
-        submitLogcat(context, log.toString())
+    fun clipException(context: Context, exception: String?) {
+        processException(context, exception, true)
+    }
+
+    @JvmStatic
+    fun sendException(context: Context, exception: String?) {
+        processException(context, exception, false)
     }
 
     private fun showGuideBanner(context: Context) {
@@ -325,7 +334,6 @@ object Debug {
                 val subject = context.getString(R.string.git_issue_title, BuildConfig.COMMIT)
                 setClipboard(context, subject, logText)
                 when {
-                    BuildConfig.WEAR_OS -> {  }
                     KeyManager(context).isKeyMissing || !hasDebugging() -> {
                         showGuideBanner(context)
                     }

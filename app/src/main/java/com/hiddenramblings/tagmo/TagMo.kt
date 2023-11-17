@@ -64,7 +64,7 @@ class TagMo : Application() {
                 error.printStackTrace(PrintWriter(this))
             }
             try {
-                Debug.processException(this, exception.toString())
+                Debug.sendException(this, exception.toString())
             } catch (ignored: Exception) { }
             android.os.Process.killProcess(android.os.Process.myPid())
             exitProcess(-1)

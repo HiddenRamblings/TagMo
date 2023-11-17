@@ -114,6 +114,10 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
             ActivityResultContracts.OpenDocument()
     ) { uri ->
         bottomSheet?.state = BottomSheetBehavior.STATE_COLLAPSED
+        if (null == uri) {
+            Toasty(requireContext()).Short(R.string.error_uri_unknown)
+            return@registerForActivityResult
+        }
         (requireActivity() as BrowserActivity).decompressArchive(uri)
     }
 

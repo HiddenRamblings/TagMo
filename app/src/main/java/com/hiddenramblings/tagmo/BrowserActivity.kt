@@ -1830,7 +1830,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
         }
     }
 
-    fun decompressArchive(uri: Uri?) {
+    fun decompressArchive(uri: Uri) {
         val zipFile = File(externalCacheDir, "archive.zip")
         zipFile.outputStream().use { fileOut ->
             contentResolver.openInputStream(uri)?.use {

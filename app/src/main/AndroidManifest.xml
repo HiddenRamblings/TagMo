@@ -44,6 +44,7 @@
     </queries>
 
     <application
+        android:process=":TagMo"
         android:name=".TagMo"
         android:enableOnBackInvokedCallback="true"
         android:allowBackup="true"
@@ -129,7 +130,8 @@
             android:configChanges="orientation|screenLayout|screenSize|smallestScreenSize"
             android:launchMode="singleTop" />
         <service
-            android:name=".bluetooth.GattService" />
+            android:name=".bluetooth.GattService"
+            android:process=":TagMo" />
         <receiver
             android:name=".update.UpdateReceiver"
             android:exported="true">

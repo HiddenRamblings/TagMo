@@ -443,6 +443,10 @@ class GattService : Service() {
     private val mGattCallback: BluetoothGattCallback = object : BluetoothGattCallback() {
         override fun onConnectionStateChange(gatt: BluetoothGatt, status: Int, newState: Int) {
             if (newState == BluetoothProfile.STATE_CONNECTED) {
+                if (Version.isLollipop) {
+                    gatt.requestMtu(247) // Nordic
+                    return
+                }
                 mBluetoothGatt?.discoverServices()
             } else if (newState == BluetoothProfile.STATE_DISCONNECTED) {
                 listener?.onConnectionLost()
@@ -452,10 +456,6 @@ class GattService : Service() {
         override fun onServicesDiscovered(gatt: BluetoothGatt, status: Int) {
             Debug.verbose(Companion::class.java, "${serviceType.logTag} onServicesDiscovered $status")
             if (status == BluetoothGatt.GATT_SUCCESS) {
-                if (Version.isLollipop) {
-                    gatt.requestMtu(247) // Nordic
-                    return
-                }
                 when (serviceType) {
                     Nordic.DEVICE.BLUUP, Nordic.DEVICE.FLASK, Nordic.DEVICE.SLIDE -> {
                         listener?.onBluupServicesDiscovered()
@@ -475,18 +475,7 @@ class GattService : Service() {
             Debug.verbose(Companion::class.java, "${serviceType.logTag} onMtuChange $mtu $status")
             if (status == BluetoothGatt.GATT_SUCCESS)
                 maxTransmissionUnit = mtu - 3
-            when (serviceType) {
-                Nordic.DEVICE.BLUUP, Nordic.DEVICE.FLASK, Nordic.DEVICE.SLIDE -> {
-                    listener?.onBluupServicesDiscovered()
-                }
-                Nordic.DEVICE.PIXL, Nordic.DEVICE.LOOP, Nordic.DEVICE.LINK -> {
-                    listener?.onPixlServicesDiscovered()
-                }
-                Nordic.DEVICE.PUCK -> {
-                    listener?.onPuckServicesDiscovered()
-                }
-                else -> { }
-            }
+            mBluetoothGatt?.discoverServices()
         }
 
         override fun onCharacteristicRead(

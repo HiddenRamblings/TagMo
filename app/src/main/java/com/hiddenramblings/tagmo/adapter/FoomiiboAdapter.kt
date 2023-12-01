@@ -168,7 +168,7 @@ class FoomiiboAdapter(
         @SuppressLint("NotifyDataSetChanged")
         override fun publishResults(charSequence: CharSequence?, filterResults: FilterResults) {
             if (filteredData === filterResults.values) return
-            filterResults.values.let { filteredData = it as ArrayList<Amiibo> }
+            filterResults.values?.let { filteredData = it as ArrayList<Amiibo> }
             if (itemCount > 0) {
                 Collections.sort(filteredData, AmiiboComparator(settings))
                 val missingFiles: ArrayList<Amiibo> = arrayListOf()

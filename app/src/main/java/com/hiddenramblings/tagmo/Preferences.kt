@@ -209,6 +209,33 @@ class Preferences(context: Context) {
         putString(eliteSignature, value)
     }
 
+    private val showCompat3DS = "settings_show_games_ds"
+    fun showCompat3DS(): Boolean {
+        return getBoolean(showCompat3DS, true)
+    }
+
+    fun showCompat3DS(value: Boolean) {
+        putBoolean(showCompat3DS, value)
+    }
+
+    private val showCompatWiiU = "settings_show_games_wii"
+    fun showCompatWiiU(): Boolean {
+        return getBoolean(showCompatWiiU, true)
+    }
+
+    fun showCompatWiiU(value: Boolean) {
+        putBoolean(showCompatWiiU, value)
+    }
+
+    private val showCompatSwitch = "settings_show_games_nx"
+    fun showCompatSwitch(): Boolean {
+        return getBoolean(showCompatSwitch, true)
+    }
+
+    fun showCompatSwitch(value: Boolean) {
+        putBoolean(showCompatSwitch, value)
+    }
+
     private val disableDebug = "settings_disable_debug"
     fun disableDebug(): Boolean {
         return getBoolean(disableDebug, false)

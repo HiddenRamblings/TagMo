@@ -2,6 +2,7 @@ package com.hiddenramblings.tagmo.amiibo.games
 
 import android.content.Context
 import android.net.Uri
+import com.hiddenramblings.tagmo.Preferences
 import com.hiddenramblings.tagmo.R
 import com.hiddenramblings.tagmo.TagMo
 import com.hiddenramblings.tagmo.amiibo.Amiibo
@@ -20,35 +21,42 @@ class GamesManager {
     private val gamesSwitch = HashMap<Long, GamesSwitch>()
     private val games = HashMap<String, GameTitles>()
 
-    fun getGamesCompatibility(amiiboId: Long): String {
+    fun getGamesCompatibility(prefs: Preferences, amiiboId: Long): String {
         val usage = StringBuilder()
-        val amiibo3DS = games3DS[amiiboId]
-        if (amiibo3DS?.stringList?.isNotBlank() == true) {
-            usage.append(TagMo.appContext.getString(R.string.games_ds))
+        if (prefs.showCompat3DS()) {
+            val amiibo3DS = games3DS[amiiboId]
+            if (amiibo3DS?.stringList?.isNotBlank() == true) {
+                usage.append(TagMo.appContext.getString(R.string.games_ds))
+                usage.append(Debug.separator).append(Debug.separator)
+                usage.append(amiibo3DS.stringList)
+            } else {
+                usage.append(TagMo.appContext.getString(R.string.no_games_ds))
+            }
             usage.append(Debug.separator).append(Debug.separator)
-            usage.append(amiibo3DS.stringList)
-        } else {
-            usage.append(TagMo.appContext.getString(R.string.no_games_ds))
         }
-        usage.append(Debug.separator).append(Debug.separator)
-        val amiiboWiiU = gamesWiiU[amiiboId]
-        if (amiiboWiiU?.stringList?.isNotBlank() == true) {
-            usage.append(TagMo.appContext.getString(R.string.games_wiiu))
+        if (prefs.showCompatWiiU()) {
+            val amiiboWiiU = gamesWiiU[amiiboId]
+            if (amiiboWiiU?.stringList?.isNotBlank() == true) {
+                usage.append(TagMo.appContext.getString(R.string.games_wiiu))
+                usage.append(Debug.separator).append(Debug.separator)
+                usage.append(amiiboWiiU.stringList)
+            } else {
+                usage.append(TagMo.appContext.getString(R.string.no_games_wiiu))
+            }
             usage.append(Debug.separator).append(Debug.separator)
-            usage.append(amiiboWiiU.stringList)
-        } else {
-            usage.append(TagMo.appContext.getString(R.string.no_games_wiiu))
         }
-        usage.append(Debug.separator).append(Debug.separator)
-        val amiiboSwitch = gamesSwitch[amiiboId]
-        if (amiiboSwitch?.stringList?.isNotBlank() == true) {
-            usage.append(TagMo.appContext.getString(R.string.games_switch))
+        if (prefs.showCompatSwitch()) {
+            val amiiboSwitch = gamesSwitch[amiiboId]
+            if (amiiboSwitch?.stringList?.isNotBlank() == true) {
+                usage.append(TagMo.appContext.getString(R.string.games_nx))
+                usage.append(Debug.separator).append(Debug.separator)
+                usage.append(amiiboSwitch.stringList)
+            } else {
+                usage.append(TagMo.appContext.getString(R.string.no_games_nx))
+            }
             usage.append(Debug.separator).append(Debug.separator)
-            usage.append(amiiboSwitch.stringList)
-        } else {
-            usage.append(TagMo.appContext.getString(R.string.no_games_switch))
         }
-        return usage.append(Debug.separator).toString()
+        return usage.toString()
     }
 
     val gameTitles: Collection<GameTitles>

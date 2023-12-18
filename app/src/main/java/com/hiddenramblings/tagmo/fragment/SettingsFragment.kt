@@ -165,6 +165,27 @@ class SettingsFragment : PreferenceFragmentCompat() {
                 super@SettingsFragment.onPreferenceTreeClick(it)
             }
         }
+        findPreference<SwitchPreferenceCompat>(getString(R.string.settings_show_games_ds))?.apply {
+            isChecked = prefs.showCompat3DS()
+            onPreferenceClickListener = Preference.OnPreferenceClickListener {
+                prefs.showCompat3DS(isChecked)
+                super@SettingsFragment.onPreferenceTreeClick(it)
+            }
+        }
+        findPreference<SwitchPreferenceCompat>(getString(R.string.settings_show_games_wii))?.apply {
+            isChecked = prefs.showCompatWiiU()
+            onPreferenceClickListener = Preference.OnPreferenceClickListener {
+                prefs.showCompatWiiU(isChecked)
+                super@SettingsFragment.onPreferenceTreeClick(it)
+            }
+        }
+        findPreference<SwitchPreferenceCompat>(getString(R.string.settings_show_games_nx))?.apply {
+            isChecked = prefs.showCompatSwitch()
+            onPreferenceClickListener = Preference.OnPreferenceClickListener {
+                prefs.showCompatSwitch(isChecked)
+                super@SettingsFragment.onPreferenceTreeClick(it)
+            }
+        }
         findPreference<ListPreference>(getString(R.string.setting_database_source))?.apply {
             setValueIndex(prefs.databaseSource())
             summary = entry

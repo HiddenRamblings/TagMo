@@ -593,7 +593,7 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
         settings.gamesManager?.let {
             try {
                 val amiiboId = Amiibo.dataToId(tagData)
-                txtUsage.text = it.getGamesCompatibility(amiiboId)
+                txtUsage.text = it.getGamesCompatibility(prefs, amiiboId)
             } catch (ex: Exception) {
                 Debug.warn(ex)
             }

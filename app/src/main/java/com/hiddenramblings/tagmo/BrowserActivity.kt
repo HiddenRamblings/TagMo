@@ -1372,7 +1372,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
         return settings?.gamesManager?.let {
             try {
                 val amiiboId = Amiibo.dataToId(tagData)
-                txtUsage.text = it.getGamesCompatibility(amiiboId)
+                txtUsage.text = it.getGamesCompatibility(prefs, amiiboId)
                 true
             } catch (ex: Exception) {
                 Debug.warn(ex)
@@ -1902,7 +1902,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
             Intent.FLAG_GRANT_READ_URI_PERMISSION
                     or Intent.FLAG_GRANT_WRITE_URI_PERMISSION
         )
-        val pickedDir = DocumentFile.fromTreeUri(this, treeUri!!)
+        val pickedDir = DocumentFile.fromTreeUri(this, treeUri)
 
         // List all existing files inside picked directory
         if (null != pickedDir) {

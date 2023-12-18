@@ -42,6 +42,24 @@
     </androidx.preference.PreferenceCategory>
 
     <androidx.preference.PreferenceCategory
+        android:title="@string/prefs_game_compat">
+        <androidx.preference.SwitchPreferenceCompat
+            android:defaultValue="true"
+            android:key="@string/settings_show_games_ds"
+            android:title="@string/enable_ds_compat" />
+
+        <androidx.preference.SwitchPreferenceCompat
+            android:defaultValue="true"
+            android:key="@string/settings_show_games_wii"
+            android:title="@string/enable_wii_compat" />
+
+        <androidx.preference.SwitchPreferenceCompat
+            android:defaultValue="true"
+            android:key="@string/settings_show_games_nx"
+            android:title="@string/enable_nx_compat" />
+    </androidx.preference.PreferenceCategory>
+
+    <androidx.preference.PreferenceCategory
         android:title="@string/amiibo_api_url">
         <androidx.preference.ListPreference
             android:entries="@array/databaseSource"

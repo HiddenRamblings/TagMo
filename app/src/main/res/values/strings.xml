@@ -116,10 +116,10 @@
 
     <string name="games_ds">3DS Compatibility</string>
     <string name="games_wiiu">WiiU Compatibility</string>
-    <string name="games_switch">Switch Compatibility</string>
+    <string name="games_nx">Switch Compatibility</string>
     <string name="no_games_ds">No 3DS compatibility</string>
     <string name="no_games_wiiu">No WiiU compatibility</string>
-    <string name="no_games_switch">No Switch compatibility</string>
+    <string name="no_games_nx">No Switch compatibility</string>
 
     <string name="properties">Properties</string>
     <string name="mii" translatable="false">Mii</string>
@@ -253,6 +253,10 @@
     <string name="lock_elite_warning">Lock N2 Elite Hardware?</string>
     <string name="unlock_elite_warning">Unlock N2 Elite Hardware</string>
     <string name="elite_signature">N2 Elite ID: %1$s</string>
+    <string name="prefs_game_compat">Game Compatibility</string>
+    <string name="enable_ds_compat">Show 3DS Games</string>
+    <string name="enable_wii_compat">Show Wii U Games</string>
+    <string name="enable_nx_compat">Show Switch Games</string>
     <string name="amiibo_info">amiibo Database</string>
     <string name="pref_database_source">Preferred AmiiboAPI Database</string>
     <string name="sync_amiibo_info">Sync database with AmiiboAPI</string>

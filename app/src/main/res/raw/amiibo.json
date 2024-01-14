@@ -377,7 +377,7 @@
 		},
 		"0x0189000100ab0502":
 		{
-			"name": "Label",
+			"name": "Labelle",
 			"release":
 			{
 				"au": "2015-11-21",
@@ -916,7 +916,7 @@
 		},
 		"0x03a8000100910502":
 		{
-			"name": "Rosco",
+			"name": "Roscoe",
 			"release":
 			{
 				"au": "2015-10-03",
@@ -9886,7 +9886,7 @@
 		"0x0463": "Friga",
 		"0x0462": "Hopper",
 		"0x03a9": "Winnie",
-		"0x03a8": "Rosco",
+		"0x03a8": "Roscoe",
 		"0x0a13": "Tiansheng",
 		"0x0a12": "Ione",
 		"0x03a7": "Elmer",

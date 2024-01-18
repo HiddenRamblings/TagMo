@@ -105126,6 +105126,18 @@
 					]
 				}
 			]
+		},
+		"0x22430000043d1b02":
+		{
+			"games3DS": [],
+			"gamesWiiU": [],
+			"gamesSwitch": []
+		},
+		"0x22440000043e1b02":
+		{
+			"games3DS": [],
+			"gamesWiiU": [],
+			"gamesSwitch": []
 		}
 	}
 }

@@ -32,6 +32,7 @@ import java.net.URL
 import java.net.UnknownHostException
 import java.nio.charset.StandardCharsets
 import javax.net.ssl.HttpsURLConnection
+import javax.net.ssl.SSLHandshakeException
 
 class JSONExecutor(activity: Activity, server: String, path: String? = null) {
 
@@ -86,6 +87,9 @@ class JSONExecutor(activity: Activity, server: String, path: String? = null) {
                 return@launch
             } catch (cne: ConnectException) {
                 Debug.warn(cne)
+                return@launch
+            } catch (ssl: SSLHandshakeException) {
+                Debug.warn(ssl)
                 return@launch
             } catch (ignored: UnknownHostException) { }
             try {

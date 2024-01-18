@@ -9306,6 +9306,28 @@
 				"eu": "2015-10-02",
 				"jp": "2015-07-30"
 			}
+		},
+		"0x22430000043d1b02":
+		{
+			"name": "Noah",
+			"release":
+			{
+				"au": "2024-01-19",
+				"eu": "2024-01-19",
+				"jp": "2024-01-19",
+				"na": "2024-01-19"
+			}
+		},
+		"0x22440000043e1b02":
+		{
+			"name": "Mio",
+			"release":
+			{
+				"au": "2024-01-19",
+				"eu": "2024-01-19",
+				"jp": "2024-01-19",
+				"na": "2024-01-19"
+			}
 		}
 	},
 	"amiibo_series":
@@ -9334,7 +9356,8 @@
 		"0x02": "Chibi-Robo!",
 		"0x07": "Skylanders",
 		"0x16": "Diablo",
-		"0x17": "Power Pros"
+		"0x17": "Power Pros",
+		"0x1b": "Xenoblade Chronicles 3"
 	},
 	"game_series":
 	{
@@ -9452,7 +9475,8 @@
 		"0x37c": "Castlevania",
 		"0x348": "Megaman",
 		"0x1b9": "Pokemon",
-		"0x22c": "Chibi Robo"
+		"0x22c": "Chibi Robo",
+		"0x224": "Xenoblade Chronicles"
 	},
 	"types":
 	{
@@ -10103,6 +10127,8 @@
 		"0x0741": "Dark Pit",
 		"0x3a00": "Joker",
 		"0x09c8": "Diddy Kong",
-		"0x07c0": "Mii"
+		"0x07c0": "Mii",
+		"0x2243": "Noah",
+		"0x2244": "Mio"
 	}
 }

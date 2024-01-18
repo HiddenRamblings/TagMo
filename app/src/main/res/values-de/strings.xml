@@ -207,7 +207,6 @@
     <string name="menu_elite">N2 Elite-Browser</string>
     <string name="menu_gatt">Bluetooth-Browser</string>
     <string name="menu_qr_code">QR-Code Toolkit</string>
-    <string name="menu_dimensions">Dimensions 213</string>
     <string name="menu_settings">TagMo Einstellungen</string>
 
     <string name="pref_menu_return">Zurück zum Hauptmenü</string>

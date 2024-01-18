@@ -60,6 +60,7 @@
     <string name="elite_n2" translatable="false">N2 Elite</string>
     <string name="elite_amiiqo" translatable="false">N2 Elite / Amiiqo</string>
     <string name="gatt_title" translatable="false">Bluetooth</string>
+    <string name="menu_dimensions" translatable="false">Dimensions 213</string>
 
     <string name="device_bluup" translatable="false">Bluup</string>
     <string name="device_flask" translatable="false">Flask</string>

@@ -347,7 +347,7 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
 
     fun setAmiiboStats() {
         statsHandler.removeCallbacksAndMessages(null)
-        if (isDetached) return
+        if (isDetached || null == context) return
         browserActivity?.let { activity ->
             if (activity.viewPager.currentItem != 0) return
             currentFolderView?.run {

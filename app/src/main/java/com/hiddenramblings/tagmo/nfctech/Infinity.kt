@@ -18,7 +18,7 @@ import java.io.IOException
 import java.math.BigInteger
 import java.security.MessageDigest
 
-class Infinity(mifare: MifareClassic?) : TagTechnology {
+class Infinity(mifare: MifareClassic?) : TagTechnology { // Mifare Mini
 
     private val magicNumbers: Array<BigInteger> = arrayOf(
             BigInteger("3"), BigInteger("5"),

@@ -33,13 +33,15 @@ android {
             dimension "source"
             manifestPlaceholders.storagePermission = "android.permission.MANAGE_EXTERNAL_STORAGE"
             manifestPlaceholders.installPermission = "android.permission.REQUEST_INSTALL_PACKAGES"
+            manifestPlaceholders.updatesPermission = "android.permission.UPDATE_PACKAGES_WITHOUT_USER_ACTION"
             buildConfigField "boolean", "GOOGLE_PLAY", "false"
         }
         google {
             dimension "source"
             isDefault true
-            manifestPlaceholders.storagePermission = "com.hiddenramblings.tagmo.BROWSER"
-            manifestPlaceholders.installPermission = "com.hiddenramblings.tagmo.UPDATING"
+            manifestPlaceholders.storagePermission = "${defaultConfig.applicationId}.BROWSER"
+            manifestPlaceholders.installPermission = "${defaultConfig.applicationId}.INSTALL"
+            manifestPlaceholders.updatesPermission = "${defaultConfig.applicationId}.UPDATES"
             buildConfigField "boolean", "GOOGLE_PLAY", "true"
         }
     }
@@ -124,7 +126,7 @@ dependencies {
     implementation 'androidx.preference:preference-ktx:1.2.1'
     implementation 'androidx.recyclerview:recyclerview:1.3.2'
     implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.1.0'
-    implementation 'androidx.webkit:webkit:1.9.0'
+    implementation 'androidx.webkit:webkit:1.10.0'
     wearosImplementation "androidx.wear:wear:1.3.0"
 
     implementation 'com.android.billingclient:billing:6.1.0'
@@ -150,5 +152,5 @@ dependencies {
 
     implementation 'org.lsposed.hiddenapibypass:hiddenapibypass:4.3'
 
-    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.1'
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3'
 }

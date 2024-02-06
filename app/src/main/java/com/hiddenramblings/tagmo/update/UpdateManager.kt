@@ -135,6 +135,11 @@ class UpdateManager internal constructor(activity: BrowserActivity) {
                                 val params = PackageInstaller.SessionParams(
                                     PackageInstaller.SessionParams.MODE_FULL_INSTALL
                                 )
+                                if (!BuildConfig.GOOGLE_PLAY && Version.isSnowCone) {
+                                    params.setRequireUserAction(
+                                        PackageInstaller.SessionParams.USER_ACTION_NOT_REQUIRED
+                                    )
+                                }
                                 openSession(createSession(params))
                             }
                             val document = DocumentFile.fromSingleUri(applicationContext, apkUri)

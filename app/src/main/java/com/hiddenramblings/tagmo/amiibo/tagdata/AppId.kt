@@ -10,6 +10,7 @@ object AppId {
     const val MLPaperJam = 0x00132600
     const val MLSuperstarSaga = 0x00194B00
     const val MSSuperstars = 0x00188B00
+    const val MarioParty10 = 0x0000FFFF // Placeholder
     const val MarioTennis = 0x10199000
     const val Pikmin = 0x001A9200
     const val Splatoon = 0x10162B00
@@ -28,6 +29,7 @@ object AppId {
             apps[MLPaperJam] = getString(R.string.ml_paper_jam)
             apps[MLSuperstarSaga] = getString(R.string.ml_superstar_saga)
             apps[MSSuperstars] = getString(R.string.ms_superstars)
+            apps[MarioParty10] = getString(R.string.mario_party_ten)
             apps[MarioTennis] = getString(R.string.mario_tennis)
             apps[Pikmin] = getString(R.string.pikmin)
             apps[Splatoon] = getString(R.string.splatoon)

@@ -80,6 +80,7 @@ class TagDataEditor : AppCompatActivity() {
     private lateinit var appDataViewMLPaperJam: LinearLayout
     private lateinit var appDataViewMLSuperstarSaga: LinearLayout
     private lateinit var appDataViewMSSuperstars: LinearLayout
+    private lateinit var appDataViewMarioParty10: LinearLayout
     private lateinit var appDataViewMarioTennis: LinearLayout
     private lateinit var appDataViewPikmin: LinearLayout
     private lateinit var appDataViewSplatoon: LinearLayout
@@ -113,6 +114,7 @@ class TagDataEditor : AppCompatActivity() {
     private var buttonUnlock: AppCompatButton? = null
     private var appDataMLSuperstarSaga: AppDataMLSuperstarSaga? = null
     private var appDataMSSuperstars: AppDataMSSuperstars? = null
+    private var appDataMarioParty10: AppDataMarioParty10? = null
     private var appDataMarioTennis: AppDataMarioTennis? = null
     private var appDataPikmin: AppDataPikmin? = null
     private var appDataSplatoon: AppDataSplatoon? = null
@@ -177,6 +179,7 @@ class TagDataEditor : AppCompatActivity() {
         appDataViewMLPaperJam = findViewById(R.id.appDataMLPaperJam)
         appDataViewMLSuperstarSaga = findViewById(R.id.appDataMLSuperstarSaga)
         appDataViewMSSuperstars = findViewById(R.id.appDataMSSuperstars)
+        appDataViewMarioParty10 = findViewById(R.id.appDataMarioParty10)
         appDataViewMarioTennis = findViewById(R.id.appDataMarioTennis)
         appDataViewPikmin = findViewById(R.id.appDataPikmin)
         appDataViewSplatoon = findViewById(R.id.appDataSplatoon)
@@ -863,6 +866,8 @@ class TagDataEditor : AppCompatActivity() {
         appDataMLSuperstarSaga = null
         appDataViewMSSuperstars.isGone = true
         appDataMSSuperstars = null
+        appDataViewMarioParty10.isGone = true
+        appDataMarioParty10 = null
         appDataViewMarioTennis.isGone = true
         appDataMarioTennis = null
         appDataViewPikmin.isGone = true
@@ -896,6 +901,10 @@ class TagDataEditor : AppCompatActivity() {
                 AppId.MSSuperstars -> {
                     appDataViewMSSuperstars.isVisible = true
                     enableAppDataMSSuperstars(amiiboData.appData)
+                }
+                AppId.MarioParty10 -> {
+                    appDataViewMarioParty10.isVisible = true
+                    enableAppDataMarioParty10(amiiboData.appData)
                 }
                 AppId.MarioTennis -> {
                     appDataViewMarioTennis.isVisible = true
@@ -1209,6 +1218,16 @@ class TagDataEditor : AppCompatActivity() {
             return
         }
         onAppDataMSSuperstarsChecked(isAppDataInitialized)
+    }
+
+    private fun enableAppDataMarioParty10(appData: ByteArray) {
+        try {
+            appDataMarioParty10 = AppDataMarioParty10(appData)
+        } catch (e: Exception) {
+            appDataViewMarioParty10.isGone = true
+            return
+        }
+        onAppDataMarioParty10Checked(isAppDataInitialized)
     }
 
     private fun enableAppDataMarioTennis(appData: ByteArray) {
@@ -1605,6 +1624,10 @@ class TagDataEditor : AppCompatActivity() {
     }
 
     private fun onAppDataMSSuperstarsChecked(enabled: Boolean) {
+
+    }
+
+    private fun onAppDataMarioParty10Checked(enabled: Boolean) {
 
     }
 

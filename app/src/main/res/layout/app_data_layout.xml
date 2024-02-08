@@ -33,6 +33,10 @@
             android:id="@+id/appDataMSSuperstars" />
 
         <include
+            layout="@layout/app_data_mario_party_10"
+            android:id="@+id/appDataMarioParty10" />
+
+        <include
             layout="@layout/app_data_mario_tennis"
             android:id="@+id/appDataMarioTennis" />
 

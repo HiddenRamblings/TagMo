@@ -9328,6 +9328,15 @@
 				"jp": "2024-01-19",
 				"na": "2024-01-19"
 			}
+		},
+		"0x3f000000042e0002": {
+			"name": "Sora",
+			"release": {
+				"au": "2024-02-16",
+				"eu": "2024-02-16",
+				"jp": "2024-02-16",
+				"na": "2024-02-16"
+			}
 		}
 	},
 	"amiibo_series":
@@ -9450,6 +9459,7 @@
 		"0x380": "Power Pros",
 		"0x1bd": "Pokemon",
 		"0x378": "Metal Gear Solid",
+		"0x3f0": "Kingdom Hearts",
 		"0x1d4": "Pokemon",
 		"0x1d0": "Pokemon",
 		"0x34c": "Street fighter",
@@ -10129,6 +10139,7 @@
 		"0x09c8": "Diddy Kong",
 		"0x07c0": "Mii",
 		"0x2243": "Noah",
-		"0x2244": "Mio"
+		"0x2244": "Mio",
+		"0x3f00": "Sora"
 	}
 }

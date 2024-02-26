@@ -11,7 +11,7 @@ android {
         compileSdk 34
         minSdk 19
         targetSdk 34
-        versionName "4.1.6"
+        versionName "4.1.7"
         versionCode = versionName.replace(".","").toInteger() * 10
 
         vectorDrawables {

@@ -6,7 +6,6 @@ import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
 import android.content.res.Resources
-import android.os.Build
 import android.os.Bundle
 import android.os.Environment
 import android.os.Handler
@@ -22,7 +21,6 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.AppCompatButton
@@ -38,8 +36,15 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.google.android.flexbox.FlexboxLayout
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.snackbar.Snackbar
-import com.hiddenramblings.tagmo.*
+import com.hiddenramblings.tagmo.BrowserActivity
+import com.hiddenramblings.tagmo.BrowserSettings
 import com.hiddenramblings.tagmo.BrowserSettings.BrowserSettingsListener
+import com.hiddenramblings.tagmo.BuildConfig
+import com.hiddenramblings.tagmo.ImageActivity
+import com.hiddenramblings.tagmo.NFCIntent
+import com.hiddenramblings.tagmo.Preferences
+import com.hiddenramblings.tagmo.R
+import com.hiddenramblings.tagmo.TagMo
 import com.hiddenramblings.tagmo.adapter.BrowserAdapter
 import com.hiddenramblings.tagmo.adapter.FoldersAdapter
 import com.hiddenramblings.tagmo.adapter.FoomiiboAdapter
@@ -58,7 +63,10 @@ import com.hiddenramblings.tagmo.nfctech.TagArray
 import com.hiddenramblings.tagmo.widget.Toasty
 import com.robertlevonyan.views.chip.Chip
 import com.robertlevonyan.views.chip.OnCloseClickListener
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import me.zhanghai.android.fastscroll.FastScrollerBuilder
 import java.io.File
 
@@ -151,6 +159,7 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
                 }
             }
             browserContent = view.findViewById<RecyclerView>(R.id.browser_content).apply {
+                setMaxViewPoolSize(2, Int.MAX_VALUE)
                 layoutManager = if (settings.amiiboView == BrowserSettings.VIEW.IMAGE.value)
                     GridLayoutManager(activity, activity.columnCount)
                 else
@@ -162,6 +171,7 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
             }
 
             foomiiboContent = view.findViewById<RecyclerView>(R.id.foomiibo_list).apply {
+                setMaxViewPoolSize(2, Int.MAX_VALUE)
                 layoutManager = if (settings.amiiboView == BrowserSettings.VIEW.IMAGE.value)
                     GridLayoutManager(activity, activity.columnCount)
                 else
@@ -224,6 +234,11 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
             browserContent?.layoutManager = GridLayoutManager(activity, activity.columnCount)
             foomiiboContent?.layoutManager = GridLayoutManager(activity, activity.columnCount)
         }
+    }
+
+    private fun RecyclerView.setMaxViewPoolSize(maxViewTypeId: Int, maxPoolSize: Int) {
+        for (i in 0..maxViewTypeId)
+            recycledViewPool.setMaxRecycledViews(i, maxPoolSize)
     }
 
     @SuppressLint("InflateParams")

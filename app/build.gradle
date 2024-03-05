@@ -20,7 +20,9 @@ android {
         renderscriptTargetApi 31
         renderscriptSupportModeEnabled true
 
-        def commit = 'git rev-parse --short HEAD'.execute().text.trim()
+        def commit = providers.exec {
+            commandLine("git", "rev-parse", "--short", "HEAD")
+        }.standardOutput.asText.get().trim()
         buildConfigField "String", "COMMIT", "\""+commit+"\""
         project.archivesBaseName = "${rootProject.name}-${commit}"
     }

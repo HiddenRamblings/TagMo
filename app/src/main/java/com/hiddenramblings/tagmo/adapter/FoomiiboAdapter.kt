@@ -79,7 +79,7 @@ class FoomiiboAdapter(
     }
 
     override fun getItemId(position: Int): Long {
-        return position.toLong()
+        return data[position].id + position
     }
 
     private fun getItem(i: Int): Amiibo {

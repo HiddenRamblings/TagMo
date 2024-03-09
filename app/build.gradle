@@ -84,6 +84,10 @@ android {
         buildTypes.wearos.signingConfig signingConfigs.document
     } catch (FileNotFoundException ignored) { }
 
+    buildFeatures {
+        buildConfig true
+    }
+
     ndkVersion '21.4.7075529'
     externalNativeBuild {
         cmake {
@@ -154,5 +158,5 @@ dependencies {
 
     implementation 'org.lsposed.hiddenapibypass:hiddenapibypass:4.3'
 
-    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3'
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.8.0'
 }

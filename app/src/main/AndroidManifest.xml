@@ -135,11 +135,7 @@
             android:process=":TagMo" />
         <receiver
             android:name=".update.UpdateReceiver"
-            android:exported="true">
-            <intent-filter android:priority="999">
-                <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
-            </intent-filter>
-        </receiver>
+            android:exported="true" />
         <meta-data
             android:name="com.android.packageinstaller.notification.smallIcon"
             android:resource="@mipmap/ic_launcher" />

@@ -31,14 +31,7 @@ class UpdateReceiver : BroadcastReceiver() {
         intent.setPackage(context.packageName)
         intent.flags = 0
         intent.data = null
-        if (Intent.ACTION_MY_PACKAGE_REPLACED == action) {
-            var mainIntent: Intent? = Intent(context, BrowserActivity::class.java)
-            try {
-                mainIntent = context.packageManager
-                    .getLaunchIntentForPackage(BuildConfig.APPLICATION_ID)
-            } catch (ignored: Exception) { }
-            startLauncherActivity(context, mainIntent)
-        } else if (!BuildConfig.GOOGLE_PLAY && Version.isLollipop) {
+        if (!BuildConfig.GOOGLE_PLAY && Version.isLollipop) {
             when (intent.getIntExtra(PackageInstaller.EXTRA_STATUS, -1)) {
                 PackageInstaller.STATUS_PENDING_USER_ACTION -> {
                     intent.parcelable<Intent>(Intent.EXTRA_INTENT)?.let {

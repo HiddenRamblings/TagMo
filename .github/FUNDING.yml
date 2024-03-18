@@ -1,2 +1,3 @@
 github: AbandonedCart
-custom: https://paypal.me/twistedumbrella
+custom: ["https://paypal.me/twistedumbrella", paypal.me]
+custom: ["https://www.buymeacoffee.com/tagmo", buymeacoffee]

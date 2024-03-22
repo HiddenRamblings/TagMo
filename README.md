@@ -13,8 +13,8 @@
       <img src="https://img.shields.io/discord/1109571129242296320.svg?label=&logo=discord&logoColor=ffffff&color=7289DA&labelColor=6A5ACD">
   </a>
 &nbsp;
-  <a href="https://github.com/HiddenRamblings/TagMo/actions/workflows/wearos.yml" target="_blank">
-    <img src="https://github.com/HiddenRamblings/TagMo/actions/workflows/wearos.yml/badge.svg">
+  <a href="https://github.com/HiddenRamblings/TagMo/releases" target="_blank">
+    <img src="https://img.shields.io/github/downloads/HiddenRamblings/TagMo/total">
   </a>
 </p>
 

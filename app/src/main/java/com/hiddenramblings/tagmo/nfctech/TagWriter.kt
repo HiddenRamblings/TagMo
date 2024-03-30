@@ -53,11 +53,13 @@ object TagWriter {
         } catch (e: Exception) {
             throw Exception(context.getString(R.string.error_password_write), e)
         }
-        try {
-            writeLockInfo(mifare)
-            Debug.verbose(TagWriter::class.java, R.string.lock_write)
-        } catch (e: Exception) {
-            throw Exception(context.getString(R.string.error_lock_write), e)
+        if (true) {
+            try {
+                writeLockInfo(mifare)
+                Debug.verbose(TagWriter::class.java, R.string.lock_write)
+            } catch (e: Exception) {
+                throw Exception(context.getString(R.string.error_lock_write), e)
+            }
         }
     }
 
@@ -88,11 +90,13 @@ object TagWriter {
         } catch (e: Exception) {
             throw Exception(TagMo.appContext.getString(R.string.error_password_write), e)
         }
-        try {
-            writeLockInfo(mifare)
-            Debug.verbose(TagWriter::class.java, R.string.lock_write)
-        } catch (e: Exception) {
-            throw Exception(TagMo.appContext.getString(R.string.error_lock_write), e)
+        if (true) {
+            try {
+                writeLockInfo(mifare)
+                Debug.verbose(TagWriter::class.java, R.string.lock_write)
+            } catch (e: Exception) {
+                throw Exception(TagMo.appContext.getString(R.string.error_lock_write), e)
+            }
         }
     }
 

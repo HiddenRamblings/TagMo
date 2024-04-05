@@ -134,6 +134,7 @@ jobs:
     - uses: actions/upload-artifact@v3
       with:
         name: TagMo-${{ env.GIT_HASH }}
+        retention-days: 1
         path: |
           ${{steps.sign_main.outputs.signedReleaseFile}}
 
@@ -147,9 +148,9 @@ jobs:
         files: |
           ${{steps.sign_main.outputs.signedReleaseFile}}
 
-#    - name: Discord webhook notification
-#      uses: distributhor/workflow-webhook@v3.0.5
-#      env:
-#        webhook_type: 'json-extended'
-#        webhook_url: 'https://discord.com/api/webhooks/1126499633242308608/uBVJQ6nnh0bn2XBzsjNzASwRy2dd5AzzuNoEbNplebSG81NJXeYQVJ92NZvWg3sdm0pI/github'
-#        data: '{ "download": "${{ env.APK_LINK }}" }'
+    - name: Purge cache
+      if: ${{ ! startsWith(github.event.head_commit.message, 'Update ') }}
+      continue-on-error: true
+      uses: MyAlbum/purge-cache@v1
+      with:
+        max-age: 172800 # 2 days, default: 7 days since last use

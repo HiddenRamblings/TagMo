@@ -77,6 +77,7 @@ import com.hiddenramblings.tagmo.eightbit.util.Zip
 import com.hiddenramblings.tagmo.eightbit.view.AnimatedLinearLayout
 import com.hiddenramblings.tagmo.eightbit.widget.FABulous
 import com.hiddenramblings.tagmo.eightbit.widget.ProgressAlert
+import com.hiddenramblings.tagmo.fragment.FittedSheets
 import com.hiddenramblings.tagmo.fragment.BrowserFragment
 import com.hiddenramblings.tagmo.fragment.SettingsFragment
 import com.hiddenramblings.tagmo.hexcode.HexCodeViewer
@@ -1396,10 +1397,19 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
     @Throws(ActivityNotFoundException::class)
     fun onDocumentRequested() {
         if (Version.isLollipop) {
-            onDocumentTree.launch(Intent(Intent.ACTION_OPEN_DOCUMENT_TREE)
-                .putExtra("android.content.extra.SHOW_ADVANCED", true)
-                .putExtra("android.content.extra.FANCY", true)
-            )
+            FittedSheets.newInstance().apply {
+                setTitleText(this@BrowserActivity.getString(R.string.storage_setup))
+                setPositiveButton(this@BrowserActivity.getString(R.string.proceed)) {
+                    onDocumentTree.launch(
+                        Intent(Intent.ACTION_OPEN_DOCUMENT_TREE)
+                            .putExtra("android.content.extra.SHOW_ADVANCED", true)
+                            .putExtra("android.content.extra.FANCY", true)
+                    )
+                }
+                setNegativeButton(this@BrowserActivity.getString(R.string.close)) {
+                    finish()
+                }
+            }.show(supportFragmentManager, "storage")
         }
     }
 

@@ -307,6 +307,7 @@
     <string name="physical_storage_root">Browse Physical Storage</string>
     <string name="grant_file_permission">Enable "All Files" Manager</string>
     <string name="force_document_storage">Enable Document Storage</string>
+    <string name="storage_setup">Please configure a root folder</string>
     <string name="unzip_archive">Extract bins from zip file</string>
     <string name="refresh_browser">Refresh Browser</string>
 

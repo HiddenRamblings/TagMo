@@ -3,6 +3,10 @@ name: TagMo CI
 on:
   push:
     branches: [ master ]
+    paths-ignore:
+      - '**/README.md'
+      - '.github/ISSUE_TEMPLATE/**'
+      - 'assets/**'
 
 permissions:
   contents: write

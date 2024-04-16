@@ -46,3 +46,8 @@ Additional thanks go out to (alphabetically):
 ![TagMo Logo](assets/tagmo_feature.gif)
 ###
 *TagMo is not affiliated, authorized, sponsored, endorsed, or in any way connected with Nintendo Co., Ltd or its subsidiaries. amiibo is a registered trademark of Nintendo of America Inc. TagMo does not claim ownership of any licensed resources. Files created with or resulting from TagMo are not intended for sale or distribution. TagMo is for educational and archival purposes only.*
+
+<br />
+<p align="center">
+<img src="https://count.getloli.com/get/@:repodevildantotsu" alt=":repodevildantotsu" />
+</p>

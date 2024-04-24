@@ -135,15 +135,13 @@ class WebsiteFragment : Fragment() {
 
     fun loadWebsite(address: String?) {
         var website = address
-        if (null != mWebView) {
+        mWebView?.let { view ->
             if (null == website) website = WEBSITE_README
-            val webViewSettings = mWebView?.settings
-            if (null != webViewSettings) {
-                webViewSettings.setSupportZoom(true)
-                webViewSettings.builtInZoomControls = true
-            }
-            mWebView?.loadUrl(website)
-        } else {
+            val webViewSettings = view.settings
+            webViewSettings.setSupportZoom(true)
+            webViewSettings.builtInZoomControls = true
+            website?.let { view.loadUrl(it) }
+        } ?: {
             val delayedUrl = website
             webHandler.postDelayed({ loadWebsite(delayedUrl) }, TagMo.uiDelay.toLong())
         }

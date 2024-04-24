@@ -1,7 +1,5 @@
 package com.hiddenramblings.tagmo.eightbit.util
 
-import android.os.Build
-import androidx.annotation.RequiresApi
 import com.hiddenramblings.tagmo.eightbit.os.Version
 import java.io.*
 import java.nio.charset.Charset

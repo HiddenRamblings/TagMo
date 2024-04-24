@@ -12,7 +12,6 @@ import com.hiddenramblings.tagmo.Preferences
 import com.hiddenramblings.tagmo.R
 import com.hiddenramblings.tagmo.TagMo
 import java.util.ArrayDeque
-import java.util.Arrays
 import java.util.Queue
 
 @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)

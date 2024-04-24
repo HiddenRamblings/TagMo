@@ -10,7 +10,8 @@ import com.hiddenramblings.tagmo.amiibo.games.GamesManager
 import com.hiddenramblings.tagmo.eightbit.os.Storage
 import com.hiddenramblings.tagmo.eightbit.os.Version
 import java.io.File
-import java.util.*
+import java.util.Arrays
+import java.util.Locale
 
 open class BrowserSettings : Parcelable {
     enum class SORT(val value: Int) {

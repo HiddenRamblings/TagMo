@@ -1,10 +1,8 @@
 package com.hiddenramblings.tagmo.eightbit.util
 
 import android.content.Context
-import android.os.Build
 import android.os.Handler
 import android.os.Looper
-import androidx.annotation.RequiresApi
 import com.hiddenramblings.tagmo.R
 import com.hiddenramblings.tagmo.eightbit.io.Debug
 import com.hiddenramblings.tagmo.eightbit.os.Version

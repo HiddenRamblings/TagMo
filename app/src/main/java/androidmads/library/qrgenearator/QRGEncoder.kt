@@ -28,7 +28,8 @@ import com.google.zxing.EncodeHintType
 import com.google.zxing.MultiFormatWriter
 import com.hiddenramblings.tagmo.eightbit.os.Version
 import java.nio.charset.StandardCharsets
-import java.util.*
+import java.util.EnumMap
+import java.util.Locale
 
 class QRGEncoder(data: String?, bundle: Bundle?, type: Int, private var dimension: Int) {
     

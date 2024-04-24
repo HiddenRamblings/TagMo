@@ -20,6 +20,19 @@
             layout="@layout/active_tile_layout"
             android:id="@+id/active_tile_layout" />
 
+        <TextView
+            android:id="@+id/sort_mode_label"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:gravity="center"
+            android:ellipsize="marquee"
+            android:marqueeRepeatLimit="marquee_forever"
+            android:singleLine="true"
+            android:text="@string/sort_mode_set"
+            android:textColor="@color/bottomSheetText"
+            android:textSize="14sp" />
+
         <Spinner
             android:id="@+id/sort_mode_spinner"
             android:layout_width="match_parent"

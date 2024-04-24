@@ -77,8 +77,8 @@ import com.hiddenramblings.tagmo.eightbit.util.Zip
 import com.hiddenramblings.tagmo.eightbit.view.AnimatedLinearLayout
 import com.hiddenramblings.tagmo.eightbit.widget.FABulous
 import com.hiddenramblings.tagmo.eightbit.widget.ProgressAlert
-import com.hiddenramblings.tagmo.fragment.FittedSheets
 import com.hiddenramblings.tagmo.fragment.BrowserFragment
+import com.hiddenramblings.tagmo.fragment.FittedSheets
 import com.hiddenramblings.tagmo.fragment.SettingsFragment
 import com.hiddenramblings.tagmo.hexcode.HexCodeViewer
 import com.hiddenramblings.tagmo.nfctech.Flipper.toNFC

@@ -5,19 +5,40 @@ import android.app.SearchManager
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothAdapter.LeScanCallback
 import android.bluetooth.BluetoothDevice
-import android.bluetooth.le.*
-import android.content.*
+import android.bluetooth.le.ScanCallback
+import android.bluetooth.le.ScanFilter
+import android.bluetooth.le.ScanResult
+import android.bluetooth.le.ScanSettings
+import android.content.ComponentName
+import android.content.Context
+import android.content.DialogInterface
+import android.content.Intent
+import android.content.ServiceConnection
 import android.graphics.Bitmap
 import android.net.Uri
-import android.os.*
-import android.view.*
+import android.os.Build
+import android.os.Bundle
+import android.os.Handler
+import android.os.IBinder
+import android.os.Looper
+import android.os.ParcelUuid
+import android.view.Gravity
+import android.view.LayoutInflater
+import android.view.MenuItem
+import android.view.View
+import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.AdapterView.OnItemSelectedListener
 import android.widget.LinearLayout
 import android.widget.Spinner
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
-import androidx.appcompat.widget.*
+import androidx.appcompat.widget.AppCompatButton
+import androidx.appcompat.widget.AppCompatImageView
+import androidx.appcompat.widget.AppCompatToggleButton
+import androidx.appcompat.widget.SearchView
+import androidx.appcompat.widget.SwitchCompat
+import androidx.appcompat.widget.Toolbar
 import androidx.cardview.widget.CardView
 import androidx.core.view.isGone
 import androidx.core.view.isInvisible
@@ -31,7 +52,14 @@ import com.bumptech.glide.request.target.CustomTarget
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetBehavior.BottomSheetCallback
 import com.google.android.material.snackbar.Snackbar
-import com.hiddenramblings.tagmo.*
+import com.hiddenramblings.tagmo.BrowserActivity
+import com.hiddenramblings.tagmo.BrowserSettings
+import com.hiddenramblings.tagmo.BuildConfig
+import com.hiddenramblings.tagmo.ImageActivity
+import com.hiddenramblings.tagmo.NFCIntent
+import com.hiddenramblings.tagmo.Preferences
+import com.hiddenramblings.tagmo.R
+import com.hiddenramblings.tagmo.TagMo
 import com.hiddenramblings.tagmo.adapter.GattSlotAdapter
 import com.hiddenramblings.tagmo.adapter.WriteTagAdapter
 import com.hiddenramblings.tagmo.amiibo.Amiibo
@@ -95,6 +123,7 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
     private var createBlank: AppCompatButton? = null
     private var resetDevice: AppCompatButton? = null
     private var switchMenuOptions: AppCompatToggleButton? = null
+    private var sortModeLabel: TextView? = null
     private var sortModeSpinner: Spinner? = null
     private var writeSlotsLayout: LinearLayout? = null
     private var writeTagAdapter: WriteTagAdapter? = null
@@ -174,6 +203,7 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
             gattStats = view.findViewById(R.id.bluup_stats)
             switchMenuOptions = view.findViewById(R.id.switch_menu_btn)
             slotOptionsMenu = view.findViewById(R.id.slot_options_menu)
+            sortModeLabel = view.findViewById(R.id.sort_mode_label)
             sortModeSpinner = view.findViewById<Spinner>(R.id.sort_mode_spinner).apply {
                 onItemSelectedListener = object : OnItemSelectedListener {
                     override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
@@ -400,6 +430,7 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
             when (sheet) {
                 SHEET.LOCKED -> {
                     amiiboCard?.isGone = true
+                    sortModeLabel?.isGone = true
                     sortModeSpinner?.isGone = true
                     switchMenuOptions?.isGone = true
                     slotOptionsMenu?.isGone = true
@@ -415,6 +446,7 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
                 }
                 SHEET.MENU -> {
                     amiiboCard?.isGone = true
+                    sortModeLabel?.isVisible = isKeyFob
                     sortModeSpinner?.isVisible = isKeyFob
                     switchMenuOptions?.isGone = isKeyFob
                     slotOptionsMenu?.isVisible = true
@@ -433,6 +465,7 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
                 SHEET.WRITE -> {
                     bottomSheet?.isFitToContents = false
                     amiiboCard?.isGone = true
+                    sortModeLabel?.isGone = true
                     sortModeSpinner?.isGone = true
                     switchMenuOptions?.isGone = true
                     slotOptionsMenu?.isGone = true

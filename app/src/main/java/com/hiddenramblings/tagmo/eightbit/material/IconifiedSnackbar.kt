@@ -25,7 +25,6 @@ import androidx.core.view.updatePadding
 import androidx.transition.TransitionManager
 import com.google.android.material.snackbar.Snackbar
 import com.hiddenramblings.tagmo.R
-import com.hiddenramblings.tagmo.eightbit.os.Version
 
 @Suppress("unused")
 class IconifiedSnackbar @JvmOverloads constructor(activity: Activity, layout: ViewGroup? = null) {

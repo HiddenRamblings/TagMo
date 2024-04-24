@@ -22,7 +22,7 @@ import com.hiddenramblings.tagmo.amiibo.Amiibo
 import com.hiddenramblings.tagmo.amiibo.EliteTag
 import com.hiddenramblings.tagmo.eightbit.request.ImageTarget
 import com.hiddenramblings.tagmo.widget.BoldSpannable
-import java.util.*
+import java.util.Locale
 
 class EliteBankAdapter(
     private val settings: BrowserSettings, private val listener: OnAmiiboClickListener

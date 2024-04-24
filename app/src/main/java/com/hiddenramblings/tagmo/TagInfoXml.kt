@@ -1,6 +1,5 @@
 package com.hiddenramblings.tagmo
 
-import android.util.Log
 import com.hiddenramblings.tagmo.eightbit.io.Debug
 import org.xmlpull.v1.XmlPullParser
 import org.xmlpull.v1.XmlPullParserException

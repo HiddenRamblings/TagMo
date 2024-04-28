@@ -18,6 +18,7 @@ import android.app.Activity
 import android.content.*
 import android.net.Uri
 import android.os.Build
+import android.os.Environment
 import android.util.Log
 import com.google.android.material.snackbar.Snackbar
 import com.hiddenramblings.tagmo.BrowserActivity
@@ -194,7 +195,7 @@ object Debug {
         if (hasDebugging()) Log.d(ex.javaClass.simpleName, context.getString(resource), ex)
     }
 
-    private const val issueUrl = ("https://github.com/HiddenRamblings/TagMo/issues/new?"
+    private const val ISSUE_URL = ("https://github.com/HiddenRamblings/TagMo/issues/new?"
             + "labels=logcat&template=bug_report.yml&title=[Bug]%3A+")
 
     private fun getDeviceProfile(context: Context): StringBuilder {
@@ -250,7 +251,7 @@ object Debug {
                 ).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
             } catch (ex: ActivityNotFoundException) {
                 try {
-                    context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(issueUrl)))
+                    context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(ISSUE_URL)))
                 } catch (ignored: Exception) { }
             }
         }
@@ -262,29 +263,43 @@ object Debug {
         }
     }
 
+    private fun writeLogcat(subject: String, logText: String) {
+        FileOutputStream(File(
+            Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS),
+            "${subject}.txt"
+        )).use {
+            it.write(logText.toByteArray())
+        }
+    }
+
     @JvmStatic
-    fun processException(context: Context, exception: String?, clipboard: Boolean) {
+    private fun processException(context: Context, exception: String?, clipboard: Boolean = false, logfile: Boolean = false, email: Boolean = false) {
         val log = getDeviceProfile(context)
         log.append(separator).append(separator).append(exception)
         val subject = context.getString(R.string.git_issue_title, BuildConfig.COMMIT)
-        setClipboard(context, subject, log.toString())
         when {
-            clipboard -> {}
+            clipboard -> setClipboard(context, subject, log.toString())
+            logfile -> writeLogcat(subject, log.toString())
             System.currentTimeMillis() < mPrefs.lastBugReport() + 900000 -> {
                 Toasty(context).Long(R.string.duplicate_reports)
             }
-            else -> { submitLogcat(context, log.toString()) }
+            email -> submitLogcat(context, log.toString())
         }
     }
 
     @JvmStatic
     fun clipException(context: Context, exception: String?) {
-        processException(context, exception, true)
+        processException(context, exception, clipboard = true)
+    }
+
+    @JvmStatic
+    fun saveException(context: Context, exception: String?) {
+        processException(context, exception, logfile = true)
     }
 
     @JvmStatic
     fun sendException(context: Context, exception: String?) {
-        processException(context, exception, false)
+        processException(context, exception, email = true)
     }
 
     private fun showGuideBanner(context: Context) {
@@ -346,7 +361,7 @@ object Debug {
                             ).also { status ->
                                 status.addCallback(object: Snackbar.Callback() {
                                     override fun onDismissed(snackbar: Snackbar?, event: Int) {
-                                        setClipboard(context, subject, logText)
+                                        writeLogcat(subject, logText)
                                     }
                                 })
                                 status.show()

@@ -1397,6 +1397,13 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
     @Throws(ActivityNotFoundException::class)
     fun onDocumentRequested() {
         if (Version.isLollipop) {
+            if (prefs.isDocumentStorage) {
+                onDocumentTree.launch(Intent(Intent.ACTION_OPEN_DOCUMENT_TREE)
+                    .putExtra("android.content.extra.SHOW_ADVANCED", true)
+                    .putExtra("android.content.extra.FANCY", true)
+                )
+                return
+            }
             FittedSheets.newInstance().apply {
                 setTitleText(this@BrowserActivity.getString(R.string.storage_setup))
                 setPositiveButton(this@BrowserActivity.getString(R.string.proceed)) {

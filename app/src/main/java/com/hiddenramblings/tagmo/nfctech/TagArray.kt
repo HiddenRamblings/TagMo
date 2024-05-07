@@ -164,10 +164,9 @@ object TagArray {
         (keyManager?.decrypt(this) ?: this)?.let { tagData ->
             coroutineScope { (0 until count).map { async(Dispatchers.IO) {
                 try {
-                    AmiiboData(tagData.clone()).let {
-                        it.uID = Foomiibo.generateRandomUID()
-                        dataList.add(it)
-                    }
+                    dataList.add(AmiiboData(tagData.clone()).apply {
+                        uID = Foomiibo.generateRandomUID()
+                    })
                 } catch (e: Exception) {
                     Debug.warn(e)
                 }

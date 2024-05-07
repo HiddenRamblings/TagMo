@@ -391,7 +391,7 @@ object TagArray {
     @Throws(IOException::class)
     fun writeBytesToDocument(
         context: Context, directory: DocumentFile, name: String, tagData: ByteArray?
-    ): String? {
+    ): Uri? {
         // displayName – name of new document, without any file extension appended; the underlying provider may choose to append the extension
         // The underlying provider does NOT provide an extension, therefore one IS appended
         val newFile = directory.createFile(
@@ -400,7 +400,7 @@ object TagArray {
         newFile?.let { file ->
             context.contentResolver.openOutputStream(file.uri).use { it?.write(tagData) }
         }
-        return newFile?.name
+        return newFile?.uri
     }
 
     fun writeBytesWithName(context: Context, fileName: String?, directory: String, tagData: ByteArray?) : String? {
@@ -410,7 +410,7 @@ object TagArray {
                     val rootDocument = browserRootDocument()?.let { uri ->
                         DocumentFile.fromTreeUri(context, Uri.parse(uri))
                     } ?: throw NullPointerException()
-                    writeBytesToDocument(context, rootDocument, name, tagData)
+                    writeBytesToDocument(context, rootDocument, name, tagData)?.toString()
                 } else {
                     val destination = Storage.getDownloadDir("TagMo", directory)
                     destination.mkdirs()

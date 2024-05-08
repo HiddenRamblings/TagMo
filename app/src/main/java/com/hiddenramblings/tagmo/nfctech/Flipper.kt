@@ -41,6 +41,13 @@ object Flipper {
                 .append(Debug.separator).append("Tearing 2: 00")
                 .append(Debug.separator).append("Pages total: 135")
         pages.forEachIndexed{ index, bytes ->
+            if (index == 133) {
+                // turbospok/Flipper-NTAG215-password-converter
+                // pwd.append(uid[1] ^ uid[3] ^ 0xAA)
+                // pwd.append(uid[2] ^ uid[4] ^ 0x55)
+                // pwd.append(uid[3] ^ uid[5] ^ 0xAA)
+                // pwd.append(uid[4] ^ uid[6] ^ 0x55)
+            }
             bytes?.let {
                 contents.append(Debug.separator).append("Page $index: ${it.toHex().hexFormat}")
             }

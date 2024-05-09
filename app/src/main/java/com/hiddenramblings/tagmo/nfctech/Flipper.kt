@@ -56,16 +56,16 @@ object Flipper {
                             uid[1] xor uid[3] xor 0xAA.toByte(),
                             uid[2] xor uid[4] xor 0x55,
                             uid[3] xor uid[5] xor 0xAA.toByte(),
-                            uid[4] xor uid[6] xor 0x55).toHex().hexFormat
+                            uid[4] xor uid[6] xor 0x55)
                     }
                 }
                 134 -> {
-                    byteArrayOf(0x80.toByte(), 0x80.toByte(), 0, 0).toHex().hexFormat
+                    byteArrayOf(0x80.toByte(), 0x80.toByte(), 0, 0)
                 }
                 else -> {
-                    bytes?.toHex()?.hexFormat
+                    bytes
                 }
-            }
+            }?.toHex()?.hexFormat
             }")
         }
         val nfcFile = File(directory, "$filename.nfc")

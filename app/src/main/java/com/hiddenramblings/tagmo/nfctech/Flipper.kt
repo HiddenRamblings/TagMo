@@ -49,25 +49,24 @@ object Flipper {
                 .append(Debug.separator).append("Tearing 2: 00")
                 .append(Debug.separator).append("Pages total: 135")
         pages.forEachIndexed{ index, bytes ->
-            when (index) {
+            contents.append(Debug.separator).append("Page $index: ${when (index) {
                 133 -> {
-                    pages[1]?.let { pages[0]?.copyOf(3)?.plus(it) }?.let { uid ->
-                        "Page $index: ${byteArrayOf(
+                    pages[1]?.let { pages[0]?.plus(it) }?.let { uid ->
+                        byteArrayOf(
                             uid[1] xor uid[3] xor 0xAA.toByte(),
                             uid[2] xor uid[4] xor 0x55,
                             uid[3] xor uid[5] xor 0xAA.toByte(),
-                            uid[4] xor uid[6] xor 0x55).toHex().hexFormat}"
+                            uid[4] xor uid[6] xor 0x55).toHex().hexFormat
                     }
                 }
                 134 -> {
-                    "Page $index: ${byteArrayOf(0x80.toByte(), 0x80.toByte(), 0, 0).toHex().hexFormat}"
+                    byteArrayOf(0x80.toByte(), 0x80.toByte(), 0, 0).toHex().hexFormat
                 }
                 else -> {
-                    bytes?.let {
-                        contents.append(Debug.separator).append("Page $index: ${it.toHex().hexFormat}")
-                    }
+                    bytes?.toHex()?.hexFormat
                 }
             }
+            }")
         }
         val nfcFile = File(directory, "$filename.nfc")
         FileOutputStream(nfcFile).use { stream ->

@@ -1,3 +1,10 @@
+/*
+ * ====================================================================
+ * Flipper NTAG215 password converter Copyright (C) 2024 turbospok
+ * Copyright (C) 2023 AbandonedCart @ TagMo
+ * ====================================================================
+ */
+
 package com.hiddenramblings.tagmo.nfctech
 
 import android.media.MediaScannerConnection
@@ -9,6 +16,7 @@ import com.hiddenramblings.tagmo.nfctech.TagArray.toPages
 import com.hiddenramblings.tagmo.nfctech.TagArray.toTagArray
 import java.io.File
 import java.io.FileOutputStream
+import kotlin.experimental.xor
 
 
 object Flipper {
@@ -42,11 +50,16 @@ object Flipper {
                 .append(Debug.separator).append("Pages total: 135")
         pages.forEachIndexed{ index, bytes ->
             if (index == 133) {
-                // turbospok/Flipper-NTAG215-password-converter
-                // pwd.append(uid[1] ^ uid[3] ^ 0xAA)
-                // pwd.append(uid[2] ^ uid[4] ^ 0x55)
-                // pwd.append(uid[3] ^ uid[5] ^ 0xAA)
-                // pwd.append(uid[4] ^ uid[6] ^ 0x55)
+                pages[1]?.let { pages[0]?.copyOf(3)?.plus(it) }?.let { uid ->
+                    "Page $index: ${byteArrayOf(
+                        uid[1] xor uid[3] xor 0xAA.toByte(),
+                        uid[2] xor uid[4] xor 0x55,
+                        uid[3] xor uid[5] xor 0xAA.toByte(),
+                        uid[4] xor uid[6] xor 0x55).toHex().hexFormat}"
+                }
+            }
+            if (index == 134) {
+                "Page $index: ${byteArrayOf(0x80.toByte(), 0x80.toByte(), 0, 0).toHex().hexFormat}"
             }
             bytes?.let {
                 contents.append(Debug.separator).append("Page $index: ${it.toHex().hexFormat}")

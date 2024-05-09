@@ -41,6 +41,7 @@ Additional thanks go out to (alphabetically):
 * hax0karti - [Amiibo Generator For Wumiibo](https://github.com/hax0kartik/amiibo-generator)
 * N3evin - [AmiiboAPI](https://github.com/N3evin/AmiiboAPI)
 * socram8888 - [amiitool](https://github.com/socram8888/amiitool)
+* turbospok - [Flipper NTAG215 password converter](https://github.com/turbospok/Flipper-NTAG215-password-converter)
 
 ##
 ![TagMo Logo](assets/tagmo_feature.gif)

@@ -22,6 +22,7 @@ import com.hiddenramblings.tagmo.BrowserSettings.VIEW
 import com.hiddenramblings.tagmo.R
 import com.hiddenramblings.tagmo.amiibo.Amiibo
 import com.hiddenramblings.tagmo.amiibo.AmiiboComparator
+import com.hiddenramblings.tagmo.amiibo.AmiiboFile
 import com.hiddenramblings.tagmo.amiibo.AmiiboManager
 import com.hiddenramblings.tagmo.eightbit.request.ImageTarget
 import com.hiddenramblings.tagmo.widget.BoldSpannable
@@ -101,6 +102,10 @@ class FoomiiboAdapter(
     private fun handleClickEvent(holder: FoomiiboViewHolder) {
         holder.listener?.run {
             holder.isExpanded = !holder.isExpanded
+            if (holder.isExpanded)
+                holder.foomiibo?.let { expanded.add(it) }
+            else
+                holder.foomiibo?.let { expanded.remove(it) }
             onFoomiiboClicked(holder.itemView, holder.foomiibo)
         }
     }
@@ -121,8 +126,19 @@ class FoomiiboAdapter(
         }
     }
 
+    private val expanded: ArrayList<Amiibo> = arrayListOf()
+
     override fun onBindViewHolder(holder: FoomiiboViewHolder, position: Int) {
+        val amiibo = getItem(holder.bindingAdapterPosition)
+        if (expanded.contains(amiibo)) holder.isExpanded = true
         holder.bind(getItem(holder.bindingAdapterPosition))
+    }
+
+    override fun onViewRecycled(holder: FoomiiboViewHolder) {
+        super.onViewRecycled(holder)
+        holder.isExpanded = false
+        holder.menuOptions?.isVisible = false
+        holder.txtUsage?.isVisible = false
     }
 
     override fun getPopupText(position: Int) : CharSequence {
@@ -209,7 +225,7 @@ class FoomiiboAdapter(
         val txtPath: TextView?
         var imageAmiibo: AppCompatImageView? = null
 
-        private val menuOptions: LinearLayout?
+        val menuOptions: LinearLayout?
         val txtUsage: TextView?
 
         var foomiibo: Amiibo? = null

@@ -122,6 +122,10 @@ class BrowserAdapter(
                     TextUtils.TruncateAt.START
                 it.isSelected = holder.isExpanded
             }
+            if (holder.isExpanded)
+                holder.amiiboFile?.let { expanded.add(it) }
+            else
+                holder.amiiboFile?.let { expanded.remove(it) }
             holder.listener.onAmiiboClicked(holder.itemView, holder.amiiboFile)
         }
     }
@@ -142,8 +146,19 @@ class BrowserAdapter(
         }
     }
 
+    private val expanded: ArrayList<AmiiboFile> = arrayListOf()
+
     override fun onBindViewHolder(holder: AmiiboViewHolder, position: Int) {
-        holder.bind(getItem(holder.bindingAdapterPosition))
+        val amiiboFile = getItem(holder.bindingAdapterPosition)
+        if (expanded.contains(amiiboFile)) holder.isExpanded = true
+        holder.bind(amiiboFile)
+    }
+
+    override fun onViewRecycled(holder: AmiiboViewHolder) {
+        super.onViewRecycled(holder)
+        holder.isExpanded = false
+        holder.menuOptions?.isVisible = false
+        holder.txtUsage?.isVisible = false
     }
 
     override fun getPopupText(position: Int) : CharSequence {
@@ -240,7 +255,7 @@ class BrowserAdapter(
         val txtPath: TextView?
         var imageAmiibo: AppCompatImageView? = null
 
-        private val menuOptions: LinearLayout?
+        val menuOptions: LinearLayout?
         val txtUsage: TextView?
 
         var amiiboFile: AmiiboFile? = null
@@ -374,7 +389,9 @@ class BrowserAdapter(
             if (hasSpoofData(amiiboHexId)) txtTagId?.isEnabled = false
         }
 
-        private fun setIsHighlighted(isHighlighted: Boolean) {
+
+
+        fun setIsHighlighted(isHighlighted: Boolean) {
             val highlight = itemView.findViewById<View>(R.id.highlight)
             if (isHighlighted) {
                 highlight.setBackgroundResource(R.drawable.rounded_view)

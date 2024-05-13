@@ -1399,6 +1399,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
         if (Version.isLollipop) {
             if (prefs.isDocumentStorage) {
                 onDocumentTree.launch(Intent(Intent.ACTION_OPEN_DOCUMENT_TREE)
+                    .setType("*/*")
                     .putExtra("android.content.extra.SHOW_ADVANCED", true)
                     .putExtra("android.content.extra.FANCY", true)
                 )
@@ -1409,6 +1410,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                 setPositiveButton(this@BrowserActivity.getString(R.string.proceed)) {
                     onDocumentTree.launch(
                         Intent(Intent.ACTION_OPEN_DOCUMENT_TREE)
+                            .setType("*/*")
                             .putExtra("android.content.extra.SHOW_ADVANCED", true)
                             .putExtra("android.content.extra.FANCY", true)
                     )

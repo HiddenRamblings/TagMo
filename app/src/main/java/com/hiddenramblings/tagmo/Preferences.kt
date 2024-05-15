@@ -78,6 +78,24 @@ class Preferences(context: Context) {
         putFloat(fabulousY, value)
     }
 
+    private val fabulousHorzX = "fabulousHorzX"
+    fun fabulousHorzX(fab: FABulous): Float {
+        return getFloat(fabulousHorzX, fab.x)
+    }
+
+    fun fabulousHorzX(value: Float) {
+        putFloat(fabulousHorzX, value)
+    }
+
+    private val fabulousHorzY = "fabulousHorzY"
+    fun fabulousHorzY(fab: FABulous): Float {
+        return getFloat(fabulousHorzY, fab.y)
+    }
+
+    fun fabulousHorzY(value: Float) {
+        putFloat(fabulousHorzY, value)
+    }
+
     private val query = "query"
     fun query(): String? {
         return getString(query, null)

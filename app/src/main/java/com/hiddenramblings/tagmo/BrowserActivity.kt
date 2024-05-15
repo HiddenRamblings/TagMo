@@ -223,11 +223,16 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
 
         nfcFab = findViewById<FABulous>(R.id.nfc_fab).apply {
             (behavior as FloatingActionButton.Behavior).isAutoHideEnabled = false
-            loadSavedPosition(prefs)
+            loadSavedPosition(resources.configuration)
             setOnMoveListener(object : FABulous.OnViewMovedListener {
                 override fun onActionMove(x: Float, y: Float) {
-                    prefs.fabulousX(x)
-                    prefs.fabulousY(y)
+                    if (resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT) {
+                        prefs.fabulousX(x)
+                        prefs.fabulousY(y)
+                    } else {
+                        prefs.fabulousHorzX(x)
+                        prefs.fabulousHorzY(y)
+                    }
                 }
             })
         }
@@ -1780,7 +1785,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
     private fun loadAmiiboFiles(rootFolder: File?, recursiveFiles: Boolean) {
         setSnackbarListener(object: SnackbarListener {
             override fun onSnackbarHidden(fakeSnackbar: AnimatedLinearLayout) {
-                nfcFab.loadSavedPosition(prefs)
+                nfcFab.loadSavedPosition(resources.configuration)
                 snackbarListener = null
             }
         })
@@ -1802,7 +1807,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
     private fun loadAmiiboDocuments(rootFolder: DocumentFile?, recursiveFiles: Boolean) {
         setSnackbarListener(object: SnackbarListener {
             override fun onSnackbarHidden(fakeSnackbar: AnimatedLinearLayout) {
-                nfcFab.loadSavedPosition(prefs)
+                nfcFab.loadSavedPosition(resources.configuration)
                 snackbarListener = null
             }
         })

@@ -31,6 +31,8 @@ import kotlin.math.abs
 
 class FABulous : FloatingActionButton, OnTouchListener {
 
+    private val prefs: Preferences by lazy { Preferences(TagMo.appContext) }
+
     private var downRawX = 0f
     private var downRawY = 0f
     private var dX = 0f
@@ -123,19 +125,26 @@ class FABulous : FloatingActionButton, OnTouchListener {
         this.viewMoveListener = listener
     }
 
-    override fun onConfigurationChanged(newConfig: Configuration?) {
+    override fun onConfigurationChanged(newConfig: Configuration) {
         super.onConfigurationChanged(newConfig)
-        postDelayed({
-            val bounds = getViewCoordinates(this, x, y)
-            animate().x(bounds[0]).y(bounds[1]).setDuration(0).start()
-        }, TagMo.uiDelay.toLong())
+        loadSavedPosition(newConfig)
     }
 
-    fun loadSavedPosition(prefs: Preferences) {
+    fun loadSavedPosition(configuration: Configuration) {
         postDelayed({
-            val bounds = getViewCoordinates(
-                    this, prefs.fabulousX(this), prefs.fabulousY(this)
-            )
+            val bounds = if (configuration.orientation == Configuration.ORIENTATION_PORTRAIT) {
+                getViewCoordinates(
+                    this,
+                    prefs.fabulousX(this),
+                    prefs.fabulousY(this)
+                )
+            } else {
+                getViewCoordinates(
+                    this,
+                    prefs.fabulousHorzX(this),
+                    prefs.fabulousHorzY(this)
+                )
+            }
             animate().x(bounds[0]).y(bounds[1]).setDuration(0).start()
         }, TagMo.uiDelay.toLong())
     }

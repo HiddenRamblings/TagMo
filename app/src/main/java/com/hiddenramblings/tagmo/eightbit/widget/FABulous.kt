@@ -75,44 +75,61 @@ class FABulous : FloatingActionButton, OnTouchListener {
         return floatArrayOf(newX, newY)
     }
 
+    private var lastPressed: Long = System.currentTimeMillis()
+
     override fun onTouch(view: View, motionEvent: MotionEvent): Boolean {
         val action = motionEvent.action
-        return if (action == MotionEvent.ACTION_DOWN) {
-            downRawX = motionEvent.rawX
-            downRawY = motionEvent.rawY
-            dX = view.x - downRawX
-            dY = view.y - downRawY
-            true // Consumed
-        } else if (action == MotionEvent.ACTION_MOVE) {
-            val bounds = getViewCoordinates(view, motionEvent.rawX + dX, motionEvent.rawY + dY)
-            view.animate()
-                .x(bounds[0])
-                .y(bounds[1])
-                .setDuration(0)
-                .setListener(object : AnimatorListener{
-                    override fun onAnimationStart(p0: Animator) { }
-
-                    override fun onAnimationEnd(p0: Animator) {
-                        viewMoveListener?.onActionMove(view.x, view.y)
-                    }
-
-                    override fun onAnimationCancel(p0: Animator) { }
-                    override fun onAnimationRepeat(p0: Animator) { }
-                })
-                .start()
-            true // Consumed
-        } else if (action == MotionEvent.ACTION_UP) {
-            val upRawX = motionEvent.rawX
-            val upRawY = motionEvent.rawY
-            val upDX = upRawX - downRawX
-            val upDY = upRawY - downRawY
-            if (abs(upDX) < CLICK_DRAG_TOLERANCE && abs(upDY) < CLICK_DRAG_TOLERANCE) { // A click
-                performClick()
-            } else { // Drag
+        return when (action) {
+            MotionEvent.ACTION_DOWN -> {
+                downRawX = motionEvent.rawX
+                downRawY = motionEvent.rawY
+                dX = view.x - downRawX
+                dY = view.y - downRawY
+                lastPressed = System.currentTimeMillis()
                 true // Consumed
             }
-        } else {
-            super.onTouchEvent(motionEvent)
+            MotionEvent.ACTION_MOVE -> {
+                val bounds = getViewCoordinates(view, motionEvent.rawX + dX, motionEvent.rawY + dY)
+                view.animate()
+                    .x(bounds[0])
+                    .y(bounds[1])
+                    .setDuration(0)
+                    .setListener(object : AnimatorListener{
+                        override fun onAnimationStart(p0: Animator) { }
+
+                        override fun onAnimationEnd(p0: Animator) {
+                            viewMoveListener?.onActionMove(view.x, view.y)
+                        }
+
+                        override fun onAnimationCancel(p0: Animator) { }
+                        override fun onAnimationRepeat(p0: Animator) { }
+                    })
+                    .start()
+                lastPressed = System.currentTimeMillis()
+                true // Consumed
+            }
+            MotionEvent.ACTION_UP -> {
+                val upRawX = motionEvent.rawX
+                val upRawY = motionEvent.rawY
+                val upDX = upRawX - downRawX
+                val upDY = upRawY - downRawY
+                if (abs(upDX) < CLICK_DRAG_TOLERANCE && abs(upDY) < CLICK_DRAG_TOLERANCE) { // A click
+                    val click = if (System.currentTimeMillis() > lastPressed + 750) {
+                        performLongClick()
+                    } else {
+                        performClick()
+                    }
+                    lastPressed = System.currentTimeMillis()
+                    click
+                } else { // Drag
+                    lastPressed = System.currentTimeMillis()
+                    true // Consumed
+                }
+            }
+            else -> {
+                lastPressed = System.currentTimeMillis()
+                super.onTouchEvent(motionEvent)
+            }
         }
     }
 

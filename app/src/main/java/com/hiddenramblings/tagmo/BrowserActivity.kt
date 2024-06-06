@@ -1672,7 +1672,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
     }
 
     override fun onAmiiboRebind(itemView: View, amiiboFile: AmiiboFile?) {
-        if (amiiboFile?.filePath == null) return
+        if (null == amiiboFile?.docUri && null == amiiboFile?.filePath) return
         try {
             val tagData = amiiboFile.data ?: amiiboFile.filePath?.let {
                 TagArray.getValidatedFile(keyManager, it)

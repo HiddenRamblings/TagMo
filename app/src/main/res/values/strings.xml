@@ -499,6 +499,8 @@
     <string name="donation_thanks">Thanks for supporting TagMo!</string>
     <string name="settings_banner">TagMo Donation Subscriber</string>
 
+    <string name="external_search">Search Amiibo</string>
+
     <string name="conversion_title">TagMo Critical Update</string>
     <string name="conversion_message">GitHub and Google Play builds are now universal.\nPlease click continue to resolve installation conflicts.</string>
 

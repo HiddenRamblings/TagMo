@@ -69,13 +69,14 @@ class WebsiteFragment : Fragment() {
         val webViewSettings = webView.settings
         webView.isScrollbarFadingEnabled = true
         webViewSettings.loadWithOverviewMode = true
-        webViewSettings.useWideViewPort = true
+        // webViewSettings.useWideViewPort = true
         webViewSettings.allowFileAccess = true
         webViewSettings.allowContentAccess = false
         webViewSettings.javaScriptEnabled = true
         webViewSettings.domStorageEnabled = true
         webViewSettings.cacheMode = WebSettings.LOAD_NO_CACHE
         if (Version.isLollipop) {
+            webViewSettings.mixedContentMode = WebSettings.MIXED_CONTENT_COMPATIBILITY_MODE
             val assetLoader = WebViewAssetLoader.Builder().addPathHandler(
                 "/assets/",
                 AssetsPathHandler(requireContext())

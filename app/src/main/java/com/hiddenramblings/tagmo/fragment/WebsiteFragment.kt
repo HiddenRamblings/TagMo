@@ -77,6 +77,12 @@ class WebsiteFragment : Fragment() {
         webViewSettings.cacheMode = WebSettings.LOAD_NO_CACHE
         if (Version.isLollipop) {
             webViewSettings.mixedContentMode = WebSettings.MIXED_CONTENT_COMPATIBILITY_MODE
+        } else {
+            @Suppress("deprecation")
+            webViewSettings.allowFileAccessFromFileURLs = true
+            @Suppress("deprecation")
+            webViewSettings.allowUniversalAccessFromFileURLs = true
+        }
             val assetLoader = WebViewAssetLoader.Builder().addPathHandler(
                 "/assets/",
                 AssetsPathHandler(requireContext())
@@ -117,12 +123,6 @@ class WebsiteFragment : Fragment() {
                         }
                     })
             }
-        } else {
-            @Suppress("deprecation")
-            webViewSettings.allowFileAccessFromFileURLs = true
-            @Suppress("deprecation")
-            webViewSettings.allowUniversalAccessFromFileURLs = true
-        }
         val download = JavaScriptInterface()
         webView.addJavascriptInterface(download, "Android")
         webView.setDownloadListener { url: String, _: String?, _: String?, mimeType: String, _: Long ->

@@ -26,12 +26,12 @@ open class BrowserSettings : Parcelable {
         companion object {
             fun valueOf(value: Int): SORT {
                 if (Version.isNougat) {
-                    val optional = Arrays.stream(values()).filter {
+                    val optional = Arrays.stream(entries.toTypedArray()).filter {
                             sort: SORT -> sort.value == value
                     }.findFirst()
                     if (optional.isPresent) return optional.get()
                 } else {
-                    for (view in values()) {
+                    for (view in entries) {
                         if (view.value == value) return view
                     }
                 }
@@ -50,12 +50,12 @@ open class BrowserSettings : Parcelable {
         companion object {
             fun valueOf(value: Int): VIEW {
                 if (Version.isNougat) {
-                    val optional = Arrays.stream(values()).filter {
+                    val optional = Arrays.stream(entries.toTypedArray()).filter {
                             view: VIEW -> view.value == value
                         }.findFirst()
                     if (optional.isPresent) return optional.get()
                 } else {
-                    for (view in values()) {
+                    for (view in entries) {
                         if (view.value == value) return view
                     }
                 }

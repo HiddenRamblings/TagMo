@@ -44,4 +44,8 @@ object NfcByte {
     val POWERTAG_WRITE = TagArray.hexToByteArray("a000")
     @JvmField
     val POWERTAG_SIG = TagArray.hexToByteArray("3c00")
+
+    private fun generatePowerTagId(): ByteArray {
+        return Foomiibo.generateRandomUID().plus(ByteArray(7))
+    }
 }

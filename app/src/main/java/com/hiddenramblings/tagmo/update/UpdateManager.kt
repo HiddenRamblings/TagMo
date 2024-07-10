@@ -24,6 +24,7 @@ import androidx.documentfile.provider.DocumentFile
 import com.google.android.play.core.appupdate.AppUpdateInfo
 import com.google.android.play.core.appupdate.AppUpdateManager
 import com.google.android.play.core.appupdate.AppUpdateManagerFactory
+import com.google.android.play.core.appupdate.AppUpdateOptions
 import com.google.android.play.core.install.model.AppUpdateType
 import com.google.android.play.core.install.model.UpdateAvailability
 import com.hiddenramblings.tagmo.BrowserActivity
@@ -231,9 +232,9 @@ class UpdateManager internal constructor(activity: BrowserActivity) {
     private fun startPlayUpdateFlow(appUpdateInfo: AppUpdateInfo?) {
         try {
             appUpdateManager?.startUpdateFlowForResult( // Pass the intent that is returned by 'getAppUpdateInfo()'.
-                appUpdateInfo!!,  // Or 'AppUpdateType.FLEXIBLE' for flexible updates.
-                AppUpdateType.IMMEDIATE,  // The current activity making the update request.
-                browserActivity,  // Include a request code to later monitor this update request.
+                appUpdateInfo!!,
+                browserActivity,
+                AppUpdateOptions.defaultOptions(AppUpdateType.IMMEDIATE),
                 Random.nextInt()
             )
         } catch (ex: SendIntentException) {

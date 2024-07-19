@@ -32,11 +32,16 @@
         android:layout_marginBottom="2dp"
         android:background="@drawable/bottom_divider"/>
 
-    <LinearLayout
-        android:id="@+id/bluetooth_paired"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical" />
+    <ScrollView
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content">
+
+        <LinearLayout
+            android:id="@+id/bluetooth_paired"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" />
+    </ScrollView>
 
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/shop_hardware"

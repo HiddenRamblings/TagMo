@@ -1402,21 +1402,25 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
     @Throws(ActivityNotFoundException::class)
     fun onDocumentRequested() {
         if (Version.isLollipop) {
+            val docTreeIntent = Intent(Intent.ACTION_OPEN_DOCUMENT_TREE)
+                .putExtra("android.content.extra.SHOW_ADVANCED", true)
+                .putExtra("android.content.extra.FANCY", true)
             if (prefs.isDocumentStorage) {
-                onDocumentTree.launch(Intent(Intent.ACTION_OPEN_DOCUMENT_TREE)
-                    .putExtra("android.content.extra.SHOW_ADVANCED", true)
-                    .putExtra("android.content.extra.FANCY", true)
-                )
+                try {
+                    onDocumentTree.launch(docTreeIntent)
+                } catch (anf: ActivityNotFoundException) {
+                    onDocumentTree.launch(docTreeIntent.setType("*/*"))
+                }
                 return
             }
             FittedSheets.newInstance().apply {
                 setTitleText(this@BrowserActivity.getString(R.string.storage_setup))
                 setPositiveButton(this@BrowserActivity.getString(R.string.proceed)) {
-                    onDocumentTree.launch(
-                        Intent(Intent.ACTION_OPEN_DOCUMENT_TREE)
-                            .putExtra("android.content.extra.SHOW_ADVANCED", true)
-                            .putExtra("android.content.extra.FANCY", true)
-                    )
+                    try {
+                        onDocumentTree.launch(docTreeIntent)
+                    } catch (anf: ActivityNotFoundException) {
+                        onDocumentTree.launch(docTreeIntent.setType("*/*"))
+                    }
                 }
                 setNegativeButton(this@BrowserActivity.getString(R.string.close)) {
                     finish()

@@ -66,6 +66,7 @@ class NfcActivity : AppCompatActivity() {
 
     private var isEliteIntent = false
     private var isEliteDevice = false
+    private var skipLockInfo = false
     private var ntag215: NTAG215? = null
     private var skylanders: Skylanders? = null
     private var infinity: Infinity? = null
@@ -111,6 +112,7 @@ class NfcActivity : AppCompatActivity() {
         val commandIntent = this.intent
         val mode = commandIntent.action
         isEliteIntent = commandIntent.hasExtra(NFCIntent.EXTRA_SIGNATURE)
+        skipLockInfo = commandIntent.hasExtra(NFCIntent.EXTRA_SKIP_LOCK_INFO)
         when {
             commandIntent.hasExtra(NFCIntent.EXTRA_CURRENT_BANK) -> {
                 val position = bankPicker.getPositionByValue(bankPicker.value)
@@ -306,7 +308,9 @@ class NfcActivity : AppCompatActivity() {
                     when (mode) {
                         NFCIntent.ACTION_WRITE_TAG_RAW -> {
                             update = TagReader.readFromTag(mifare)
-                            TagWriter.writeToTagRaw(mifare, data!!, prefs.tagTypeValidation())
+                            TagWriter.writeToTagRaw(
+                                mifare, data!!, prefs.tagTypeValidation(), skipLockInfo
+                            )
                             setResult(RESULT_OK)
                         }
                         NFCIntent.ACTION_WRITE_TAG_FULL -> {
@@ -341,7 +345,9 @@ class NfcActivity : AppCompatActivity() {
                                 })
                             } else {
                                 update = TagReader.readFromTag(mifare)
-                                TagWriter.writeToTagAuto(mifare, data!!, keyManager, prefs.tagTypeValidation())
+                                TagWriter.writeToTagAuto(
+                                    mifare, data!!, keyManager, prefs.tagTypeValidation(), skipLockInfo
+                                )
                                 setResult(RESULT_OK)
                             }
                         }

@@ -35,7 +35,7 @@ object TagWriter {
 
     @Throws(Exception::class)
     fun writeToTagRaw(
-        mifare: NTAG215, tagData: ByteArray, validateNtag: Boolean
+        mifare: NTAG215, tagData: ByteArray, validateNtag: Boolean, skipLock: Boolean = false
     ) {
         val context = TagMo.appContext
         TagArray.validateNtag(mifare, tagData, validateNtag)
@@ -53,13 +53,15 @@ object TagWriter {
         } catch (e: Exception) {
             throw Exception(context.getString(R.string.error_password_write), e)
         }
-        if (true) {
-            try {
-                writeLockInfo(mifare)
-                Debug.verbose(TagWriter::class.java, R.string.lock_write)
-            } catch (e: Exception) {
-                throw Exception(context.getString(R.string.error_lock_write), e)
-            }
+        if (skipLock) {
+            Debug.verbose(TagWriter::class.java, R.string.lock_skipped)
+            return
+        }
+        try {
+            writeLockInfo(mifare)
+            Debug.verbose(TagWriter::class.java, R.string.lock_write)
+        } catch (e: Exception) {
+            throw Exception(context.getString(R.string.error_lock_write), e)
         }
     }
 
@@ -83,26 +85,28 @@ object TagWriter {
     }
 
     @Throws(Exception::class)
-    private fun writePasswordLockInfo(mifare: NTAG215) {
+    private fun writePasswordLockInfo(mifare: NTAG215, skipLock: Boolean) {
         try {
             writePassword(mifare)
             Debug.verbose(TagWriter::class.java, R.string.password_write)
         } catch (e: Exception) {
             throw Exception(TagMo.appContext.getString(R.string.error_password_write), e)
         }
-        if (true) {
-            try {
-                writeLockInfo(mifare)
-                Debug.verbose(TagWriter::class.java, R.string.lock_write)
-            } catch (e: Exception) {
-                throw Exception(TagMo.appContext.getString(R.string.error_lock_write), e)
-            }
+        if (skipLock) {
+            Debug.verbose(TagWriter::class.java, R.string.lock_skipped)
+            return
+        }
+        try {
+            writeLockInfo(mifare)
+            Debug.verbose(TagWriter::class.java, R.string.lock_write)
+        } catch (e: Exception) {
+            throw Exception(TagMo.appContext.getString(R.string.error_lock_write), e)
         }
     }
 
     @Throws(Exception::class)
     fun writeToTagAuto(
-        mifare: NTAG215, tagData: ByteArray, keyManager: KeyManager, validateNtag: Boolean
+        mifare: NTAG215, tagData: ByteArray, keyManager: KeyManager, validateNtag: Boolean, skipLock: Boolean = false
     ) {
         val idPages = mifare.readPages(0)
         if (null == idPages || idPages.size != NfcByte.PAGE_SIZE * 4)
@@ -157,7 +161,7 @@ object TagWriter {
             } catch (e: Exception) {
                 throw Exception(TagMo.appContext.getString(R.string.error_data_write), e)
             }
-            writePasswordLockInfo(mifare)
+            writePasswordLockInfo(mifare, skipLock)
         }
     }
 

@@ -370,6 +370,7 @@
     <string name="data_write">Wrote main data</string>
     <string name="password_write">Wrote password</string>
     <string name="lock_write">Wrote lock info</string>
+    <string name="lock_skipped">Lock info skipped</string>
 
     <string name="auth_response">Auth response %1$s</string>
     <string name="password">Password: %1$s</string>

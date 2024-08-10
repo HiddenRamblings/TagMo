@@ -944,6 +944,7 @@ class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
     }
 
     fun onConfigurationChanged() {
+        if (settings.amiiboView != BrowserSettings.VIEW.IMAGE.value) return
         browserActivity?.let { activity ->
             amiiboFilesView?.layoutManager = GridLayoutManager(activity, activity.columnCount)
         }

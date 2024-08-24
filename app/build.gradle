@@ -11,7 +11,7 @@ android {
         compileSdk 34
         minSdk 21
         targetSdk 34
-        versionName "4.2.3"
+        versionName "4.2.4"
         versionCode = versionName.replace(".","").toInteger() * 10
 
         vectorDrawables {
@@ -28,6 +28,9 @@ android {
     }
 
     namespace defaultConfig.applicationId
+    androidResources {
+        generateLocaleConfig true
+    }
 
     flavorDimensions += "source"
     productFlavors {

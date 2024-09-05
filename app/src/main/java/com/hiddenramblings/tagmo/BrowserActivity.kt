@@ -1173,7 +1173,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                 R.id.mnu_copy_id -> {
                     with (getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager) {
                         setPrimaryClip(ClipData.newPlainText(
-                            getString(R.string.amiibo_id), Amiibo.dataToId(tagData).toString()
+                            getString(R.string.amiibo_id), Amiibo.idToHex(Amiibo.dataToId(tagData))
                         ))
                     }
                     return@setOnMenuItemClickListener true
@@ -1322,6 +1322,14 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                         fragment.onUpdateTagResult.launch(tagEdit.putExtras(args))
                     } catch (ex: IllegalStateException) {
                         viewPager.adapter = pagerAdapter
+                    }
+                    return@setOnMenuItemClickListener true
+                }
+                R.id.mnu_copy_id -> {
+                    with (getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager) {
+                        setPrimaryClip(ClipData.newPlainText(
+                            getString(R.string.amiibo_id), Amiibo.idToHex(Amiibo.dataToId(tagData))
+                        ))
                     }
                     return@setOnMenuItemClickListener true
                 }

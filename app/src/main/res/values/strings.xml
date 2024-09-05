@@ -101,6 +101,9 @@
     <string name="bin_random">Bin Randomizer</string>
     <string name="download_slot">Download Slot</string>
     <string name="share_export">Share / Export</string>
+    <string name="copy_id">Copy ID</string>
+    <string name="copy_amiibo_id">Copy amiibo ID</string>
+    <string name="flipper">Flipper</string>
     <string name="flipper_save">Save as Flipper</string>
     <string name="delete_binary">Delete Tag File</string>
     <string name="ignore_tag_id">Ignore Tag ID #</string>

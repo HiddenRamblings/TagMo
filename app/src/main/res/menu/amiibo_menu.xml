@@ -33,6 +33,11 @@
         app:showAsAction="ifRoom|withText">
         <menu>
             <item
+                android:id="@+id/mnu_copy_id"
+                android:title="@string/copy_amiibo_id"
+                android:titleCondensed="@string/copy_id"
+                app:showAsAction="ifRoom|withText"/>
+            <item
                 android:id="@+id/mnu_gatt"
                 android:title="@string/gatt_share"
                 android:titleCondensed="@string/upload"
@@ -45,6 +50,7 @@
             <item
                 android:id="@+id/mnu_flipper"
                 android:title="@string/flipper_save"
+                android:titleCondensed="@string/flipper"
                 app:showAsAction="never"/>
         </menu>
     </item>

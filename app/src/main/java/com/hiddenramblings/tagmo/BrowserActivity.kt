@@ -9,6 +9,9 @@ import android.annotation.SuppressLint
 import android.app.Dialog
 import android.app.SearchManager
 import android.content.ActivityNotFoundException
+import android.content.ClipData
+import android.content.ClipboardManager
+import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.ActivityInfo
@@ -1165,6 +1168,14 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                                 putByteArray(NFCIntent.EXTRA_TAG_DATA, tagData)
                             })
                     )
+                    return@setOnMenuItemClickListener true
+                }
+                R.id.mnu_copy_id -> {
+                    with (getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager) {
+                        setPrimaryClip(ClipData.newPlainText(
+                            getString(R.string.amiibo_id), Amiibo.dataToId(tagData).toString()
+                        ))
+                    }
                     return@setOnMenuItemClickListener true
                 }
                 R.id.mnu_gatt -> {

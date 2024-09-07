@@ -74,6 +74,8 @@ class NfcActivity : AppCompatActivity() {
     private var tagTech: String? = null
     private var hasTestedElite = false
 
+    private var tagExpired = false
+
     private val mReceiver: BroadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
             val action = intent.action
@@ -258,7 +260,7 @@ class NfcActivity : AppCompatActivity() {
         }
     }
 
-    private suspend fun onMifareUltralight(tag: Tag?) = withContext(Dispatchers.IO) {
+    private suspend fun onMifareUltralight(tag: Tag?) {
         val command = intent
         val mode = command.action
         var update: ByteArray? = ByteArray(0)
@@ -324,7 +326,7 @@ class NfcActivity : AppCompatActivity() {
                                     }
                                     intent = command
                                     hasTestedElite = false
-                                    return@withContext
+                                    return
                                 }
                                 TagWriter.writeEliteAuto(mifare, data, bankNumber)
                                 setResult(RESULT_OK, Intent(NFCIntent.ACTION_NFC_SCANNED).apply {
@@ -516,6 +518,10 @@ class NfcActivity : AppCompatActivity() {
             Debug.warn(e)
             Debug.getExceptionCause(e)?.let { error ->
                 when {
+                    e is SecurityException && !tagExpired -> {
+                        tagExpired = true
+                        onMifareUltralight(intent.parcelable<Tag>(NfcAdapter.EXTRA_TAG))
+                    }
                     getString(R.string.error_tag_rewrite) == error -> {
                         withContext(Dispatchers.Main) {
                             getErrorDialog(
@@ -626,10 +632,11 @@ class NfcActivity : AppCompatActivity() {
                 } catch (ignored: IOException) {
                 }
             }
+            tagExpired = false
         }
     }
 
-    private suspend fun onMifareClassic(tag: Tag?) = withContext(Dispatchers.IO) {
+    private fun onMifareClassic(tag: Tag?) {
         val command = intent
         val mode = command.action
         try {

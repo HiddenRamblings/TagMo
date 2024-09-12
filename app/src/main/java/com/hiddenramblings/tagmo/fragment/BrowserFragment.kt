@@ -230,7 +230,8 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
     }
 
     fun onConfigurationChanged() {
-        if (settings.amiiboView != BrowserSettings.VIEW.IMAGE.value) return
+        if (!this::settings.isInitialized || settings.amiiboView
+            != BrowserSettings.VIEW.IMAGE.value) return
         browserActivity?.let { activity ->
             browserContent?.layoutManager = GridLayoutManager(activity, activity.columnCount)
             foomiiboContent?.layoutManager = GridLayoutManager(activity, activity.columnCount)

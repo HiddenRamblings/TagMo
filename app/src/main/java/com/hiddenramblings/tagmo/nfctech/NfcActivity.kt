@@ -632,7 +632,6 @@ class NfcActivity : AppCompatActivity() {
                 } catch (ignored: IOException) {
                 }
             }
-            tagExpired = false
         }
     }
 
@@ -662,7 +661,7 @@ class NfcActivity : AppCompatActivity() {
         } catch (e: Exception) {
             Debug.warn(e)
             Debug.getExceptionCause(e)?.let { error ->
-
+                showError(error)
             } ?: {
                 showError(getString(R.string.error_unknown))
                 try {

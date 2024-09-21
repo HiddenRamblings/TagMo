@@ -309,18 +309,20 @@ class TagDataEditor : AppCompatActivity() {
             }
         }
         appDataTransfer = findViewById<AppCompatButton>(R.id.transfer_app_data).apply {
-            text = getString(R.string.import_app_data)
+            text = getString(
+                if (null != AppData.transferData) R.string.import_app_data else R.string.export_app_data
+            )
             setOnClickListener {
+                val button = it as AppCompatButton
                 if (null != AppData.transferData) {
                     transferData()
-                    val button = it as AppCompatButton
                     button.text = getString(R.string.export_app_data)
-                    button.isEnabled = false
                 } else {
                     AppData.apply {
                         transferId = amiiboData.appId
                         transferData = amiiboData.appData
                     }
+                    button.text = getString(R.string.import_app_data)
                     finish()
                 }
             }
@@ -1689,7 +1691,7 @@ class TagDataEditor : AppCompatActivity() {
             }
             try {
                 val hearts1 = txtHearts1?.text.toString().toInt()
-                txtHearts2?.selectedItemPosition?.let { this.hearts = hearts1 * 4 + it }
+                txtHearts2?.selectedItemPosition?.let { this.hearts = (hearts1 * 4) + it }
             } catch (e: NumberFormatException) {
                 txtHearts1?.requestFocus()
                 throw e

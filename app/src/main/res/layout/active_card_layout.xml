@@ -191,7 +191,8 @@
                             android:layout_height="wrap_content"
                             android:textColor="@color/tag_text"
                             android:textSize="12sp"
-                            android:layout_marginVertical="8dp"
+                            android:layout_marginTop="6dp"
+                            android:layout_marginBottom="4dp"
                             android:text="@string/game_titles_view"
                             android:gravity="center"
                             tools:ignore="SmallSp"/>
@@ -202,7 +203,8 @@
                             android:layout_height="wrap_content"
                             android:textColor="@color/tag_text"
                             android:textSize="10sp"
-                            android:layout_marginBottom="-8dp"
+                            android:layout_marginTop="4dp"
+                            android:layout_marginBottom="-6dp"
                             tools:ignore="SmallSp"/>
                     </LinearLayout>
                 </LinearLayout>

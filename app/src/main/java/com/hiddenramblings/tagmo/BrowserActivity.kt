@@ -2284,26 +2284,31 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
         setAmiiboInfoText(txtAmiiboType, amiiboType, hasTagInfo)
         setAmiiboInfoText(txtGameSeries, gameSeries, hasTagInfo)
         // setAmiiboInfoText(txtCharacter, character, hasTagInfo);
-        try {
-            val txtUsage = findViewById<TextView>(R.id.txtUsage)
-            val label = findViewById<TextView>(R.id.txtUsageLabel)
-            if (getGameCompatibility(txtUsage, tagData)) {
-                label.setOnClickListener {
-                    label.setText(
-                        if (txtUsage.isVisible)
-                            R.string.game_titles_view
-                        else
-                            R.string.game_titles_hide
-                    )
-                    txtUsage.isGone = txtUsage.isVisible
+        val txtUsage = findViewById<TextView>(R.id.txtUsage)
+        val label = findViewById<TextView>(R.id.txtUsageLabel)
+        if (settings?.amiiboView == BrowserSettings.VIEW.IMAGE.value) {
+            try {
+                if (getGameCompatibility(txtUsage, tagData)) {
+                    label.setOnClickListener {
+                        label.setText(
+                            if (txtUsage.isVisible)
+                                R.string.game_titles_view
+                            else
+                                R.string.game_titles_hide
+                        )
+                        txtUsage.isGone = txtUsage.isVisible
+                    }
+                    label.isVisible = true
+                } else {
+                    label.isVisible = false
                 }
-                label.isVisible = true
-            } else {
-                label.isVisible = false
-            }
-            txtUsage.isGone = true
+                txtUsage.isGone = true
 
-        } catch (ex: Exception) { Debug.warn(ex) }
+            } catch (ex: Exception) { Debug.warn(ex) }
+        } else {
+            label.isVisible = false
+            txtUsage.isGone = true
+        }
         if (hasSpoofData(amiiboHexId)) txtTagId?.isEnabled = false
         imageAmiibo?.let {
             it.setImageResource(0)

@@ -8,7 +8,8 @@ on:
       - '.github/ISSUE_TEMPLATE/**'
       - 'assets/**'
 
-permissions:
+permissions: 
+  actions: write
   contents: write
 
 concurrency:
@@ -16,8 +17,21 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  wearos:
+  orphan:
     if: ${{ github.repository == 'HiddenRamblings/TagMo' }}
+    runs-on: ubuntu-latest
+    env:
+      CI: true
+    steps:
+
+    - name: Drop orphan tags
+      continue-on-error: true
+      uses: fabriziocacicia/delete-tags-without-release-action@v0.1.0
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  wearos:
+    needs: orphan
     continue-on-error: true
     runs-on: ubuntu-latest
 
@@ -56,6 +70,7 @@ jobs:
         # Properties are passed as -Pname=value
         properties: |
           org.gradle.unsafe.configuration-cache=true
+          org.gradle.configuration-cache=true
 
     - uses: r0adkll/sign-android-release@v1
       name: Sign WearOS APK
@@ -125,6 +140,7 @@ jobs:
         # Properties are passed as -Pname=value
         properties: |
           org.gradle.unsafe.configuration-cache=true
+          org.gradle.configuration-cache=true
 
     - uses: r0adkll/sign-android-release@v1
       name: Sign Release APK

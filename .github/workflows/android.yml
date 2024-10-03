@@ -16,8 +16,21 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  wearos:
+  orphan:
     if: ${{ github.repository == 'HiddenRamblings/TagMo' }}
+    runs-on: ubuntu-latest
+    env:
+      CI: true
+    steps:
+
+    - name: Drop orphan tags
+      continue-on-error: true
+      uses: fabriziocacicia/delete-tags-without-release-action@v0.1.0
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  wearos:
+    needs: orphan
     continue-on-error: true
     runs-on: ubuntu-latest
 

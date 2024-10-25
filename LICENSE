@@ -687,9 +687,9 @@ including, but not limited to, the following Apache License 2.0 derivative
  * are met:
  *
  * For the purpose of this license, the phrase "GitHub labels" shall be
- * used to refer to the items "8-bit Dream", "TwistedUmbrella", "TagMo",
- * "SamSprung", and "AbandonedCart" and these items should be considered
- * the equivalent of any usage of the aforementioned phrase.
+ * used to refer to "AbandonedCart", "TwistedUmbrella", "SamSprung",
+ * and "TagMo" such that these entities are collectively considered the
+ * equivalent of any usage of the aforementioned phrase.
  *
  * 1. Redistributions of source code must retain the above copyright
  *    notice, this list of conditions and the following disclaimer.

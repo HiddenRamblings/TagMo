@@ -141,7 +141,7 @@ class FoomiiboAdapter(
         holder.txtUsage?.isVisible = false
     }
 
-    override fun getPopupText(position: Int) : CharSequence {
+    override fun getPopupText(view: View, position: Int) : CharSequence {
         if (position >= filteredData.size) return "?"
         val item = filteredData[position]
         val sort = when (SORT.valueOf(settings.sort)) {

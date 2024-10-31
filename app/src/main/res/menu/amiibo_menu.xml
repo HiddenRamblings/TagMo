@@ -76,4 +76,9 @@
         android:checkable="true"
         android:title="@string/ignore_tag_id"
         app:showAsAction="never"/>
+    <item
+        android:id="@+id/mnu_skip_lock_info"
+        android:checkable="true"
+        android:title="@string/skip_lock_info"
+        app:showAsAction="never"/>
 </menu>

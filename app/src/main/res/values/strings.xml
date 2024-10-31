@@ -107,6 +107,7 @@
     <string name="flipper_save">Save as Flipper</string>
     <string name="delete_binary">Delete Tag File</string>
     <string name="ignore_tag_id">Ignore Tag ID #</string>
+    <string name="skip_lock_info">Skip Lock Info</string>
     <string name="random_serial">Random Serial Number</string>
     <string name="inject_game_data">Inject Save Data</string>
     <string name="unlock_sparkle_cards">Unlock Sparkle Cards</string>

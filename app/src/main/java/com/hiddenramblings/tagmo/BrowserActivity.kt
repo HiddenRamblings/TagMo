@@ -118,6 +118,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
     var settings: BrowserSettings? = null
         private set
     private var ignoreTagId = false
+    private var skipLockInfo = false
     private var updateManager: UpdateManager? = null
     private var fragmentSettings: SettingsFragment? = null
     private var browserSheet: BottomSheetBehavior<View>? = null
@@ -1157,6 +1158,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                         action = NFCIntent.ACTION_WRITE_TAG_DATA
                         putExtras(Bundle().apply {
                             putBoolean(NFCIntent.EXTRA_IGNORE_TAG_ID, ignoreTagId)
+                            putBoolean(NFCIntent.EXTRA_SKIP_LOCK_INFO, skipLockInfo)
                             putByteArray(NFCIntent.EXTRA_TAG_DATA, tagData)
                         })
                     })
@@ -1264,6 +1266,11 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                     menuItem.isChecked = ignoreTagId
                     return@setOnMenuItemClickListener true
                 }
+                R.id.mnu_skip_lock_info -> {
+                    skipLockInfo = !menuItem.isChecked
+                    menuItem.isChecked = skipLockInfo
+                    return@setOnMenuItemClickListener true
+                }
                 else -> false
             }
         }
@@ -1289,6 +1296,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
         toolbar.menu.findItem(R.id.mnu_validate).isVisible = available
         toolbar.menu.findItem(R.id.mnu_delete).isVisible = available
         toolbar.menu.findItem(R.id.mnu_ignore_tag_id).isVisible = available
+        toolbar.menu.findItem(R.id.mnu_skip_lock_info).isVisible = available
 
         toolbar.setOnMenuItemClickListener {
             val args = Bundle()
@@ -1308,6 +1316,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                     args.putByteArray(NFCIntent.EXTRA_TAG_DATA, tagData)
                     scan.action = NFCIntent.ACTION_WRITE_TAG_DATA
                     scan.putExtra(NFCIntent.EXTRA_IGNORE_TAG_ID, ignoreTagId)
+                    scan.putExtra(NFCIntent.EXTRA_SKIP_LOCK_INFO, skipLockInfo)
                     try {
                         fragment.onUpdateTagResult.launch(scan.putExtras(args))
                     } catch (ex: IllegalStateException) {
@@ -1386,6 +1395,11 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                 R.id.mnu_ignore_tag_id -> {
                     ignoreTagId = !it.isChecked
                     it.isChecked = ignoreTagId
+                    return@setOnMenuItemClickListener true
+                }
+                R.id.mnu_skip_lock_info -> {
+                    skipLockInfo = !it.isChecked
+                    it.isChecked = skipLockInfo
                     return@setOnMenuItemClickListener true
                 }
                 else -> false

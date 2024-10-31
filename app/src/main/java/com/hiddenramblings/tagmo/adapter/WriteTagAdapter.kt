@@ -172,7 +172,7 @@ class WriteTagAdapter(private val settings: BrowserSettings?) :
         setIsHighlighted(holder, amiiboList.contains(holder.amiiboFile))
     }
 
-    override fun getPopupText(position: Int) : CharSequence {
+    override fun getPopupText(view: View, position: Int) : CharSequence {
         if (null == settings || position >= filteredData.size) return "?"
         val amiibo: Amiibo? = filteredData[position]?.let { file ->
             settings.amiiboManager?.let {

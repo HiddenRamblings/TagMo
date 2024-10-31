@@ -161,7 +161,7 @@ class BrowserAdapter(
         holder.txtUsage?.isVisible = false
     }
 
-    override fun getPopupText(position: Int) : CharSequence {
+    override fun getPopupText(view: View, position: Int) : CharSequence {
         if (position >= filteredData.size) return "?"
         val amiibo: Amiibo? = filteredData[position]?.let { file ->
             settings.amiiboManager?.let {

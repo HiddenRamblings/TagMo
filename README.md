@@ -4,19 +4,16 @@
 
 <p align="center">
   TagMo is an Android NTAG215, Power Tag, N2 Elite, & Bluetooth tag manager for 3DS, WiiU, and Switch
-  <br /><br />
-  <a href="https://github.com/HiddenRamblings/TagMo/actions/workflows/android.yml" target="_blank">
-    <img src="https://github.com/HiddenRamblings/TagMo/actions/workflows/android.yml/badge.svg">
-  </a>
-&nbsp;
-  <a href="https://discord.gg/uc2YheD4CK" target="_blank">
-      <img src="https://img.shields.io/discord/1109571129242296320.svg?label=&logo=discord&logoColor=ffffff&color=7289DA&labelColor=6A5ACD">
-  </a>
-&nbsp;
-  <a href="https://github.com/HiddenRamblings/TagMo/releases" target="_blank">
-    <img src="https://img.shields.io/github/downloads/HiddenRamblings/TagMo/total">
-  </a>
 </p>
+<p align="center">
+  <a href="https://github.com/HiddenRamblings/TagMo/releases"><img src="https://img.shields.io/github/actions/workflow/status/HiddenRamblings/TagMo/android.yml?logo=github&style=for-the-badge"></a>
+  <img src="https://img.shields.io/badge/platforms-android-blueviolet?logo=android&style=for-the-badge"/>
+  <a href="https://github.com/HiddenRamblings/TagMo/releases"><img src="https://img.shields.io/github/downloads/HiddenRamblings/TagMo/total?color=%233DDC84&logo=github&style=for-the-badge"></a>
+</p>
+<p align="center">
+  <a href="https://discord.gg/uc2YheD4CK"><img src="https://invidget.switchblade.xyz/uc2YheD4CK"></a>
+</p>
+<br />
 
 ## [Code of Conduct](https://github.com/HiddenRamblings/TagMo/blob/master/CODE_OF_CONDUCT.md)
 

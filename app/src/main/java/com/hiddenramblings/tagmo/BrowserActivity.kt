@@ -11,7 +11,6 @@ import android.app.SearchManager
 import android.content.ActivityNotFoundException
 import android.content.ClipData
 import android.content.ClipboardManager
-import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.ActivityInfo
@@ -58,7 +57,6 @@ import com.bumptech.glide.Glide
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
-import com.hiddenramblings.tagmo.*
 import com.hiddenramblings.tagmo.BrowserSettings.*
 import com.hiddenramblings.tagmo.NFCIntent.FilterComponent
 import com.hiddenramblings.tagmo.adapter.BrowserAdapter
@@ -358,10 +356,8 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
             }
         }
 
-        if (BuildConfig.WEAR_OS) {
-            onRequestStorage.launch(PERMISSIONS_STORAGE)
-        } else {
-            requestStoragePermission()
+        requestStoragePermission()
+        if (!BuildConfig.WEAR_OS) {
             try {
                 packageManager.getPackageInfo("com.hiddenramblings.tagmo", PackageManager.GET_META_DATA)
                 AlertDialog.Builder(this)
@@ -372,7 +368,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                             Uri.parse("package:com.hiddenramblings.tagmo")
                         ))
                     }.show()
-            } catch (ignored: PackageManager.NameNotFoundException) { }
+            } catch (_: PackageManager.NameNotFoundException) { }
         }
 
         onCreateMainMenuLayout()
@@ -451,7 +447,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                             processIncomingUri(intent, uri)
                         }
                     }
-                } catch (ignored: Exception) { }
+                } catch (_: Exception) { }
             }
         }
 
@@ -567,20 +563,27 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
     }
 
     private fun requestStoragePermission() {
-        if (Version.isRedVelvet) {
-            if (BuildConfig.GOOGLE_PLAY) {
-                onDocumentEnabled()
-            } else {
-                if (Environment.isExternalStorageManager()) {
-                    onStorageEnabled()
-                } else {
+        when {
+            BuildConfig.WEAR_OS -> {
+                onRequestStorage.launch(PERMISSIONS_STORAGE)
+            }
+            Version.isRedVelvet -> {
+                if (BuildConfig.GOOGLE_PLAY) {
                     onDocumentEnabled()
+                } else {
+                    if (Environment.isExternalStorageManager()) {
+                        onStorageEnabled()
+                    } else {
+                        onDocumentEnabled()
+                    }
                 }
             }
-        } else if (Version.isMarshmallow) {
-            onRequestStorage.launch(PERMISSIONS_STORAGE)
-        } else {
-            onStorageEnabled()
+            Version.isMarshmallow -> {
+                onRequestStorage.launch(PERMISSIONS_STORAGE)
+            }
+            else -> {
+                onStorageEnabled()
+            }
         }
     }
 
@@ -1008,7 +1011,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
     private fun cloneWithRandomSerial(amiiboFile: AmiiboFile?, tagData: ByteArray?, count: Int) {
         CoroutineScope(Dispatchers.IO).launch {
             val cached = amiiboFile?.let {
-                it.filePath?.let { path ->
+                (it.filePath?.let { path ->
                     var relativeFile = Storage.getRelativePath(path, prefs.preferEmulated())
                     prefs.browserRootFolder()?.let { root ->
                         relativeFile = relativeFile.replace(root, "")
@@ -1016,8 +1019,8 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                     relativeFile.startsWith("/Foomiibo/")
                 } ?: it.docUri?.let { doc ->
                     Storage.getRelativeDocument(doc.uri).startsWith("/Foomiibo/")
-                } ?: false
-            } ?: false
+                }) == true
+            } == true
 
             val directory = File(Foomiibo.directory, "Duplicates")
             if (cached) directory.mkdirs()
@@ -1128,7 +1131,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                 }
                 relativeFile.startsWith("/Foomiibo/")
             }
-        } ?: false
+        } == true
         if (cached) backup.setTitle(R.string.cache)
         toolbar.setOnMenuItemClickListener { menuItem ->
             clickedAmiibo = amiiboFile
@@ -1173,7 +1176,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                     return@setOnMenuItemClickListener true
                 }
                 R.id.mnu_copy_id -> {
-                    with (getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager) {
+                    with (getSystemService(CLIPBOARD_SERVICE) as ClipboardManager) {
                         setPrimaryClip(ClipData.newPlainText(
                             getString(R.string.amiibo_id), Amiibo.idToHex(Amiibo.dataToId(tagData))
                         ))
@@ -1307,7 +1310,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                     scan.action = NFCIntent.ACTION_WRITE_TAG_FULL
                     try {
                         fragment.onUpdateTagResult.launch(scan.putExtras(args))
-                    } catch (ex: IllegalStateException) {
+                    } catch (_: IllegalStateException) {
                         viewPager.adapter = pagerAdapter
                     }
                     return@setOnMenuItemClickListener true
@@ -1319,7 +1322,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                     scan.putExtra(NFCIntent.EXTRA_SKIP_LOCK_INFO, skipLockInfo)
                     try {
                         fragment.onUpdateTagResult.launch(scan.putExtras(args))
-                    } catch (ex: IllegalStateException) {
+                    } catch (_: IllegalStateException) {
                         viewPager.adapter = pagerAdapter
                     }
                     return@setOnMenuItemClickListener true
@@ -1329,13 +1332,13 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                     val tagEdit = Intent(this, TagDataEditor::class.java)
                     try {
                         fragment.onUpdateTagResult.launch(tagEdit.putExtras(args))
-                    } catch (ex: IllegalStateException) {
+                    } catch (_: IllegalStateException) {
                         viewPager.adapter = pagerAdapter
                     }
                     return@setOnMenuItemClickListener true
                 }
                 R.id.mnu_copy_id -> {
-                    with (getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager) {
+                    with (getSystemService(CLIPBOARD_SERVICE) as ClipboardManager) {
                         setPrimaryClip(ClipData.newPlainText(
                             getString(R.string.amiibo_id), Amiibo.idToHex(Amiibo.dataToId(tagData))
                         ))
@@ -1417,7 +1420,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                 Debug.warn(ex)
                 false
             }
-        } ?: false
+        } == true
     }
 
     fun onKeysLoaded(indicator: Boolean) {
@@ -1441,7 +1444,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
             if (prefs.isDocumentStorage) {
                 try {
                     onDocumentTree.launch(docTreeIntent)
-                } catch (anf: ActivityNotFoundException) {
+                } catch (_: ActivityNotFoundException) {
                     onDocumentTree.launch(docTreeIntent.setType("*/*"))
                 }
                 return
@@ -1451,7 +1454,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                 setPositiveButton(this@BrowserActivity.getString(R.string.proceed)) {
                     try {
                         onDocumentTree.launch(docTreeIntent)
-                    } catch (anf: ActivityNotFoundException) {
+                    } catch (_: ActivityNotFoundException) {
                         onDocumentTree.launch(docTreeIntent.setType("*/*"))
                     }
                 }
@@ -1468,7 +1471,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
         } else {
             try {
                 onDocumentRequested()
-            } catch (anf: ActivityNotFoundException) {
+            } catch (_: ActivityNotFoundException) {
                 Toasty(this).Long(R.string.storage_unavailable)
             }
         }
@@ -1851,7 +1854,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                 rootFolder?.let {
                     listAmiiboDocuments(this@BrowserActivity, keyManager, it, recursiveFiles)
                 } ?: arrayListOf()
-            } catch (ex: Exception) {
+            } catch (_: Exception) {
                 arrayListOf()
             }
             if (amiiboFiles.isEmpty() && null == settings?.browserRootDocument) {
@@ -1987,7 +1990,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                 newBrowserSettings.browserRootDocument,
                 oldBrowserSettings.browserRootDocument
             )
-        } catch (ignored: Exception) { }
+        } catch (_: Exception) { }
         if (newBrowserSettings.isRecursiveEnabled != oldBrowserSettings.isRecursiveEnabled) {
             oldBrowserSettings.amiiboFiles.clear()
             newBrowserSettings.amiiboFiles.clear()
@@ -2300,7 +2303,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
         // setAmiiboInfoText(txtCharacter, character, hasTagInfo);
         val txtUsage = findViewById<TextView>(R.id.txtUsage)
         val label = findViewById<TextView>(R.id.txtUsageLabel)
-        if (settings?.amiiboView == BrowserSettings.VIEW.IMAGE.value) {
+        if (settings?.amiiboView == VIEW.IMAGE.value) {
             try {
                 if (getGameCompatibility(txtUsage, tagData)) {
                     label.setOnClickListener {
@@ -2528,7 +2531,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                         contentResolver.openInputStream(uri)?.use { inputStream ->
                             try {
                                 keyManager.evaluateKey(inputStream)
-                            } catch (ex: Exception) {
+                            } catch (_: Exception) {
                                 onShowSettingsFragment()
                             }
                             hideFakeSnackbar()
@@ -2569,7 +2572,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                             FileInputStream(file).use { inputStream ->
                                 try {
                                     keyManager.evaluateKey(inputStream)
-                                } catch (ignored: Exception) { }
+                                } catch (_: Exception) { }
                             }
                         } catch (e: Exception) { Debug.warn(e) }
                     }
@@ -2603,7 +2606,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                             FileInputStream(file).use { inputStream ->
                                 try {
                                     keyManager.evaluateKey(inputStream)
-                                } catch (ignored: Exception) { }
+                                } catch (_: Exception) { }
                             }
                         } catch (e: Exception) {
                             Debug.warn(e)
@@ -2652,11 +2655,11 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
             val intent = Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION)
             try {
                 intent.data = Uri.parse(String.format("package:%s", packageName))
-            } catch (e: Exception) {
+            } catch (_: Exception) {
                 intent.action = Settings.ACTION_MANAGE_ALL_FILES_ACCESS_PERMISSION
             }
             onRequestScopedStorage.launch(intent)
-        } catch (anf: ActivityNotFoundException) {
+        } catch (_: ActivityNotFoundException) {
             onDocumentEnabled()
         }
     }

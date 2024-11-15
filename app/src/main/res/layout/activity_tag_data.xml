@@ -335,6 +335,8 @@
                             android:id="@+id/txtSerialNumber"
                             android:importantForAutofill="no"
                             style="@style/TagEditor.EditSerial"
+                            android:maxLength="10"
+                            android:maxLines="1"
                             android:paddingLeft="6dp"
                             android:paddingRight="6dp"
                             tools:ignore="LabelFor,TextFields" />

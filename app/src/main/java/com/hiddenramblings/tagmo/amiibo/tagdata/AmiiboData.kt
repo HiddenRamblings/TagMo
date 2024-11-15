@@ -205,6 +205,11 @@ open class AmiiboData : Parcelable {
         if (value < WRITE_COUNT_MIN_VALUE || value > WRITE_COUNT_MAX_VALUE) throw NumberFormatException()
     }
 
+    @Throws(StringIndexOutOfBoundsException::class)
+    fun checkSerialNumber(value: String) {
+        if (value.length < 18) throw StringIndexOutOfBoundsException()
+    }
+
     @set:Throws(NumberFormatException::class)
     var writeCount: Int
         get() = tagData.getShort(WRITE_COUNT_OFFSET).toInt() and 0xFFFF

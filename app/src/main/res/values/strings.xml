@@ -387,6 +387,7 @@
     <string name="error_tag_unavailable">NTAG215 connection cannot be established!</string>
     <string name="error_state">State error. Invalid action: %1$s</string>
     <string name="error_length">Must be 8 characters</string>
+    <string name="error_serial">Must be 18 characters</string>
     <string name="error_input">Invalid input</string>
     <string name="error_min_max">Must be between %1$d and %2$d</string>
     <string name="error_data_write">Error while writing main data (stage 1)</string>

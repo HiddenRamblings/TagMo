@@ -218,7 +218,20 @@ class TagDataEditor : AppCompatActivity() {
                 onAppDataSwitchClicked(checked)
             }
         }
-        txtSerialNumber = findViewById(R.id.txtSerialNumber)
+        txtSerialNumber = findViewById<EditText>(R.id.txtSerialNumber).apply {
+            addTextChangedListener(object : TextWatcher {
+                override fun beforeTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {}
+                override fun onTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {}
+                override fun afterTextChanged(editable: Editable) {
+                    try {
+                        amiiboData.checkSerialNumber(editable.toString())
+                        txtSerialNumber.error = null
+                    } catch (e: Exception) {
+                        txtSerialNumber.error = getString(R.string.error_serial)
+                    }
+                }
+            })
+        }
         generateSerial = findViewById<AppCompatButton>(R.id.random_serial).apply {
             setOnClickListener {
                 txtSerialNumber.setText(Foomiibo.generateRandomUID().toHex())
@@ -954,7 +967,7 @@ class TagDataEditor : AppCompatActivity() {
 
     private fun loadSerialNumber() {
         txtSerialNumber.tag = txtSerialNumber.keyListener
-        txtSerialNumber.keyListener = null
+        // txtSerialNumber.keyListener = null
         val value = amiiboData.uID
         txtSerialNumber.setText(value.toHex())
     }

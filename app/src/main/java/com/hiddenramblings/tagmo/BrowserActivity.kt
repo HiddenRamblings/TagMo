@@ -1151,6 +1151,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                     onUpdateTagResult.launch(scan.apply {
                         action = NFCIntent.ACTION_WRITE_TAG_FULL
                         putExtras(Bundle().apply {
+                            putBoolean(NFCIntent.EXTRA_SKIP_LOCK_INFO, skipLockInfo)
                             putByteArray(NFCIntent.EXTRA_TAG_DATA, tagData)
                         })
                     })
@@ -1308,6 +1309,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                 R.id.mnu_write -> {
                     args.putByteArray(NFCIntent.EXTRA_TAG_DATA, tagData)
                     scan.action = NFCIntent.ACTION_WRITE_TAG_FULL
+                    scan.putExtra(NFCIntent.EXTRA_SKIP_LOCK_INFO, skipLockInfo)
                     try {
                         fragment.onUpdateTagResult.launch(scan.putExtras(args))
                     } catch (_: IllegalStateException) {

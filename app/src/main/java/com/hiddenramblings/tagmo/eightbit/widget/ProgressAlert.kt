@@ -16,7 +16,6 @@ package com.hiddenramblings.tagmo.eightbit.widget
 
 import android.content.Context
 import android.graphics.Color
-import android.graphics.drawable.AnimationDrawable
 import android.graphics.drawable.ColorDrawable
 import android.view.LayoutInflater
 import android.widget.ImageView
@@ -30,7 +29,6 @@ import java.lang.ref.SoftReference
 object ProgressAlert {
     private var dialog: AlertDialog? = null
     private var messageText: SoftReference<TextView>? = null
-    private var uploading: AnimationDrawable? = null
 
     fun show(context: Context, message: String, imageUrk: String? = null) : ProgressAlert {
         if (dialog == null) {
@@ -64,7 +62,7 @@ object ProgressAlert {
 
     @Suppress("unused")
     val isShowing: Boolean
-        get() = dialog?.isShowing ?: false
+        get() = dialog?.isShowing == true
 
     fun dismiss() {
         dialog?.dismiss()

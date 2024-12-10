@@ -92,7 +92,7 @@ class BrowserAdapter(
     }
 
     override fun getItemId(position: Int): Long {
-        return data[position]?.id?.plus(position) ?: position.toLong()
+        return filteredData[position]?.id?.plus(position) ?: position.toLong()
     }
 
     private fun getItem(i: Int): AmiiboFile? {

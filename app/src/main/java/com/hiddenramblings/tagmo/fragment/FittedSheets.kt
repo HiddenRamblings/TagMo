@@ -11,6 +11,7 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.hiddenramblings.tagmo.R
+import com.hiddenramblings.tagmo.eightbit.os.Version
 
 
 class FittedSheets: BottomSheetDialogFragment() {
@@ -46,9 +47,7 @@ class FittedSheets: BottomSheetDialogFragment() {
     ): View {
         val view = inflater.inflate(R.layout.fitted_sheets, container, false)
         val window = dialog?.window
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            window?.statusBarColor = Color.TRANSPARENT
-        }
+        if (Version.isLollipop) window?.statusBarColor = Color.TRANSPARENT
         return view
     }
 
@@ -63,6 +62,7 @@ class FittedSheets: BottomSheetDialogFragment() {
             text = negativeText
             setOnClickListener {
                 negativeCallback?.invoke()
+                dismiss()
             }
         }
 
@@ -71,6 +71,7 @@ class FittedSheets: BottomSheetDialogFragment() {
             text = positiveText
             setOnClickListener {
                 positiveCallback?.invoke()
+                dismiss()
             }
         }
 

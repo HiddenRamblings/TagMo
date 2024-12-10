@@ -164,24 +164,23 @@ class FoomiiboAdapter(
 
     inner class FoomiiboFilter : Filter() {
         override fun performFiltering(constraint: CharSequence?): FilterResults {
-            val query = constraint?.trim { it <= ' ' }?.toString()
+            val query = constraint?.toString() ?: ""
             val filterResults = FilterResults()
-            if (query.isNullOrBlank()) {
+            if (query.trim { it <= ' ' }.isEmpty()) {
                 filterResults.count = data.size
                 filterResults.values = data
-            } else {
-                settings.query = query
-                settings.amiiboManager?.let {
-                    data = ArrayList(it.amiibos.values)
-                } ?: data.clear()
-                val tempList: ArrayList<Amiibo> = arrayListOf()
-                val queryText = query.trim { it <= ' ' }.lowercase(Locale.getDefault())
-                data.forEach {
-                    if (settings.amiiboContainsQuery(it, queryText)) tempList.add(it)
-                }
-                filterResults.count = tempList.size
-                filterResults.values = tempList
             }
+            settings.query = query
+            settings.amiiboManager?.let {
+                data = ArrayList(it.amiibos.values)
+            } ?: data.clear()
+            val tempList: ArrayList<Amiibo> = arrayListOf()
+            val queryText = query.trim { it <= ' ' }.lowercase(Locale.getDefault())
+            data.forEach {
+                if (settings.amiiboContainsQuery(it, queryText)) tempList.add(it)
+            }
+            filterResults.count = tempList.size
+            filterResults.values = tempList
             return filterResults
         }
 

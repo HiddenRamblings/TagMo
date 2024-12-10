@@ -83,7 +83,7 @@ class FoomiiboAdapter(
     }
 
     override fun getItemId(position: Int): Long {
-        return data[position].id + position
+        return filteredData[position].id + position
     }
 
     private fun getItem(i: Int): Amiibo {
@@ -164,23 +164,24 @@ class FoomiiboAdapter(
 
     inner class FoomiiboFilter : Filter() {
         override fun performFiltering(constraint: CharSequence?): FilterResults {
-            val query = constraint?.toString() ?: ""
+            val query = constraint?.trim { it <= ' ' }?.toString()
             val filterResults = FilterResults()
-            if (query.trim { it <= ' ' }.isEmpty()) {
+            if (query.isNullOrBlank()) {
                 filterResults.count = data.size
                 filterResults.values = data
+            } else {
+                settings.query = query
+                settings.amiiboManager?.let {
+                    data = ArrayList(it.amiibos.values)
+                } ?: data.clear()
+                val tempList: ArrayList<Amiibo> = arrayListOf()
+                val queryText = query.trim { it <= ' ' }.lowercase(Locale.getDefault())
+                data.forEach {
+                    if (settings.amiiboContainsQuery(it, queryText)) tempList.add(it)
+                }
+                filterResults.count = tempList.size
+                filterResults.values = tempList
             }
-            settings.query = query
-            settings.amiiboManager?.let {
-                data = ArrayList(it.amiibos.values)
-            } ?: data.clear()
-            val tempList: ArrayList<Amiibo> = arrayListOf()
-            val queryText = query.trim { it <= ' ' }.lowercase(Locale.getDefault())
-            data.forEach {
-                if (settings.amiiboContainsQuery(it, queryText)) tempList.add(it)
-            }
-            filterResults.count = tempList.size
-            filterResults.values = tempList
             return filterResults
         }
 

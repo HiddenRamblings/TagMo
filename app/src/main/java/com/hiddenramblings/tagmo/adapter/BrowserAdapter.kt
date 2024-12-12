@@ -192,12 +192,13 @@ class BrowserAdapter(
         override fun performFiltering(constraint: CharSequence?): FilterResults {
             val query = constraint?.toString() ?: ""
             val filterResults = FilterResults()
+            data = ArrayList(settings.amiiboFiles)
             if (query.trim { it <= ' ' }.isEmpty()) {
                 filterResults.count = data.size
                 filterResults.values = data
+                return filterResults
             }
             settings.query = query
-            data = ArrayList(settings.amiiboFiles)
             val tempList:ArrayList<AmiiboFile> = arrayListOf()
             val queryText = query.trim { it <= ' ' }.lowercase(Locale.getDefault())
             val amiiboManager = settings.amiiboManager

@@ -114,7 +114,7 @@ class NfcActivity : AppCompatActivity() {
         val commandIntent = this.intent
         val mode = commandIntent.action
         isEliteIntent = commandIntent.hasExtra(NFCIntent.EXTRA_SIGNATURE)
-        skipLockInfo = commandIntent.hasExtra(NFCIntent.EXTRA_SKIP_LOCK_INFO)
+        skipLockInfo = commandIntent.getBooleanExtra(NFCIntent.EXTRA_SKIP_LOCK_INFO, false)
         when {
             commandIntent.hasExtra(NFCIntent.EXTRA_CURRENT_BANK) -> {
                 val position = bankPicker.getPositionByValue(bankPicker.value)

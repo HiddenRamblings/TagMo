@@ -111,7 +111,7 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
                             resultData[resultData.indexOf(data)] = tagData
                             break
                         }
-                    } catch (ignored: Exception) { }
+                    } catch (_: Exception) { }
                 }
                 if (!updated) resultData.add(tagData)
             }
@@ -625,14 +625,14 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
                     tagData = data
                     break
                 }
-            } catch (ignored: Exception) { }
+            } catch (_: Exception) { }
         }
         return try {
             if (tagData.isEmpty() && null != this)
                 Foomiibo.getSignedData(Amiibo.idToHex(this.id))
             else
                 TagArray.getValidatedData(keyManager, tagData)
-        } catch (ignored: Exception) { byteArrayOf() }
+        } catch (_: Exception) { byteArrayOf() }
     }
 
     override fun onFoomiiboClicked(itemView: View, amiibo: Amiibo?) {

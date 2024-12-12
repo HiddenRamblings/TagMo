@@ -252,7 +252,7 @@ object Debug {
             } catch (ex: ActivityNotFoundException) {
                 try {
                     context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(ISSUE_URL)))
-                } catch (ignored: Exception) { }
+                } catch (_: Exception) { }
             }
         }
     }

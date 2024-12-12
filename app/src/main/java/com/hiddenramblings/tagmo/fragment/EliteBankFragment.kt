@@ -936,7 +936,7 @@ class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
                     R.string.bank_stats, eliteBankCount.getValueByPosition(activeBank), bankCount
                 )
                 updateNumberedText(bankCount)
-            } catch (ignored: Exception) {
+            } catch (_: Exception) {
                 if (amiibos.isEmpty()) onBottomSheetChanged(SHEET.LOCKED)
             }
             arguments = null

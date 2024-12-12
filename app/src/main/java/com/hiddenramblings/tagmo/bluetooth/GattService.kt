@@ -609,7 +609,7 @@ class GattService : Service() {
                     descriptor.value = value
                     mBluetoothGatt?.writeDescriptor(descriptor)
                 }
-            } catch (ignored: Exception) { }
+            } catch (_: Exception) { }
         }
     }
 

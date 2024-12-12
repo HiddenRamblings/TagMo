@@ -68,7 +68,7 @@ class UpdateManager internal constructor(activity: BrowserActivity) {
                     mySessions.forEach {
                         try {
                             abandonSession(it.sessionId)
-                        } catch (ignored: Exception) { }
+                        } catch (_: Exception) { }
                     }
                 }
             }
@@ -181,7 +181,7 @@ class UpdateManager internal constructor(activity: BrowserActivity) {
                             } catch (anf: ActivityNotFoundException) {
                                 try {
                                     startActivity(it.setAction(Intent.ACTION_VIEW))
-                                } catch (ignored: ActivityNotFoundException) { }
+                                } catch (_: ActivityNotFoundException) { }
                             }
                         }
                     }

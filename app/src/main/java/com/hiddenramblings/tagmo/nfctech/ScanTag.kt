@@ -32,7 +32,7 @@ class ScanTag {
     private fun closeTagSilently(mifare: NTAG215?) {
         try {
             mifare?.close()
-        } catch (ignored: Exception) { }
+        } catch (_: Exception) { }
     }
 
     private suspend fun onTagDiscovered(activity: BrowserActivity, intent: Intent) = withContext(Dispatchers.IO) {
@@ -180,7 +180,7 @@ class ScanTag {
                                 }
                                 try {
                                     Debug.clipException(activity, exception.toString())
-                                } catch (ignored: Exception) { }
+                                } catch (_: Exception) { }
                             }
                         }
                     }

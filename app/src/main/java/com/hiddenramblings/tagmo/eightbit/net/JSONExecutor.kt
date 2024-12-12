@@ -91,7 +91,7 @@ class JSONExecutor(activity: Activity, server: String, path: String? = null) {
             } catch (ssl: SSLHandshakeException) {
                 Debug.warn(ssl)
                 return@launch
-            } catch (ignored: UnknownHostException) { }
+            } catch (_: UnknownHostException) { }
             try {
                 var conn = URL(url).asConnection.withToken
                 var statusCode = conn.responseCode

@@ -1061,7 +1061,7 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
         try {
             requireContext().unbindService(gattServerConn)
             requireContext().stopService(Intent(requireContext(), GattService::class.java))
-        } catch (ignored: IllegalArgumentException) { }
+        } catch (_: IllegalArgumentException) { }
     }
 
     fun disconnectService() {
@@ -1131,7 +1131,7 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
     override fun onDestroyView() {
         try {
             dismissGattDiscovery()
-        } catch (ignored: NullPointerException) { }
+        } catch (_: NullPointerException) { }
         disconnectService()
         bluetoothHandler?.unregisterResultContracts()
         super.onDestroyView()
@@ -1145,7 +1145,7 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
                             extras.getByteArray(NFCIntent.EXTRA_TAG_DATA)?.let {
                                 uploadAmiiboData(AmiiboData(it))
                             }
-                        } catch (ignored: Exception) { }
+                        } catch (_: Exception) { }
                     } else {
                         Toasty(requireActivity()).Long(R.string.fail_no_device)
                     }

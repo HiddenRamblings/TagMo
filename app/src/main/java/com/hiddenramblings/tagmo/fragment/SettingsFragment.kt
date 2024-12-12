@@ -462,7 +462,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
                 try {
                     withContext(Dispatchers.IO) { Glide.get(activity).clearDiskCache() }
                     withContext(Dispatchers.Main) { Glide.get(activity).clearMemory() }
-                } catch (ignored: IllegalStateException) { }
+                } catch (_: IllegalStateException) { }
                 if (notify) withContext(Dispatchers.Main) {
                     buildSnackbar(
                         activity, R.string.removing_amiibo_info, Snackbar.LENGTH_SHORT
@@ -574,7 +574,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
                                 buildSnackbar(
                                     activity, R.string.update_amiibo_api, Snackbar.LENGTH_LONG
                                 ).setAction(R.string.sync) { onDownloadRequested(lastUpdated) }.show()
-                            } catch (ignored: IllegalStateException) { }
+                            } catch (_: IllegalStateException) { }
                         }
                     }
                 }

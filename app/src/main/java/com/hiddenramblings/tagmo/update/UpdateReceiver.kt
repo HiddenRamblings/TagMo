@@ -39,7 +39,7 @@ class UpdateReceiver : BroadcastReceiver() {
                                 it.toUri(0),
                                 if (Version.isLollipopMR) Intent.URI_ALLOW_UNSAFE else 0
                             ))
-                        } catch (ignored: URISyntaxException) { }
+                        } catch (_: URISyntaxException) { }
                     }
                 }
                 PackageInstaller.STATUS_SUCCESS -> {}

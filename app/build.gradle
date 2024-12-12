@@ -126,7 +126,7 @@ dependencies {
     implementation 'androidx.activity:activity-ktx:1.9.3'
     implementation 'androidx.appcompat:appcompat:1.7.0'
     implementation "androidx.browser:browser:1.8.0"
-    def androidx_camera = '1.4.0'
+    def androidx_camera = '1.4.1'
     implementation "androidx.camera:camera-core:$androidx_camera"
     implementation "androidx.camera:camera-camera2:$androidx_camera"
     implementation "androidx.camera:camera-lifecycle:$androidx_camera"

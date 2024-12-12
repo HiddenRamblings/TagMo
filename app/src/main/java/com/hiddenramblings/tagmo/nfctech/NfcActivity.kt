@@ -223,7 +223,7 @@ class NfcActivity : AppCompatActivity() {
     private fun closeTagSilently(ntag215: NTAG215?) {
         try {
             ntag215?.close()
-        } catch (ignored: Exception) { }
+        } catch (_: Exception) { }
     }
 
     private fun writeCollection(ntag215: NTAG215, command: Intent) {
@@ -619,7 +619,7 @@ class NfcActivity : AppCompatActivity() {
                                 }
                                 try {
                                     Debug.clipException(this@NfcActivity, exception.toString())
-                                } catch (ignored: Exception) {
+                                } catch (_: Exception) {
                                 }
                             }
                         }
@@ -629,7 +629,7 @@ class NfcActivity : AppCompatActivity() {
                 showError(getString(R.string.error_unknown))
                 try {
                     Debug.processLogcat(this@NfcActivity)
-                } catch (ignored: IOException) {
+                } catch (_: IOException) {
                 }
             }
         }
@@ -666,7 +666,7 @@ class NfcActivity : AppCompatActivity() {
                 showError(getString(R.string.error_unknown))
                 try {
                     Debug.processLogcat(this@NfcActivity)
-                } catch (ignored: IOException) {
+                } catch (_: IOException) {
                 }
             }
         }
@@ -752,10 +752,10 @@ class NfcActivity : AppCompatActivity() {
     private fun stopNfcMonitor() {
         try {
             nfcAdapter?.disableForegroundDispatch(this)
-        } catch (ignored: RuntimeException) { }
+        } catch (_: RuntimeException) { }
         try {
             unregisterReceiver(mReceiver)
-        } catch (ignored: IllegalArgumentException) { }
+        } catch (_: IllegalArgumentException) { }
     }
 
     private fun listenForTags() {

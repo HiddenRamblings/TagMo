@@ -77,6 +77,6 @@ object Flipper {
             MediaScannerConnection.scanFile(
                     TagMo.appContext, arrayOf(nfcFile.canonicalPath), null, null
             )
-        } catch (ignored: Exception) { }
+        } catch (_: Exception) { }
     }
 }

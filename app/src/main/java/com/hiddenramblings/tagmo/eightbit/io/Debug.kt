@@ -199,27 +199,28 @@ object Debug {
             + "labels=logcat&template=bug_report.yml&title=[Bug]%3A+")
 
     private fun getDeviceProfile(context: Context): StringBuilder {
-        val log = StringBuilder(separator)
-        log.append(TagMo.versionLabel)
-        log.append(separator)
-        log.append(manufacturer)
-        log.append(" ")
-        var codeName = "UNKNOWN"
-        for (field in Build.VERSION_CODES::class.java.fields) {
-            try {
-                if (field.getInt(Build.VERSION_CODES::class.java) == Build.VERSION.SDK_INT)
-                    codeName = field.name
-            } catch (e: IllegalAccessException) {
-                e.printStackTrace()
+        return StringBuilder(separator).apply {
+            append(TagMo.versionLabel)
+            append(separator)
+            append(manufacturer)
+            append(" ")
+            var codeName = "UNKNOWN"
+            for (field in Build.VERSION_CODES::class.java.fields) {
+                try {
+                    if (field.getInt(Build.VERSION_CODES::class.java) == Build.VERSION.SDK_INT)
+                        codeName = field.name
+                } catch (e: IllegalAccessException) {
+                    e.printStackTrace()
+                }
             }
+            append(codeName)
+            append(" (")
+            append(Build.VERSION.RELEASE)
+            append(") - ")
+            append(Memory.getDeviceRAM()).append(" RAM")
+            if (KeyManager(context).isKeyMissing)
+                append(separator).append(context.getString(R.string.log_keymanager))
         }
-        log.append(codeName)
-        log.append(" (")
-        log.append(Build.VERSION.RELEASE)
-        log.append(") - ").append(Memory.getDeviceRAM()).append(" RAM")
-        if (KeyManager(context).isKeyMissing)
-            log.append(separator).append(context.getString(R.string.log_keymanager))
-        return log
     }
 
     private fun setEmailParams(action: String, subject: String, text: String): Intent {

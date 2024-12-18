@@ -7613,6 +7613,17 @@
 				"jp": "2016-10-20"
 			}
 		},
+		"0x000900030432ff02":
+		{
+			"name": "Diddy Kong - Power Up Band",
+			"release":
+			{
+				"au": null,
+				"na": null,
+				"eu": null,
+				"jp": "2024-12-11"
+			}
+		},
 		"0x03c40001012b0502":
 		{
 			"name": "Canberra",
@@ -9032,6 +9043,17 @@
 				"jp": "2016-10-20"
 			}
 		},
+		"0x000800030431ff02":
+		{
+			"name": "Donkey Kong - Power Up Band",
+			"release":
+			{
+				"au": null,
+				"na": null,
+				"eu": null,
+				"jp": "2024-12-11"
+			}
+		},
 		"0x02fb000100900502":
 		{
 			"name": "Cherry",
@@ -9373,9 +9395,11 @@
 				"na": "2024-01-19"
 			}
 		},
-		"0x3f000000042e0002": {
+		"0x3f000000042e0002":
+		{
 			"name": "Sora",
-			"release": {
+			"release":
+			{
 				"au": "2024-02-16",
 				"eu": "2024-02-16",
 				"jp": "2024-02-16",

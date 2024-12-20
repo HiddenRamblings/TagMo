@@ -36,35 +36,58 @@ class ScaledContext(base: Context) : ContextWrapper(base) {
         }
     }
 
-    fun screen(density: Float): ScaledContext {
-        val metrics = resources.displayMetrics
-        val orientation = resources.configuration.orientation
-        metrics.density = density // 2
-        metrics.densityDpi = 360 // 360
-        if (orientation == Configuration.ORIENTATION_PORTRAIT) {
-            metrics.heightPixels = 2640 // 2640
-            metrics.widthPixels = 1080 // 1080
-        }
-        if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
-            metrics.heightPixels = 1080 // 1080
-            metrics.widthPixels = 2640 // 2640
-        }
-        metrics.scaledDensity = density // 2
-        metrics.xdpi = 425f // 425
-        metrics.ydpi = 425f // 425
-        metrics.setTo(metrics)
-        return ScaledContext(this)
-    }
+    // Z Flip 3
+    /*
+     * metrics.density = 2f
+     * metrics.densityDpi = 360
+     * if (orientation == Configuration.ORIENTATION_PORTRAIT) {
+     *     metrics.heightPixels = 2640
+     *     metrics.widthPixels = 1080
+     * }
+     * if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
+     *     metrics.heightPixels = 1080
+     *     metrics.widthPixels = 2640
+     * }
+     * metrics.scaledDensity = 2f
+     * metrics.xdpi = 425f
+     * metrics.ydpi = 425f
+     */
+
+    // S22 Ultra
+    /*
+     * if (orientation == Configuration.ORIENTATION_PORTRAIT) {
+     *     metrics.heightPixels = 3088
+     *     metrics.widthPixels = 1440
+     * }
+     * if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
+     *     metrics.heightPixels = 1440
+     *     metrics.widthPixels = 3088
+     * }
+     *
+     * metrics.xdpi = 500f
+     * metrics.ydpi = 500f
+     */
+
+    // Galaxy Watch 5
+    /*
+     * metrics.density = 1f
+     * metrics.densityDpi = 340
+     * metrics.heightPixels = 320
+     * metrics.widthPixels = 320
+     * metrics.scaledDensity = 1f
+     * metrics.xdpi = 302f
+     * metrics.ydpi = 302f
+     */
 
     fun watch(density: Float): ScaledContext {
         val metrics = resources.displayMetrics
-        metrics.density = density // 1f
-        metrics.densityDpi = 160 // 340
-        metrics.heightPixels = 450 // 320
-        metrics.widthPixels = 450 // 320
-        metrics.scaledDensity = density // 1f
-        metrics.xdpi = 321f // 302
-        metrics.ydpi = 321f // 302
+        metrics.density = density
+        metrics.densityDpi = DisplayMetrics.DENSITY_MEDIUM
+        metrics.heightPixels = 450
+        metrics.widthPixels = 450
+        metrics.scaledDensity = density
+        metrics.xdpi = 321f
+        metrics.ydpi = 321f
         metrics.setTo(metrics)
         return ScaledContext(this)
     }

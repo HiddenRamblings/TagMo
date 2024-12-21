@@ -22,20 +22,6 @@ import com.hiddenramblings.tagmo.eightbit.os.Version
 
 class ScaledContext(base: Context) : ContextWrapper(base) {
 
-    fun getDisplayParams(): IntArray {
-        with (getSystemService(WINDOW_SERVICE) as WindowManager) {
-            return if (Version.isRedVelvet) {
-                val metrics = maximumWindowMetrics.bounds
-                intArrayOf(metrics.width(), metrics.height())
-            } else {
-                val displayMetrics = DisplayMetrics()
-                @Suppress("deprecation")
-                defaultDisplay.getMetrics(displayMetrics)
-                intArrayOf(displayMetrics.widthPixels, displayMetrics.heightPixels)
-            }
-        }
-    }
-
     // Z Flip 3
     /*
      * metrics.density = 2f
@@ -95,6 +81,5 @@ class ScaledContext(base: Context) : ContextWrapper(base) {
     fun restore(): Context {
         resources.displayMetrics.setToDefaults()
         return this
-
     }
 }

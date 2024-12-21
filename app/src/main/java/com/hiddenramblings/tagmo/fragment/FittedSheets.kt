@@ -45,10 +45,7 @@ class FittedSheets: BottomSheetDialogFragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        val view = inflater.inflate(R.layout.fitted_sheets, container, false)
-        val window = dialog?.window
-        if (Version.isLollipop) window?.statusBarColor = Color.TRANSPARENT
-        return view
+        return inflater.inflate(R.layout.fitted_sheets, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

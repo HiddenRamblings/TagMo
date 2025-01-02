@@ -238,6 +238,14 @@ class SettingsFragment : PreferenceFragmentCompat() {
                     super@SettingsFragment.onPreferenceTreeClick(preference)
                 }
         }
+        findPreference<CheckBoxPreference>(getString(R.string.settings_persist_skip_lock))?.apply {
+            isChecked = prefs.persistSkipLockInfo()
+            onPreferenceClickListener =
+                Preference.OnPreferenceClickListener {
+                    prefs.persistSkipLockInfo(isChecked)
+                    super@SettingsFragment.onPreferenceTreeClick(it)
+                }
+        }
         findPreference<CheckBoxPreference>(getString(R.string.settings_disable_debug))?.apply {
             isChecked = prefs.disableDebug()
             onPreferenceClickListener = Preference.OnPreferenceClickListener {

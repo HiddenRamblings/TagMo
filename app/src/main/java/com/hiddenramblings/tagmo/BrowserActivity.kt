@@ -1112,6 +1112,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
         toolbar.menu.findItem(R.id.mnu_flipper).isVisible = available
         toolbar.menu.findItem(R.id.mnu_validate).isVisible = available
         toolbar.menu.findItem(R.id.mnu_ignore_tag_id).isVisible = available
+        toolbar.menu.findItem(R.id.mnu_skip_lock_info).isVisible = available
         toolbar.menu.findItem(R.id.mnu_random).apply {
             isVisible = null != amiiboFile
         }
@@ -1121,6 +1122,10 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
         val backup = toolbar.menu.findItem(R.id.mnu_save).apply {
             isVisible = available
         }
+
+        skipLockInfo = prefs.persistSkipLockInfo()
+        toolbar.menu.findItem(R.id.mnu_skip_lock_info).isChecked = skipLockInfo
+
         val cached = amiiboFile?.let {
             it.docUri?.let { doc ->
                 Storage.getRelativeDocument(doc.uri).startsWith("/Foomiibo/")
@@ -1301,6 +1306,9 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
         toolbar.menu.findItem(R.id.mnu_delete).isVisible = available
         toolbar.menu.findItem(R.id.mnu_ignore_tag_id).isVisible = available
         toolbar.menu.findItem(R.id.mnu_skip_lock_info).isVisible = available
+
+        skipLockInfo = prefs.persistSkipLockInfo()
+        toolbar.menu.findItem(R.id.mnu_skip_lock_info).isChecked = skipLockInfo
 
         toolbar.setOnMenuItemClickListener {
             val args = Bundle()

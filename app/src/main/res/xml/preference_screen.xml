@@ -79,6 +79,11 @@
 
     <androidx.preference.PreferenceCategory
         android:title="@string/pref_advanced">
+        <androidx.preference.CheckBoxPreference
+            android:defaultValue="false"
+            android:key="@string/settings_persist_skip_lock"
+            android:summary="@string/persist_skip_lock_details"
+            android:title="@string/pref_persist_skip_lock" />
         <androidx.preference.ListPreference
             android:entries="@array/themeSettingNames"
             android:entryValues="@array/themeSettingValues"

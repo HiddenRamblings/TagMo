@@ -177,6 +177,7 @@ class Preferences(context: Context) {
         putBoolean(tagTypeValidation, value)
     }
 
+
     private val automaticScan = "enable_automatic_scan"
     fun automaticScan(value: Boolean) {
         putBoolean(automaticScan, value)
@@ -252,6 +253,15 @@ class Preferences(context: Context) {
 
     fun showCompatSwitch(value: Boolean) {
         putBoolean(showCompatSwitch, value)
+    }
+
+    private val persistSkipLockInfo = "persist_skip_lock_info"
+    fun persistSkipLockInfo(): Boolean {
+        return getBoolean(persistSkipLockInfo, false)
+    }
+
+    fun persistSkipLockInfo(value: Boolean) {
+        putBoolean(persistSkipLockInfo, value)
     }
 
     private val disableDebug = "settings_disable_debug"

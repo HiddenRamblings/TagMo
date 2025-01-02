@@ -56,15 +56,21 @@
     <string name="proceed">繼續</string>
     <string name="unlock">解鎖</string>
     <string name="scan">掃描</string>
+    <string name="qr_code">QR Code</string>
+    <string name="upload">GATT</string>								   								   
     <string name="browser">瀏覽器</string>
     <string name="retry">重試</string>
     <string name="save">儲存</string>
+    <string name="edit">編輯</string>
+    <string name="export">匯出</string>										 
     <string name="cache">快取</string>
     <string name="write">寫入</string>
     <string name="erase">抹除</string>
     <string name="cancel">取消</string>
+    <string name="dismiss">忽略</string>										   
     <string name="accept">接受</string>
-    <string name="deny">拒絕</string>
+	<string name="submit">提交</string>
+    <string name="deny">拒絕</string>								 
     <string name="start">開始</string>
     <string name="delete">刪除</string>
     <string name="activate">已啟用</string>
@@ -94,8 +100,14 @@
     <string name="edit_props">編輯相關資訊</string>
     <string name="bin_random">Bin隨機產生</string>
     <string name="download_slot">下載Slot</string>
+    <string name="share_export">分享 / 匯出</string>
+    <string name="copy_id">複製ID</string>
+    <string name="copy_amiibo_id">複製amiibo ID</string>
+    <string name="flipper">Flipper</string>
+    <string name="flipper_save">另存為Flipper</string>													 										   														 										 											
     <string name="delete_binary">删除二進位檔案</string>
     <string name="ignore_tag_id">忽略此Tag ID #</string>
+    <string name="skip_lock_info">忽略鎖定資訊</string>														
     <string name="random_serial">隨機序號</string>
     <string name="inject_game_data">寫入遊戲儲存數據</string>
     <string name="unlock_sparkle_cards">解鎖Sparkle Cards</string>
@@ -104,7 +116,15 @@
     <string name="format_app_data">格式化</string>
     <string name="game_titles_view">檢視可支援的相關遊戲</string>
     <string name="game_titles_hide">隱藏可支援的相關遊戲</string>
+    <string name="export_flipper_files">匯出為Flipper檔案</string>
 
+    <string name="games_ds">相容支援3DS</string>
+    <string name="games_wiiu">相容支援WiiU</string>
+    <string name="games_nx">相容支援Switch</string>
+    <string name="no_games_ds">未相容3DS</string>
+    <string name="no_games_wiiu">未相容WiiU</string>
+    <string name="no_games_nx">未相容Switch</string>
+	
     <string name="properties">相關資訊</string>
     <string name="mii" translatable="false">Mii</string>
     <string name="mii_name">Mii名稱</string>
@@ -158,9 +178,10 @@
     <string name="zelda_twilight">薩爾達傳說 曙光公主HD</string>
     <string name="mh_stories">魔物獵人物語</string>
     <string name="ml_paper_jam">Mario &#38; Luigi: Paper Jam</string>
-    <string name="ml_superstar_saga">Mario &#38; Luigi: Superstar Saga</string>
+    <string name="ml_superstar_saga">瑪利歐與路易吉RPG</string>
     <string name="ms_superstars">瑪利歐體壇超明星</string>
-    <string name="mario_tennis">瑪利歐網球</string>
+	<string name="mario_party_ten">瑪利歐派對10</string>
+    <string name="mario_tennis">瑪利歐網球</string>													 
     <string name="pikmin">皮克敏</string>
     <string name="splatoon">斯普拉遁 (1 &#38; 2)</string>
     <string name="splatoon_three">斯普拉遁 3</string>
@@ -171,7 +192,9 @@
     <string name="write_raw">寫入Tag卡(Raw)</string>
     <string name="write_auto">寫入Tag卡(Auto)</string>
     <string name="update_tag">更新Tag卡</string>
-    <string name="scan_tag">掃描NFC Tag</string>
+    <string name="scan_tag">掃描 NFC Tag</string>
+	<string name="scan_data">掃描Tag</string>
+    <string name="gatt_share">傳送至GATT</string>									   													
     <string name="lock_elite">鎖住 N2 Elite</string>
     <string name="unlock_elite">解鎖 N2 Elite</string>
     <string name="scan_bank_no">掃描 Bank %1$d</string>
@@ -189,6 +212,7 @@
     <string name="feature_unavailable">此功能尚未開放使用!</string>
     <string name="activity_unavailable">請稍後再試</string>
     <string name="storage_unavailable">無法存取手機的儲存空間！</string>
+    <string name="guide_suggested">檢視操作手冊瞭解更多內容</string>
     <string name="allow">允許</string>
     
     <string name="camera">相機</string>
@@ -202,17 +226,20 @@
     <string name="qr_invalid">無法存取或數據不正確</string>
 
     <string name="settings">設定</string>
-    <string name="about">關於</string>
-    <string name="guides">協助</string>
+	<string name="guides">協助</string>
+    <string name="about">關於</string>  
     <string name="donate">贊助</string>
     
     <string name="menu_amiibo">備份瀏覽器</string>
+	<string name="menu_foomiibo">Foomiibo Panel</string>
     <string name="menu_elite">連接N2 Elite</string>
-    <string name="menu_gatt">連接Bluetooth</string>
+    <string name="menu_gatt">連接藍牙</string>
     <string name="menu_qr_code">QR Code工具箱</string>
     <string name="menu_guides">使用手冊與協助</string>
     <string name="menu_settings">TagMo設定</string>
 
+	<string name="tagmo_update">更新TagMo</string>
+							
     <string name="pref_menu_return">返回主畫面</string>
     <string name="prefs_configuration">配置</string>
     <string name="pref_import_keys">匯入amitool金鑰</string>
@@ -230,11 +257,16 @@
     <string name="lock_elite_warning">是否鎖定N2 Elite硬體？</string>
     <string name="unlock_elite_warning">解除鎖定N2 Elite硬體</string>
     <string name="elite_signature">N2 Elite ID: %1$s</string>
+    <string name="prefs_game_compat">遊戲平台相容性</string>
+    <string name="enable_ds_compat">列出對應3DS遊戲</string>
+    <string name="enable_wii_compat">列出對應Wii U遊戲</string>
+    <string name="enable_nx_compat">列出對應Switch遊戲</string>							  														  
     <string name="amiibo_info">amiibo 資料庫</string>
     <string name="pref_database_source">設定AmiiboAPI資料庫來源</string>
     <string name="sync_amiibo_info">與 AmiiboAPI 同步資料庫</string>
     <string name="import_json_details">載入 amiibo 資料庫 (JSON)</string>
     <string name="reset_amiibo_info">重置 amiibo 資料庫快取</string>
+	<string name="database_stats">資料庫統計數據</string>													 
     <string name="number_character">%1$d 位角色人物</string>
     <string name="number_type">%1$d 種 amiibo 類型</string>
     <string name="number_titles">%1$d 個可使用的遊戲</string>
@@ -264,7 +296,7 @@
     <string name="write_banks">寫入 %1$d banks</string>
     <string name="erase_banks">抹除 %1$d banks</string>
     <string name="edit_bank_count">編輯 N2 Elite 的 Bank 計數</string>
-    <string name="bank_stats">Bank %1$d 可用 ， 已啟用 %2$d Banks </string>
+    <string name="bank_stats">Bank %1$d 可用 ，已啟用 %2$d Banks </string>
     <string name="bank_number">Bank %1$d</string>
 
     <string name="bank_select_details">設定Bank數量</string>
@@ -279,12 +311,18 @@
     <string name="physical_storage_root">瀏覽實體儲存空間</string>
     <string name="grant_file_permission">啟用 "所有檔案" 管理器</string>
     <string name="force_document_storage">啟用 文件儲存空間</string>
+    <string name="storage_setup">請配置為根目錄</string>
+    <string name="unzip_archive">將bins壓縮檔進行解壓縮</string>																																			
     <string name="refresh_browser">重新整理瀏覽器</string>
 
     <string name="hint_filename">設定二進位檔案名稱</string>
     <string name="key_hex_entry">請輸入十六進位Key</string>
     <string name="save_image">請設定檔案名稱</string>
     
+    <string name="key_input_method">選擇輸入方式</string>
+    <string name="key_input_hex">Hex編碼</string>
+    <string name="key_input_bin">Bin檔案</string>
+
     <string name="prepare_unlock">開始掃描N2，在傳輸完成前請勿將NFC感應區移開</string>
     <string name="progress_unlock">請長按N2鈕，並保持與NFC的感應連線.</string>
     <string name="prepare_blank">發現啟用項目含有空白bank，N2 Elite驗證失敗</string>
@@ -295,8 +333,13 @@
     <string name="encryption_fault">此檔案可能已損壞或建立時內容出現錯誤</string>
 
     <string name="custom_tab_back">返回 TagMo</string>
+    <string name="shop_hardware">Shop amiibo hardware</string>
     <string name="gatt_missing">附近沒有可用的GATT設備！</string>
     <string name="gatt_connect_fail">無效的GATT設備！</string>
+	<string name="gatt_services_null">沒有可用的%1$s services!</string>
+    <string name="characteristic_null">沒有可用的Characteristic!</string>
+    <string name="xor_invalid">Empty collection can\'t be reduced</string>
+    <string name="connect_device">連接設備</string>
     <string name="gatt_scanning">正在掃描Bluetooth GATT&#8230;</string>
     <string name="gatt_located">正在連接Bluetooth GATT&#8230;</string>
     <string name="gatt_disconnect">GATT連線無法使用！</string>
@@ -307,34 +350,44 @@
     <string name="slots_full">Device 已滿</string>
     <string name="slots_empty">Device 無項目</string>
     <string name="create_blank">建立空白的虛擬 NFC tag</string>
-    <string name="gatt_upload">正在上傳二進位檔案&#8230;</string>
-    <string name="gatt_remove">正在抹除slot數據&#8230;</string>
+    <string name="reset_device">將目前設備還原回原廠設定</string>
+	<string name="gatt_erase_confirm">將%1$s全部的slots抹除?</string>
+    <string name="gatt_write_confirm">將selections寫入%1$s?</string>	
+    <string name="gatt_upload">正在上傳 binary&#8230;</string>
+    <string name="gatt_remove">正在抹除 slot data&#8230;</string>
+	<string name="gatt_create">正在建立 blank tag&#8230;</string>
+    <string name="gatt_format">正在格式化 device&#8230;</string>
     <string name="fail_bluetooth_adapter">沒有可用的藍牙裝置!</string>
+    <string name="fail_no_device">沒有已連線的GATT設備!</string>
     <string name="tiramisu_bluetooth">Android 13需要手動啟用藍牙. 是否開啟設定頁面來啟用藍牙?</string>
     <string name="fail_permissions">無法取得執行所需的權限！</string>
     <string name="location_disclosure">特此知會您，使用Bluetooth LE掃描時必須取得定位資訊，依據Google Play商店的政策，本程序會在背景服務收集定位資訊，但絕對不會讀取、儲存或與第三人分享定位資訊。</string>
-
+	
+    <string name="sort_mode_set">Set device mode</string>											 
     <string name="paired_devices">已配對的藍牙裝置</string>
     <string name="device_address">MAC: %1$s</string>
-    <string name="switch_devices">連接其他裝置</string>
-    
+    <string name="device_services">UUID: %1$s</string>
+    <string name="switch_devices">Switch / 未連線的設備</string>  
+	  
     <string name="clone_random">以隨機序號進行複製</string>
     
     <string name="data_write">寫入主要數據</string>
     <string name="password_write">寫入密碼</string>
     <string name="lock_write">寫入鎖定資訊</string>
+    <string name="lock_skipped">已略過鎖定資訊</string>
 
     <string name="auth_response">等候驗證 %1$s</string>
     <string name="password">密碼: %1$s</string>
 
     <string name="validation_success">數據驗證完成！</string>
     <string name="no_source_data">無法驗證: 沒有可供比對的數據</string>
-
+	
     <string name="error_no_data">沒有數據可供寫入</string>
     <string name="error_tag_protocol">必須使用NTAG215 ，目前為 %1$s！</string>
     <string name="error_tag_unavailable">無法與NTAG215建立連線！</string>
     <string name="error_state">錯誤狀態、無效的操作: %1$s</string>
     <string name="error_length">必須輸入8個字元</string>
+	<string name="error_serial">必須輸入18個字元</string>
     <string name="error_input">輸入錯誤</string>
     <string name="error_min_max">必須介於 %1$d 與 %2$d 之間</string>
     <string name="error_data_write">寫入主要數據時發生錯誤(stage 1)</string>
@@ -351,17 +404,26 @@
     <string name="error_elite_auth">驗證N2 Elite時發生錯誤</string>
     <string name="error_amiitool_init">無法初始化amiitool</string>
     <string name="error_auth_null">驗證內容為空值</string>
+    <string name="error_archive_format">不支援的壓縮檔檔案格式</string>
+    <string name="error_archive_invalid">壓縮檔解壓縮失敗!</string>
+    <string name="error_uri_unknown">未選取檔案或檔案無法使用!</string>
+    <string name="error_uri_size">檔案不是金鑰或合法的bin!</string>
     <string name="error_unknown">發生未知的錯誤</string>
+    <string name="error_tag_format">必須使用Mifare Classic 1K智慧卡!</string>
+    <string name="error_nxp_required">必須為NXP晶片組!</string>
 
-    <string name="fail_update_git">無法連接至伺服器進行更新!</string>
-    <string name="fail_update_url">更新失敗! 請稍後再試一次</string>
+    <string name="fail_update_git">無法連接至伺服器進行更新!</string>																	   																	    <string name="fail_update_url">更新失敗! 請稍後再試一次</string>
+    <string name="fail_update_url">無法更新! 請再試一次.</string>
     <string name="fail_ssl_update">OpenSSL 安全性憑證已逾期！</string>
     <string name="fail_save_file">將tag寫入檔案時發生錯誤</string>
     <string name="fail_save_data">儲存tag數據失敗</string>
     <string name="fail_read_size">讀取失敗！超出可支援的讀取範圍</string>
     <string name="fail_read_uid">無法讀取舊版UID</string>
     <string name="fail_mismatch_uid">來源的UID與目標的UID不一致！</string>
-    <string name="fail_invalid_size">讀取的檔案大小無效</string>
+	<string name="fail_uid_invalid">不正確的UID (%1$d byte hex)</string>
+    <string name="fail_primary_key">Sector 0驗證失敗!</string>												 													  
+    <string name="fail_sector_invalid">sector (0 – 15)不正確</string>
+    <string name="fail_invalid_size">讀取的檔案大小不正確</string>
     <string name="fail_powertag_keys">無法載入Power Tag金鑰</string>
     <string name="fail_bank_oob">已選擇的bank超過上限！</string>
     <string name="fail_active_oob">可用的bank超過可啟用數量上限！</string>
@@ -371,6 +433,7 @@
     <string name="fail_amiibo_null">請重新掃描 amiibo</string>
     <string name="fail_read">讀取失敗</string>
     <string name="fail_auth">驗證失敗</string>
+    <string name="fail_decrypt_null">無法解密空白數據</string>
     <string name="fail_decrypt">解密tag數據失敗</string>
     <string name="fail_encrypt">加密tag數據失敗</string>
     <string name="fail_display">顯示tag數據失敗</string>
@@ -379,7 +442,7 @@
     <string name="fail_logcat">製作操作日誌時發生錯誤！</string>
     <string name="fail_bitmap">製作縮圖時發生錯誤!</string>
     <string name="fail_bank_data">空白的二進位檔案!\n正在略過 bank %1$d&#8230;</string>
-    <string name="fail_randomize">Randomizer failed to duplicate data!</string>
+    <string name="fail_randomize">無法使用隨機序號進行數據複製!</string>
     <string name="fail_firmware_api">韌體設定已停用API!</string>
 
     <string name="no_tag_loaded">&lt;尚未載入Tag&gt;</string>
@@ -399,7 +462,7 @@
     <string name="invalid_tag_prefix">數據開頭必須為0x04字元</string>
     <string name="invalid_tag_lock">鎖定驗證的簽章不一致</string>
     <string name="invalid_tag_cc">CC的簽章不一致</string>
-    <string name="invalid_tag_dynamic">Dynamic lock的簽章不一致</string>
+    <string name="invalid_tag_dynamic">動態鎖定的簽章不一致</string>
     <string name="invalid_tag_cfg_zero">CFG0的簽章不一致</string>
     <string name="invalid_tag_cfg_one">CFG1的簽章不一致</string>
     <string name="invalid_uid_length">UID的字元長度不正確</string>
@@ -425,24 +488,29 @@
 
     <string name="firmware_update">N2 Elite 韌體已更新完成！</string>
     <string name="firmware_failed">韌體更新失敗，請再試一次！ (%1$d)</string>
-    
+    <string name="firmware_obsolete">韌體必須更新!</string>
+
     <string name="speed_scan">請將tag靠近感應以完成掃描</string>
     <string name="tag_disconnect">Tag不在感應距離內!</string>
     <string name="unzip_item">正在解壓縮 %1$s&#8230;</string>
     <string name="mkdir_failed">新建資料夾 &#8217;%1$s&#8217; 失敗！</string>
     <string name="downloads_hidden">下載項目已經隱藏！</string>
-
+	
     <string name="controller_pro" translatable="false">Pro控制器</string>
     <string name="controller_rjc" translatable="false">Right Joy-Con</string>
     <string name="no_controllers">沒有已連線的手把控制器!</string>
-    
+ 	
     <string name="sub_button">%1$s 每月捐贈</string>
     <string name="iap_button">%1$s 單次捐贈</string>
     <string name="donation_thanks">非常感謝你的捐贈！</string>
     <string name="settings_banner">TagMo按月訂閱捐款者</string>
+ 
+    <string name="external_search">搜尋Amiibo</string>
 
     <string name="conversion_title">TagMo必要更新</string>
-    <string name="conversion_message">目前GitHub的新版本已與Google Play商店同步更新。\n請點擊繼續，將核對版本並完成更新安裝。</string>
-
+    <string name="conversion_message">目前GitHub的新版本已與Google Play商店同步更新。\n請點擊繼續，將核對版本並完成更新安裝。</string>																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																															   
+	
     <string name="disclaimer_general">程式開發期間，沒有損傷任何公仔</string>
+	
+	<string name="duplicate_reports">不需要反覆多次提交相同的程式錯誤</string>
 </resources>

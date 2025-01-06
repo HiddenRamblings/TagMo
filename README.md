@@ -47,5 +47,5 @@ Additional thanks go out to (alphabetically):
 
 <br />
 <p align="center">
-<img src="https://count.getloli.com/get/@:repodevildantotsu" alt=":repodevildantotsu" />
+<img src="https://count.getloli.com/get/@:tagmo?theme=gelbooru" alt="TagMo Moe Counter!" />
 </p>

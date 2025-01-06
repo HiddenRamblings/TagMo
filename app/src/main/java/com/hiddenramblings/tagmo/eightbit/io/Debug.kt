@@ -28,6 +28,7 @@ import com.hiddenramblings.tagmo.R
 import com.hiddenramblings.tagmo.TagMo
 import com.hiddenramblings.tagmo.amiibo.KeyManager
 import com.hiddenramblings.tagmo.eightbit.material.IconifiedSnackbar
+import com.hiddenramblings.tagmo.eightbit.os.Storage
 import com.hiddenramblings.tagmo.widget.Toasty
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -265,10 +266,7 @@ object Debug {
     }
 
     private fun writeLogcat(subject: String, logText: String) {
-        FileOutputStream(File(
-            Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS),
-            "${subject}.txt"
-        )).use {
+        FileOutputStream(File(Storage.getDownloadDir(null), "${subject}.txt")).use {
             it.write(logText.toByteArray())
         }
     }

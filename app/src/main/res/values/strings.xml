@@ -209,6 +209,7 @@
     <string name="write_collection">Write Collection</string>
     <string name="erase_collection">Erase Collection</string>
 
+    <string name="unlock_complete">N2 unlock complete!</string>
     <string name="feature_unavailable">Feature not implemented!</string>
     <string name="activity_unavailable">Please try again later.</string>
     <string name="storage_unavailable">Device storage inaccessible!</string>
@@ -239,6 +240,11 @@
     <string name="menu_settings">TagMo Settings</string>
 
     <string name="tagmo_update">TagMo Update</string>
+    <string name="install_storage">Insufficient storage!</string>
+    <string name="install_conflict">Package conflict!</string>
+    <string name="install_aborted">Install aborted!</string>
+    <string name="install_blocked">Install blocked!</string>
+    <string name="install_rejected">Install rejected!</string>
 
     <string name="pref_menu_return">Return to main menu</string>
     <string name="prefs_configuration">Configuration</string>

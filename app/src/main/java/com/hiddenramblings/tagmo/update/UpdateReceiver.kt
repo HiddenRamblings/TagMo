@@ -21,7 +21,9 @@ import android.widget.Toast
 import com.hiddenramblings.tagmo.BuildConfig
 import com.hiddenramblings.tagmo.eightbit.os.Version
 import com.hiddenramblings.tagmo.parcelable
+import com.hiddenramblings.tagmo.widget.Toasty
 import java.net.URISyntaxException
+import com.hiddenramblings.tagmo.R
 
 class UpdateReceiver : BroadcastReceiver() {
 
@@ -40,7 +42,19 @@ class UpdateReceiver : BroadcastReceiver() {
                                 if (Version.isLollipopMR) Intent.URI_ALLOW_UNSAFE else 0
                             ))
                         } catch (_: URISyntaxException) { }
-                    }
+                    } ?: Toasty(context).Long(R.string.install_rejected)
+                }
+                PackageInstaller.STATUS_FAILURE_BLOCKED -> {
+                    Toasty(context).Long(R.string.install_blocked)
+                }
+                PackageInstaller.STATUS_FAILURE_STORAGE -> {
+                    Toasty(context).Long(R.string.install_storage)
+                }
+                PackageInstaller.STATUS_FAILURE_CONFLICT -> {
+                    Toasty(context).Long(R.string.install_conflict)
+                }
+                PackageInstaller.STATUS_FAILURE_ABORTED -> {
+                    Toasty(context).Long(R.string.install_aborted)
                 }
                 PackageInstaller.STATUS_SUCCESS -> {}
                 else -> {

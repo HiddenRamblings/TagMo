@@ -2685,6 +2685,12 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
         }
     }
 
+    val onEliteUnlock = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) {
+        Toasty(this).Long(R.string.unlock_complete)
+    }
+
     override fun onConfigurationChanged(newConfig: Configuration) {
         super.onConfigurationChanged(newConfig)
         when(viewPager.currentItem) {

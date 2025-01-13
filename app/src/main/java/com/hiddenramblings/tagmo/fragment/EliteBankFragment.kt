@@ -323,7 +323,7 @@ class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
                 .setTitle(R.string.unlock_elite_warning)
                 .setMessage(R.string.prepare_unlock)
                 .setPositiveButton(R.string.start) { dialog: DialogInterface, _: Int ->
-                    startActivity(
+                    browserActivity?.onEliteUnlock?.launch(
                         Intent(requireContext(), NfcActivity::class.java)
                             .setAction(NFCIntent.ACTION_UNLOCK_UNIT)
                     )
@@ -366,21 +366,24 @@ class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
             }
             bankAdapter?.notifyItemRangeInserted(0, amiibos.size)
         } else {
+            val currentSize = amiibos.size
+            val updateSize = amiiboList?.size ?: 0
             amiiboList?.forEachIndexed { i, amiibo ->
                 val amiiboId = TagArray.hexToLong(amiibo)
                 if (i >= amiibos.size) {
                     amiibos.add(EliteTag(amiiboManager.amiibos[TagArray.hexToLong(amiibo)]))
-                    bankAdapter?.notifyItemInserted(i)
+                    // bankAdapter?.notifyItemInserted(i)
                 } else if (null == amiibos[i] || i != amiibos[i]?.index || amiiboId != amiibos[i]?.id) {
                     amiibos[i] = EliteTag(amiiboManager.amiibos[amiiboId])
-                    bankAdapter?.notifyItemChanged(i)
+                    // bankAdapter?.notifyItemChanged(i)
                 }
             }
-            if (null != amiiboList && amiibos.size > amiiboList.size) {
-                val count = amiibos.size
-                val size = amiiboList.size
-                amiibos.subList(0, count - size).clear()
-                bankAdapter?.notifyItemRangeRemoved(size, count - size)
+            bankAdapter?.notifyItemRangeChanged(0, currentSize)
+            if (updateSize > currentSize) {
+                bankAdapter?.notifyItemRangeInserted(currentSize, updateSize)
+            } else if (currentSize > updateSize) {
+                amiibos.subList(0, currentSize - updateSize).clear()
+                bankAdapter?.notifyItemRangeRemoved(updateSize, currentSize - updateSize)
             }
         }
         refreshListener?.onListRefreshed(amiibos)

@@ -1453,9 +1453,9 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                 .putExtra("android.content.extra.FANCY", true)
             if (prefs.isDocumentStorage) {
                 try {
-                    onDocumentTree.launch(docTreeIntent)
-                } catch (_: ActivityNotFoundException) {
                     onDocumentTree.launch(docTreeIntent.setType("*/*"))
+                } catch (_: ActivityNotFoundException) {
+                    onDocumentTree.launch(docTreeIntent)
                 }
                 return
             }
@@ -1463,9 +1463,9 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                 setTitleText(this@BrowserActivity.getString(R.string.storage_setup))
                 setPositiveButton(this@BrowserActivity.getString(R.string.proceed)) {
                     try {
-                        onDocumentTree.launch(docTreeIntent)
-                    } catch (_: ActivityNotFoundException) {
                         onDocumentTree.launch(docTreeIntent.setType("*/*"))
+                    } catch (_: ActivityNotFoundException) {
+                        onDocumentTree.launch(docTreeIntent)
                     }
                 }
                 setNegativeButton(this@BrowserActivity.getString(R.string.close)) {

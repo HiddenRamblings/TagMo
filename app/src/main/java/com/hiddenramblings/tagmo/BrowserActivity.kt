@@ -2689,6 +2689,10 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
         ActivityResultContracts.StartActivityForResult()
     ) {
         Toasty(this).Long(R.string.unlock_complete)
+        onNFCActivity.launch(
+            Intent(this, NfcActivity::class.java)
+                .setAction(NFCIntent.ACTION_SCAN_TAG)
+        )
     }
 
     override fun onConfigurationChanged(newConfig: Configuration) {

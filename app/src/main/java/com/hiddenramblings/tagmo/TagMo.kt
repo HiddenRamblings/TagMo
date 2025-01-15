@@ -98,7 +98,7 @@ class TagMo : Application() {
                 + BuildConfig.COMMIT + ">" + commitHash + "</a>")
 
         val versionLabelLinked = HtmlCompat.fromHtml(
-                versionLabel.replace(commitHash, commitLink),
+                versionLabel.removePrefix("TagMo ").replace(commitHash, commitLink),
                 HtmlCompat.FROM_HTML_MODE_LEGACY
             )
 

@@ -251,6 +251,6 @@ class WebsiteFragment : Fragment() {
     }
 
     companion object {
-        private const val WEBSITE_README = "https://tagmo.gitlab.io/"
+        private const val WEBSITE_README = "https://tagmo.gitlab.io/?s=Importing"
     }
 }

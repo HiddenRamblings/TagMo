@@ -39,7 +39,7 @@ import java.util.*
 
 @Suppress("unused")
 object Debug {
-    private val guideUri = Uri.parse("https://tagmo.gitlab.io")
+    private val guideUri = Uri.parse("https://tagmo.gitlab.io/?s=Importing")
     private val context: Context
         get() = TagMo.appContext
     private val mPrefs = Preferences(context)

@@ -1,7 +1,5 @@
 package com.hiddenramblings.tagmo.fragment
 
-import android.graphics.Color
-import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -11,7 +9,6 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.hiddenramblings.tagmo.R
-import com.hiddenramblings.tagmo.eightbit.os.Version
 
 
 class FittedSheets: BottomSheetDialogFragment() {

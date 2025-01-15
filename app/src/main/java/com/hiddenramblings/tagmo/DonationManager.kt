@@ -354,6 +354,33 @@ class DonationManager internal constructor(private val activity: BrowserActivity
                 }
 
                 if (!BuildConfig.GOOGLE_PLAY) {
+                    addView(activity.layoutInflater.inflate(R.layout.button_paypal, null).apply {
+                        setOnClickListener {
+                            activity.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(
+                                "https://www.paypal.com/donate/?hosted_button_id=Q2LFH2SC8RHRN"
+                            )))
+                            donateDialog.cancel()
+                        }
+                        layoutParams = params
+                    })
+                    addView(activity.layoutInflater.inflate(R.layout.button_kofi, null).apply {
+                        setOnClickListener {
+                            activity.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(
+                                "https://ko-fi.com/abandonedcart"
+                            )))
+                            donateDialog.cancel()
+                        }
+                        layoutParams = params
+                    })
+                    addView(activity.layoutInflater.inflate(R.layout.button_coffee, null).apply {
+                        setOnClickListener {
+                            activity.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(
+                                "https://www.buymeacoffee.com/abandonedcart"
+                            )))
+                            donateDialog.cancel()
+                        }
+                        layoutParams = params
+                    })
                     addView(activity.layoutInflater.inflate(R.layout.button_sponsor, null).apply {
                         setOnClickListener {
                             activity.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(
@@ -362,15 +389,6 @@ class DonationManager internal constructor(private val activity: BrowserActivity
                             donateDialog.cancel()
                         }
                         layoutParams = params
-                    })
-
-                    addView(activity.layoutInflater.inflate(R.layout.button_paypal, null).apply {
-                        setOnClickListener {
-                            activity.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(
-                                "https://www.paypal.com/donate/?hosted_button_id=Q2LFH2SC8RHRN"
-                            )))
-                            donateDialog.cancel()
-                        }
                     })
                 }
                 donateDialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))

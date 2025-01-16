@@ -211,7 +211,7 @@
     <string name="write_collection">Write Collection</string>
     <string name="erase_collection">Erase Collection</string>
 
-    <string name="unlock_complete">N2 unlock complete!</string>
+    <string name="unlock_complete">N2 unlock complete!\nScan N2 to verify.</string>
     <string name="feature_unavailable">Feature not implemented!</string>
     <string name="activity_unavailable">Please try again later.</string>
     <string name="storage_unavailable">Device storage inaccessible!</string>

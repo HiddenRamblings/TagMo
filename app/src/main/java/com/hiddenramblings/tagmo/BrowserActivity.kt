@@ -675,9 +675,9 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
         popupHandler.postDelayed({
             val baseDelay = 75
             popupHandler.sendEmptyMessageDelayed(R.id.mnu_validate, (baseDelay).toLong())
-            popupHandler.sendEmptyMessageDelayed(R.id.mnu_backup, (75 + baseDelay).toLong())
-            popupHandler.sendEmptyMessageDelayed(R.id.mnu_scan, (175 + baseDelay).toLong())
-        }, 275)
+            popupHandler.sendEmptyMessageDelayed(R.id.mnu_backup, (baseDelay * 2).toLong())
+            popupHandler.sendEmptyMessageDelayed(R.id.mnu_scan, (baseDelay * 3).toLong())
+        }, 250)
         popup.setOnMenuItemClickListener { item: MenuItem ->
             when (item.itemId) {
                 R.id.mnu_scan -> {

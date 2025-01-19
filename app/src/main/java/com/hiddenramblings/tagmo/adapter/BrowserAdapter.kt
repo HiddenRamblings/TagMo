@@ -238,7 +238,8 @@ class BrowserAdapter(
             if (filteredData === filterResults.values) return
             @Suppress("UNCHECKED_CAST")
             filterResults.values?.let { filteredData = it as ArrayList<AmiiboFile?> }
-            if (itemCount > 0) Collections.sort(filteredData, AmiiboFileComparator(settings))
+            if (filteredData.isNotEmpty())
+                Collections.sort(filteredData, AmiiboFileComparator(settings))
             notifyDataSetChanged()
         }
     }

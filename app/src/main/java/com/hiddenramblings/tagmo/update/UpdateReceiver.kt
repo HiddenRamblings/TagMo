@@ -39,7 +39,10 @@ class UpdateReceiver : BroadcastReceiver() {
                         try {
                             startLauncherActivity(context, Intent.parseUri(
                                 it.toUri(0),
-                                if (Version.isLollipopMR) Intent.URI_ALLOW_UNSAFE else 0
+                                if (Version.isLollipopMR)
+                                    Intent.URI_ALLOW_UNSAFE or Intent.URI_INTENT_SCHEME
+                                else
+                                    Intent.URI_INTENT_SCHEME
                             ))
                         } catch (_: URISyntaxException) { }
                     } ?: Toasty(context).Long(R.string.install_rejected)
@@ -66,7 +69,7 @@ class UpdateReceiver : BroadcastReceiver() {
         }
     }
 
-    private fun startLauncherActivity(context: Context, intent: Intent?) {
-        context.startActivity(intent?.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
+    private fun startLauncherActivity(context: Context, intent: Intent) {
+        context.startActivity(intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
     }
 }

@@ -378,12 +378,16 @@ class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
                     // bankAdapter?.notifyItemChanged(i)
                 }
             }
-            bankAdapter?.notifyItemRangeChanged(0, currentSize)
+
             if (updateSize > currentSize) {
-                bankAdapter?.notifyItemRangeInserted(currentSize, updateSize)
+                bankAdapter?.notifyItemRangeChanged(0, currentSize)
+                bankAdapter?.notifyItemRangeInserted(currentSize, updateSize - currentSize)
             } else if (currentSize > updateSize) {
                 amiibos.subList(0, currentSize - updateSize).clear()
+                bankAdapter?.notifyItemRangeChanged(0, updateSize)
                 bankAdapter?.notifyItemRangeRemoved(updateSize, currentSize - updateSize)
+            } else {
+                bankAdapter?.notifyItemRangeChanged(0, updateSize)
             }
         }
         refreshListener?.onListRefreshed(amiibos)

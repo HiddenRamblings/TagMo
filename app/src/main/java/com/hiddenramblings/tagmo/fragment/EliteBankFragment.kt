@@ -383,7 +383,7 @@ class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
                 bankAdapter?.notifyItemRangeChanged(0, currentSize)
                 bankAdapter?.notifyItemRangeInserted(currentSize, updateSize - currentSize)
             } else if (currentSize > updateSize) {
-                amiibos.subList(0, currentSize - updateSize).clear()
+                amiibos.subList(updateSize, currentSize).clear()
                 bankAdapter?.notifyItemRangeChanged(0, updateSize)
                 bankAdapter?.notifyItemRangeRemoved(updateSize, currentSize - updateSize)
             } else {

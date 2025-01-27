@@ -60,9 +60,7 @@ class TagMo : Application() {
         else
             setThemePreference()
         Thread.setDefaultUncaughtExceptionHandler { _: Thread?, error: Throwable ->
-            val exception = StringWriter().apply {
-                error.printStackTrace(PrintWriter(this))
-            }
+            val exception = error.printStackTrace(PrintWriter(StringWriter()))
             try {
                 Debug.sendException(this, exception.toString())
             } catch (_: Exception) { }

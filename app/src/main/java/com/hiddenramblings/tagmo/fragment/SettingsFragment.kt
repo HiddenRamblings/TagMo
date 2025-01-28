@@ -497,7 +497,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
                     override fun onResults(result: String?, isRawJSON: Boolean) {
                         result?.let {
                             val amiiboManager = if (isRawJSON) parse(it) else parseAmiiboAPI(it)
-                            saveDatabase(amiiboManager, requireContext().applicationContext)
+                            saveDatabase(amiiboManager, TagMo.appContext)
                             CoroutineScope(Dispatchers.Main).launch {
                                 if (syncMessage.isShown) syncMessage.dismiss()
                                 buildSnackbar(

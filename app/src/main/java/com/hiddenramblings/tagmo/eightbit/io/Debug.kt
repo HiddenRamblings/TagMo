@@ -266,7 +266,7 @@ object Debug {
     }
 
     private fun writeLogcat(subject: String, logText: String) {
-        FileOutputStream(File(Storage.getDownloadDir(null), "${subject}.txt")).use {
+        FileOutputStream(File(Storage.getDownloadDir(null), "${subject}-${System.currentTimeMillis()}.txt")).use {
             it.write(logText.toByteArray())
         }
     }

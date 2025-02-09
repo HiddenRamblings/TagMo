@@ -20,6 +20,7 @@ import android.animation.Animator.AnimatorListener
 import android.content.Context
 import android.content.res.Configuration
 import android.util.AttributeSet
+import android.view.HapticFeedbackConstants
 import android.view.MotionEvent
 import android.view.View
 import android.view.View.OnTouchListener
@@ -27,6 +28,7 @@ import android.view.ViewGroup.MarginLayoutParams
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.hiddenramblings.tagmo.Preferences
 import com.hiddenramblings.tagmo.TagMo
+import com.hiddenramblings.tagmo.eightbit.os.Version
 import kotlin.math.abs
 
 class FABulous : FloatingActionButton, OnTouchListener {
@@ -76,6 +78,7 @@ class FABulous : FloatingActionButton, OnTouchListener {
     }
 
     private var lastPressed: Long = System.currentTimeMillis()
+    private var hasTriggered = false
 
     override fun onTouch(view: View, motionEvent: MotionEvent): Boolean {
         val action = motionEvent.action
@@ -89,6 +92,15 @@ class FABulous : FloatingActionButton, OnTouchListener {
                 true // Consumed
             }
             MotionEvent.ACTION_MOVE -> {
+                val upDX = motionEvent.rawX - downRawX
+                val upDY =  motionEvent.rawY - downRawY
+                if (abs(upDX) < CLICK_DRAG_TOLERANCE && abs(upDY) < CLICK_DRAG_TOLERANCE) { // Click
+                    if (System.currentTimeMillis() > lastPressed + 750L && !hasTriggered) {
+                        hasTriggered = true
+                        view.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS)
+                    }
+                    return true
+                }
                 val bounds = getViewCoordinates(view, motionEvent.rawX + dX, motionEvent.rawY + dY)
                 view.animate()
                     .x(bounds[0])
@@ -105,17 +117,20 @@ class FABulous : FloatingActionButton, OnTouchListener {
                         override fun onAnimationRepeat(p0: Animator) { }
                     })
                     .start()
-                lastPressed = System.currentTimeMillis()
                 true // Consumed
             }
             MotionEvent.ACTION_UP -> {
+                hasTriggered = false
                 val upRawX = motionEvent.rawX
                 val upRawY = motionEvent.rawY
                 val upDX = upRawX - downRawX
                 val upDY = upRawY - downRawY
-                if (abs(upDX) < CLICK_DRAG_TOLERANCE && abs(upDY) < CLICK_DRAG_TOLERANCE) { // A click
+                if (abs(upDX) < CLICK_DRAG_TOLERANCE && abs(upDY) < CLICK_DRAG_TOLERANCE) { // Click
                     val click = if (System.currentTimeMillis() > lastPressed + 750) {
-                        performLongClick()
+                        if (Version.isNougat)
+                            performLongClick(upRawX, upRawY)
+                        else
+                            performLongClick()
                     } else {
                         performClick()
                     }

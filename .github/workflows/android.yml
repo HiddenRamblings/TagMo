@@ -55,7 +55,7 @@ jobs:
         APK_LINK="https://github.com/HiddenRamblings/TagMo/releases/download/master/TagMo-${GIT_HASH}-github-release-signed.apk"
         echo "APK_LINK=${APK_LINK}" >> $GITHUB_ENV
 
-    - uses: burrunan/gradle-cache-action@v1
+    - uses: burrunan/gradle-cache-action@v2
       name: Build WearOS Gradle
       with:
         job-id: TagMo-WearOS

@@ -266,7 +266,8 @@ object Debug {
     }
 
     private fun writeLogcat(subject: String, logText: String) {
-        FileOutputStream(File(Storage.getDownloadDir(null), "${subject}-${System.currentTimeMillis()}.txt")).use {
+        val fileName = "${subject.replace(":", "")}.${System.currentTimeMillis()}.txt"
+        FileOutputStream(File(Storage.getDownloadDir(null), fileName)).use {
             it.write(logText.toByteArray())
         }
     }

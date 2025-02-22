@@ -196,9 +196,8 @@ class BrowserAdapter(
             if (query.isEmpty()) {
                 filterResults.count = data.size
                 filterResults.values = data
-                return filterResults
             }
-            settings.query = constraint?.toString()
+            settings.query = constraint?.toString() ?: ""
             val tempList:ArrayList<AmiiboFile> = arrayListOf()
             val queryText = query.lowercase(Locale.getDefault())
             val amiiboManager = settings.amiiboManager

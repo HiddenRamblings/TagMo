@@ -7,6 +7,10 @@ plugins {
 }
 
 android {
+    buildFeatures {
+        buildConfig = true
+    }
+
     defaultConfig {
         applicationId 'com.hiddenramblings.tagmo'
         compileSdk 35

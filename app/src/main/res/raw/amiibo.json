@@ -9313,6 +9313,17 @@
 				"jp": "2016-10-20"
 			}
 		},
+		"0x00080100042f1a02":
+		{
+			"name": "Donkey Kong & Pauline",
+			"release":
+			{
+				"au": "2025-07-17",
+				"na": "2025-07-17",
+				"eu": "2025-07-17",
+				"jp": "2025-07-17"
+			}
+		},
 		"0x000800030431ff02":
 		{
 			"name": "Donkey Kong - Power Up Band",
@@ -9704,6 +9715,7 @@
 		"0x07": "Skylanders",
 		"0x16": "Diablo",
 		"0x17": "Power Pros",
+		"0x1a": "Donkey Kong",
 		"0x1b": "Xenoblade Chronicles 3",
 		"0x1d": "Street Fighter 6"
 	},

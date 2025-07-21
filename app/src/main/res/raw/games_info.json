@@ -25,7 +25,7 @@
 					],
 					"amiiboUsage": [
 						{
-							"Usage": "Unlock figure in the pose of the character (requires Chibi-Robo amiibo)",
+							"Usage": "Unlock figure in an amiibo-exclusive pose of the character (requires Chibi-Robo amiibo)",
 							"write": false
 						}
 					]
@@ -527,7 +527,7 @@
 					],
 					"amiiboUsage": [
 						{
-							"Usage": "Unlock figure in the pose of the character (requires Chibi-Robo amiibo)",
+							"Usage": "Unlock figure in an amiibo-exclusive pose of the character (requires Chibi-Robo amiibo)",
 							"write": false
 						}
 					]
@@ -1056,7 +1056,7 @@
 					],
 					"amiiboUsage": [
 						{
-							"Usage": "Unlock figure in the pose of the character (requires Chibi-Robo amiibo)",
+							"Usage": "Unlock figure in an amiibo-exclusive pose of the character (requires Chibi-Robo amiibo)",
 							"write": false
 						}
 					]
@@ -1603,7 +1603,7 @@
 					],
 					"amiiboUsage": [
 						{
-							"Usage": "Unlock figure in the pose of the character (requires Chibi-Robo amiibo)",
+							"Usage": "Unlock figure in an amiibo-exclusive pose of the character (requires Chibi-Robo amiibo)",
 							"write": false
 						}
 					]
@@ -2150,7 +2150,7 @@
 					],
 					"amiiboUsage": [
 						{
-							"Usage": "Unlock figure in the pose of the character (requires Chibi-Robo amiibo)",
+							"Usage": "Unlock figure in an amiibo-exclusive pose of the character (requires Chibi-Robo amiibo)",
 							"write": false
 						}
 					]
@@ -2678,7 +2678,7 @@
 					],
 					"amiiboUsage": [
 						{
-							"Usage": "Unlock figure in the pose of the character (requires Chibi-Robo amiibo)",
+							"Usage": "Unlock figure in an amiibo-exclusive pose of the character (requires Chibi-Robo amiibo)",
 							"write": false
 						}
 					]
@@ -3219,7 +3219,7 @@
 					],
 					"amiiboUsage": [
 						{
-							"Usage": "Unlock figure in the pose of the character (requires Chibi-Robo amiibo)",
+							"Usage": "Unlock figure in an amiibo-exclusive pose of the character (requires Chibi-Robo amiibo)",
 							"write": false
 						}
 					]
@@ -3977,7 +3977,7 @@
 					],
 					"amiiboUsage": [
 						{
-							"Usage": "Unlock figure in the pose of the character (requires Chibi-Robo amiibo)",
+							"Usage": "Unlock figure in an amiibo-exclusive pose of the character (requires Chibi-Robo amiibo)",
 							"write": false
 						}
 					]
@@ -4493,7 +4493,7 @@
 					],
 					"amiiboUsage": [
 						{
-							"Usage": "Unlock figure in the pose of the character (requires Chibi-Robo amiibo)",
+							"Usage": "Unlock figure in an amiibo-exclusive pose of the character (requires Chibi-Robo amiibo)",
 							"write": false
 						}
 					]
@@ -4991,7 +4991,7 @@
 					],
 					"amiiboUsage": [
 						{
-							"Usage": "Unlock figure in the pose of the character (requires Chibi-Robo amiibo)",
+							"Usage": "Unlock figure in an amiibo-exclusive pose of the character (requires Chibi-Robo amiibo)",
 							"write": false
 						}
 					]
@@ -5022,6 +5022,19 @@
 					"amiiboUsage": [
 						{
 							"Usage": "Get a chance to revive when you run out of health / Furniture hiding a Speedy Spirit will light up",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Mario & Luigi: Bowser's Inside Story + Bowser Jr.'s Journey",
+					"gameID": [
+						"00040000001D1400",
+						"00040000001D1500"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a helpful item",
 							"write": false
 						}
 					]
@@ -5436,7 +5449,7 @@
 					],
 					"amiiboUsage": [
 						{
-							"Usage": "Unlock figure in the pose of the character (requires Chibi-Robo amiibo)",
+							"Usage": "Unlock figure in an amiibo-exclusive pose of the character (requires Chibi-Robo amiibo)",
 							"write": false
 						}
 					]
@@ -5482,6 +5495,19 @@
 					"amiiboUsage": [
 						{
 							"Usage": "Get a chance to revive when you run out of health / Furniture hiding a Speedy Spirit will light up",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Mario & Luigi: Bowser's Inside Story + Bowser Jr.'s Journey",
+					"gameID": [
+						"00040000001D1400",
+						"00040000001D1500"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a helpful item",
 							"write": false
 						}
 					]
@@ -6010,7 +6036,7 @@
 					],
 					"amiiboUsage": [
 						{
-							"Usage": "Unlock figure in the pose of the character (requires Chibi-Robo amiibo)",
+							"Usage": "Unlock figure in an amiibo-exclusive pose of the character (requires Chibi-Robo amiibo)",
 							"write": false
 						}
 					]
@@ -6464,7 +6490,7 @@
 					],
 					"amiiboUsage": [
 						{
-							"Usage": "Unlock figure in the pose of the character (requires Chibi-Robo amiibo)",
+							"Usage": "Unlock figure in an amiibo-exclusive pose of the character (requires Chibi-Robo amiibo)",
 							"write": false
 						}
 					]
@@ -6958,7 +6984,7 @@
 					],
 					"amiiboUsage": [
 						{
-							"Usage": "Unlock figure in the pose of the character (requires Chibi-Robo amiibo)",
+							"Usage": "Unlock figure in an amiibo-exclusive pose of the character (requires Chibi-Robo amiibo)",
 							"write": false
 						}
 					]
@@ -7574,7 +7600,7 @@
 					],
 					"amiiboUsage": [
 						{
-							"Usage": "Unlock figure in the pose of the character (requires Chibi-Robo amiibo)",
+							"Usage": "Unlock figure in an amiibo-exclusive pose of the character (requires Chibi-Robo amiibo)",
 							"write": false
 						}
 					]
@@ -8013,7 +8039,7 @@
 					],
 					"amiiboUsage": [
 						{
-							"Usage": "Unlock figure in the pose of the character (requires Chibi-Robo amiibo)",
+							"Usage": "Unlock figure in an amiibo-exclusive pose of the character (requires Chibi-Robo amiibo)",
 							"write": false
 						}
 					]
@@ -8401,7 +8427,7 @@
 					],
 					"amiiboUsage": [
 						{
-							"Usage": "Unlock figure in the pose of the character (requires Chibi-Robo amiibo)",
+							"Usage": "Unlock figure in an amiibo-exclusive pose of the character (requires Chibi-Robo amiibo)",
 							"write": false
 						}
 					]
@@ -8906,7 +8932,7 @@
 					],
 					"amiiboUsage": [
 						{
-							"Usage": "Unlock figure in the pose of the character (requires Chibi-Robo amiibo)",
+							"Usage": "Unlock figure in an amiibo-exclusive pose of the character (requires Chibi-Robo amiibo)",
 							"write": false
 						}
 					]
@@ -9314,7 +9340,7 @@
 					],
 					"amiiboUsage": [
 						{
-							"Usage": "Unlock figure in the pose of the character (requires Chibi-Robo amiibo)",
+							"Usage": "Unlock figure in an amiibo-exclusive pose of the character (requires Chibi-Robo amiibo)",
 							"write": false
 						}
 					]
@@ -9741,7 +9767,7 @@
 					],
 					"amiiboUsage": [
 						{
-							"Usage": "Unlock figure in the pose of the character (requires Chibi-Robo amiibo)",
+							"Usage": "Unlock figure in an amiibo-exclusive pose of the character (requires Chibi-Robo amiibo)",
 							"write": false
 						}
 					]
@@ -10168,7 +10194,7 @@
 					],
 					"amiiboUsage": [
 						{
-							"Usage": "Unlock figure in the pose of the character (requires Chibi-Robo amiibo)",
+							"Usage": "Unlock figure in an amiibo-exclusive pose of the character (requires Chibi-Robo amiibo)",
 							"write": false
 						}
 					]
@@ -10576,7 +10602,7 @@
 					],
 					"amiiboUsage": [
 						{
-							"Usage": "Unlock figure in the pose of the character (requires Chibi-Robo amiibo)",
+							"Usage": "Unlock figure in an amiibo-exclusive pose of the character (requires Chibi-Robo amiibo)",
 							"write": false
 						}
 					]
@@ -10930,7 +10956,7 @@
 					],
 					"amiiboUsage": [
 						{
-							"Usage": "Unlock figure in the pose of the character (requires Chibi-Robo amiibo)",
+							"Usage": "Unlock figure in an amiibo-exclusive pose of the character (requires Chibi-Robo amiibo)",
 							"write": false
 						}
 					]
@@ -11272,7 +11298,7 @@
 					],
 					"amiiboUsage": [
 						{
-							"Usage": "Unlock figure in the pose of the character (requires Chibi-Robo amiibo)",
+							"Usage": "Unlock figure in an amiibo-exclusive pose of the character (requires Chibi-Robo amiibo)",
 							"write": false
 						}
 					]
@@ -11694,7 +11720,7 @@
 					],
 					"amiiboUsage": [
 						{
-							"Usage": "Unlock figure in the pose of the character (requires Chibi-Robo amiibo)",
+							"Usage": "Unlock figure in an amiibo-exclusive pose of the character (requires Chibi-Robo amiibo)",
 							"write": false
 						}
 					]
@@ -12156,7 +12182,7 @@
 					],
 					"amiiboUsage": [
 						{
-							"Usage": "Unlock figure in the pose of the character (requires Chibi-Robo amiibo)",
+							"Usage": "Unlock figure in an amiibo-exclusive pose of the character (requires Chibi-Robo amiibo)",
 							"write": false
 						}
 					]
@@ -12626,7 +12652,7 @@
 					],
 					"amiiboUsage": [
 						{
-							"Usage": "Unlock figure in the pose of the character (requires Chibi-Robo amiibo)",
+							"Usage": "Unlock figure in an amiibo-exclusive pose of the character (requires Chibi-Robo amiibo)",
 							"write": false
 						}
 					]
@@ -13021,7 +13047,7 @@
 					],
 					"amiiboUsage": [
 						{
-							"Usage": "Unlock figure in the pose of the character (requires Chibi-Robo amiibo)",
+							"Usage": "Unlock figure in an amiibo-exclusive pose of the character (requires Chibi-Robo amiibo)",
 							"write": false
 						}
 					]
@@ -13308,7 +13334,7 @@
 					],
 					"amiiboUsage": [
 						{
-							"Usage": "Unlock figure in the pose of the character (requires Chibi-Robo amiibo)",
+							"Usage": "Unlock figure in an amiibo-exclusive pose of the character (requires Chibi-Robo amiibo)",
 							"write": false
 						}
 					]
@@ -13556,7 +13582,7 @@
 					],
 					"amiiboUsage": [
 						{
-							"Usage": "Unlock figure in the pose of the character (requires Chibi-Robo amiibo)",
+							"Usage": "Unlock figure in an amiibo-exclusive pose of the character (requires Chibi-Robo amiibo)",
 							"write": false
 						}
 					]
@@ -13846,7 +13872,7 @@
 					],
 					"amiiboUsage": [
 						{
-							"Usage": "Unlock figure in the pose of the character (requires Chibi-Robo amiibo)",
+							"Usage": "Unlock figure in an amiibo-exclusive pose of the character (requires Chibi-Robo amiibo)",
 							"write": false
 						}
 					]
@@ -14162,7 +14188,7 @@
 					],
 					"amiiboUsage": [
 						{
-							"Usage": "Unlock figure in the pose of the character (requires Chibi-Robo amiibo)",
+							"Usage": "Unlock figure in an amiibo-exclusive pose of the character (requires Chibi-Robo amiibo)",
 							"write": false
 						}
 					]
@@ -14546,6 +14572,322 @@
 				}
 			]
 		},
+		"0x00080100042f1a02": {
+			"games3DS": [
+				{
+					"gameName": "Ace Combat Assault Horizon Legacy+",
+					"gameID": [
+						"0004000000064900",
+						"000400000006CC00",
+						"000400000015A300",
+						"000400000015C000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Unlock a character-themed aircraft early, plus a bonus skin and tuning part",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Chibi-Robo! Zip Lash",
+					"gameID": [
+						"0004000000162F00",
+						"0004000000163000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Unlock figure in an amiibo-exclusive pose of the character (requires Chibi-Robo amiibo)",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Kirby: Planet Robobot",
+					"gameID": [
+						"0004000000183600",
+						"0004000000189600",
+						"0004000000189800"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Give Kirby a Copy ability based on the character's abilities and a health item",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Mario Party: Star Rush",
+					"gameID": [
+						"0004000000193900",
+						"000400000019BD00",
+						"000400000019BE00"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Play as or receive bonus from this character, depending on the mode",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Mario Party: The Top 100",
+					"gameID": [
+						"00040000001C4D00",
+						"00040000001C4E00"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Minigame Island: If you land on an amiibo space, use to receive coins / Use to revive your character once",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Miitopia",
+					"gameID": [
+						"0004000000178800",
+						"00040000001B4E00",
+						"00040000001B4F00"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Unlock a character-based costume",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Mini Mario & Friends amiibo Challenge",
+					"gameID": [
+						"000400000016C200",
+						"000400000016C300"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Play stages as a Mini version of this character, with a unique special ability, and unlock character-specific stages",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "One Piece: Super Grand Battle! X",
+					"gameID": [
+						"0004000000144400"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Unlock a character-based costume with special abilities",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Super Smash Bros. for Nintendo 3DS",
+					"gameID": [
+						"00040000000EDF00",
+						"00040000000EE000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Battle and train up a computer-controlled Figure Player of the character",
+							"write": true
+						}
+					]
+				},
+				{
+					"gameName": "WarioWare Gold",
+					"gameID": [
+						"00040000001D1C00"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a sketch of the character from Wario which can be exchanged for in-game coins",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Yoshi's Woolly World",
+					"gameID": [
+						"00040000001A4100",
+						"00040000001A4200",
+						"00040000001B6C00",
+						"00040000001B6D00"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Unlock a character-based Yoshi yarn pattern",
+							"write": false
+						}
+					]
+				}
+			],
+			"gamesWiiU": [
+				{
+					"gameName": "Mario Kart 8",
+					"gameID": [
+						"000500001010EB00",
+						"000500001010EC00",
+						"000500001010ED00"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Unlock a character-themed Mii racing suit",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Mario Party 10",
+					"gameID": [
+						"0005000010161F00",
+						"0005000010162D00",
+						"0005000010162E00"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Customize game board in amiibo Party",
+							"write": false
+						},
+						{
+							"Usage": "Use as game piece in amiibo Party",
+							"write": true
+						}
+					]
+				},
+				{
+					"gameName": "Mario Tennis: Ultra Smash",
+					"gameID": [
+						"0005000010199000",
+						"00050000101A3500",
+						"00050000101A3600"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Play alongside and train up a computer-controlled character",
+							"write": true
+						}
+					]
+				},
+				{
+					"gameName": "Mini Mario & Friends amiibo Challenge",
+					"gameID": [
+						"00050000101C6100",
+						"00050000101C6200",
+						"00050000101C6300"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Play stages as a Mini version of this character, with a unique special ability, and unlock character-specific stages",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Super Mario Maker",
+					"gameID": [
+						"000500001018DB00",
+						"000500001018DC00",
+						"000500001018DD00"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Unlock a character-based Mystery Mushroom costume",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Super Smash Bros. for Wii U",
+					"gameID": [
+						"0005000010110E00",
+						"0005000010144F00",
+						"0005000010145000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Battle and train up a computer-controlled Figure Player of the character",
+							"write": true
+						}
+					]
+				},
+				{
+					"gameName": "Yoshi's Woolly World",
+					"gameID": [
+						"0005000010131F00"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Unlock a character-based Yoshi yarn pattern",
+							"write": false
+						}
+					]
+				}
+			],
+			"gamesSwitch": [
+				{
+					"gameName": "Mario Kart 8 Deluxe",
+					"gameID": [
+						"0100152000022000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Unlock a character-themed Mii racing suit",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Miitopia",
+					"gameID": [
+						"01003DA010E8A000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Unlock a character-based costume",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Super Mario 3D World + Bowser's Fury",
+					"gameID": [
+						"010028600EBDA000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a particular power-up depending on the character",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Super Mario Party",
+					"gameID": [
+						"010036B0034E4000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Unlock the character's shiny sticker",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Super Smash Bros. Ultimate",
+					"gameID": [
+						"01006A800016E000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Battle and train up a computer-controlled Figure Player of the character",
+							"write": true
+						}
+					]
+				}
+			]
+		},
 		"0x0008ff00023b0702": {
 			"games3DS": [
 				{
@@ -14571,7 +14913,7 @@
 					],
 					"amiiboUsage": [
 						{
-							"Usage": "Unlock figure in the pose of the character (requires Chibi-Robo amiibo)",
+							"Usage": "Unlock figure in an amiibo-exclusive pose of the character (requires Chibi-Robo amiibo)",
 							"write": false
 						}
 					]
@@ -14872,7 +15214,7 @@
 					],
 					"amiiboUsage": [
 						{
-							"Usage": "Unlock figure in the pose of the character (requires Chibi-Robo amiibo)",
+							"Usage": "Unlock figure in an amiibo-exclusive pose of the character (requires Chibi-Robo amiibo)",
 							"write": false
 						}
 					]
@@ -15089,7 +15431,7 @@
 					],
 					"amiiboUsage": [
 						{
-							"Usage": "Unlock figure in the pose of the character (requires Chibi-Robo amiibo)",
+							"Usage": "Unlock figure in an amiibo-exclusive pose of the character (requires Chibi-Robo amiibo)",
 							"write": false
 						}
 					]
@@ -15388,6 +15730,19 @@
 					"amiiboUsage": [
 						{
 							"Usage": "Receive an invincibility mushroom",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Chibi-Robo! Zip Lash",
+					"gameID": [
+						"0004000000162F00",
+						"0004000000163000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Unlock figure in an amiibo-exclusive pose of the character (requires Chibi-Robo amiibo)",
 							"write": false
 						}
 					]
@@ -17017,6 +17372,19 @@
 					]
 				},
 				{
+					"gameName": "Chibi-Robo! Zip Lash",
+					"gameID": [
+						"0004000000162F00",
+						"0004000000163000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Unlock figure in an amiibo-exclusive pose of the character (requires Chibi-Robo amiibo)",
+							"write": false
+						}
+					]
+				},
+				{
 					"gameName": "Hyrule Warriors Legends",
 					"gameID": [
 						"000400000017EA00",
@@ -17421,6 +17789,19 @@
 					"amiiboUsage": [
 						{
 							"Usage": "Invite an amiibo-exclusive Legend of Zelda-themed villager to visit your RV campsite, give you an item, and/or move to your town",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Chibi-Robo! Zip Lash",
+					"gameID": [
+						"0004000000162F00",
+						"0004000000163000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Unlock figure in an amiibo-exclusive pose of the character (requires Chibi-Robo amiibo)",
 							"write": false
 						}
 					]
@@ -17835,6 +18216,19 @@
 					]
 				},
 				{
+					"gameName": "Chibi-Robo! Zip Lash",
+					"gameID": [
+						"0004000000162F00",
+						"0004000000163000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Unlock figure in an amiibo-exclusive pose of the character (requires Chibi-Robo amiibo)",
+							"write": false
+						}
+					]
+				},
+				{
 					"gameName": "Hyrule Warriors Legends",
 					"gameID": [
 						"000400000017EA00",
@@ -18239,6 +18633,19 @@
 					"amiiboUsage": [
 						{
 							"Usage": "Invite an amiibo-exclusive Legend of Zelda-themed villager to visit your RV campsite, give you an item, and/or move to your town",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Chibi-Robo! Zip Lash",
+					"gameID": [
+						"0004000000162F00",
+						"0004000000163000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Unlock figure in an amiibo-exclusive pose of the character (requires Chibi-Robo amiibo)",
 							"write": false
 						}
 					]
@@ -18665,6 +19072,19 @@
 					]
 				},
 				{
+					"gameName": "Chibi-Robo! Zip Lash",
+					"gameID": [
+						"0004000000162F00",
+						"0004000000163000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Unlock figure in an amiibo-exclusive pose of the character (requires Chibi-Robo amiibo)",
+							"write": false
+						}
+					]
+				},
+				{
 					"gameName": "Hyrule Warriors Legends",
 					"gameID": [
 						"000400000017EA00",
@@ -19069,6 +19489,19 @@
 					"amiiboUsage": [
 						{
 							"Usage": "Invite an amiibo-exclusive Legend of Zelda-themed villager to visit your RV campsite, give you an item, and/or move to your town",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Chibi-Robo! Zip Lash",
+					"gameID": [
+						"0004000000162F00",
+						"0004000000163000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Unlock figure in an amiibo-exclusive pose of the character (requires Chibi-Robo amiibo)",
 							"write": false
 						}
 					]
@@ -19483,6 +19916,19 @@
 					]
 				},
 				{
+					"gameName": "Chibi-Robo! Zip Lash",
+					"gameID": [
+						"0004000000162F00",
+						"0004000000163000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Unlock figure in an amiibo-exclusive pose of the character (requires Chibi-Robo amiibo)",
+							"write": false
+						}
+					]
+				},
+				{
 					"gameName": "Hyrule Warriors Legends",
 					"gameID": [
 						"000400000017EA00",
@@ -19887,6 +20333,19 @@
 					"amiiboUsage": [
 						{
 							"Usage": "Invite an amiibo-exclusive Legend of Zelda-themed villager to visit your RV campsite, give you an item, and/or move to your town",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Chibi-Robo! Zip Lash",
+					"gameID": [
+						"0004000000162F00",
+						"0004000000163000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Unlock figure in an amiibo-exclusive pose of the character (requires Chibi-Robo amiibo)",
 							"write": false
 						}
 					]
@@ -20301,6 +20760,19 @@
 					]
 				},
 				{
+					"gameName": "Chibi-Robo! Zip Lash",
+					"gameID": [
+						"0004000000162F00",
+						"0004000000163000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Unlock figure in an amiibo-exclusive pose of the character (requires Chibi-Robo amiibo)",
+							"write": false
+						}
+					]
+				},
+				{
 					"gameName": "Hyrule Warriors Legends",
 					"gameID": [
 						"000400000017EA00",
@@ -20693,6 +21165,19 @@
 					"amiiboUsage": [
 						{
 							"Usage": "Invite an amiibo-exclusive Legend of Zelda-themed villager to visit your RV campsite, give you an item, and/or move to your town",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Chibi-Robo! Zip Lash",
+					"gameID": [
+						"0004000000162F00",
+						"0004000000163000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Unlock figure in an amiibo-exclusive pose of the character (requires Chibi-Robo amiibo)",
 							"write": false
 						}
 					]
@@ -21119,6 +21604,19 @@
 					]
 				},
 				{
+					"gameName": "Chibi-Robo! Zip Lash",
+					"gameID": [
+						"0004000000162F00",
+						"0004000000163000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Unlock figure in an amiibo-exclusive pose of the character (requires Chibi-Robo amiibo)",
+							"write": false
+						}
+					]
+				},
+				{
 					"gameName": "Hyrule Warriors Legends",
 					"gameID": [
 						"000400000017EA00",
@@ -21528,6 +22026,19 @@
 					]
 				},
 				{
+					"gameName": "Chibi-Robo! Zip Lash",
+					"gameID": [
+						"0004000000162F00",
+						"0004000000163000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Unlock figure in an amiibo-exclusive pose of the character (requires Chibi-Robo amiibo)",
+							"write": false
+						}
+					]
+				},
+				{
 					"gameName": "Hyrule Warriors Legends",
 					"gameID": [
 						"000400000017EA00",
@@ -21930,6 +22441,19 @@
 					"amiiboUsage": [
 						{
 							"Usage": "Invite an amiibo-exclusive Legend of Zelda-themed villager to visit your RV campsite, give you an item, and/or move to your town",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Chibi-Robo! Zip Lash",
+					"gameID": [
+						"0004000000162F00",
+						"0004000000163000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Unlock figure in an amiibo-exclusive pose of the character (requires Chibi-Robo amiibo)",
 							"write": false
 						}
 					]
@@ -22361,7 +22885,7 @@
 					],
 					"amiiboUsage": [
 						{
-							"Usage": "Unlock figure in the pose of the character (requires Chibi-Robo amiibo)",
+							"Usage": "Unlock figure in an amiibo-exclusive pose of the character (requires Chibi-Robo amiibo)",
 							"write": false
 						}
 					]
@@ -22729,7 +23253,7 @@
 					],
 					"amiiboUsage": [
 						{
-							"Usage": "Unlock figure in the pose of the character (requires Chibi-Robo amiibo)",
+							"Usage": "Unlock figure in an amiibo-exclusive pose of the character (requires Chibi-Robo amiibo)",
 							"write": false
 						}
 					]
@@ -23109,7 +23633,7 @@
 					],
 					"amiiboUsage": [
 						{
-							"Usage": "Unlock figure in the pose of the character (requires Chibi-Robo amiibo)",
+							"Usage": "Unlock figure in an amiibo-exclusive pose of the character (requires Chibi-Robo amiibo)",
 							"write": false
 						}
 					]
@@ -23489,7 +24013,7 @@
 					],
 					"amiiboUsage": [
 						{
-							"Usage": "Unlock figure in the pose of the character (requires Chibi-Robo amiibo)",
+							"Usage": "Unlock figure in an amiibo-exclusive pose of the character (requires Chibi-Robo amiibo)",
 							"write": false
 						}
 					]
@@ -23869,7 +24393,7 @@
 					],
 					"amiiboUsage": [
 						{
-							"Usage": "Unlock figure in the pose of the character (requires Chibi-Robo amiibo)",
+							"Usage": "Unlock figure in an amiibo-exclusive pose of the character (requires Chibi-Robo amiibo)",
 							"write": false
 						}
 					]
@@ -24237,7 +24761,7 @@
 					],
 					"amiiboUsage": [
 						{
-							"Usage": "Unlock figure in the pose of the character (requires Chibi-Robo amiibo)",
+							"Usage": "Unlock figure in an amiibo-exclusive pose of the character (requires Chibi-Robo amiibo)",
 							"write": false
 						}
 					]
@@ -24588,7 +25112,7 @@
 					],
 					"amiiboUsage": [
 						{
-							"Usage": "Unlock figure in the pose of the character (requires Chibi-Robo amiibo)",
+							"Usage": "Unlock figure in an amiibo-exclusive pose of the character (requires Chibi-Robo amiibo)",
 							"write": false
 						}
 					]
@@ -24929,7 +25453,7 @@
 					],
 					"amiiboUsage": [
 						{
-							"Usage": "Unlock figure in the pose of the character (requires Chibi-Robo amiibo)",
+							"Usage": "Unlock figure in an amiibo-exclusive pose of the character (requires Chibi-Robo amiibo)",
 							"write": false
 						}
 					]
@@ -26858,7 +27382,7 @@
 					],
 					"amiiboUsage": [
 						{
-							"Usage": "Unlock figure in the pose of the character (requires Chibi-Robo amiibo)",
+							"Usage": "Unlock figure in an amiibo-exclusive pose of the character (requires Chibi-Robo amiibo)",
 							"write": false
 						}
 					]
@@ -89971,7 +90495,7 @@
 					],
 					"amiiboUsage": [
 						{
-							"Usage": "Unlock figure in the pose of the character (requires Chibi-Robo amiibo)",
+							"Usage": "Unlock figure in an amiibo-exclusive pose of the character (requires Chibi-Robo amiibo)",
 							"write": false
 						}
 					]
@@ -90176,7 +90700,7 @@
 					],
 					"amiiboUsage": [
 						{
-							"Usage": "Unlock figure in the pose of the character (requires Chibi-Robo amiibo)",
+							"Usage": "Unlock figure in an amiibo-exclusive pose of the character (requires Chibi-Robo amiibo)",
 							"write": false
 						}
 					]
@@ -90376,7 +90900,7 @@
 					],
 					"amiiboUsage": [
 						{
-							"Usage": "Unlock figure in the pose of the character (requires Chibi-Robo amiibo)",
+							"Usage": "Unlock figure in an amiibo-exclusive pose of the character (requires Chibi-Robo amiibo)",
 							"write": false
 						}
 					]
@@ -90662,7 +91186,7 @@
 					],
 					"amiiboUsage": [
 						{
-							"Usage": "Unlock figure in the pose of the character (requires Chibi-Robo amiibo)",
+							"Usage": "Unlock figure in an amiibo-exclusive pose of the character (requires Chibi-Robo amiibo)",
 							"write": false
 						}
 					]
@@ -90960,7 +91484,7 @@
 					],
 					"amiiboUsage": [
 						{
-							"Usage": "Unlock figure in the pose of the character (requires Chibi-Robo amiibo)",
+							"Usage": "Unlock figure in an amiibo-exclusive pose of the character (requires Chibi-Robo amiibo)",
 							"write": false
 						}
 					]
@@ -91268,7 +91792,7 @@
 					],
 					"amiiboUsage": [
 						{
-							"Usage": "Unlock figure in the pose of the character (requires Chibi-Robo amiibo)",
+							"Usage": "Unlock figure in an amiibo-exclusive pose of the character (requires Chibi-Robo amiibo)",
 							"write": false
 						}
 					]
@@ -91815,7 +92339,7 @@
 					],
 					"amiiboUsage": [
 						{
-							"Usage": "Unlock figure in the pose of the character (requires Chibi-Robo amiibo)",
+							"Usage": "Unlock figure in an amiibo-exclusive pose of the character (requires Chibi-Robo amiibo)",
 							"write": false
 						}
 					]
@@ -91983,7 +92507,7 @@
 					],
 					"amiiboUsage": [
 						{
-							"Usage": "Unlock figure in the pose of the character (requires Chibi-Robo amiibo)",
+							"Usage": "Unlock figure in an amiibo-exclusive pose of the character (requires Chibi-Robo amiibo)",
 							"write": false
 						}
 					]
@@ -92236,7 +92760,7 @@
 					],
 					"amiiboUsage": [
 						{
-							"Usage": "Unlock figure in the pose of the character (requires Chibi-Robo amiibo)",
+							"Usage": "Unlock figure in an amiibo-exclusive pose of the character (requires Chibi-Robo amiibo)",
 							"write": false
 						}
 					]
@@ -92363,7 +92887,7 @@
 					],
 					"amiiboUsage": [
 						{
-							"Usage": "Unlock figure in the pose of the character (requires Chibi-Robo amiibo)",
+							"Usage": "Unlock figure in an amiibo-exclusive pose of the character (requires Chibi-Robo amiibo)",
 							"write": false
 						}
 					]
@@ -92514,7 +93038,7 @@
 					],
 					"amiiboUsage": [
 						{
-							"Usage": "Unlock figure in the pose of the character (requires Chibi-Robo amiibo)",
+							"Usage": "Unlock figure in an amiibo-exclusive pose of the character (requires Chibi-Robo amiibo)",
 							"write": false
 						}
 					]
@@ -92629,7 +93153,7 @@
 					],
 					"amiiboUsage": [
 						{
-							"Usage": "Unlock figure in the pose of the character (requires Chibi-Robo amiibo)",
+							"Usage": "Unlock figure in an amiibo-exclusive pose of the character (requires Chibi-Robo amiibo)",
 							"write": false
 						}
 					]
@@ -92744,7 +93268,7 @@
 					],
 					"amiiboUsage": [
 						{
-							"Usage": "Unlock figure in the pose of the character (requires Chibi-Robo amiibo)",
+							"Usage": "Unlock figure in an amiibo-exclusive pose of the character (requires Chibi-Robo amiibo)",
 							"write": false
 						}
 					]
@@ -92883,7 +93407,7 @@
 					],
 					"amiiboUsage": [
 						{
-							"Usage": "Unlock figure in the pose of the character (requires Chibi-Robo amiibo)",
+							"Usage": "Unlock figure in an amiibo-exclusive pose of the character (requires Chibi-Robo amiibo)",
 							"write": false
 						}
 					]
@@ -93010,7 +93534,7 @@
 					],
 					"amiiboUsage": [
 						{
-							"Usage": "Unlock figure in the pose of the character (requires Chibi-Robo amiibo)",
+							"Usage": "Unlock figure in an amiibo-exclusive pose of the character (requires Chibi-Robo amiibo)",
 							"write": false
 						}
 					]
@@ -93137,7 +93661,7 @@
 					],
 					"amiiboUsage": [
 						{
-							"Usage": "Unlock figure in the pose of the character (requires Chibi-Robo amiibo)",
+							"Usage": "Unlock figure in an amiibo-exclusive pose of the character (requires Chibi-Robo amiibo)",
 							"write": false
 						}
 					]
@@ -93264,7 +93788,7 @@
 					],
 					"amiiboUsage": [
 						{
-							"Usage": "Unlock figure in the pose of the character (requires Chibi-Robo amiibo)",
+							"Usage": "Unlock figure in an amiibo-exclusive pose of the character (requires Chibi-Robo amiibo)",
 							"write": false
 						}
 					]
@@ -93409,7 +93933,7 @@
 					],
 					"amiiboUsage": [
 						{
-							"Usage": "Unlock figure in the pose of the character (requires Chibi-Robo amiibo)",
+							"Usage": "Unlock figure in an amiibo-exclusive pose of the character (requires Chibi-Robo amiibo)",
 							"write": false
 						}
 					]
@@ -93510,7 +94034,7 @@
 					],
 					"amiiboUsage": [
 						{
-							"Usage": "Unlock figure in the pose of the character (requires Chibi-Robo amiibo)",
+							"Usage": "Unlock figure in an amiibo-exclusive pose of the character (requires Chibi-Robo amiibo)",
 							"write": false
 						}
 					]
@@ -93611,7 +94135,7 @@
 					],
 					"amiiboUsage": [
 						{
-							"Usage": "Unlock figure in the pose of the character (requires Chibi-Robo amiibo)",
+							"Usage": "Unlock figure in an amiibo-exclusive pose of the character (requires Chibi-Robo amiibo)",
 							"write": false
 						}
 					]
@@ -93727,7 +94251,7 @@
 					],
 					"amiiboUsage": [
 						{
-							"Usage": "Unlock figure in the pose of the character (requires Chibi-Robo amiibo)",
+							"Usage": "Unlock figure in an amiibo-exclusive pose of the character (requires Chibi-Robo amiibo)",
 							"write": false
 						}
 					]
@@ -93970,7 +94494,7 @@
 					],
 					"amiiboUsage": [
 						{
-							"Usage": "Unlock figure in the pose of the character (requires Chibi-Robo amiibo)",
+							"Usage": "Unlock figure in an amiibo-exclusive pose of the character (requires Chibi-Robo amiibo)",
 							"write": false
 						}
 					]
@@ -94213,7 +94737,7 @@
 					],
 					"amiiboUsage": [
 						{
-							"Usage": "Unlock figure in the pose of the character (requires Chibi-Robo amiibo)",
+							"Usage": "Unlock figure in an amiibo-exclusive pose of the character (requires Chibi-Robo amiibo)",
 							"write": false
 						}
 					]
@@ -94441,7 +94965,7 @@
 					],
 					"amiiboUsage": [
 						{
-							"Usage": "Unlock figure in the pose of the character (requires Chibi-Robo amiibo)",
+							"Usage": "Unlock figure in an amiibo-exclusive pose of the character (requires Chibi-Robo amiibo)",
 							"write": false
 						}
 					]
@@ -94645,7 +95169,7 @@
 					],
 					"amiiboUsage": [
 						{
-							"Usage": "Unlock figure in the pose of the character (requires Chibi-Robo amiibo)",
+							"Usage": "Unlock figure in an amiibo-exclusive pose of the character (requires Chibi-Robo amiibo)",
 							"write": false
 						}
 					]
@@ -94873,7 +95397,7 @@
 					],
 					"amiiboUsage": [
 						{
-							"Usage": "Unlock figure in the pose of the character (requires Chibi-Robo amiibo)",
+							"Usage": "Unlock figure in an amiibo-exclusive pose of the character (requires Chibi-Robo amiibo)",
 							"write": false
 						}
 					]
@@ -95104,7 +95628,7 @@
 					],
 					"amiiboUsage": [
 						{
-							"Usage": "Unlock figure in the pose of the character (requires Chibi-Robo amiibo)",
+							"Usage": "Unlock figure in an amiibo-exclusive pose of the character (requires Chibi-Robo amiibo)",
 							"write": false
 						}
 					]
@@ -95335,7 +95859,7 @@
 					],
 					"amiiboUsage": [
 						{
-							"Usage": "Unlock figure in the pose of the character (requires Chibi-Robo amiibo)",
+							"Usage": "Unlock figure in an amiibo-exclusive pose of the character (requires Chibi-Robo amiibo)",
 							"write": false
 						}
 					]
@@ -95551,7 +96075,7 @@
 					],
 					"amiiboUsage": [
 						{
-							"Usage": "Unlock figure in the pose of the character (requires Chibi-Robo amiibo)",
+							"Usage": "Unlock figure in an amiibo-exclusive pose of the character (requires Chibi-Robo amiibo)",
 							"write": false
 						}
 					]
@@ -95782,7 +96306,7 @@
 					],
 					"amiiboUsage": [
 						{
-							"Usage": "Unlock figure in the pose of the character (requires Chibi-Robo amiibo)",
+							"Usage": "Unlock figure in an amiibo-exclusive pose of the character (requires Chibi-Robo amiibo)",
 							"write": false
 						}
 					]
@@ -96013,7 +96537,7 @@
 					],
 					"amiiboUsage": [
 						{
-							"Usage": "Unlock figure in the pose of the character (requires Chibi-Robo amiibo)",
+							"Usage": "Unlock figure in an amiibo-exclusive pose of the character (requires Chibi-Robo amiibo)",
 							"write": false
 						}
 					]
@@ -101460,7 +101984,7 @@
 					],
 					"amiiboUsage": [
 						{
-							"Usage": "Unlock figure in the pose of the character (requires Chibi-Robo amiibo)",
+							"Usage": "Unlock figure in an amiibo-exclusive pose of the character (requires Chibi-Robo amiibo)",
 							"write": false
 						}
 					]
@@ -101800,7 +102324,7 @@
 					],
 					"amiiboUsage": [
 						{
-							"Usage": "Unlock figure in the pose of the character (requires Chibi-Robo amiibo)",
+							"Usage": "Unlock figure in an amiibo-exclusive pose of the character (requires Chibi-Robo amiibo)",
 							"write": false
 						}
 					]
@@ -102140,7 +102664,7 @@
 					],
 					"amiiboUsage": [
 						{
-							"Usage": "Unlock figure in the pose of the character (requires Chibi-Robo amiibo)",
+							"Usage": "Unlock figure in an amiibo-exclusive pose of the character (requires Chibi-Robo amiibo)",
 							"write": false
 						}
 					]
@@ -102288,20 +102812,6 @@
 						{
 							"Usage": "Unlock a character-based Mystery Mushroom costume",
 							"write": false
-						}
-					]
-				},
-				{
-					"gameName": "Super Smash Bros. for Wii U",
-					"gameID": [
-						"0005000010110E00",
-						"0005000010144F00",
-						"0005000010145000"
-					],
-					"amiiboUsage": [
-						{
-							"Usage": "Battle and train up a computer-controlled Figure Player of the character",
-							"write": true
 						}
 					]
 				},
@@ -102416,7 +102926,7 @@
 					],
 					"amiiboUsage": [
 						{
-							"Usage": "Unlock figure in the pose of the character (requires Chibi-Robo amiibo)",
+							"Usage": "Unlock figure in an amiibo-exclusive pose of the character (requires Chibi-Robo amiibo)",
 							"write": false
 						}
 					]
@@ -102568,20 +103078,6 @@
 					]
 				},
 				{
-					"gameName": "Super Smash Bros. for Wii U",
-					"gameID": [
-						"0005000010110E00",
-						"0005000010144F00",
-						"0005000010145000"
-					],
-					"amiiboUsage": [
-						{
-							"Usage": "Battle and train up a computer-controlled Figure Player of the character",
-							"write": true
-						}
-					]
-				},
-				{
 					"gameName": "Yoshi's Woolly World",
 					"gameID": [
 						"0005000010131F00"
@@ -102692,7 +103188,7 @@
 					],
 					"amiiboUsage": [
 						{
-							"Usage": "Unlock figure in the pose of the character (requires Chibi-Robo amiibo)",
+							"Usage": "Unlock figure in an amiibo-exclusive pose of the character (requires Chibi-Robo amiibo)",
 							"write": false
 						}
 					]
@@ -102968,7 +103464,7 @@
 					],
 					"amiiboUsage": [
 						{
-							"Usage": "Unlock figure in the pose of the character (requires Chibi-Robo amiibo)",
+							"Usage": "Unlock figure in an amiibo-exclusive pose of the character (requires Chibi-Robo amiibo)",
 							"write": false
 						}
 					]
@@ -103521,7 +104017,7 @@
 					],
 					"amiiboUsage": [
 						{
-							"Usage": "Unlock figure in the pose of the character (requires Chibi-Robo amiibo)",
+							"Usage": "Unlock figure in an amiibo-exclusive pose of the character (requires Chibi-Robo amiibo)",
 							"write": false
 						}
 					]
@@ -103751,7 +104247,7 @@
 					],
 					"amiiboUsage": [
 						{
-							"Usage": "Unlock figure in the pose of the character (requires Chibi-Robo amiibo)",
+							"Usage": "Unlock figure in an amiibo-exclusive pose of the character (requires Chibi-Robo amiibo)",
 							"write": false
 						}
 					]
@@ -103969,7 +104465,7 @@
 					],
 					"amiiboUsage": [
 						{
-							"Usage": "Unlock figure in the pose of the character (requires Chibi-Robo amiibo)",
+							"Usage": "Unlock figure in an amiibo-exclusive pose of the character (requires Chibi-Robo amiibo)",
 							"write": false
 						}
 					]
@@ -104199,7 +104695,7 @@
 					],
 					"amiiboUsage": [
 						{
-							"Usage": "Unlock figure in the pose of the character (requires Chibi-Robo amiibo)",
+							"Usage": "Unlock figure in an amiibo-exclusive pose of the character (requires Chibi-Robo amiibo)",
 							"write": false
 						}
 					]
@@ -105339,7 +105835,7 @@
 					],
 					"amiiboUsage": [
 						{
-							"Usage": "Unlock figure in the pose of the character (requires Chibi-Robo amiibo)",
+							"Usage": "Unlock figure in an amiibo-exclusive pose of the character (requires Chibi-Robo amiibo)",
 							"write": false
 						}
 					]
@@ -105575,7 +106071,7 @@
 					],
 					"amiiboUsage": [
 						{
-							"Usage": "Unlock figure in the pose of the character (requires Chibi-Robo amiibo)",
+							"Usage": "Unlock figure in an amiibo-exclusive pose of the character (requires Chibi-Robo amiibo)",
 							"write": false
 						}
 					]
@@ -106139,19 +106635,6 @@
 					]
 				},
 				{
-					"gameName": "Chibi-Robo! Zip Lash",
-					"gameID": [
-						"0004000000162F00",
-						"0004000000163000"
-					],
-					"amiiboUsage": [
-						{
-							"Usage": "Unlock figure in the pose of the character (requires Chibi-Robo amiibo)",
-							"write": false
-						}
-					]
-				},
-				{
 					"gameName": "Super Smash Bros. for Nintendo 3DS",
 					"gameID": [
 						"00040000000EDF00",
@@ -106206,6 +106689,20 @@
 						{
 							"Usage": "Unlock a character-based Mystery Mushroom costume",
 							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Super Smash Bros. for Wii U",
+					"gameID": [
+						"0005000010110E00",
+						"0005000010144F00",
+						"0005000010145000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Battle and train up a computer-controlled Figure Player of the character",
+							"write": true
 						}
 					]
 				},

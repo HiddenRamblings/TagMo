@@ -36,7 +36,7 @@
     <uses-feature android:name="android.hardware.bluetooth_le" android:required="false" />
     <uses-feature android:name="${wearUsesFeature}" android:required="false" />
 
-    <uses-sdk tools:overrideLibrary="androidx.wear, androidx.core.splashscreen" />
+    <uses-sdk tools:overrideLibrary="androidx.wear, androidx.core.splashscreen, com.google.android.gms.common" />
 
     <queries>
         <package android:name="${applicationId}" />

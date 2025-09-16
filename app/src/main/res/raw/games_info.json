@@ -449,6 +449,30 @@
 					]
 				},
 				{
+					"gameName": "Super Mario Galaxy",
+					"gameID": [
+						"010099C022B96000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a helpful item depending on the character",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Super Mario Galaxy 2",
+					"gameID": [
+						"0100FD8022DAA000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a helpful item depending on the character",
+							"write": false
+						}
+					]
+				},
+				{
 					"gameName": "Super Mario Odyssey",
 					"gameID": [
 						"0100000000010000"
@@ -978,6 +1002,30 @@
 					]
 				},
 				{
+					"gameName": "Super Mario Galaxy",
+					"gameID": [
+						"010099C022B96000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a helpful item depending on the character",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Super Mario Galaxy 2",
+					"gameID": [
+						"0100FD8022DAA000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a helpful item depending on the character",
+							"write": false
+						}
+					]
+				},
+				{
 					"gameName": "Super Mario Odyssey",
 					"gameID": [
 						"0100000000010000"
@@ -1030,6 +1078,11 @@
 					]
 				}
 			]
+		},
+		"0x00000004043f1c02": {
+			"games3DS": [],
+			"gamesWiiU": [],
+			"gamesSwitch": []
 		},
 		"0x00000000003c0102": {
 			"games3DS": [
@@ -1512,6 +1565,30 @@
 					"amiiboUsage": [
 						{
 							"Usage": "Receive a particular power-up depending on the character",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Super Mario Galaxy",
+					"gameID": [
+						"010099C022B96000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a helpful item depending on the character",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Super Mario Galaxy 2",
+					"gameID": [
+						"0100FD8022DAA000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a helpful item depending on the character",
 							"write": false
 						}
 					]
@@ -2064,6 +2141,30 @@
 					]
 				},
 				{
+					"gameName": "Super Mario Galaxy",
+					"gameID": [
+						"010099C022B96000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a helpful item depending on the character",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Super Mario Galaxy 2",
+					"gameID": [
+						"0100FD8022DAA000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a helpful item depending on the character",
+							"write": false
+						}
+					]
+				},
+				{
 					"gameName": "Super Mario Odyssey",
 					"gameID": [
 						"0100000000010000"
@@ -2600,6 +2701,30 @@
 					]
 				},
 				{
+					"gameName": "Super Mario Galaxy",
+					"gameID": [
+						"010099C022B96000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a helpful item depending on the character",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Super Mario Galaxy 2",
+					"gameID": [
+						"0100FD8022DAA000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a helpful item depending on the character",
+							"write": false
+						}
+					]
+				},
+				{
 					"gameName": "Super Mario Odyssey",
 					"gameID": [
 						"0100000000010000"
@@ -3123,6 +3248,30 @@
 					"amiiboUsage": [
 						{
 							"Usage": "Receive a particular power-up depending on the character",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Super Mario Galaxy",
+					"gameID": [
+						"010099C022B96000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a helpful item depending on the character",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Super Mario Galaxy 2",
+					"gameID": [
+						"0100FD8022DAA000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a helpful item depending on the character",
 							"write": false
 						}
 					]
@@ -3667,6 +3816,30 @@
 					]
 				},
 				{
+					"gameName": "Super Mario Galaxy",
+					"gameID": [
+						"010099C022B96000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a helpful item depending on the character",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Super Mario Galaxy 2",
+					"gameID": [
+						"0100FD8022DAA000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a helpful item depending on the character",
+							"write": false
+						}
+					]
+				},
+				{
 					"gameName": "Super Mario Odyssey",
 					"gameID": [
 						"0100000000010000"
@@ -3793,6 +3966,30 @@
 					]
 				},
 				{
+					"gameName": "Super Mario Galaxy",
+					"gameID": [
+						"010099C022B96000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a helpful item depending on the character",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Super Mario Galaxy 2",
+					"gameID": [
+						"0100FD8022DAA000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a helpful item depending on the character",
+							"write": false
+						}
+					]
+				},
+				{
 					"gameName": "Super Mario Odyssey",
 					"gameID": [
 						"0100000000010000"
@@ -3894,6 +4091,30 @@
 					"amiiboUsage": [
 						{
 							"Usage": "Receive a particular power-up depending on the character",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Super Mario Galaxy",
+					"gameID": [
+						"010099C022B96000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a helpful item depending on the character",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Super Mario Galaxy 2",
+					"gameID": [
+						"0100FD8022DAA000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a helpful item depending on the character",
 							"write": false
 						}
 					]
@@ -4415,6 +4636,30 @@
 					]
 				},
 				{
+					"gameName": "Super Mario Galaxy",
+					"gameID": [
+						"010099C022B96000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a helpful item depending on the character",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Super Mario Galaxy 2",
+					"gameID": [
+						"0100FD8022DAA000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a helpful item depending on the character",
+							"write": false
+						}
+					]
+				},
+				{
 					"gameName": "Super Mario Odyssey",
 					"gameID": [
 						"0100000000010000"
@@ -4929,6 +5174,30 @@
 					]
 				},
 				{
+					"gameName": "Super Mario Galaxy",
+					"gameID": [
+						"010099C022B96000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a helpful item depending on the character",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Super Mario Galaxy 2",
+					"gameID": [
+						"0100FD8022DAA000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a helpful item depending on the character",
+							"write": false
+						}
+					]
+				},
+				{
 					"gameName": "Super Mario Party",
 					"gameID": [
 						"010036B0034E4000"
@@ -5375,6 +5644,30 @@
 					]
 				},
 				{
+					"gameName": "Super Mario Galaxy",
+					"gameID": [
+						"010099C022B96000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a helpful item depending on the character",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Super Mario Galaxy 2",
+					"gameID": [
+						"0100FD8022DAA000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a helpful item depending on the character",
+							"write": false
+						}
+					]
+				},
+				{
 					"gameName": "Super Mario Odyssey",
 					"gameID": [
 						"0100000000010000"
@@ -5423,6 +5716,11 @@
 					]
 				}
 			]
+		},
+		"0x0001000404401c02": {
+			"games3DS": [],
+			"gamesWiiU": [],
+			"gamesSwitch": []
 		},
 		"0x0001000000350102": {
 			"games3DS": [
@@ -5860,6 +6158,30 @@
 					]
 				},
 				{
+					"gameName": "Super Mario Galaxy",
+					"gameID": [
+						"010099C022B96000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a helpful item depending on the character",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Super Mario Galaxy 2",
+					"gameID": [
+						"0100FD8022DAA000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a helpful item depending on the character",
+							"write": false
+						}
+					]
+				},
+				{
 					"gameName": "Super Mario Odyssey",
 					"gameID": [
 						"0100000000010000"
@@ -5957,6 +6279,30 @@
 					"amiiboUsage": [
 						{
 							"Usage": "Receive a particular power-up depending on the character",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Super Mario Galaxy",
+					"gameID": [
+						"010099C022B96000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a helpful item depending on the character",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Super Mario Galaxy 2",
+					"gameID": [
+						"0100FD8022DAA000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a helpful item depending on the character",
 							"write": false
 						}
 					]
@@ -6416,6 +6762,30 @@
 					]
 				},
 				{
+					"gameName": "Super Mario Galaxy",
+					"gameID": [
+						"010099C022B96000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a helpful item depending on the character",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Super Mario Galaxy 2",
+					"gameID": [
+						"0100FD8022DAA000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a helpful item depending on the character",
+							"write": false
+						}
+					]
+				},
+				{
 					"gameName": "Super Mario Odyssey",
 					"gameID": [
 						"0100000000010000"
@@ -6464,6 +6834,11 @@
 					]
 				}
 			]
+		},
+		"0x0002000404411c02": {
+			"games3DS": [],
+			"gamesWiiU": [],
+			"gamesSwitch": []
 		},
 		"0x0002000000360102": {
 			"games3DS": [
@@ -6892,6 +7267,30 @@
 					"amiiboUsage": [
 						{
 							"Usage": "Receive a particular power-up depending on the character",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Super Mario Galaxy",
+					"gameID": [
+						"010099C022B96000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a helpful item depending on the character",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Super Mario Galaxy 2",
+					"gameID": [
+						"0100FD8022DAA000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a helpful item depending on the character",
 							"write": false
 						}
 					]
@@ -7388,6 +7787,30 @@
 					]
 				},
 				{
+					"gameName": "Super Mario Galaxy",
+					"gameID": [
+						"010099C022B96000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a helpful item depending on the character",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Super Mario Galaxy 2",
+					"gameID": [
+						"0100FD8022DAA000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a helpful item depending on the character",
+							"write": false
+						}
+					]
+				},
+				{
 					"gameName": "Super Mario Odyssey",
 					"gameID": [
 						"0100000000010000"
@@ -7521,6 +7944,30 @@
 					"amiiboUsage": [
 						{
 							"Usage": "Receive a particular power-up depending on the character",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Super Mario Galaxy",
+					"gameID": [
+						"010099C022B96000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a helpful item depending on the character",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Super Mario Galaxy 2",
+					"gameID": [
+						"0100FD8022DAA000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a helpful item depending on the character",
 							"write": false
 						}
 					]
@@ -7992,6 +8439,30 @@
 					]
 				},
 				{
+					"gameName": "Super Mario Galaxy",
+					"gameID": [
+						"010099C022B96000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a helpful item depending on the character",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Super Mario Galaxy 2",
+					"gameID": [
+						"0100FD8022DAA000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a helpful item depending on the character",
+							"write": false
+						}
+					]
+				},
+				{
 					"gameName": "Super Mario Party",
 					"gameID": [
 						"010036B0034E4000"
@@ -8375,6 +8846,30 @@
 					"amiiboUsage": [
 						{
 							"Usage": "Receive a particular power-up depending on the character",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Super Mario Galaxy",
+					"gameID": [
+						"010099C022B96000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a helpful item depending on the character",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Super Mario Galaxy 2",
+					"gameID": [
+						"0100FD8022DAA000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a helpful item depending on the character",
 							"write": false
 						}
 					]
@@ -8795,6 +9290,30 @@
 					]
 				},
 				{
+					"gameName": "Super Mario Galaxy",
+					"gameID": [
+						"010099C022B96000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a helpful item depending on the character",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Super Mario Galaxy 2",
+					"gameID": [
+						"0100FD8022DAA000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a helpful item depending on the character",
+							"write": false
+						}
+					]
+				},
+				{
 					"gameName": "Super Mario Party",
 					"gameID": [
 						"010036B0034E4000"
@@ -8831,6 +9350,11 @@
 					]
 				}
 			]
+		},
+		"0x0003000404421c02": {
+			"games3DS": [],
+			"gamesWiiU": [],
+			"gamesSwitch": []
 		},
 		"0x00030003039fff02": {
 			"games3DS": [],
@@ -8880,6 +9404,30 @@
 					"amiiboUsage": [
 						{
 							"Usage": "Receive a particular power-up depending on the character",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Super Mario Galaxy",
+					"gameID": [
+						"010099C022B96000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a helpful item depending on the character",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Super Mario Galaxy 2",
+					"gameID": [
+						"0100FD8022DAA000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a helpful item depending on the character",
 							"write": false
 						}
 					]
@@ -9288,6 +9836,30 @@
 					"amiiboUsage": [
 						{
 							"Usage": "Receive a particular power-up depending on the character",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Super Mario Galaxy",
+					"gameID": [
+						"010099C022B96000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a helpful item depending on the character",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Super Mario Galaxy 2",
+					"gameID": [
+						"0100FD8022DAA000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a helpful item depending on the character",
 							"write": false
 						}
 					]
@@ -9720,6 +10292,30 @@
 					]
 				},
 				{
+					"gameName": "Super Mario Galaxy",
+					"gameID": [
+						"010099C022B96000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a helpful item depending on the character",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Super Mario Galaxy 2",
+					"gameID": [
+						"0100FD8022DAA000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a helpful item depending on the character",
+							"write": false
+						}
+					]
+				},
+				{
 					"gameName": "Super Mario Party",
 					"gameID": [
 						"010036B0034E4000"
@@ -10147,6 +10743,30 @@
 					]
 				},
 				{
+					"gameName": "Super Mario Galaxy",
+					"gameID": [
+						"010099C022B96000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a helpful item depending on the character",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Super Mario Galaxy 2",
+					"gameID": [
+						"0100FD8022DAA000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a helpful item depending on the character",
+							"write": false
+						}
+					]
+				},
+				{
 					"gameName": "Super Mario Party",
 					"gameID": [
 						"010036B0034E4000"
@@ -10555,6 +11175,30 @@
 					]
 				},
 				{
+					"gameName": "Super Mario Galaxy",
+					"gameID": [
+						"010099C022B96000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a helpful item depending on the character",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Super Mario Galaxy 2",
+					"gameID": [
+						"0100FD8022DAA000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a helpful item depending on the character",
+							"write": false
+						}
+					]
+				},
+				{
 					"gameName": "Super Mario Party",
 					"gameID": [
 						"010036B0034E4000"
@@ -10921,6 +11565,30 @@
 					]
 				},
 				{
+					"gameName": "Super Mario Galaxy",
+					"gameID": [
+						"010099C022B96000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a helpful item depending on the character",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Super Mario Galaxy 2",
+					"gameID": [
+						"0100FD8022DAA000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a helpful item depending on the character",
+							"write": false
+						}
+					]
+				},
+				{
 					"gameName": "Super Mario Party",
 					"gameID": [
 						"010036B0034E4000"
@@ -11243,6 +11911,30 @@
 					"amiiboUsage": [
 						{
 							"Usage": "Receive a particular power-up depending on the character",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Super Mario Galaxy",
+					"gameID": [
+						"010099C022B96000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a helpful item depending on the character",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Super Mario Galaxy 2",
+					"gameID": [
+						"0100FD8022DAA000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a helpful item depending on the character",
 							"write": false
 						}
 					]
@@ -11641,6 +12333,30 @@
 						},
 						{
 							"Usage": "Receive a particular power-up depending on the character",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Super Mario Galaxy",
+					"gameID": [
+						"010099C022B96000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a helpful item depending on the character",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Super Mario Galaxy 2",
+					"gameID": [
+						"0100FD8022DAA000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a helpful item depending on the character",
 							"write": false
 						}
 					]
@@ -12090,6 +12806,30 @@
 						},
 						{
 							"Usage": "Receive a particular power-up depending on the character",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Super Mario Galaxy",
+					"gameID": [
+						"010099C022B96000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a helpful item depending on the character",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Super Mario Galaxy 2",
+					"gameID": [
+						"0100FD8022DAA000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a helpful item depending on the character",
 							"write": false
 						}
 					]
@@ -12554,6 +13294,30 @@
 					]
 				},
 				{
+					"gameName": "Super Mario Galaxy",
+					"gameID": [
+						"010099C022B96000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a helpful item depending on the character",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Super Mario Galaxy 2",
+					"gameID": [
+						"0100FD8022DAA000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a helpful item depending on the character",
+							"write": false
+						}
+					]
+				},
+				{
 					"gameName": "Super Mario Odyssey",
 					"gameID": [
 						"0100000000010000"
@@ -13000,6 +13764,30 @@
 					]
 				},
 				{
+					"gameName": "Super Mario Galaxy",
+					"gameID": [
+						"010099C022B96000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a helpful item depending on the character",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Super Mario Galaxy 2",
+					"gameID": [
+						"0100FD8022DAA000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a helpful item depending on the character",
+							"write": false
+						}
+					]
+				},
+				{
 					"gameName": "Super Mario Party",
 					"gameID": [
 						"010036B0034E4000"
@@ -13299,6 +14087,30 @@
 					]
 				},
 				{
+					"gameName": "Super Mario Galaxy",
+					"gameID": [
+						"010099C022B96000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a helpful item depending on the character",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Super Mario Galaxy 2",
+					"gameID": [
+						"0100FD8022DAA000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a helpful item depending on the character",
+							"write": false
+						}
+					]
+				},
+				{
 					"gameName": "Super Mario Party",
 					"gameID": [
 						"010036B0034E4000"
@@ -13530,6 +14342,30 @@
 					"amiiboUsage": [
 						{
 							"Usage": "Receive a particular power-up depending on the character",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Super Mario Galaxy",
+					"gameID": [
+						"010099C022B96000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a helpful item depending on the character",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Super Mario Galaxy 2",
+					"gameID": [
+						"0100FD8022DAA000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a helpful item depending on the character",
 							"write": false
 						}
 					]
@@ -13805,6 +14641,30 @@
 					"amiiboUsage": [
 						{
 							"Usage": "Receive a particular power-up depending on the character",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Super Mario Galaxy",
+					"gameID": [
+						"010099C022B96000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a helpful item depending on the character",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Super Mario Galaxy 2",
+					"gameID": [
+						"0100FD8022DAA000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a helpful item depending on the character",
 							"write": false
 						}
 					]
@@ -14133,6 +14993,30 @@
 					"amiiboUsage": [
 						{
 							"Usage": "Receive a particular power-up depending on the character",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Super Mario Galaxy",
+					"gameID": [
+						"010099C022B96000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a helpful item depending on the character",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Super Mario Galaxy 2",
+					"gameID": [
+						"0100FD8022DAA000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a helpful item depending on the character",
 							"write": false
 						}
 					]
@@ -14481,6 +15365,30 @@
 					]
 				},
 				{
+					"gameName": "Super Mario Galaxy",
+					"gameID": [
+						"010099C022B96000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a helpful item depending on the character",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Super Mario Galaxy 2",
+					"gameID": [
+						"0100FD8022DAA000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a helpful item depending on the character",
+							"write": false
+						}
+					]
+				},
+				{
 					"gameName": "Super Mario Party",
 					"gameID": [
 						"010036B0034E4000"
@@ -14542,6 +15450,30 @@
 					"amiiboUsage": [
 						{
 							"Usage": "Receive a particular power-up depending on the character",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Super Mario Galaxy",
+					"gameID": [
+						"010099C022B96000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a helpful item depending on the character",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Super Mario Galaxy 2",
+					"gameID": [
+						"0100FD8022DAA000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a helpful item depending on the character",
 							"write": false
 						}
 					]
@@ -14863,6 +15795,30 @@
 					]
 				},
 				{
+					"gameName": "Super Mario Galaxy",
+					"gameID": [
+						"010099C022B96000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a helpful item depending on the character",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Super Mario Galaxy 2",
+					"gameID": [
+						"0100FD8022DAA000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a helpful item depending on the character",
+							"write": false
+						}
+					]
+				},
+				{
 					"gameName": "Super Mario Party",
 					"gameID": [
 						"010036B0034E4000"
@@ -15179,6 +16135,30 @@
 					]
 				},
 				{
+					"gameName": "Super Mario Galaxy",
+					"gameID": [
+						"010099C022B96000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a helpful item depending on the character",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Super Mario Galaxy 2",
+					"gameID": [
+						"0100FD8022DAA000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a helpful item depending on the character",
+							"write": false
+						}
+					]
+				},
+				{
 					"gameName": "Super Mario Party",
 					"gameID": [
 						"010036B0034E4000"
@@ -15379,6 +16359,30 @@
 					"amiiboUsage": [
 						{
 							"Usage": "Receive a particular power-up depending on the character",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Super Mario Galaxy",
+					"gameID": [
+						"010099C022B96000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a helpful item depending on the character",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Super Mario Galaxy 2",
+					"gameID": [
+						"0100FD8022DAA000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a helpful item depending on the character",
 							"write": false
 						}
 					]
@@ -15628,6 +16632,30 @@
 					]
 				},
 				{
+					"gameName": "Super Mario Galaxy",
+					"gameID": [
+						"010099C022B96000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a helpful item depending on the character",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Super Mario Galaxy 2",
+					"gameID": [
+						"0100FD8022DAA000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a helpful item depending on the character",
+							"write": false
+						}
+					]
+				},
+				{
 					"gameName": "Super Mario Odyssey",
 					"gameID": [
 						"0100000000010000"
@@ -15677,6 +16705,30 @@
 					"amiiboUsage": [
 						{
 							"Usage": "Receive a particular power-up depending on the character",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Super Mario Galaxy",
+					"gameID": [
+						"010099C022B96000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a helpful item depending on the character",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Super Mario Galaxy 2",
+					"gameID": [
+						"0100FD8022DAA000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a helpful item depending on the character",
 							"write": false
 						}
 					]
@@ -16090,6 +17142,30 @@
 					]
 				},
 				{
+					"gameName": "Super Mario Galaxy",
+					"gameID": [
+						"010099C022B96000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a helpful item depending on the character",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Super Mario Galaxy 2",
+					"gameID": [
+						"0100FD8022DAA000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a helpful item depending on the character",
+							"write": false
+						}
+					]
+				},
+				{
 					"gameName": "Super Smash Bros. Ultimate",
 					"gameID": [
 						"01006A800016E000"
@@ -16163,6 +17239,30 @@
 					"amiiboUsage": [
 						{
 							"Usage": "Receive a particular power-up depending on the character",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Super Mario Galaxy",
+					"gameID": [
+						"010099C022B96000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a helpful item depending on the character",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Super Mario Galaxy 2",
+					"gameID": [
+						"0100FD8022DAA000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a helpful item depending on the character",
 							"write": false
 						}
 					]
@@ -16342,6 +17442,30 @@
 					]
 				},
 				{
+					"gameName": "Super Mario Galaxy",
+					"gameID": [
+						"010099C022B96000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a helpful item depending on the character",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Super Mario Galaxy 2",
+					"gameID": [
+						"0100FD8022DAA000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a helpful item depending on the character",
+							"write": false
+						}
+					]
+				},
+				{
 					"gameName": "Super Mario Party",
 					"gameID": [
 						"010036B0034E4000"
@@ -16489,6 +17613,30 @@
 					]
 				},
 				{
+					"gameName": "Super Mario Galaxy",
+					"gameID": [
+						"010099C022B96000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a helpful item depending on the character",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Super Mario Galaxy 2",
+					"gameID": [
+						"0100FD8022DAA000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a helpful item depending on the character",
+							"write": false
+						}
+					]
+				},
+				{
 					"gameName": "Super Mario Party",
 					"gameID": [
 						"010036B0034E4000"
@@ -16562,6 +17710,30 @@
 					"amiiboUsage": [
 						{
 							"Usage": "Receive a particular power-up depending on the character",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Super Mario Galaxy",
+					"gameID": [
+						"010099C022B96000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a helpful item depending on the character",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Super Mario Galaxy 2",
+					"gameID": [
+						"0100FD8022DAA000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a helpful item depending on the character",
 							"write": false
 						}
 					]
@@ -16701,6 +17873,30 @@
 					"amiiboUsage": [
 						{
 							"Usage": "Receive a particular power-up depending on the character",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Super Mario Galaxy",
+					"gameID": [
+						"010099C022B96000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a helpful item depending on the character",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Super Mario Galaxy 2",
+					"gameID": [
+						"0100FD8022DAA000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a helpful item depending on the character",
 							"write": false
 						}
 					]
@@ -16854,6 +18050,30 @@
 					"amiiboUsage": [
 						{
 							"Usage": "Receive a particular power-up depending on the character",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Super Mario Galaxy",
+					"gameID": [
+						"010099C022B96000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a helpful item depending on the character",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Super Mario Galaxy 2",
+					"gameID": [
+						"0100FD8022DAA000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a helpful item depending on the character",
 							"write": false
 						}
 					]
@@ -17166,6 +18386,30 @@
 					"amiiboUsage": [
 						{
 							"Usage": "Receive a particular power-up depending on the character",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Super Mario Galaxy",
+					"gameID": [
+						"010099C022B96000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a helpful item depending on the character",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Super Mario Galaxy 2",
+					"gameID": [
+						"0100FD8022DAA000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a helpful item depending on the character",
 							"write": false
 						}
 					]

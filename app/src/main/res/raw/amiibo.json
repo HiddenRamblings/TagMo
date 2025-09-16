@@ -2905,6 +2905,17 @@
 				"jp": "2014-12-06"
 			}
 		},
+		"0x0001000404401c02":
+		{
+			"name": "Tsumiki Luigi",
+			"release":
+			{
+				"au": null,
+				"eu": null,
+				"jp": "2025-08-26",
+				"na": null
+			}
+		},
 		"0x0189010103b10502":
 		{
 			"name": "Label",
@@ -2969,6 +2980,17 @@
 				"na": "2015-03-20",
 				"eu": "2015-03-20",
 				"jp": "2015-03-12"
+			}
+		},
+		"0x0003000404421c02":
+		{
+			"name": "Tsumiki Yoshi",
+			"release":
+			{
+				"au": null,
+				"eu": null,
+				"jp": "2025-08-26",
+				"na": null
 			}
 		},
 		"0x030f0001016d0502":
@@ -4147,6 +4169,17 @@
 				"na": "2015-03-20",
 				"eu": "2015-03-20",
 				"jp": "2015-03-12"
+			}
+		},
+		"0x00000004043f1c02":
+		{
+			"name": "Tsumiki Mario",
+			"release":
+			{
+				"au": null,
+				"eu": null,
+				"jp": "2025-08-26",
+				"na": null
 			}
 		},
 		"0x07c0020000230002":
@@ -6897,6 +6930,17 @@
 				"na": "2014-11-21",
 				"eu": "2014-11-28",
 				"jp": "2014-12-06"
+			}
+		},
+		"0x0002000404411c02":
+		{
+			"name": "Tsumiki Peach",
+			"release":
+			{
+				"au": null,
+				"eu": null,
+				"jp": "2025-08-26",
+				"na": null
 			}
 		},
 		"0x0014000002670102":
@@ -9717,6 +9761,7 @@
 		"0x17": "Power Pros",
 		"0x1a": "Donkey Kong",
 		"0x1b": "Xenoblade Chronicles 3",
+		"0x1c": "My Mario Wooden Blocks",
 		"0x1d": "Street Fighter 6"
 	},
 	"game_series":
@@ -9845,7 +9890,8 @@
 		"0x01": "Card",
 		"0x00": "Figure",
 		"0x03": "Band",
-		"0x02": "Yarn"
+		"0x02": "Yarn",
+		"0x04": "Block"
 	},
 	"characters":
 	{

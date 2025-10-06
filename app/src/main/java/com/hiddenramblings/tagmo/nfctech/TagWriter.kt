@@ -13,7 +13,6 @@ import com.hiddenramblings.tagmo.nfctech.TagArray.toTagArray
 import java.io.BufferedReader
 import java.io.IOException
 import java.io.InputStreamReader
-import java.util.*
 
 object TagWriter {
     @Throws(Exception::class)
@@ -267,7 +266,7 @@ object TagWriter {
         passBytes = try {
             System.arraycopy(passBytes, 0, req, 1, 4)
             tag.transceive(req)
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             return false
         }
         return if (null == passBytes || passBytes.size != 2) {
@@ -414,7 +413,7 @@ object TagWriter {
                         }
                         i = 0
                         while (i < rpduBuf.size - 2) {
-                            if (response?.get(i) != rpduBuf[i])
+                            if (response[i] != rpduBuf[i])
                                 throw Exception(context.getString(R.string.firmware_failed, 3))
                             i++
                         }
@@ -422,7 +421,7 @@ object TagWriter {
                 }
                 true
             }
-        } catch (e: IOException) {
+        } catch (_: IOException) {
             throw Exception(context.getString(R.string.firmware_failed, 4))
         }
     }

@@ -343,7 +343,7 @@ class NTAG215 : TagTechnology {
             } catch (ex: IOException) {
                 Debug.warn(ex)
                 null
-            } ?: getNfcA(tag)?.apply { connect() }
+            } ?: getBlind(tag)
         }
     }
 }

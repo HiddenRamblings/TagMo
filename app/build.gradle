@@ -2,7 +2,7 @@ plugins {
     id 'com.android.application'
     id 'kotlin-android'
     id 'kotlin-kapt'
-    id 'com.google.devtools.ksp' version '2.1.0-1.0.29'
+    id 'com.google.devtools.ksp' version '2.2.20-2.0.2'
     // id 'com.google.firebase.crashlytics'
 }
 
@@ -59,7 +59,7 @@ android {
     buildTypes {
         release {
             minifyEnabled true
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
             applicationIdSuffix ".eightbit"
             manifestPlaceholders.wearUsesFeature = "android.hardware.usb.host"
             buildConfigField "boolean", "WEAR_OS", "false"
@@ -138,8 +138,8 @@ dependencies {
     implementation "androidx.camera:camera-view:$androidx_camera"
     implementation 'androidx.cardview:cardview:1.0.0'
     implementation 'androidx.core:core-ktx:1.16.0'
-    implementation 'androidx.core:core-splashscreen:1.0.1'
-    implementation 'androidx.fragment:fragment-ktx:1.8.8'
+    implementation 'androidx.core:core-splashscreen:1.2.0'
+    implementation 'androidx.fragment:fragment-ktx:1.8.9'
     implementation 'androidx.preference:preference-ktx:1.2.1'
     implementation 'androidx.recyclerview:recyclerview:1.4.0'
     implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.1.0'
@@ -155,20 +155,16 @@ dependencies {
 
     implementation 'com.google.android.flexbox:flexbox:3.0.0'
     // Required for Lollipop Amiibo API download compatibility
-    implementation 'com.google.android.gms:play-services-basement:18.8.0'
+    implementation 'com.google.android.gms:play-services-basement:18.7.1'
     implementation 'com.google.android.material:material:1.12.0'
     implementation 'com.google.android.play:app-update-ktx:2.1.0'
     // implementation 'com.google.android.gms:play-services-mlkit-barcode-scanning:18.1.0'
     implementation 'com.google.mlkit:barcode-scanning:17.3.0'
-    implementation 'com.google.zxing:core:3.5.0'
+    implementation 'com.google.zxing:core:3.5.3'
 
-    // Current (3.0.5) requires kotlin and incompatible with Wear
-    implementation 'com.robertlevonyan.view:MaterialChipView:3.0.4'
-
-    implementation 'io.github.vicmikhailau:MaskedEditText:4.0.7'
-
-    implementation 'org.lsposed.hiddenapibypass:hiddenapibypass:4.3'
-
+    implementation 'com.robertlevonyan.view:MaterialChipView:3.0.8'
+    implementation 'io.github.vicmikhailau:MaskedEditText:5.0.1'
+    implementation 'org.lsposed.hiddenapibypass:hiddenapibypass:6.1'
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.10.2'
 
     /* Firebase */

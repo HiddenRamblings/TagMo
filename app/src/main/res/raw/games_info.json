@@ -13864,6 +13864,18 @@
 					"Usage": "Battle and train up a computer-controlled Figure Player of the character",
 					"write": true
 				}]
+			}],
+			"gamesSwitch2": [
+			{
+				"gameName": "Donkey Kong Bananza",
+				"gameID": [
+					"040074A01BF12000"
+				],
+				"amiiboUsage": [
+				{
+					"Usage": "Spawn explosive golden KONG tiles",
+					"write": false
+				}]
 			}]
 		},
 		"0x0008000002640102":
@@ -14202,6 +14214,18 @@
 					"Usage": "Battle and train up a computer-controlled Figure Player of the character",
 					"write": true
 				}]
+			}],
+			"gamesSwitch2": [
+			{
+				"gameName": "Donkey Kong Bananza",
+				"gameID": [
+					"040074A01BF12000"
+				],
+				"amiiboUsage": [
+				{
+					"Usage": "Spawn explosive golden KONG tiles",
+					"write": false
+				}]
 			}]
 		},
 		"0x000800030431ff02":
@@ -14284,6 +14308,18 @@
 				{
 					"Usage": "Battle and train up a computer-controlled Figure Player of the character",
 					"write": true
+				}]
+			}],
+			"gamesSwitch2": [
+			{
+				"gameName": "Donkey Kong Bananza",
+				"gameID": [
+					"040074A01BF12000"
+				],
+				"amiiboUsage": [
+				{
+					"Usage": "Spawn explosive golden KONG tiles",
+					"write": false
 				}]
 			}]
 		},
@@ -14598,6 +14634,22 @@
 					"Usage": "Battle and train up a computer-controlled Figure Player of the character",
 					"write": true
 				}]
+			}],
+			"gamesSwitch2": [
+			{
+				"gameName": "Donkey Kong Bananza",
+				"gameID": [
+					"040074A01BF12000"
+				],
+				"amiiboUsage": [
+				{
+					"Usage": "Unlock Pauline's Diva Dress early",
+					"write": false
+				},
+				{
+					"Usage": "Spawn explosive golden KONG tiles",
+					"write": false
+				}]
 			}]
 		},
 		"0x0008ff00023b0702":
@@ -14911,6 +14963,18 @@
 					"Usage": "Battle and train up a computer-controlled Figure Player of the character",
 					"write": true
 				}]
+			}],
+			"gamesSwitch2": [
+			{
+				"gameName": "Donkey Kong Bananza",
+				"gameID": [
+						"040074A01BF12000"
+				],
+				"amiiboUsage": [
+				{
+					"Usage": "Spawn explosive golden KONG tiles",
+					"write": false
+				}]
 			}]
 		},
 		"0x00090000000d0002":
@@ -15131,6 +15195,18 @@
 				{
 					"Usage": "Battle and train up a computer-controlled Figure Player of the character",
 					"write": true
+				}]
+			}],
+			"gamesSwitch2": [
+			{
+				"gameName": "Donkey Kong Bananza",
+				"gameID": [
+					"040074A01BF12000"
+				],
+				"amiiboUsage": [
+				{
+					"Usage": "Spawn explosive golden KONG tiles",
+					"write": false
 				}]
 			}]
 		},
@@ -15378,6 +15454,18 @@
 					"Usage": "Battle and train up a computer-controlled Figure Player of the character",
 					"write": true
 				}]
+			}],
+			"gamesSwitch2": [
+			{
+				"gameName": "Donkey Kong Bananza",
+				"gameID": [
+					"040074A01BF12000"
+				],
+				"amiiboUsage": [
+				{
+					"Usage": "Spawn explosive golden KONG tiles",
+					"write": false
+				}]
 			}]
 		},
 		"0x000900030432ff02":
@@ -15449,6 +15537,18 @@
 				{
 					"Usage": "Battle and train up a computer-controlled Figure Player of the character",
 					"write": true
+				}]
+			}],
+			"gamesSwitch2": [
+			{
+				"gameName": "Donkey Kong Bananza",
+				"gameID": [
+					"040074A01BF12000"
+				],
+				"amiiboUsage": [
+				{
+					"Usage": "Spawn explosive golden KONG tiles",
+					"write": false
 				}]
 			}]
 		},
@@ -17115,6 +17215,18 @@
 				{
 					"Usage": "Battle and train up a computer-controlled Figure Player of the character",
 					"write": true
+				}]
+			}],
+			"gamesSwitch2": [
+			{
+				"gameName": "Donkey Kong Bananza",
+				"gameID": [
+					"040074A01BF12000"
+				],
+				"amiiboUsage": [
+				{
+					"Usage": "Spawn explosive golden KONG tiles",
+					"write": false
 				}]
 			}]
 		},
@@ -84679,6 +84791,16 @@
 				}]
 			}]
 		},
+		"0x05c00000043b1302": {
+			"games3DS": [],
+			"gamesWiiU": [],
+			"gamesSwitch": []
+		},
+		"0x05c00000043a1302": {
+			"games3DS": [],
+			"gamesWiiU": [],
+			"gamesSwitch": []
+		},
 		"0x05c0000003651302":
 		{
 			"games3DS": [
@@ -99678,7 +99800,19 @@
 					"Usage": "Battle and train up a computer-controlled Figure Player of the character",
 					"write": true
 				}]
-			}]
+			}],
+            "gamesSwitch2": [
+            {
+                "gameName": "Street Fighter 6",
+                "gameID": [
+                    "040078001CCF6000"
+                ],
+                "amiiboUsage": [
+                {
+                    "Usage": "Save and load outfit, color, and button settings / Scan another player's amiibo to friend or follow them",
+                    "write": true
+                }]
+            }]
 		},
 		"0x34c0000104a81d02":
 		{
@@ -99756,7 +99890,19 @@
 					"Usage": "Battle and train up a computer-controlled Figure Player of the character",
 					"write": true
 				}]
-			}]
+			}],
+            "gamesSwitch2": [
+            {
+                "gameName": "Street Fighter 6",
+                "gameID": [
+                    "040078001CCF6000"
+                ],
+                "amiiboUsage": [
+                {
+                    "Usage": "Save and load outfit, color, and button settings / Scan another player's amiibo to friend or follow them",
+                    "write": true
+                }]
+            }]
 		},
 		"0x34c1000003890002":
 		{
@@ -99773,7 +99919,19 @@
 					"Usage": "Battle and train up a computer-controlled Figure Player of the character",
 					"write": true
 				}]
-			}]
+			}],
+            "gamesSwitch2": [
+            {
+                "gameName": "Street Fighter 6",
+                "gameID": [
+                    "040078001CCF6000"
+                ],
+                "amiiboUsage": [
+                {
+                    "Usage": "Save and load outfit, color, and button settings / Scan another player's amiibo to friend or follow them",
+                    "write": true
+                }]
+            }]
 		},
 		"0x34c1000104a91d02":
 		{
@@ -99790,373 +99948,1117 @@
 					"Usage": "Battle and train up a computer-controlled Figure Player of the character",
 					"write": true
 				}]
-			}]
+			}],
+            "gamesSwitch2": [
+            {
+                "gameName": "Street Fighter 6",
+                "gameID": [
+                    "040078001CCF6000"
+                ],
+                "amiiboUsage": [
+                {
+                    "Usage": "Save and load outfit, color, and button settings / Scan another player's amiibo to friend or follow them",
+                    "write": true
+                }]
+            }]
 		},
 		"0x34c2000004aa1d02":
 		{
 			"games3DS": [],
 			"gamesWiiU": [],
-			"gamesSwitch": []
+			"gamesSwitch": [],
+            "gamesSwitch2": [
+            {
+                "gameName": "Street Fighter 6",
+                "gameID": [
+                    "040078001CCF6000"
+                ],
+                "amiiboUsage": [
+                {
+                    "Usage": "Save and load outfit, color, and button settings / Scan another player's amiibo to friend or follow them",
+                    "write": true
+                }]
+            }]
 		},
 		"0x34c2000104ab1d02":
 		{
 			"games3DS": [],
 			"gamesWiiU": [],
-			"gamesSwitch": []
+			"gamesSwitch": [],
+            "gamesSwitch2": [
+            {
+                "gameName": "Street Fighter 6",
+                "gameID": [
+                    "040078001CCF6000"
+                ],
+                "amiiboUsage": [
+                {
+                    "Usage": "Save and load outfit, color, and button settings / Scan another player's amiibo to friend or follow them",
+                    "write": true
+                }]
+            }]
 		},
 		"0x34c3000004ac1d02":
 		{
 			"games3DS": [],
 			"gamesWiiU": [],
-			"gamesSwitch": []
+			"gamesSwitch": [],
+            "gamesSwitch2": [
+            {
+                "gameName": "Street Fighter 6",
+                "gameID": [
+                    "040078001CCF6000"
+                ],
+                "amiiboUsage": [
+                {
+                    "Usage": "Save and load outfit, color, and button settings / Scan another player's amiibo to friend or follow them",
+                    "write": true
+                }]
+            }]
 		},
 		"0x34c3000104ad1d02":
 		{
 			"games3DS": [],
 			"gamesWiiU": [],
-			"gamesSwitch": []
+			"gamesSwitch": [],
+            "gamesSwitch2": [
+            {
+                "gameName": "Street Fighter 6",
+                "gameID": [
+                    "040078001CCF6000"
+                ],
+                "amiiboUsage": [
+                {
+                    "Usage": "Save and load outfit, color, and button settings / Scan another player's amiibo to friend or follow them",
+                    "write": true
+                }]
+            }]
 		},
 		"0x34c4000004ae1d02":
 		{
 			"games3DS": [],
 			"gamesWiiU": [],
-			"gamesSwitch": []
+			"gamesSwitch": [],
+            "gamesSwitch2": [
+            {
+                "gameName": "Street Fighter 6",
+                "gameID": [
+                    "040078001CCF6000"
+                ],
+                "amiiboUsage": [
+                {
+                    "Usage": "Save and load outfit, color, and button settings / Scan another player's amiibo to friend or follow them",
+                    "write": true
+                }]
+            }]
 		},
 		"0x34c4000104af1d02":
 		{
 			"games3DS": [],
 			"gamesWiiU": [],
-			"gamesSwitch": []
+			"gamesSwitch": [],
+            "gamesSwitch2": [
+            {
+                "gameName": "Street Fighter 6",
+                "gameID": [
+                    "040078001CCF6000"
+                ],
+                "amiiboUsage": [
+                {
+                    "Usage": "Save and load outfit, color, and button settings / Scan another player's amiibo to friend or follow them",
+                    "write": true
+                }]
+            }]
 		},
 		"0x34c5000104b01d02":
 		{
 			"games3DS": [],
 			"gamesWiiU": [],
-			"gamesSwitch": []
+			"gamesSwitch": [],
+            "gamesSwitch2": [
+            {
+                "gameName": "Street Fighter 6",
+                "gameID": [
+                    "040078001CCF6000"
+                ],
+                "amiiboUsage": [
+                {
+                    "Usage": "Save and load outfit, color, and button settings / Scan another player's amiibo to friend or follow them",
+                    "write": true
+                }]
+            }]
 		},
 		"0x34c6000104b11d02":
 		{
 			"games3DS": [],
 			"gamesWiiU": [],
-			"gamesSwitch": []
+			"gamesSwitch": [],
+            "gamesSwitch2": [
+            {
+                "gameName": "Street Fighter 6",
+                "gameID": [
+                    "040078001CCF6000"
+                ],
+                "amiiboUsage": [
+                {
+                    "Usage": "Save and load outfit, color, and button settings / Scan another player's amiibo to friend or follow them",
+                    "write": true
+                }]
+            }]
 		},
 		"0x34c7000104b21d02":
 		{
 			"games3DS": [],
 			"gamesWiiU": [],
-			"gamesSwitch": []
+			"gamesSwitch": [],
+            "gamesSwitch2": [
+            {
+                "gameName": "Street Fighter 6",
+                "gameID": [
+                    "040078001CCF6000"
+                ],
+                "amiiboUsage": [
+                {
+                    "Usage": "Save and load outfit, color, and button settings / Scan another player's amiibo to friend or follow them",
+                    "write": true
+                }]
+            }]
 		},
 		"0x34c8000104b31d02":
 		{
 			"games3DS": [],
 			"gamesWiiU": [],
-			"gamesSwitch": []
+			"gamesSwitch": [],
+            "gamesSwitch2": [
+            {
+                "gameName": "Street Fighter 6",
+                "gameID": [
+                    "040078001CCF6000"
+                ],
+                "amiiboUsage": [
+                {
+                    "Usage": "Save and load outfit, color, and button settings / Scan another player's amiibo to friend or follow them",
+                    "write": true
+                }]
+            }]
 		},
 		"0x34c9000104b41d02":
 		{
 			"games3DS": [],
 			"gamesWiiU": [],
-			"gamesSwitch": []
+			"gamesSwitch": [],
+            "gamesSwitch2": [
+            {
+                "gameName": "Street Fighter 6",
+                "gameID": [
+                    "040078001CCF6000"
+                ],
+                "amiiboUsage": [
+                {
+                    "Usage": "Save and load outfit, color, and button settings / Scan another player's amiibo to friend or follow them",
+                    "write": true
+                }]
+            }]
 		},
 		"0x34ca000104b51d02":
 		{
 			"games3DS": [],
 			"gamesWiiU": [],
-			"gamesSwitch": []
+			"gamesSwitch": [],
+            "gamesSwitch2": [
+            {
+                "gameName": "Street Fighter 6",
+                "gameID": [
+                    "040078001CCF6000"
+                ],
+                "amiiboUsage": [
+                {
+                    "Usage": "Save and load outfit, color, and button settings / Scan another player's amiibo to friend or follow them",
+                    "write": true
+                }]
+            }]
 		},
 		"0x34cb000104b61d02":
 		{
 			"games3DS": [],
 			"gamesWiiU": [],
-			"gamesSwitch": []
+			"gamesSwitch": [],
+            "gamesSwitch2": [
+            {
+                "gameName": "Street Fighter 6",
+                "gameID": [
+                    "040078001CCF6000"
+                ],
+                "amiiboUsage": [
+                {
+                    "Usage": "Save and load outfit, color, and button settings / Scan another player's amiibo to friend or follow them",
+                    "write": true
+                }]
+            }]
 		},
 		"0x34cc000104b71d02":
 		{
 			"games3DS": [],
 			"gamesWiiU": [],
-			"gamesSwitch": []
+			"gamesSwitch": [],
+            "gamesSwitch2": [
+            {
+                "gameName": "Street Fighter 6",
+                "gameID": [
+                    "040078001CCF6000"
+                ],
+                "amiiboUsage": [
+                {
+                    "Usage": "Save and load outfit, color, and button settings / Scan another player's amiibo to friend or follow them",
+                    "write": true
+                }]
+            }]
 		},
 		"0x34cd000104b81d02":
 		{
 			"games3DS": [],
 			"gamesWiiU": [],
-			"gamesSwitch": []
+			"gamesSwitch": [],
+            "gamesSwitch2": [
+            {
+                "gameName": "Street Fighter 6",
+                "gameID": [
+                    "040078001CCF6000"
+                ],
+                "amiiboUsage": [
+                {
+                    "Usage": "Save and load outfit, color, and button settings / Scan another player's amiibo to friend or follow them",
+                    "write": true
+                }]
+            }]
 		},
 		"0x34ce000104b91d02":
 		{
 			"games3DS": [],
 			"gamesWiiU": [],
-			"gamesSwitch": []
+			"gamesSwitch": [],
+            "gamesSwitch2": [
+            {
+                "gameName": "Street Fighter 6",
+                "gameID": [
+                    "040078001CCF6000"
+                ],
+                "amiiboUsage": [
+                {
+                    "Usage": "Save and load outfit, color, and button settings / Scan another player's amiibo to friend or follow them",
+                    "write": true
+                }]
+            }]
 		},
 		"0x34cf000104ba1d02":
 		{
 			"games3DS": [],
 			"gamesWiiU": [],
-			"gamesSwitch": []
+			"gamesSwitch": [],
+            "gamesSwitch2": [
+            {
+                "gameName": "Street Fighter 6",
+                "gameID": [
+                    "040078001CCF6000"
+                ],
+                "amiiboUsage": [
+                {
+                    "Usage": "Save and load outfit, color, and button settings / Scan another player's amiibo to friend or follow them",
+                    "write": true
+                }]
+            }]
 		},
 		"0x34d0000104bb1d02":
 		{
 			"games3DS": [],
 			"gamesWiiU": [],
-			"gamesSwitch": []
+			"gamesSwitch": [],
+            "gamesSwitch2": [
+            {
+                "gameName": "Street Fighter 6",
+                "gameID": [
+                    "040078001CCF6000"
+                ],
+                "amiiboUsage": [
+                {
+                    "Usage": "Save and load outfit, color, and button settings / Scan another player's amiibo to friend or follow them",
+                    "write": true
+                }]
+            }]
 		},
 		"0x34d1000104bc1d02":
 		{
 			"games3DS": [],
 			"gamesWiiU": [],
-			"gamesSwitch": []
+			"gamesSwitch": [],
+            "gamesSwitch2": [
+            {
+                "gameName": "Street Fighter 6",
+                "gameID": [
+                    "040078001CCF6000"
+                ],
+                "amiiboUsage": [
+                {
+                    "Usage": "Save and load outfit, color, and button settings / Scan another player's amiibo to friend or follow them",
+                    "write": true
+                }]
+            }]
 		},
 		"0x34d2000104bd1d02":
 		{
 			"games3DS": [],
 			"gamesWiiU": [],
-			"gamesSwitch": []
+			"gamesSwitch": [],
+            "gamesSwitch2": [
+            {
+                "gameName": "Street Fighter 6",
+                "gameID": [
+                    "040078001CCF6000"
+                ],
+                "amiiboUsage": [
+                {
+                    "Usage": "Save and load outfit, color, and button settings / Scan another player's amiibo to friend or follow them",
+                    "write": true
+                }]
+            }]
 		},
 		"0x34d3000104be1d02":
 		{
 			"games3DS": [],
 			"gamesWiiU": [],
-			"gamesSwitch": []
+			"gamesSwitch": [],
+            "gamesSwitch2": [
+            {
+                "gameName": "Street Fighter 6",
+                "gameID": [
+                    "040078001CCF6000"
+                ],
+                "amiiboUsage": [
+                {
+                    "Usage": "Save and load outfit, color, and button settings / Scan another player's amiibo to friend or follow them",
+                    "write": true
+                }]
+            }]
 		},
 		"0x34d4000104bf1d02":
 		{
 			"games3DS": [],
 			"gamesWiiU": [],
-			"gamesSwitch": []
+			"gamesSwitch": [],
+            "gamesSwitch2": [
+            {
+                "gameName": "Street Fighter 6",
+                "gameID": [
+                    "040078001CCF6000"
+                ],
+                "amiiboUsage": [
+                {
+                    "Usage": "Save and load outfit, color, and button settings / Scan another player's amiibo to friend or follow them",
+                    "write": true
+                }]
+            }]
 		},
 		"0x34d5000104c01d02":
 		{
 			"games3DS": [],
 			"gamesWiiU": [],
-			"gamesSwitch": []
+			"gamesSwitch": [],
+            "gamesSwitch2": [
+            {
+                "gameName": "Street Fighter 6",
+                "gameID": [
+                    "040078001CCF6000"
+                ],
+                "amiiboUsage": [
+                {
+                    "Usage": "Save and load outfit, color, and button settings / Scan another player's amiibo to friend or follow them",
+                    "write": true
+                }]
+            }]
 		},
 		"0x34d6000104e11d02":
 		{
 			"games3DS": [],
 			"gamesWiiU": [],
-			"gamesSwitch": []
+			"gamesSwitch": [],
+            "gamesSwitch2": [
+            {
+                "gameName": "Street Fighter 6",
+                "gameID": [
+                    "040078001CCF6000"
+                ],
+                "amiiboUsage": [
+                {
+                    "Usage": "Save and load outfit, color, and button settings / Scan another player's amiibo to friend or follow them",
+                    "write": true
+                }]
+            }]
 		},
 		"0x3c80000104e81d02":
 		{
 			"games3DS": [],
 			"gamesWiiU": [],
-			"gamesSwitch": []
+			"gamesSwitch": [],
+            "gamesSwitch2": [
+            {
+                "gameName": "Street Fighter 6",
+                "gameID": [
+                    "040078001CCF6000"
+                ],
+                "amiiboUsage": [
+                {
+                    "Usage": "Save and load outfit, color, and button settings / Scan another player's amiibo to friend or follow them",
+                    "write": true
+                }]
+            }]
 		},
 		"0x3c81000104f21d02":
 		{
 			"games3DS": [],
 			"gamesWiiU": [],
-			"gamesSwitch": []
+			"gamesSwitch": [],
+            "gamesSwitch2": [
+            {
+                "gameName": "Street Fighter 6",
+                "gameID": [
+                    "040078001CCF6000"
+                ],
+                "amiiboUsage": [
+                {
+                    "Usage": "Save and load outfit, color, and button settings / Scan another player's amiibo to friend or follow them",
+                    "write": true
+                }]
+            }]
 		},
 		"0x34d8000104e31d02":
 		{
 			"games3DS": [],
 			"gamesWiiU": [],
-			"gamesSwitch": []
+			"gamesSwitch": [],
+            "gamesSwitch2": [
+            {
+                "gameName": "Street Fighter 6",
+                "gameID": [
+                    "040078001CCF6000"
+                ],
+                "amiiboUsage": [
+                {
+                    "Usage": "Save and load outfit, color, and button settings / Scan another player's amiibo to friend or follow them",
+                    "write": true
+                }]
+            }]
 		},
 		"0x34d9000104e41d02":
 		{
 			"games3DS": [],
 			"gamesWiiU": [],
-			"gamesSwitch": []
+			"gamesSwitch": [],
+            "gamesSwitch2": [
+            {
+                "gameName": "Street Fighter 6",
+                "gameID": [
+                    "040078001CCF6000"
+                ],
+                "amiiboUsage": [
+                {
+                    "Usage": "Save and load outfit, color, and button settings / Scan another player's amiibo to friend or follow them",
+                    "write": true
+                }]
+            }]
 		},
 		"0x34da000104e51d02":
 		{
 			"games3DS": [],
 			"gamesWiiU": [],
-			"gamesSwitch": []
+			"gamesSwitch": [],
+            "gamesSwitch2": [
+            {
+                "gameName": "Street Fighter 6",
+                "gameID": [
+                    "040078001CCF6000"
+                ],
+                "amiiboUsage": [
+                {
+                    "Usage": "Save and load outfit, color, and button settings / Scan another player's amiibo to friend or follow them",
+                    "write": true
+                }]
+            }]
 		},
 		"0x34db000104e61d02":
 		{
 			"games3DS": [],
 			"gamesWiiU": [],
-			"gamesSwitch": []
+			"gamesSwitch": [],
+            "gamesSwitch2": [
+            {
+                "gameName": "Street Fighter 6",
+                "gameID": [
+                    "040078001CCF6000"
+                ],
+                "amiiboUsage": [
+                {
+                    "Usage": "Save and load outfit, color, and button settings / Scan another player's amiibo to friend or follow them",
+                    "write": true
+                }]
+            }]
 		},
 		"0x34dc000104e71d02":
 		{
 			"games3DS": [],
 			"gamesWiiU": [],
-			"gamesSwitch": []
+			"gamesSwitch": [],
+            "gamesSwitch2": [
+            {
+                "gameName": "Street Fighter 6",
+                "gameID": [
+                    "040078001CCF6000"
+                ],
+                "amiiboUsage": [
+                {
+                    "Usage": "Save and load outfit, color, and button settings / Scan another player's amiibo to friend or follow them",
+                    "write": true
+                }]
+            }]
 		},
 		"0x34c2000104cd1d02":
 		{
 			"games3DS": [],
 			"gamesWiiU": [],
-			"gamesSwitch": []
+			"gamesSwitch": [],
+            "gamesSwitch2": [
+            {
+                "gameName": "Street Fighter 6",
+                "gameID": [
+                    "040078001CCF6000"
+                ],
+                "amiiboUsage": [
+                {
+                    "Usage": "Save and load outfit, color, and button settings / Scan another player's amiibo to friend or follow them",
+                    "write": true
+                }]
+            }]
 		},
 		"0x34c3000104ce1d02":
 		{
 			"games3DS": [],
 			"gamesWiiU": [],
-			"gamesSwitch": []
+			"gamesSwitch": [],
+            "gamesSwitch2": [
+            {
+                "gameName": "Street Fighter 6",
+                "gameID": [
+                    "040078001CCF6000"
+                ],
+                "amiiboUsage": [
+                {
+                    "Usage": "Save and load outfit, color, and button settings / Scan another player's amiibo to friend or follow them",
+                    "write": true
+                }]
+            }]
 		},
 		"0x34cc000104d71d02":
 		{
 			"games3DS": [],
 			"gamesWiiU": [],
-			"gamesSwitch": []
+			"gamesSwitch": [],
+            "gamesSwitch2": [
+            {
+                "gameName": "Street Fighter 6",
+                "gameID": [
+                    "040078001CCF6000"
+                ],
+                "amiiboUsage": [
+                {
+                    "Usage": "Save and load outfit, color, and button settings / Scan another player's amiibo to friend or follow them",
+                    "write": true
+                }]
+            }]
 		},
 		"0x34c4000104cf1d02":
 		{
 			"games3DS": [],
 			"gamesWiiU": [],
-			"gamesSwitch": []
+			"gamesSwitch": [],
+            "gamesSwitch2": [
+            {
+                "gameName": "Street Fighter 6",
+                "gameID": [
+                    "040078001CCF6000"
+                ],
+                "amiiboUsage": [
+                {
+                    "Usage": "Save and load outfit, color, and button settings / Scan another player's amiibo to friend or follow them",
+                    "write": true
+                }]
+            }]
 		},
 		"0x34cd000104d81d02":
 		{
 			"games3DS": [],
 			"gamesWiiU": [],
-			"gamesSwitch": []
+			"gamesSwitch": [],
+            "gamesSwitch2": [
+            {
+                "gameName": "Street Fighter 6",
+                "gameID": [
+                    "040078001CCF6000"
+                ],
+                "amiiboUsage": [
+                {
+                    "Usage": "Save and load outfit, color, and button settings / Scan another player's amiibo to friend or follow them",
+                    "write": true
+                }]
+            }]
 		},
 		"0x34d0000104db1d02":
 		{
 			"games3DS": [],
 			"gamesWiiU": [],
-			"gamesSwitch": []
+			"gamesSwitch": [],
+            "gamesSwitch2": [
+            {
+                "gameName": "Street Fighter 6",
+                "gameID": [
+                    "040078001CCF6000"
+                ],
+                "amiiboUsage": [
+                {
+                    "Usage": "Save and load outfit, color, and button settings / Scan another player's amiibo to friend or follow them",
+                    "write": true
+                }]
+            }]
 		},
 		"0x34ce000104d91d02":
 		{
 			"games3DS": [],
 			"gamesWiiU": [],
-			"gamesSwitch": []
+			"gamesSwitch": [],
+            "gamesSwitch2": [
+            {
+                "gameName": "Street Fighter 6",
+                "gameID": [
+                    "040078001CCF6000"
+                ],
+                "amiiboUsage": [
+                {
+                    "Usage": "Save and load outfit, color, and button settings / Scan another player's amiibo to friend or follow them",
+                    "write": true
+                }]
+            }]
 		},
 		"0x34c7000104d21d02":
 		{
 			"games3DS": [],
 			"gamesWiiU": [],
-			"gamesSwitch": []
+			"gamesSwitch": [],
+            "gamesSwitch2": [
+            {
+                "gameName": "Street Fighter 6",
+                "gameID": [
+                    "040078001CCF6000"
+                ],
+                "amiiboUsage": [
+                {
+                    "Usage": "Save and load outfit, color, and button settings / Scan another player's amiibo to friend or follow them",
+                    "write": true
+                }]
+            }]
 		},
 		"0x34cb000104d61d02":
 		{
 			"games3DS": [],
 			"gamesWiiU": [],
-			"gamesSwitch": []
+			"gamesSwitch": [],
+            "gamesSwitch2": [
+            {
+                "gameName": "Street Fighter 6",
+                "gameID": [
+                    "040078001CCF6000"
+                ],
+                "amiiboUsage": [
+                {
+                    "Usage": "Save and load outfit, color, and button settings / Scan another player's amiibo to friend or follow them",
+                    "write": true
+                }]
+            }]
 		},
 		"0x34d1000104dc1d02":
 		{
 			"games3DS": [],
 			"gamesWiiU": [],
-			"gamesSwitch": []
+			"gamesSwitch": [],
+            "gamesSwitch2": [
+            {
+                "gameName": "Street Fighter 6",
+                "gameID": [
+                    "040078001CCF6000"
+                ],
+                "amiiboUsage": [
+                {
+                    "Usage": "Save and load outfit, color, and button settings / Scan another player's amiibo to friend or follow them",
+                    "write": true
+                }]
+            }]
 		},
 		"0x34c0000104cb1d02":
 		{
 			"games3DS": [],
 			"gamesWiiU": [],
-			"gamesSwitch": []
+			"gamesSwitch": [],
+            "gamesSwitch2": [
+            {
+                "gameName": "Street Fighter 6",
+                "gameID": [
+                    "040078001CCF6000"
+                ],
+                "amiiboUsage": [
+                {
+                    "Usage": "Save and load outfit, color, and button settings / Scan another player's amiibo to friend or follow them",
+                    "write": true
+                }]
+            }]
 		},
 		"0x34ca000104d51d02":
 		{
 			"games3DS": [],
 			"gamesWiiU": [],
-			"gamesSwitch": []
+			"gamesSwitch": [],
+            "gamesSwitch2": [
+            {
+                "gameName": "Street Fighter 6",
+                "gameID": [
+                    "040078001CCF6000"
+                ],
+                "amiiboUsage": [
+                {
+                    "Usage": "Save and load outfit, color, and button settings / Scan another player's amiibo to friend or follow them",
+                    "write": true
+                }]
+            }]
 		},
 		"0x34c8000104d31d02":
 		{
 			"games3DS": [],
 			"gamesWiiU": [],
-			"gamesSwitch": []
+			"gamesSwitch": [],
+            "gamesSwitch2": [
+            {
+                "gameName": "Street Fighter 6",
+                "gameID": [
+                    "040078001CCF6000"
+                ],
+                "amiiboUsage": [
+                {
+                    "Usage": "Save and load outfit, color, and button settings / Scan another player's amiibo to friend or follow them",
+                    "write": true
+                }]
+            }]
 		},
 		"0x34c6000104d11d02":
 		{
 			"games3DS": [],
 			"gamesWiiU": [],
-			"gamesSwitch": []
+			"gamesSwitch": [],
+            "gamesSwitch2": [
+            {
+                "gameName": "Street Fighter 6",
+                "gameID": [
+                    "040078001CCF6000"
+                ],
+                "amiiboUsage": [
+                {
+                    "Usage": "Save and load outfit, color, and button settings / Scan another player's amiibo to friend or follow them",
+                    "write": true
+                }]
+            }]
 		},
 		"0x34c1000104cc1d02":
 		{
 			"games3DS": [],
 			"gamesWiiU": [],
-			"gamesSwitch": []
+			"gamesSwitch": [],
+            "gamesSwitch2": [
+            {
+                "gameName": "Street Fighter 6",
+                "gameID": [
+                    "040078001CCF6000"
+                ],
+                "amiiboUsage": [
+                {
+                    "Usage": "Save and load outfit, color, and button settings / Scan another player's amiibo to friend or follow them",
+                    "write": true
+                }]
+            }]
 		},
 		"0x34c5000104d01d02":
 		{
 			"games3DS": [],
 			"gamesWiiU": [],
-			"gamesSwitch": []
+			"gamesSwitch": [],
+            "gamesSwitch2": [
+            {
+                "gameName": "Street Fighter 6",
+                "gameID": [
+                    "040078001CCF6000"
+                ],
+                "amiiboUsage": [
+                {
+                    "Usage": "Save and load outfit, color, and button settings / Scan another player's amiibo to friend or follow them",
+                    "write": true
+                }]
+            }]
 		},
 		"0x34cf000104da1d02":
 		{
 			"games3DS": [],
 			"gamesWiiU": [],
-			"gamesSwitch": []
+			"gamesSwitch": [],
+            "gamesSwitch2": [
+            {
+                "gameName": "Street Fighter 6",
+                "gameID": [
+                    "040078001CCF6000"
+                ],
+                "amiiboUsage": [
+                {
+                    "Usage": "Save and load outfit, color, and button settings / Scan another player's amiibo to friend or follow them",
+                    "write": true
+                }]
+            }]
 		},
 		"0x34c9000104d41d02":
 		{
 			"games3DS": [],
 			"gamesWiiU": [],
-			"gamesSwitch": []
+			"gamesSwitch": [],
+            "gamesSwitch2": [
+            {
+                "gameName": "Street Fighter 6",
+                "gameID": [
+                    "040078001CCF6000"
+                ],
+                "amiiboUsage": [
+                {
+                    "Usage": "Save and load outfit, color, and button settings / Scan another player's amiibo to friend or follow them",
+                    "write": true
+                }]
+            }]
 		},
 		"0x34d2000104dd1d02":
 		{
 			"games3DS": [],
 			"gamesWiiU": [],
-			"gamesSwitch": []
+			"gamesSwitch": [],
+            "gamesSwitch2": [
+            {
+                "gameName": "Street Fighter 6",
+                "gameID": [
+                    "040078001CCF6000"
+                ],
+                "amiiboUsage": [
+                {
+                    "Usage": "Save and load outfit, color, and button settings / Scan another player's amiibo to friend or follow them",
+                    "write": true
+                }]
+            }]
 		},
 		"0x34d3000104de1d02":
 		{
 			"games3DS": [],
 			"gamesWiiU": [],
-			"gamesSwitch": []
+			"gamesSwitch": [],
+            "gamesSwitch2": [
+            {
+                "gameName": "Street Fighter 6",
+                "gameID": [
+                    "040078001CCF6000"
+                ],
+                "amiiboUsage": [
+                {
+                    "Usage": "Save and load outfit, color, and button settings / Scan another player's amiibo to friend or follow them",
+                    "write": true
+                }]
+            }]
 		},
 		"0x34d4000104df1d02":
 		{
 			"games3DS": [],
 			"gamesWiiU": [],
-			"gamesSwitch": []
+			"gamesSwitch": [],
+            "gamesSwitch2": [
+            {
+                "gameName": "Street Fighter 6",
+                "gameID": [
+                    "040078001CCF6000"
+                ],
+                "amiiboUsage": [
+                {
+                    "Usage": "Save and load outfit, color, and button settings / Scan another player's amiibo to friend or follow them",
+                    "write": true
+                }]
+            }]
 		},
 		"0x34d5000104e01d02":
 		{
 			"games3DS": [],
 			"gamesWiiU": [],
-			"gamesSwitch": []
+			"gamesSwitch": [],
+            "gamesSwitch2": [
+            {
+                "gameName": "Street Fighter 6",
+                "gameID": [
+                    "040078001CCF6000"
+                ],
+                "amiiboUsage": [
+                {
+                    "Usage": "Save and load outfit, color, and button settings / Scan another player's amiibo to friend or follow them",
+                    "write": true
+                }]
+            }]
 		},
 		"0x34d6000104eb1d02":
 		{
 			"games3DS": [],
 			"gamesWiiU": [],
-			"gamesSwitch": []
+			"gamesSwitch": [],
+            "gamesSwitch2": [
+            {
+                "gameName": "Street Fighter 6",
+                "gameID": [
+                    "040078001CCF6000"
+                ],
+                "amiiboUsage": [
+                {
+                    "Usage": "Save and load outfit, color, and button settings / Scan another player's amiibo to friend or follow them",
+                    "write": true
+                }]
+            }]
 		},
 		"0x3c80000104f11d02":
 		{
 			"games3DS": [],
 			"gamesWiiU": [],
-			"gamesSwitch": []
+			"gamesSwitch": [],
+            "gamesSwitch2": [
+            {
+                "gameName": "Street Fighter 6",
+                "gameID": [
+                    "040078001CCF6000"
+                ],
+                "amiiboUsage": [
+                {
+                    "Usage": "Save and load outfit, color, and button settings / Scan another player's amiibo to friend or follow them",
+                    "write": true
+                }]
+            }]
 		},
 		"0x3c81000104f31d02":
 		{
 			"games3DS": [],
 			"gamesWiiU": [],
-			"gamesSwitch": []
+			"gamesSwitch": [],
+            "gamesSwitch2": [
+            {
+                "gameName": "Street Fighter 6",
+                "gameID": [
+                    "040078001CCF6000"
+                ],
+                "amiiboUsage": [
+                {
+                    "Usage": "Save and load outfit, color, and button settings / Scan another player's amiibo to friend or follow them",
+                    "write": true
+                }]
+            }]
 		},
 		"0x34d8000104ec1d02":
 		{
 			"games3DS": [],
 			"gamesWiiU": [],
-			"gamesSwitch": []
+			"gamesSwitch": [],
+            "gamesSwitch2": [
+            {
+                "gameName": "Street Fighter 6",
+                "gameID": [
+                    "040078001CCF6000"
+                ],
+                "amiiboUsage": [
+                {
+                    "Usage": "Save and load outfit, color, and button settings / Scan another player's amiibo to friend or follow them",
+                    "write": true
+                }]
+            }]
 		},
 		"0x34d9000104ed1d02":
 		{
 			"games3DS": [],
 			"gamesWiiU": [],
-			"gamesSwitch": []
+			"gamesSwitch": [],
+            "gamesSwitch2": [
+            {
+                "gameName": "Street Fighter 6",
+                "gameID": [
+                    "040078001CCF6000"
+                ],
+                "amiiboUsage": [
+                {
+                    "Usage": "Save and load outfit, color, and button settings / Scan another player's amiibo to friend or follow them",
+                    "write": true
+                }]
+            }]
 		},
 		"0x34da000104ee1d02":
 		{
 			"games3DS": [],
 			"gamesWiiU": [],
-			"gamesSwitch": []
+			"gamesSwitch": [],
+            "gamesSwitch2": [
+            {
+                "gameName": "Street Fighter 6",
+                "gameID": [
+                    "040078001CCF6000"
+                ],
+                "amiiboUsage": [
+                {
+                    "Usage": "Save and load outfit, color, and button settings / Scan another player's amiibo to friend or follow them",
+                    "write": true
+                }]
+            }]
 		},
 		"0x34db000104ef1d02":
 		{
 			"games3DS": [],
 			"gamesWiiU": [],
-			"gamesSwitch": []
+			"gamesSwitch": [],
+            "gamesSwitch2": [
+            {
+                "gameName": "Street Fighter 6",
+                "gameID": [
+                    "040078001CCF6000"
+                ],
+                "amiiboUsage": [
+                {
+                    "Usage": "Save and load outfit, color, and button settings / Scan another player's amiibo to friend or follow them",
+                    "write": true
+                }]
+            }]
 		},
 		"0x34dc000104f01d02":
 		{
 			"games3DS": [],
 			"gamesWiiU": [],
-			"gamesSwitch": []
+			"gamesSwitch": [],
+            "gamesSwitch2": [
+            {
+                "gameName": "Street Fighter 6",
+                "gameID": [
+                    "040078001CCF6000"
+                ],
+                "amiiboUsage": [
+                {
+                    "Usage": "Save and load outfit, color, and button settings / Scan another player's amiibo to friend or follow them",
+                    "write": true
+                }]
+            }]
 		},
 		"0x3500010002e10f02":
 		{
@@ -102045,7 +102947,19 @@
 					"Usage": "Battle and train up a computer-controlled Figure Player of the character",
 					"write": true
 				}]
-			}]
+            }],
+            "gamesSwitch2": [
+            {
+                "gameName": "Street Fighter 6",
+                "gameID": [
+                    "040078001CCF6000"
+                ],
+                "amiiboUsage": [
+                {
+                    "Usage": "Save and load outfit, color, and button settings / Scan another player's amiibo to friend or follow them",
+                    "write": true
+                }]
+            }]
 		},
 		"0x3dc0000004220002":
 		{

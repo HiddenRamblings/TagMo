@@ -574,6 +574,11 @@ class NfcActivity : AppCompatActivity() {
                                 closeTagSilently(ntag215)
                             }
 
+                            getString(R.string.invalid_tag_lock) == error -> {
+                                showMessage(R.string.tag_disconnect)
+                                closeTagSilently(ntag215)
+                            }
+
                             isEliteLockedCause(error) -> {
                                 withContext(Dispatchers.Main) {
                                     getErrorDialog(
@@ -603,7 +608,7 @@ class NfcActivity : AppCompatActivity() {
 
                     else -> {
                         when {
-                            e is TagLostException -> {
+                            e is TagLostException || getString(R.string.invalid_tag_lock) == error -> {
                                 closeTagSilently(ntag215)
                                 showError("${getString(R.string.tag_disconnect)}\n\n$error")
                             }

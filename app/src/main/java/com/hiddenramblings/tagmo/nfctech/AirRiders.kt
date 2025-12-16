@@ -46,34 +46,31 @@ class AirRiders {
             // must be read first, otherwise TRANSFER_DIR bit is wrong
             val sram = readPagesRange(nfca, 0xf0, 0xff, log)
 
-            var dump = byteArrayOf()
-            dump += readPagesRange(nfca, 0x0, 0x1f, log)
-            dump += readPagesRange(nfca, 0x20, 0x3f, log)
-            dump += readPagesRange(nfca, 0x40, 0x5f, log)
-            dump += readPagesRange(nfca, 0x60, 0x7f, log)
-            dump += readPagesRange(nfca, 0x80, 0x9f, log)
-            dump += readPagesRange(nfca, 0xa0, 0xbf, log)
-            dump += readPagesRange(nfca, 0xc0, 0xdf, log)
-            dump += readPagesRange(nfca, 0xe0, 0xe9, log)
-            dump += ByteArray(8) // skip ea, eb
-            dump += readPagesRange(nfca, 0xec, 0xed, log)
-            dump += ByteArray(8) // skip ee, ef
-            dump += sram
-
-            sectorSelect(nfca, 1, log)
-            unlock(nfca, log)
-            Thread.sleep(100)
-
-            dump += readPagesRange(nfca, 0x0, 0x1f, log)
-            dump += readPagesRange(nfca, 0x20, 0x3f, log)
-            dump += readPagesRange(nfca, 0x40, 0x5f, log)
-            dump += readPagesRange(nfca, 0x60, 0x7f, log)
-            dump += readPagesRange(nfca, 0x80, 0x9f, log)
-            dump += readPagesRange(nfca, 0xa0, 0xbf, log)
-            dump += readPagesRange(nfca, 0xc0, 0xdf, log)
-            dump += readPagesRange(nfca, 0xe0, 0xff, log)
-
-            return dump
+            return byteArrayOf()
+                .plus(readPagesRange(nfca, 0x0, 0x1f, log))
+                .plus(readPagesRange(nfca, 0x20, 0x3f, log))
+                .plus(readPagesRange(nfca, 0x40, 0x5f, log))
+                .plus(readPagesRange(nfca, 0x60, 0x7f, log))
+                .plus(readPagesRange(nfca, 0x80, 0x9f, log))
+                .plus(readPagesRange(nfca, 0xa0, 0xbf, log))
+                .plus(readPagesRange(nfca, 0xc0, 0xdf, log))
+                .plus(readPagesRange(nfca, 0xe0, 0xe9, log))
+                .plus(ByteArray(8)) // skip ea, eb
+                .plus(readPagesRange(nfca, 0xec, 0xed, log))
+                .plus(ByteArray(8)) // skip ee, ef
+                .plus(sram).also {
+                    sectorSelect(nfca, 1, log)
+                    unlock(nfca, log)
+                    Thread.sleep(100)
+                    it.plus(readPagesRange(nfca, 0x0, 0x1f, log))
+                        .plus(readPagesRange(nfca, 0x20, 0x3f, log))
+                        .plus(readPagesRange(nfca, 0x40, 0x5f, log))
+                        .plus(readPagesRange(nfca, 0x60, 0x7f, log))
+                        .plus(readPagesRange(nfca, 0x80, 0x9f, log))
+                        .plus(readPagesRange(nfca, 0xa0, 0xbf, log))
+                        .plus(readPagesRange(nfca, 0xc0, 0xdf, log))
+                        .plus(readPagesRange(nfca, 0xe0, 0xff, log))
+                }
         } catch (e: Exception) {
             return null
         } finally {

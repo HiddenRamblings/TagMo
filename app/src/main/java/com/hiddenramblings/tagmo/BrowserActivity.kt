@@ -691,7 +691,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                     )
                     return@setOnMenuItemClickListener true
                 }
-                R.id.scan_tag_v3 -> {
+                R.id.mnu_scan_v3 -> {
                     onNFCActivity.launch(
                         Intent(this, NfcActivity::class.java)
                             .setAction(NFCIntent.ACTION_SCAN_TAG_V3)

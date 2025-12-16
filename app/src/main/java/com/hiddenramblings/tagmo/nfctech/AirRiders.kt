@@ -11,43 +11,18 @@ import android.nfc.tech.NfcA
 import kotlin.experimental.and
 import kotlin.experimental.xor
 
-private var pendingSaveBytes: ByteArray? = null
-
-data class UiState(
-    val status: String = "Ready. Tap a tag.",
-    val uidHex: String? = null,
-    val atqaHex: String? = null,
-    val sakHex: String? = null,
-    val bytes: ByteArray? = null,
-    val log: String = "",
-    val error: String? = null,
-)
-
 class AirRiders {
-
-
-//        saveBinLauncher = registerForActivityResult(
-//            ActivityResultContracts.CreateDocument("application/octet-stream")
-//        ) { uri ->
-//            val bytes = pendingSaveBytes
-//            pendingSaveBytes = null
-//            if (uri != null && bytes != null) {
-//                writeBytesToUri(uri, bytes)
-//                uiState = uiState.copy(status = "Saved.")
-//            }
-//        }
-
 //        onSaveExt = { promptSaveBin(uiState.bytes!!.slice(0xf0*4..<0x100*4).toByteArray(), "ext") },
 //        onSaveFull = { promptSaveBin(uiState.bytes!!, "bin")}
 
-    fun onTagDiscovered(tag: Tag) {
+    fun onTagDiscovered(tag: Tag?) {
         val nfca = NfcA.get(tag)
         if (nfca == null) {
             return
         }
 
         val log = StringBuilder()
-        val uidHex = tag.id?.toHexSpaced() ?: "—"
+        val uidHex = tag?.id?.toHexSpaced() ?: "—"
 
         try {
             nfca.connect()
@@ -98,17 +73,7 @@ class AirRiders {
             dump += readPagesRange(nfca, 0xc0, 0xdf, log)
             dump += readPagesRange(nfca, 0xe0, 0xff, log)
 
-//            runOnUiThread {
-//                uiState = UiState(
-//                    status = "Scan OK",
-//                    uidHex = uidHex,
-//                    atqaHex = atqaHex,
-//                    sakHex = sakHex,
-//                    bytes = dump,
-//                    log = log.toString(),
-//                    error = null,
-//                )
-//            }
+
         } catch (e: Exception) {
             // failed
         } finally {
@@ -183,19 +148,6 @@ class AirRiders {
         log.appendLine("FAST_READ ${startPage}-${endPage} OK (${resp.size} bytes).")
         return resp
     }
-
-//    private fun promptSaveBin(bytes: ByteArray, ext: String) {
-//        pendingSaveBytes = bytes
-//        val name = "dump_${System.currentTimeMillis()}.${ext}"
-//        saveBinLauncher.launch(name)
-//    }
-//
-//    private fun writeBytesToUri(uri: android.net.Uri, bytes: ByteArray) {
-//        contentResolver.openOutputStream(uri, "w")?.use { out ->
-//            out.write(bytes)
-//            out.flush()
-//        } ?: throw IllegalStateException("Could not open output stream for $uri")
-//    }
 }
 
 private fun ByteArray.toHexSpaced(): String = joinToString(" ") { "%02X".format(it) }

@@ -24,6 +24,8 @@ object NFCIntent {
     const val ACTION_BACKUP_AMIIBO = BuildConfig.APPLICATION_ID + ".BACKUP_AMIIBO"
     const val ACTION_FIX_BANK_DATA = BuildConfig.APPLICATION_ID + ".FIX_BANK_DATA"
     const val ACTION_NFC_SCANNED = BuildConfig.APPLICATION_ID + ".NFC_SCANNED"
+    const val ACTION_SCAN_TAG_V3 = BuildConfig.APPLICATION_ID + ".SCAN_TAG_V3"
+
     const val ACTION_BLIND_SCAN = BuildConfig.APPLICATION_ID + ".BLIND_SCAN"
     const val EXTRA_TAG_DATA = BuildConfig.APPLICATION_ID + ".EXTRA_TAG_DATA"
     const val EXTRA_AMIIBO_LIST = BuildConfig.APPLICATION_ID + ".EXTRA_AMIIBO_LIST"

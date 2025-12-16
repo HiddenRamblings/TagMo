@@ -265,6 +265,9 @@ class NfcActivity : AppCompatActivity() {
         val mode = command.action
         var update: ByteArray? = ByteArray(0)
         try {
+            if (NFCIntent.ACTION_SCAN_TAG_V3 == mode) {
+                AirRiders().onTagDiscovered(tag)
+            }
             ntag215 = if (NFCIntent.ACTION_BLIND_SCAN == mode || isEliteIntent)
                 NTAG215.getBlind(tag) else NTAG215[tag]
             ntag215?.let { mifare ->

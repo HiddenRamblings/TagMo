@@ -266,7 +266,15 @@ class NfcActivity : AppCompatActivity() {
         var update: ByteArray? = ByteArray(0)
         try {
             if (NFCIntent.ACTION_SCAN_TAG_V3 == mode) {
-                AirRiders().onTagDiscovered(tag)
+                AirRiders().onTagDiscovered(tag)?.let { dump ->
+                    setResult(RESULT_OK, Intent(
+                        NFCIntent.ACTION_NFC_SCANNED
+                    ).apply {
+                        putExtras(Bundle().apply {
+                            putByteArray(NFCIntent.EXTRA_TAG_DATA, dump)
+                        })
+                    })
+                }
             }
             ntag215 = if (NFCIntent.ACTION_BLIND_SCAN == mode || isEliteIntent)
                 NTAG215.getBlind(tag) else NTAG215[tag]

@@ -15,10 +15,10 @@ class AirRiders {
 //        onSaveExt = { promptSaveBin(uiState.bytes!!.slice(0xf0*4..<0x100*4).toByteArray(), "ext") },
 //        onSaveFull = { promptSaveBin(uiState.bytes!!, "bin")}
 
-    fun onTagDiscovered(tag: Tag?) {
+    fun onTagDiscovered(tag: Tag?): ByteArray? {
         val nfca = NfcA.get(tag)
         if (nfca == null) {
-            return
+            return null
         }
 
         val log = StringBuilder()
@@ -73,9 +73,9 @@ class AirRiders {
             dump += readPagesRange(nfca, 0xc0, 0xdf, log)
             dump += readPagesRange(nfca, 0xe0, 0xff, log)
 
-
+            return dump
         } catch (e: Exception) {
-            // failed
+            return null
         } finally {
             try { nfca.close() } catch (_: Exception) {}
         }

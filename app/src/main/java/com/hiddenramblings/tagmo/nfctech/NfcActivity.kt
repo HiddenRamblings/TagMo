@@ -146,9 +146,10 @@ class NfcActivity : AppCompatActivity() {
             NFCIntent.ACTION_ERASE_ALL_TAGS,
             NFCIntent.ACTION_BLIND_SCAN,
             NFCIntent.ACTION_SCAN_TAG,
+            NFCIntent.ACTION_SCAN_TAG_V3,
             NFCIntent.ACTION_SET_BANK_COUNT,
             NFCIntent.ACTION_LOCK_AMIIBO,
-            NFCIntent.ACTION_UNLOCK_UNIT,
+            NFCIntent.ACTION_UNLOCK_UNIT
             -> {
                 bankPicker.isGone = true
                 bankPicker.isEnabled = false
@@ -177,6 +178,7 @@ class NfcActivity : AppCompatActivity() {
                     isEliteIntent -> setTitle(R.string.scan_elite)
                     else -> setTitle(R.string.scan_tag)
                 }
+            NFCIntent.ACTION_SCAN_TAG_V3 -> setTitle(R.string.scan_tag)
             NFCIntent.ACTION_ERASE_BANK -> setTitle(R.string.erase_bank)
             NFCIntent.ACTION_ACTIVATE_BANK -> setTitle(R.string.activate_bank)
             NFCIntent.ACTION_SET_BANK_COUNT -> setTitle(R.string.set_bank_count)
@@ -823,6 +825,7 @@ class NfcActivity : AppCompatActivity() {
             NFCIntent.ACTION_ERASE_ALL_TAGS,
             NFCIntent.ACTION_BLIND_SCAN,
             NFCIntent.ACTION_SCAN_TAG,
+            NFCIntent.ACTION_SCAN_TAG_V3,
             NFCIntent.ACTION_ACTIVATE_BANK,
             NFCIntent.ACTION_SET_BANK_COUNT,
             NFCIntent.ACTION_LOCK_AMIIBO,

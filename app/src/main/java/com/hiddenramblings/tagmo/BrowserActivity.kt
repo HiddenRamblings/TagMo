@@ -691,6 +691,13 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                     )
                     return@setOnMenuItemClickListener true
                 }
+                R.id.scan_tag_v3 -> {
+                    onNFCActivity.launch(
+                        Intent(this, NfcActivity::class.java)
+                            .setAction(NFCIntent.ACTION_SCAN_TAG_V3)
+                    )
+                    return@setOnMenuItemClickListener true
+                }
                 R.id.mnu_backup -> {
                     if (BuildConfig.WEAR_OS) {
                         Toasty(this).Short(R.string.feature_unavailable)

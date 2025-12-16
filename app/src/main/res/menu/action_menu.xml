@@ -6,6 +6,10 @@
         android:icon="@drawable/ic_nfc_icon_24dp"
         android:title="@string/scan_tag"/>
     <item
+        android:id="@+id/mnu_scan_v3"
+        android:icon="@drawable/ic_nfc_icon_24dp"
+        android:title="@string/scan_tag_v3"/>
+    <item
         android:id="@+id/mnu_backup"
         android:icon="@drawable/ic_save_24dp"
         android:title="@string/amiibo_backup"/>

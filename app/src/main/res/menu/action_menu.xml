@@ -6,10 +6,6 @@
         android:icon="@drawable/ic_nfc_icon_24dp"
         android:title="@string/scan_tag"/>
     <item
-        android:id="@+id/mnu_scan_v3"
-        android:icon="@drawable/ic_nfc_icon_24dp"
-        android:title="@string/scan_tag_v3"/>
-    <item
         android:id="@+id/mnu_backup"
         android:icon="@drawable/ic_save_24dp"
         android:title="@string/amiibo_backup"/>
@@ -17,4 +13,8 @@
         android:id="@+id/mnu_validate"
         android:icon="@drawable/ic_compare_24dp"
         android:title="@string/validate_data"/>
+    <item
+        android:id="@+id/mnu_scan_v3"
+        android:icon="@drawable/ic_nfc_icon_24dp"
+        android:title="@string/scan_tag_v3"/>
 </menu>

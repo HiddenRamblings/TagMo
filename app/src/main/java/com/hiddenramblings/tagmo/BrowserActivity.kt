@@ -87,6 +87,7 @@ import com.hiddenramblings.tagmo.nfctech.Flipper.toNFC
 import com.hiddenramblings.tagmo.nfctech.Foomiibo
 import com.hiddenramblings.tagmo.nfctech.NfcActivity
 import com.hiddenramblings.tagmo.nfctech.NfcByte
+import com.hiddenramblings.tagmo.nfctech.NfcByte.isVersion3
 import com.hiddenramblings.tagmo.nfctech.ScanTag
 import com.hiddenramblings.tagmo.nfctech.TagArray
 import com.hiddenramblings.tagmo.nfctech.TagArray.withRandomSerials
@@ -2200,8 +2201,14 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
             if (prefs.eliteEnabled() && intent.hasExtra(NFCIntent.EXTRA_SIGNATURE)) {
                 intent.extras?.let { showElitePage(it) }
             } else {
-                updateAmiiboView(intent.getByteArrayExtra(NFCIntent.EXTRA_TAG_DATA))
-                // toolbar.getMenu().findItem(R.id.mnu_write).setEnabled(false);
+                intent.getByteArrayExtra(NFCIntent.EXTRA_TAG_DATA)?.let {
+                    if (it.isVersion3) {
+                        Toasty(this).Short(R.string.feature_unavailable)
+                    } else {
+                        updateAmiiboView(it)
+                        // toolbar.getMenu().findItem(R.id.mnu_write).setEnabled(false);
+                    }
+                }
             }
         }
     }

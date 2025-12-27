@@ -50,4 +50,8 @@ object NfcByte {
     private fun generatePowerTagId(): ByteArray {
         return Foomiibo.generateRandomUID().plus(ByteArray(7))
     }
+
+    val ByteArray.isVersion3: Boolean get() {
+       return  this.size == TAG_V3_BIN_SIZE
+    }
 }

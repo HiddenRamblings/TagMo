@@ -4,12 +4,6 @@
  *
  * https://github.com/AbandonedCart/AbandonedCart/blob/main/LICENSE#L4
  * ====================================================================
- *
- * The license and distribution terms for any publicly available version or
- * derivative of this code cannot be changed.  i.e. this code cannot simply be
- * copied and put under another distribution license
- * [including the GNU Public License.] Content not subject to these terms is
- * subject to to the terms and conditions of the Apache License, Version 2.0.
  */
 package com.hiddenramblings.tagmo.update
 

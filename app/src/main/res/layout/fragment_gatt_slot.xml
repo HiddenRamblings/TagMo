@@ -252,6 +252,13 @@
             android:layout_marginBottom="10dp"
             android:text="@string/switch_devices" />
 
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/device_portal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            android:text="@string/switch_devices" />
+
         <LinearLayout
             android:id="@+id/write_list_slots"
             android:layout_width="match_parent"

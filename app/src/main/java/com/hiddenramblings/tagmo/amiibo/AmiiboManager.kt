@@ -24,8 +24,8 @@ import java.util.*
 object AmiiboManager {
     const val AMIIBO_DATABASE_FILE = "amiibo.json"
     const val RENDER_RAW = "https://raw.githubusercontent.com/8bitDream/AmiiboAPI/render"
-    const val AMIIBO_API = "https://amiiboapi.com/api"
-    const val AMIIBO_RAW = "https://raw.githubusercontent.com/N3evin/AmiiboAPI/master"
+    const val AMIIBO_API = "https://amiiboapi.com/org"
+    const val AMIIBO_RAW = "https://raw.githubusercontent.com/8bitDream/AmiiboAPI/master"
 
     val amiibos = HashMap<Long, Amiibo>()
     val characters = HashMap<Long, Character>()

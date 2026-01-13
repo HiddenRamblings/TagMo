@@ -395,7 +395,7 @@ class QRCodeScanner : AppCompatActivity() {
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.qr_code_menu, menu)
         setOptionalIconsVisible(menu)
-        menu.findItem(R.id.mnu_camera).isVisible = !BuildConfig.WEAR_OS
+        menu.findItem(R.id.mnu_camera).isVisible = !TagMo.isWearable
         return super.onCreateOptionsMenu(menu)
     }
 

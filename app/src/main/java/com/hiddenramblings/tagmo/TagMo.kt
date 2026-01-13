@@ -1,8 +1,10 @@
 package com.hiddenramblings.tagmo
 
 import android.app.Application
+import android.app.UiModeManager
 import android.content.Context
 import android.content.Intent
+import android.content.res.Configuration
 import android.os.Parcelable
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.text.HtmlCompat
@@ -10,6 +12,10 @@ import com.hiddenramblings.tagmo.eightbit.content.ScaledContext
 import com.hiddenramblings.tagmo.eightbit.io.Debug
 import com.hiddenramblings.tagmo.eightbit.os.Storage
 import com.hiddenramblings.tagmo.eightbit.os.Version
+import com.hiddenramblings.tagmo.eightbit.webkit.ChromeIntegration
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import me.weishu.reflection.Reflection
 import org.lsposed.hiddenapibypass.HiddenApiBypass
 import java.io.PrintWriter
@@ -43,7 +49,7 @@ class TagMo : Application() {
 
     override fun attachBaseContext(base: Context) {
         super.attachBaseContext(base)
-        if (BuildConfig.WEAR_OS)
+        if (isWearable)
             appContext = ScaledContext(this).watch(2f)
         if (Version.isPie)
             HiddenApiBypass.addHiddenApiExemptions(
@@ -55,7 +61,11 @@ class TagMo : Application() {
     override fun onCreate() {
         super.onCreate()
         AppCompatDelegate.setCompatVectorFromResourcesEnabled(true)
-        if (BuildConfig.WEAR_OS)
+
+        val uiModeManager: UiModeManager = getSystemService(UI_MODE_SERVICE) as UiModeManager
+        isWearable = uiModeManager.currentModeType == Configuration.UI_MODE_TYPE_WATCH || BuildConfig.WEAR_OS
+
+        if (isWearable)
             appContext.setTheme(R.style.AppTheme)
         else
             setThemePreference()
@@ -72,6 +82,9 @@ class TagMo : Application() {
             android.os.Process.killProcess(android.os.Process.myPid())
             exitProcess(-1)
         }
+        CoroutineScope(Dispatchers.IO).launch {
+            ChromeIntegration.hasCustomTabs = ChromeIntegration.bindCustomTabService(this@TagMo)
+        }
     }
 
     init { appContext = this }
@@ -80,6 +93,9 @@ class TagMo : Application() {
         @JvmStatic
         lateinit var appContext : Context
             private set
+
+        var isWearable = false
+
         const val uiDelay = 50
 
         val downloadDir by lazy { Storage.getDownloadDir("TagMo") }
@@ -89,7 +105,7 @@ class TagMo : Application() {
             if (BuildConfig.GOOGLE_PLAY) "Play" else "GitHub"
         } ${
             when {
-                BuildConfig.WEAR_OS -> "Wear OS"
+                isWearable -> "Wear OS"
                 BuildConfig.BUILD_TYPE == "release" -> "Release"
                 else -> "Debug"
             }

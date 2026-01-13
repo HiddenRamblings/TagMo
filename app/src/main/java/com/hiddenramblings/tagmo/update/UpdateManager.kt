@@ -25,6 +25,7 @@ import com.hiddenramblings.tagmo.BrowserActivity
 import com.hiddenramblings.tagmo.BuildConfig
 import com.hiddenramblings.tagmo.Preferences
 import com.hiddenramblings.tagmo.R
+import com.hiddenramblings.tagmo.TagMo
 import com.hiddenramblings.tagmo.eightbit.io.Debug
 import com.hiddenramblings.tagmo.eightbit.net.JSONExecutor
 import com.hiddenramblings.tagmo.eightbit.os.Storage
@@ -126,8 +127,8 @@ class UpdateManager internal constructor(activity: BrowserActivity) {
             if (!apk.name.lowercase().endsWith(".apk")) apk.delete()
             try {
                 browserActivity.run {
+                    val apkUri = Storage.getFileUri(apk)
                     if (Version.isNougat) {
-                        val apkUri = Storage.getFileUri(apk)
                         applicationContext.contentResolver.openInputStream(apkUri).use { apkStream ->
                             val session = with (applicationContext.packageManager.packageInstaller) {
                                 val params = PackageInstaller.SessionParams(
@@ -159,7 +160,7 @@ class UpdateManager internal constructor(activity: BrowserActivity) {
                     } else {
                         @Suppress("deprecation")
                         Intent(Intent.ACTION_INSTALL_PACKAGE).apply {
-                            setDataAndType(Storage.getFileUri(apk),
+                            setDataAndType(apkUri,
                                 browserActivity.getString(R.string.mimetype_apk)
                             )
                             putExtra(Intent.EXTRA_NOT_UNKNOWN_SOURCE, true)
@@ -257,7 +258,7 @@ class UpdateManager internal constructor(activity: BrowserActivity) {
     }
 
     companion object {
-        private val TAGMO_GIT_API = if (BuildConfig.WEAR_OS)
+        private val TAGMO_GIT_API = if (TagMo.isWearable)
             "https://api.github.com/repos/HiddenRamblings/TagMo/releases/tags/wearos"
         else
             "https://api.github.com/repos/HiddenRamblings/TagMo/releases/tags/master"

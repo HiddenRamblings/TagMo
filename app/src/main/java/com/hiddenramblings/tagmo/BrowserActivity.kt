@@ -170,7 +170,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
 
     public override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        if (BuildConfig.WEAR_OS) {
+        if (TagMo.isWearable) {
             supportActionBar?.hide()
         } else {
             supportActionBar?.let {
@@ -205,12 +205,12 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
         if (null == settings) settings = BrowserSettings()
         settings?.addChangeListener(this)
 
-        if (!BuildConfig.WEAR_OS) {
+        if (!TagMo.isWearable) {
             updateManager = UpdateManager(this)
             settings?.lastUpdatedGit = System.currentTimeMillis()
             updateManager?.setUpdateListener(object : UpdateManager.UpdateListener {
                 override fun onUpdateFound() {
-                    if (BuildConfig.WEAR_OS) onCreateWearOptionsMenu() else invalidateOptionsMenu()
+                    if (TagMo.isWearable) onCreateWearOptionsMenu() else invalidateOptionsMenu()
                 }
             })
         }
@@ -241,7 +241,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
             })
         }
 
-        viewPager.keepScreenOn = BuildConfig.WEAR_OS
+        viewPager.keepScreenOn = TagMo.isWearable
         viewPager.adapter = pagerAdapter
         viewPager.isUserInputEnabled = TagMo.isUserInputEnabled
         if (TagMo.isUserInputEnabled) {
@@ -258,7 +258,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                 super.onPageSelected(position)
                 nfcFab.hide()
                 val isEliteEnabled = prefs.eliteEnabled()
-                if (BuildConfig.WEAR_OS) {
+                if (TagMo.isWearable) {
                     when (position) {
                         0 -> {
                             nfcFab.show()
@@ -335,7 +335,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                     }
                 }
                 amiibosView?.layoutManager = getFileLayoutManager()
-                if (BuildConfig.WEAR_OS) onCreateWearOptionsMenu() else invalidateOptionsMenu()
+                if (TagMo.isWearable) onCreateWearOptionsMenu() else invalidateOptionsMenu()
             }
 
             override fun onPageScrollStateChanged(state: Int) {
@@ -359,7 +359,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
         }
 
         requestStoragePermission()
-        if (!BuildConfig.WEAR_OS) {
+        if (!TagMo.isWearable) {
             try {
                 packageManager.getPackageInfo("com.hiddenramblings.tagmo", PackageManager.GET_META_DATA)
                 AlertDialog.Builder(this)
@@ -375,7 +375,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
 
         onCreateMainMenuLayout()
 
-        if (BuildConfig.WEAR_OS) {
+        if (TagMo.isWearable) {
             onCreateWearOptionsMenu()
         } else {
             prefsDrawer = findViewById(R.id.drawer_layout)
@@ -455,7 +455,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
 
         loadPTagKeyManager()
 
-        if (!BuildConfig.WEAR_OS) {
+        if (!TagMo.isWearable) {
             donationManager.retrieveDonationMenu()
             findViewById<View>(R.id.donate_layout).setOnClickListener {
                 closePrefsDrawer()
@@ -540,7 +540,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
 
         findViewById<CardView>(R.id.menu_lego).setOnClickListener {
             closePrefsDrawer()
-            if (BuildConfig.WEAR_OS)
+            if (TagMo.isWearable)
                 Toasty(this).Short(R.string.feature_unavailable)
             else
                 onReturnableIntent.launch(Intent(this, DimensionActivity::class.java))
@@ -566,7 +566,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
 
     private fun requestStoragePermission() {
         when {
-            BuildConfig.WEAR_OS -> {
+            TagMo.isWearable -> {
                 onRequestStorage.launch(PERMISSIONS_STORAGE)
             }
             Version.isRedVelvet -> {
@@ -682,7 +682,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
         popup.setOnMenuItemClickListener { item: MenuItem ->
             when (item.itemId) {
                 R.id.mnu_scan -> {
-                    if (BuildConfig.WEAR_OS) {
+                    if (TagMo.isWearable) {
                         Toasty(this).Short(R.string.feature_unavailable)
                         return@setOnMenuItemClickListener true
                     }
@@ -693,7 +693,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                     return@setOnMenuItemClickListener true
                 }
                 R.id.mnu_backup -> {
-                    if (BuildConfig.WEAR_OS) {
+                    if (TagMo.isWearable) {
                         Toasty(this).Short(R.string.feature_unavailable)
                         return@setOnMenuItemClickListener true
                     }
@@ -703,7 +703,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                     return@setOnMenuItemClickListener true
                 }
                 R.id.mnu_validate -> {
-                    if (BuildConfig.WEAR_OS) {
+                    if (TagMo.isWearable) {
                         Toasty(this).Short(R.string.feature_unavailable)
                         return@setOnMenuItemClickListener true
                     }
@@ -1618,7 +1618,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                 onFilterGameTitlesClick()
             }
         }
-        return BuildConfig.WEAR_OS || super.onOptionsItemSelected(item)
+        return TagMo.isWearable || super.onOptionsItemSelected(item)
     }
 
     fun onCreateWearOptionsMenu() {
@@ -1633,7 +1633,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        if (BuildConfig.WEAR_OS) return super.onCreateOptionsMenu(menu)
+        if (TagMo.isWearable) return super.onCreateOptionsMenu(menu)
         menuInflater.inflate(R.menu.browser_menu, menu)
         MenuCompat.setGroupDividerEnabled(menu, true)
         setOptionalIconsVisible(menu)
@@ -2481,7 +2481,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
 
     private fun onShowSettingsFragment() {
         CoroutineScope(Dispatchers.Main).launch {
-            if (BuildConfig.WEAR_OS) {
+            if (TagMo.isWearable) {
                 settingsPage?.isVisible = true
             } else {
                 prefsDrawer?.openDrawer(GravityCompat.START)
@@ -2660,7 +2660,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
     private var onRequestStorage = registerForActivityResult(
         ActivityResultContracts.RequestMultiplePermissions()) { permissions: Map<String, Boolean> ->
         var isStorageEnabled = true
-        if (BuildConfig.WEAR_OS) {
+        if (TagMo.isWearable) {
             isStorageEnabled = permissions[Manifest.permission.READ_EXTERNAL_STORAGE] == true
         } else {
             permissions.entries.forEach {
@@ -2745,7 +2745,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
         super.onStart()
         onBackPressedDispatcher.addCallback(object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
-                if (BuildConfig.WEAR_OS) {
+                if (TagMo.isWearable) {
                     when {
                         browserSheet?.state == BottomSheetBehavior.STATE_EXPANDED -> {
                             browserSheet?.state = BottomSheetBehavior.STATE_COLLAPSED

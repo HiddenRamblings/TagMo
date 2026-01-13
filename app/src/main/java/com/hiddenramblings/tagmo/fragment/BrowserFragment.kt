@@ -70,7 +70,7 @@ import kotlinx.coroutines.withContext
 import me.zhanghai.android.fastscroll.FastScrollerBuilder
 import java.io.File
 
-private val Number.toPx get() = TypedValue.applyDimension(
+val Number.toPx get() = TypedValue.applyDimension(
     TypedValue.COMPLEX_UNIT_DIP, this.toFloat(), Resources.getSystem().displayMetrics
 ).toInt()
 
@@ -421,7 +421,7 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
     }
 
     fun setStorageButtons() {
-        if (BuildConfig.WEAR_OS) return
+        if (TagMo.isWearable) return
         browserActivity?.let { activity ->
             val switchStorageRoot = requireView().findViewById<AppCompatButton>(R.id.switch_storage_root)
             val switchStorageType = requireView().findViewById<AppCompatButton>(R.id.switch_storage_type)

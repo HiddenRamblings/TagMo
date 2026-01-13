@@ -79,6 +79,7 @@ import com.hiddenramblings.tagmo.eightbit.io.Debug
 import com.hiddenramblings.tagmo.eightbit.material.IconifiedSnackbar
 import com.hiddenramblings.tagmo.eightbit.os.Version
 import com.hiddenramblings.tagmo.eightbit.request.ImageTarget
+import com.hiddenramblings.tagmo.eightbit.webkit.ChromeIntegration
 import com.hiddenramblings.tagmo.eightbit.widget.ProgressAlert
 import com.hiddenramblings.tagmo.nfctech.TagArray
 import com.hiddenramblings.tagmo.nfctech.TagArray.toByteArray
@@ -234,7 +235,7 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
             screenOptions = view.findViewById(R.id.screen_options)
 
             val searchView = view.findViewById<SearchView>(R.id.amiibo_search)
-            if (BuildConfig.WEAR_OS) {
+            if (TagMo.isWearable) {
                 searchView.isGone = true
             } else {
                 with(activity.getSystemService(Context.SEARCH_SERVICE) as SearchManager) {

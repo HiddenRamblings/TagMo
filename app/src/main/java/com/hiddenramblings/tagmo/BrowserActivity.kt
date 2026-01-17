@@ -368,7 +368,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                     .setMessage(R.string.conversion_message)
                     .setPositiveButton(R.string.proceed) { _: DialogInterface?, _: Int ->
                         startActivity(Intent(Intent.ACTION_DELETE).setData(
-                            Uri.parse("package:com.hiddenramblings.tagmo")
+                            "package:com.hiddenramblings.tagmo".toUri()
                         ))
                     }.show()
             } catch (_: PackageManager.NameNotFoundException) { }
@@ -1949,7 +1949,9 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                         CoroutineScope(Dispatchers.Main).launch {
                             processDialog.dismiss()
                         }
-                       requestStoragePermission()
+                        CoroutineScope(Dispatchers.IO).launch {
+                            locateKeyFilesRecursive(folder, true)
+                        }
                     }
                 }
             } catch (iae: IllegalArgumentException) {

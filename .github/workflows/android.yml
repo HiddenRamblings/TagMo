@@ -5,6 +5,7 @@ on:
     branches: [ master ]
     paths-ignore:
       - '**/README.md'
+      - '**/FUNDING.yml'
       - '.github/ISSUE_TEMPLATE/**'
       - 'assets/**'
 

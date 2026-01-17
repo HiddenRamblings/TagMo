@@ -42,6 +42,7 @@ import androidx.cardview.widget.CardView
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.content.ContextCompat
 import androidx.core.database.getStringOrNull
+import androidx.core.net.toUri
 import androidx.core.view.GravityCompat
 import androidx.core.view.MenuCompat
 import androidx.core.view.isGone
@@ -570,12 +571,14 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                 onRequestStorage.launch(PERMISSIONS_STORAGE)
             }
             Version.isRedVelvet -> {
-                if (BuildConfig.GOOGLE_PLAY) {
-                    onDocumentEnabled()
-                } else {
-                    if (Environment.isExternalStorageManager()) {
+                when {
+                    BuildConfig.GOOGLE_PLAY -> {
+                        onDocumentEnabled()
+                    }
+                    Environment.isExternalStorageManager() -> {
                         onStorageEnabled()
-                    } else {
+                    }
+                    else -> {
                         onDocumentEnabled()
                     }
                 }
@@ -1049,7 +1052,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                         TagArray.writeBytesWithName(this@BrowserActivity, name, "Duplicates", outputData)?.let {
                             if (prefs.isDocumentStorage)
                                 AmiiboFile(DocumentFile.fromTreeUri(
-                                    this@BrowserActivity, Uri.parse(it)
+                                    this@BrowserActivity, it.toUri()
                                 ), amiiboData.amiiboID, outputData)
                             else
                                 AmiiboFile(File(it), amiiboData.amiiboID, amiiboData.array)
@@ -2553,7 +2556,6 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                 || name.lowercase().startsWith("unfixed"))
     }
 
-    @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
     private suspend fun locateKeyDocumentsRecursive() = withContext(Dispatchers.IO) {
         settings?.browserRootDocument?.let {
             AmiiboDocument(this@BrowserActivity).listFiles(it, true)
@@ -2690,7 +2692,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
         try {
             val intent = Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION)
             try {
-                intent.data = Uri.parse(String.format("package:%s", packageName))
+                intent.data = String.format("package:%s", packageName).toUri()
             } catch (_: Exception) {
                 intent.action = Settings.ACTION_MANAGE_ALL_FILES_ACCESS_PERMISSION
             }

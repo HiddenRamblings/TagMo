@@ -20,9 +20,7 @@ object Zip {
         updateProgress: (progress: Int) -> Unit
     ) {
         File(destDirectory).run {
-            if (!exists()) {
-                mkdirs()
-            }
+            if (!exists()) mkdirs()
         }
 
         ZipFile(archiveFile).use { zip ->

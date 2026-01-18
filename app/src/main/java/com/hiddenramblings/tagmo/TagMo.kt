@@ -17,7 +17,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import me.weishu.reflection.Reflection
-import org.lsposed.hiddenapibypass.HiddenApiBypass
 import java.io.PrintWriter
 import java.io.Serializable
 import java.io.StringWriter
@@ -51,11 +50,7 @@ class TagMo : Application() {
         super.attachBaseContext(base)
         if (isWearable)
             appContext = ScaledContext(this).watch(2f)
-        if (Version.isPie)
-            HiddenApiBypass.addHiddenApiExemptions(
-                "Landroid/bluetooth/BluetoothHidHost;", "LBluetooth"
-            )
-        else if (Version.isLollipop) Reflection.unseal(base)
+        if (Version.isLollipop) Reflection.unseal(base)
     }
 
     override fun onCreate() {

@@ -49,8 +49,7 @@ class JSONExecutor(activity: Activity, server: String, path: String? = null) {
                 )
                 if (activity is BrowserActivity)
                     CoroutineScope(Dispatchers.Main).launch { activity.settings?.notifyChanges() }
-                jsonListener?.onResults(null)
-                    ?: dbListener?.onResults(null, false)
+                jsonListener?.onResults(null) ?: dbListener?.onResults(null)
             }
         })
     }
@@ -74,7 +73,7 @@ class JSONExecutor(activity: Activity, server: String, path: String? = null) {
             val url = path?.let { "$server/$path" } ?: server
             try {
                 val result = URL(url).readText()
-                dbListener?.onResults(result, isRawJSON(url)) ?: jsonListener?.onResults(result)
+                dbListener?.onResults(result) ?: jsonListener?.onResults(result)
                 return@launch
             } catch (fnf: FileNotFoundException) {
                 Debug.warn(fnf)
@@ -96,7 +95,7 @@ class JSONExecutor(activity: Activity, server: String, path: String? = null) {
                     statusCode = conn.responseCode
                 } else if (statusCode != HttpsURLConnection.HTTP_OK && isRawJSON(conn)) {
                     conn.disconnect()
-                    conn = URL("${AmiiboManager.AMIIBO_API}/amiibo/").asConnection.withToken
+                    conn = URL("${AmiiboManager.AMIIBO_RAW}/database/amiibo.json").asConnection.withToken
                     statusCode = conn.responseCode
                 }
                 if (statusCode != HttpsURLConnection.HTTP_OK) {
@@ -112,7 +111,7 @@ class JSONExecutor(activity: Activity, server: String, path: String? = null) {
                         while (null != streamReader.readLine().also { inputStr = it })
                             responseStrBuilder.append(inputStr)
                         dbListener?.onResults(
-                            responseStrBuilder.toString(), isRawJSON(conn)
+                            responseStrBuilder.toString()
                         ) ?: jsonListener?.onResults(
                             responseStrBuilder.toString()
                         )
@@ -127,7 +126,7 @@ class JSONExecutor(activity: Activity, server: String, path: String? = null) {
     }
 
     private fun isRawJSON(url: String): Boolean {
-        return url == "${AmiiboManager.RENDER_RAW}/database/amiibo.json"
+        return url.startsWith(AmiiboManager.RENDER_RAW)
     }
 
     private fun isRawJSON(urlConnection: HttpsURLConnection): Boolean {
@@ -144,7 +143,7 @@ class JSONExecutor(activity: Activity, server: String, path: String? = null) {
     }
 
     interface DatabaseListener {
-        fun onResults(result: String?, isRawJSON: Boolean)
+        fun onResults(result: String?)
         fun onException(e: Exception)
     }
 

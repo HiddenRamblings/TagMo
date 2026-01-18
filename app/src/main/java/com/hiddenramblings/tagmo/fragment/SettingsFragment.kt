@@ -490,13 +490,15 @@ class SettingsFragment : PreferenceFragmentCompat() {
                     syncMessage.show()
                 }
                 JSONExecutor(
-                    activity, if (prefs.databaseSource() == 0)
-                        "${AmiiboManager.RENDER_RAW}/database/amiibo.json"
-                    else "${AmiiboManager.AMIIBO_API}/amiibo/"
+                    activity, "${if (prefs.databaseSource() == 0) {
+                        AmiiboManager.RENDER_RAW
+                    } else {
+                        AmiiboManager.AMIIBO_RAW
+                    }}/database/amiibo.json"
                 ).setDatabaseListener(object : JSONExecutor.DatabaseListener {
-                    override fun onResults(result: String?, isRawJSON: Boolean) {
+                    override fun onResults(result: String?) {
                         result?.let {
-                            val amiiboManager = if (isRawJSON) parse(it) else parseAmiiboAPI(it)
+                            val amiiboManager = parse(it)
                             saveDatabase(amiiboManager, TagMo.appContext)
                             CoroutineScope(Dispatchers.Main).launch {
                                 if (syncMessage.isShown) syncMessage.dismiss()
@@ -613,41 +615,27 @@ class SettingsFragment : PreferenceFragmentCompat() {
 
     private fun onSyncRequested(isMenuClicked: Boolean) {
         browserActivity?.let { activity ->
-            if (prefs.databaseSource() == 0) {
-                JSONExecutor(
-                    activity,
-                    "https://api.github.com/repos/8bitDream/AmiiboAPI",
-                    "branches/render?path=database/amiibo.json"
-                ).setResultListener(object : JSONExecutor.ResultListener {
-                    override fun onResults(result: String?) {
-                        result?.let { parseCommitDate(it, isMenuClicked) }
-                    }
+            JSONExecutor(
+                activity,
+                "https://api.github.com/repos/8bitDream/AmiiboAPI",
+                "branches/${ if (prefs.databaseSource() == 0) {
+                    "render"
+                } else {
+                    "master"
+                }}?path=database/amiibo.json"
+            ).setResultListener(object : JSONExecutor.ResultListener {
+                override fun onResults(result: String?) {
+                    result?.let { parseCommitDate(it, isMenuClicked) }
+                }
 
-                    override fun onException(e: Exception) {
-                        CoroutineScope(Dispatchers.Main).launch {
-                            buildSnackbar(
-                                activity, R.string.amiibo_failure_server, Snackbar.LENGTH_SHORT
-                            ).show()
-                        }
+                override fun onException(e: Exception) {
+                    CoroutineScope(Dispatchers.Main).launch {
+                        buildSnackbar(
+                            activity, R.string.amiibo_failure_server, Snackbar.LENGTH_SHORT
+                        ).show()
                     }
-                })
-            } else {
-                JSONExecutor(
-                    activity, AmiiboManager.AMIIBO_API, "lastupdated/"
-                ).setResultListener(object : JSONExecutor.ResultListener {
-                    override fun onResults(result: String?) {
-                        result?.let { parseUpdateJSON(it, isMenuClicked) }
-                    }
-
-                    override fun onException(e: Exception) {
-                        CoroutineScope(Dispatchers.Main).launch {
-                            buildSnackbar(
-                                activity, R.string.amiibo_failure_server, Snackbar.LENGTH_SHORT
-                            ).show()
-                        }
-                    }
-                })
-            }
+                }
+            })
         }
     }
 

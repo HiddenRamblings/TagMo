@@ -169,33 +169,6 @@
             android:textSize="16sp"
             android:layout_marginBottom="16dp" />
 
-        <LinearLayout
-            android:id="@+id/foomiibo_options"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-            <androidx.appcompat.widget.AppCompatButton
-                android:id="@+id/clear_foomiibo_set"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginRight="-2dp"
-                android:layout_marginEnd="-2dp"
-                android:layout_weight="1"
-                android:textSize="14sp"
-                android:text="@string/clear_foomiibo_set" />
-
-            <androidx.appcompat.widget.AppCompatButton
-                android:id="@+id/build_foomiibo_set"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="-2dp"
-                android:layout_marginStart="-2dp"
-                android:layout_weight="1"
-                android:textSize="14sp"
-                android:text="@string/build_foomiibo_set" />
-        </LinearLayout>
-
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/folders_list"
             android:layout_width="match_parent"

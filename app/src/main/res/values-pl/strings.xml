@@ -135,10 +135,6 @@
     <string name="paypal_link">Przekaż darowiznę przez PayPal</string>
     <string name="cancel_link">Anuluj subskrypcję</string>
     <string name="subscription_terms">Subskrybując comiesięczne darowizny, specjalny baner pojawi się w ustawieniach na czas trwania subskrypcji. Możesz anulować subskrypcję w dowolnym momencie za pomocą przycisku na tej stronie darowizny lub w Google Play.</string>
-    <string name="clear_foomiibo_set">Wyczyść Foomiibo</string>
-    <string name="build_foomiibo_set">Zbuduj Foomiibo</string>
-    <string name="foomiibo_progress">Budowanie %1$s&#8230;</string>
-    <string name="foomiibo_removing">Clearing %1$s&#8230;</string>
 
     <string name="wrote_file">%1$s zapisane!</string>
     <string name="wrote_foomiibo">%1$s Foomiibo zapisane!</string>

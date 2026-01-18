@@ -135,10 +135,6 @@
     <string name="paypal_link">Mit PayPal spenden</string>
     <string name="cancel_link">Abonnement kündigen</string>
     <string name="subscription_terms">Wenn Sie ein monatliches Spendenabonnement abschließen, wird für die Dauer Ihres Abonnements ein spezieller Banner in den Einstellungen angezeigt.\n\n Sie können Ihr Abonnement jederzeit über die Schaltfläche auf dieser Spendenseite oder über Google Play kündigen.</string>
-    <string name="clear_foomiibo_set">Foomiibo löschen</string>
-    <string name="build_foomiibo_set">Foomiibo aufbauen</string>
-    <string name="foomiibo_progress">Bauen %1$s&#8230;</string>
-    <string name="foomiibo_removing">Leeren %1$s&#8230;</string>
 
     <string name="wrote_file">%1$s gespeichert!</string>
     <string name="wrote_foomiibo">%1$s Foomiibo gespeichert!</string>

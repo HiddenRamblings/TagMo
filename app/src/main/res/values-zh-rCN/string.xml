@@ -99,9 +99,6 @@
     <string name="bonus_three">Bonus Effect 2</string>
 
     <string name="report_problem">抓取日志</string>
-    <string name="clear_foomiibo_set">删除本地所有 Foomiibo</string>
-    <string name="build_foomiibo_set">创建 Foomiibo</string>
-    <string name="foomiibo_progress">%1$s 创建中&#8230;</string>
 
     <string name="wrote_file">文件保存至 %1$s</string>
     <string name="nfc_tag">NFC tag</string>

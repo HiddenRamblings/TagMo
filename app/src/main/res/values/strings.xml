@@ -160,10 +160,6 @@
     <string name="coffee_link">Buy me a coffee</string>
     <string name="cancel_link">Cancel Subscription</string>
     <string name="subscription_terms">By subscribing to monthly donations, a special banner will appear in settings for the duration of your subscription.\n\nYou may cancel your subscription at any time by using the button on this donation page or through Google Play.</string>
-    <string name="clear_foomiibo_set">Clear Foomiibo</string>
-    <string name="build_foomiibo_set">Build Foomiibo</string>
-    <string name="foomiibo_progress">Building %1$s&#8230;</string>
-    <string name="foomiibo_removing">Clearing %1$s&#8230;</string>
 
     <string name="wrote_file">%1$s saved!</string>
     <string name="wrote_foomiibo">%1$s Foomiibo saved!</string>

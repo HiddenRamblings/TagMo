@@ -158,10 +158,6 @@
     <string name="paypal_link">透過PayPal捐款</string>
     <string name="cancel_link">取消訂閱</string>
     <string name="subscription_terms">使用按月贊助方案, 訂閱期間設定頁面內將有特別橫幅圖案.\n\n您隨時都可以點擊贊助頁面的按鈕或從GOOGLE PLAY商店設定來取消訂閱.</string>
-    <string name="clear_foomiibo_set">清除 Foomiibo</string>
-    <string name="build_foomiibo_set">建立 Foomiibo</string>
-    <string name="foomiibo_progress">正在建立 %1$s&#8230;</string>
-    <string name="foomiibo_removing">正在清除 %1$s&#8230;</string>
 
     <string name="wrote_file">%1$s 已儲存！</string>
     <string name="wrote_foomiibo">%1$s Foomiibo 已儲存！</string>

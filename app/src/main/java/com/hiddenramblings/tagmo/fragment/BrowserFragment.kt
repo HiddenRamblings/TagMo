@@ -215,13 +215,6 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
                 }
             }
 
-            val foomiiboOptions = view.findViewById<LinearLayout>(R.id.foomiibo_options)
-            foomiiboOptions.findViewById<View>(R.id.clear_foomiibo_set).setOnClickListener {
-                clearFoomiiboSet(activity)
-            }
-            foomiiboOptions.findViewById<View>(R.id.build_foomiibo_set).setOnClickListener {
-                buildFoomiiboSet(activity)
-            }
             view.findViewById<View>(R.id.select_zip_file).setOnClickListener {
                 onSelectArchiveFile.launch(arrayOf(getString(R.string.mimetype_zip)))
             }
@@ -536,30 +529,6 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
         } catch (e: Exception) { Toasty(requireContext()).Short(R.string.delete_virtual) }
     }
 
-    private fun clearFoomiiboSet(activity: AppCompatActivity) {
-        val dialog = ProgressAlert.show(activity, "").apply {
-            setMessage(getString(R.string.foomiibo_removing, Foomiibo.directory.name))
-        }
-        CoroutineScope(Dispatchers.IO).launch {
-            Foomiibo.directory.deleteRecursively()
-            withContext(Dispatchers.Main) {
-                dialog.dismiss()
-                if (activity is BrowserActivity) activity.onRootFolderChanged(false)
-            }
-        }
-    }
-
-    private fun buildFoomiiboFile(amiibo: Amiibo) {
-        try {
-            val tagData = Foomiibo.getSignedData(amiibo.id)
-            val directory = File(Foomiibo.directory, amiibo.amiiboSeries!!.name)
-            directory.mkdirs()
-            TagArray.writeBytesToFile(
-                directory, TagArray.decipherFilename(amiibo, tagData, false), tagData
-            )
-        } catch (e: Exception) { Debug.warn(e) }
-    }
-
     fun buildFoomiiboFile(tagData: ByteArray) {
         try {
             val amiibo = settings.amiiboManager?.amiibos?.get(Amiibo.dataToId(tagData)) ?: return
@@ -575,34 +544,6 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
                 getString(R.string.wrote_foomiibo, amiibo.name), Snackbar.LENGTH_SHORT
             ).show()
         } catch (e: Exception) { Debug.warn(e) }
-    }
-
-    private fun buildFoomiiboSet(activity: AppCompatActivity) {
-        try {
-            settings.amiiboManager?.let { amiiboManager ->
-                val dialog = ProgressAlert.show(activity, "").apply {
-                    setMessage(getString(R.string.foomiibo_removing, Foomiibo.directory.name))
-                }
-                CoroutineScope(Dispatchers.IO).launch {
-                    Foomiibo.directory.deleteRecursively()
-                    Foomiibo.directory.mkdirs()
-                    amiiboManager.amiibos.values.forEach { amiibo ->
-                        buildFoomiiboFile(amiibo)
-                        withContext(Dispatchers.Main) {
-                            amiibo.character?.let {
-                                dialog.setMessage(getString(R.string.foomiibo_progress, it.name))
-                            }
-                        }
-                    }
-                    withContext(Dispatchers.Main) {
-                        dialog.dismiss()
-                        if (activity is BrowserActivity) activity.onRootFolderChanged(false)
-                    }
-                }
-            } ?: Toasty(activity).Short(R.string.amiibo_failure_read)
-        } catch (ex: Exception) {
-            Toasty(activity).Short(R.string.amiibo_failure_read)
-        }
     }
 
     private fun getGameCompatibility(txtUsage: TextView, tagData: ByteArray) {

@@ -215,13 +215,13 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                 }
             })
         }
-        val intent = intent
-        intent?.let {
+        val bIntent = intent
+        bIntent?.let {
             if (componentName == FilterComponent) {
                 startActivity(Intent(this, BrowserActivity::class.java).apply {
-                    it.action?.let { action = it}
-                    it.extras?.let { putExtras(it) }
-                    it.data?.let { data = it }
+                    intent.action?.let { action = it}
+                    intent.extras?.let { putExtras(it) }
+                    intent.data?.let { data = it }
                 })
             }
         }

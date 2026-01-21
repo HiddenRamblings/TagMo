@@ -1457,27 +1457,34 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
 
     val isRefreshing : Boolean get() = fakeSnackbar?.isVisible == true
 
+    private fun getDocumentTreeIntent() : Intent {
+        return if (Version.isQuinceTart) {
+            with(getSystemService(STORAGE_SERVICE) as StorageManager) {
+                primaryStorageVolume.createOpenDocumentTreeIntent()
+            }
+        } else {
+            Intent(Intent.ACTION_OPEN_DOCUMENT_TREE)
+        }
+    }
+
     @Throws(ActivityNotFoundException::class)
     fun onDocumentRequested() {
         if (Version.isLollipop) {
-            val docTreeIntent = if (Version.isQuinceTart) {
-                with(getSystemService(STORAGE_SERVICE) as StorageManager) {
-                    primaryStorageVolume.createOpenDocumentTreeIntent().apply {
-                        putExtra("android.content.extra.SHOW_ADVANCED", true)
-                        putExtra("android.content.extra.FANCY", true)
-                    }
-                }
-            } else {
-                Intent(Intent.ACTION_OPEN_DOCUMENT_TREE)
-                    .putExtra("android.content.extra.SHOW_ADVANCED", true)
-                    .putExtra("android.content.extra.FANCY", true)
+            val docTreeIntent = getDocumentTreeIntent().apply {
+                putExtra("android.content.extra.SHOW_ADVANCED", true)
+                putExtra("android.content.extra.FANCY", true)
             }
             if (prefs.isDocumentStorage) {
                 try {
                     onDocumentTree.launch(docTreeIntent)
                 } catch (anf: ActivityNotFoundException) {
                     Debug.warn(anf)
-                    Toasty(this@BrowserActivity).Short(R.string.activity_unavailable)
+                    try {
+                        onDocumentTree.launch(getDocumentTreeIntent())
+                    } catch (anf: ActivityNotFoundException) {
+                        Debug.warn(anf)
+                        Toasty(this@BrowserActivity).Short(R.string.activity_unavailable)
+                    }
                 }
                 return
             }
@@ -1488,7 +1495,12 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                         onDocumentTree.launch(docTreeIntent)
                     } catch (anf: ActivityNotFoundException) {
                         Debug.warn(anf)
-                        Toasty(this@BrowserActivity).Short(R.string.activity_unavailable)
+                        try {
+                            onDocumentTree.launch(getDocumentTreeIntent())
+                        } catch (anf: ActivityNotFoundException) {
+                            Debug.warn(anf)
+                            Toasty(this@BrowserActivity).Short(R.string.activity_unavailable)
+                        }
                     }
                 }
                 setNegativeButton(this@BrowserActivity.getString(R.string.close)) {

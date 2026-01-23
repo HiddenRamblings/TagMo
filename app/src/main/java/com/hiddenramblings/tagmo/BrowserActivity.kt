@@ -1504,7 +1504,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                     }
                 }
                 setNegativeButton(this@BrowserActivity.getString(R.string.close)) {
-                    finish()
+                    Toasty(this@BrowserActivity).Short(R.string.storage_unavailable)
                 }
             }.show(supportFragmentManager, "storage")
         }

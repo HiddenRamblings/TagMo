@@ -1209,8 +1209,8 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                 }
                 R.id.mnu_save -> {
                     if (cached) {
-                        if (tagData != null) {
-                            pagerAdapter.browser.buildFoomiiboFile(tagData)
+                        tagData?.let { 
+                            pagerAdapter.browser.buildFoomiiboFile(it)
                             onRootFolderChanged(true)
                         }
                     } else {
@@ -1261,7 +1261,11 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                     return@setOnMenuItemClickListener true
                 }
                 R.id.mnu_flipper -> {
-                    writeFlipperFile(null, tagData)
+                    if (cached) {
+                        Toasty(this).Short(R.string.fail_save_data)
+                    } else {
+                        writeFlipperFile(null, tagData)
+                    }
                     return@setOnMenuItemClickListener true
                 }
                 R.id.mnu_validate -> {

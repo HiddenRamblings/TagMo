@@ -105,6 +105,13 @@ jobs:
         files: |
           ${{steps.sign_wear.outputs.signedReleaseFile}}
 
+    - name: Upload release to discord
+      uses: sinshutu/upload-to-discord@master
+      env:
+        DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+      with:
+        args: ${{steps.sign_wear.outputs.signedReleaseFile}}
+
   android:
     needs: wearos
     runs-on: ubuntu-latest
@@ -176,6 +183,13 @@ jobs:
         title: TagMo-${{ env.GIT_HASH }}
         files: |
           ${{steps.sign_main.outputs.signedReleaseFile}}
+
+    - name: Upload release to discord
+      uses: sinshutu/upload-to-discord@master
+      env:
+        DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+      with:
+        args: ${{steps.sign_main.outputs.signedReleaseFile}}
 
     - name: Purge cache
       if: ${{ ! startsWith(github.event.head_commit.message, 'Update ') }}

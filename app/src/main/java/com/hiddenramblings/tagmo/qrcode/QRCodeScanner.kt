@@ -57,6 +57,7 @@ import java.text.ParseException
 import java.util.concurrent.Executors
 import javax.crypto.Cipher
 import javax.crypto.spec.GCMParameterSpec
+import javax.crypto.spec.IvParameterSpec
 import javax.crypto.spec.SecretKeySpec
 import kotlin.math.abs
 
@@ -184,14 +185,77 @@ class QRCodeScanner : AppCompatActivity() {
         if (null == qrData) return
         val nonce = qrData.copyOfRange(0, 8)
         val ivSpec = nonce.plus(byteArrayOf(0, 0, 0, 0))
-        val cipher = Cipher.getInstance("AES/CCM/NoPadding")
-        cipher.init(
+        
+        try {
+            // Try normal decryption first (for properly implemented QR codes)
+            val cipher = Cipher.getInstance("AES/CCM/NoPadding")
+            cipher.init(
+                Cipher.DECRYPT_MODE, keySpec,
+                GCMParameterSpec(ivSpec.size * Byte.SIZE_BITS, ivSpec)
+            )
+            val content = cipher.doFinal(qrData, 0, 0x58)
+            txtMiiValue.text = content.copyOfRange(0, 12).plus(nonce)
+                    .plus(content.copyOfRange(12, content.size)).toHex()
+        } catch (e: Exception) {
+            // If MAC verification fails, try 3DS workaround
+            // 3DS pads data to multiple of 0x10 for MAC calculation
+            if (e.message?.contains("mac", ignoreCase = true) == true ||
+                e.message?.contains("tag", ignoreCase = true) == true ||
+                e.message?.contains("ccm", ignoreCase = true) == true) {
+                decryptMii3DS(qrData, nonce, ivSpec)
+            } else {
+                throw e
+            }
+        }
+    }
+
+    @Throws(Exception::class)
+    private fun decryptMii3DS(qrData: ByteArray, nonce: ByteArray, ivSpec: ByteArray) {
+        // 3DS workaround: The 3DS incorrectly pads data for MAC calculation
+        // The buffer is 0x60 bytes of actual data, padded to 0x68 for MAC
+        // We decrypt without verifying, pad, re-encrypt and verify
+        
+        // Step 1: Manually decrypt using AES/CTR (CCM uses CTR for encryption)
+        // CCM counter starts with: [flags(1) | nonce | counter]
+        // For our case with 12-byte IV: [flags | 12-byte-IV | 0x0001]
+        val ccmCounter = ByteArray(16)
+        // Flags byte for CCM: bits 0-2 = L-1 (L=2 for 16-bit counter), bit 3-5 = 0, bit 6 = Adata, bit 7 = M
+        ccmCounter[0] = 0x01 // L-1 = 1 (L=2, so 2-byte counter)
+        System.arraycopy(ivSpec, 0, ccmCounter, 1, 12)
+        ccmCounter[14] = 0
+        ccmCounter[15] = 1
+        
+        val ctrCipher = Cipher.getInstance("AES/CTR/NoPadding")
+        ctrCipher.init(
             Cipher.DECRYPT_MODE, keySpec,
-            GCMParameterSpec(ivSpec.size * Byte.SIZE_BITS, ivSpec)
+            IvParameterSpec(ccmCounter)
         )
-        val content = cipher.doFinal(qrData, 0, 0x58)
-        txtMiiValue.text = content.copyOfRange(0, 12).plus(nonce)
-                .plus(content.copyOfRange(12, content.size)).toHex()
+        
+        // Decrypt the ciphertext (skip nonce, get 0x60 bytes)
+        val ciphertext = qrData.copyOfRange(8, 8 + 0x60)
+        val plaintext = ctrCipher.doFinal(ciphertext)
+        
+        // Step 2: Re-encrypt with padded plaintext to verify MAC
+        // Pad plaintext to 0x68 bytes (0x60 + 0x08 padding)
+        val paddedPlaintext = plaintext.plus(ByteArray(8))
+        
+        val verificationCipher = Cipher.getInstance("AES/CCM/NoPadding")
+        verificationCipher.init(
+            Cipher.ENCRYPT_MODE, keySpec,
+            GCMParameterSpec(128, ivSpec) // 128-bit authentication tag
+        )
+        val reencrypted = verificationCipher.doFinal(paddedPlaintext)
+        
+        // Step 3: Verify the first 0x60 bytes match
+        val originalCiphertext = qrData.copyOfRange(8, qrData.size)
+        if (reencrypted.size < 0x60 || !reencrypted.copyOfRange(0, 0x60)
+                .contentEquals(originalCiphertext.copyOfRange(0, 0x60))) {
+            throw Exception("3DS Mii QR code verification failed: ciphertext mismatch")
+        }
+        
+        // Success! Use the decrypted plaintext (without padding)
+        txtMiiValue.text = plaintext.copyOfRange(0, 12).plus(nonce)
+                .plus(plaintext.copyOfRange(12, plaintext.size)).toHex()
     }
 
     private fun clearPreviews(barcode : Boolean) {

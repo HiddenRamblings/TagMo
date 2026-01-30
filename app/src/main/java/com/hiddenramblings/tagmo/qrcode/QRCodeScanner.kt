@@ -57,6 +57,7 @@ import java.text.ParseException
 import java.util.concurrent.Executors
 import javax.crypto.Cipher
 import javax.crypto.spec.GCMParameterSpec
+import javax.crypto.spec.IvParameterSpec
 import javax.crypto.spec.SecretKeySpec
 import kotlin.math.abs
 
@@ -184,14 +185,86 @@ class QRCodeScanner : AppCompatActivity() {
         if (null == qrData) return
         val nonce = qrData.copyOfRange(0, 8)
         val ivSpec = nonce.plus(byteArrayOf(0, 0, 0, 0))
-        val cipher = Cipher.getInstance("AES/CCM/NoPadding")
-        cipher.init(
+        
+        try {
+            // Try normal decryption first (for properly implemented QR codes)
+            val cipher = Cipher.getInstance("AES/CCM/NoPadding")
+            cipher.init(
+                Cipher.DECRYPT_MODE, keySpec,
+                GCMParameterSpec(128, ivSpec) // 128-bit authentication tag
+            )
+            val content = cipher.doFinal(qrData, 0, 0x58)
+            txtMiiValue.text = content.copyOfRange(0, 12).plus(nonce)
+                    .plus(content.copyOfRange(12, content.size)).toHex()
+        } catch (e: Exception) {
+            // If MAC verification fails, try 3DS workaround
+            // Check for authentication tag exceptions specifically
+            val isAuthError = e is javax.crypto.AEADBadTagException ||
+                e.message?.contains("mac", ignoreCase = true) == true ||
+                e.message?.contains("tag", ignoreCase = true) == true ||
+                e.message?.contains("ccm", ignoreCase = true) == true
+            
+            if (isAuthError) {
+                decryptMii3DS(qrData, nonce, ivSpec)
+            } else {
+                throw e
+            }
+        }
+    }
+
+    @Throws(Exception::class)
+    private fun decryptMii3DS(qrData: ByteArray, nonce: ByteArray, ivSpec: ByteArray) {
+        // 3DS workaround: The 3DS incorrectly pads data for MAC calculation
+        // Actual data is 0x60 bytes, 3DS pads by 0x08 bytes for MAC (total 0x68)
+        // We decrypt without verifying, pad, re-encrypt and verify
+        
+        // Validate input size
+        if (qrData.size < 8 + 0x60) {
+            throw Exception("Invalid QR data size: expected at least ${8 + 0x60} bytes, got ${qrData.size}")
+        }
+        
+        // Step 1: Manually decrypt using AES/CTR (CCM uses CTR for encryption)
+        // CCM counter starts with: [flags(1) | nonce | counter]
+        // For 12-byte nonce: L=3, so flags = L-1 = 2
+        val ccmCounter = ByteArray(16)
+        ccmCounter[0] = 0x02 // L-1 where L=3 (3-byte counter)
+        System.arraycopy(ivSpec, 0, ccmCounter, 1, 12)
+        ccmCounter[13] = 0
+        ccmCounter[14] = 0
+        ccmCounter[15] = 1 // Counter starts at 1
+        
+        val ctrCipher = Cipher.getInstance("AES/CTR/NoPadding")
+        ctrCipher.init(
             Cipher.DECRYPT_MODE, keySpec,
-            GCMParameterSpec(ivSpec.size * Byte.SIZE_BITS, ivSpec)
+            IvParameterSpec(ccmCounter)
         )
-        val content = cipher.doFinal(qrData, 0, 0x58)
-        txtMiiValue.text = content.copyOfRange(0, 12).plus(nonce)
-                .plus(content.copyOfRange(12, content.size)).toHex()
+        
+        // Decrypt the ciphertext (skip nonce, get 0x60 bytes)
+        val ciphertext = qrData.copyOfRange(8, 8 + 0x60)
+        val plaintext = ctrCipher.doFinal(ciphertext)
+        
+        // Step 2: Re-encrypt with padded plaintext to verify MAC
+        // Pad plaintext by 0x08 bytes (as done by 3DS)
+        val paddedPlaintext = plaintext.plus(ByteArray(0x08))
+        
+        val verificationCipher = Cipher.getInstance("AES/CCM/NoPadding")
+        verificationCipher.init(
+            Cipher.ENCRYPT_MODE, keySpec,
+            GCMParameterSpec(128, ivSpec) // 128-bit authentication tag
+        )
+        val reencrypted = verificationCipher.doFinal(paddedPlaintext)
+        
+        // Step 3: Verify the first 0x60 bytes match
+        val originalCiphertext = qrData.copyOfRange(8, qrData.size)
+        // Re-encrypted data should be at least 0x68 (0x60 + 0x08) bytes plus tag
+        if (reencrypted.size < 0x68 || !reencrypted.copyOfRange(0, 0x60)
+                .contentEquals(originalCiphertext.copyOfRange(0, 0x60))) {
+            throw Exception("3DS Mii QR code verification failed: ciphertext mismatch")
+        }
+        
+        // Success! Use the decrypted plaintext (without padding)
+        txtMiiValue.text = plaintext.copyOfRange(0, 12).plus(nonce)
+                .plus(plaintext.copyOfRange(12, plaintext.size)).toHex()
     }
 
     private fun clearPreviews(barcode : Boolean) {

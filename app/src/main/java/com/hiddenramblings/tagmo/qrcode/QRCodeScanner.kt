@@ -186,30 +186,8 @@ class QRCodeScanner : AppCompatActivity() {
         val nonce = qrData.copyOfRange(0, 8)
         val ivSpec = nonce.plus(byteArrayOf(0, 0, 0, 0))
         
-        try {
-            // Try normal decryption first (for properly implemented QR codes)
-            val cipher = Cipher.getInstance("AES/CCM/NoPadding")
-            cipher.init(
-                Cipher.DECRYPT_MODE, keySpec,
-                GCMParameterSpec(128, ivSpec) // 128-bit authentication tag
-            )
-            val content = cipher.doFinal(qrData, 0, 0x58)
-            txtMiiValue.text = content.copyOfRange(0, 12).plus(nonce)
-                    .plus(content.copyOfRange(12, content.size)).toHex()
-        } catch (e: Exception) {
-            // If MAC verification fails, try 3DS workaround
-            // Check for authentication tag exceptions specifically
-            val isAuthError = e is javax.crypto.AEADBadTagException ||
-                e.message?.contains("mac", ignoreCase = true) == true ||
-                e.message?.contains("tag", ignoreCase = true) == true ||
-                e.message?.contains("ccm", ignoreCase = true) == true
-            
-            if (isAuthError) {
-                decryptMii3DS(qrData, nonce, ivSpec)
-            } else {
-                throw e
-            }
-        }
+        // Only use 3DS-specific decryption
+        decryptMii3DS(qrData, nonce, ivSpec)
     }
 
     @Throws(Exception::class)

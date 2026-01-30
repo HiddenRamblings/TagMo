@@ -217,13 +217,13 @@ class QRCodeScanner : AppCompatActivity() {
         
         // Step 1: Manually decrypt using AES/CTR (CCM uses CTR for encryption)
         // CCM counter starts with: [flags(1) | nonce | counter]
-        // For our case with 12-byte IV: [flags | 12-byte-IV | 0x0001]
+        // For 12-byte nonce: L=3, so flags = L-1 = 2
         val ccmCounter = ByteArray(16)
-        // Flags byte for CCM: bits 0-2 = L-1 (L=2 for 16-bit counter), bit 3-5 = 0, bit 6 = Adata, bit 7 = M
-        ccmCounter[0] = 0x01 // L-1 = 1 (L=2, so 2-byte counter)
+        ccmCounter[0] = 0x02 // L-1 where L=3 (3-byte counter)
         System.arraycopy(ivSpec, 0, ccmCounter, 1, 12)
+        ccmCounter[13] = 0
         ccmCounter[14] = 0
-        ccmCounter[15] = 1
+        ccmCounter[15] = 1 // Counter starts at 1
         
         val ctrCipher = Cipher.getInstance("AES/CTR/NoPadding")
         ctrCipher.init(

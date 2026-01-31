@@ -141,7 +141,6 @@ jobs:
         job-id: TagMo
         # Specifies arguments for Gradle execution
         arguments: |
-          --configure-on-demand
           assembleGithubRelease
         # Gradle version to use for execution:
         #   wrapper (default), current, rc, nightly, release-nightly, or

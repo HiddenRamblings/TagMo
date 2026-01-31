@@ -64,7 +64,6 @@ jobs:
         job-id: TagMo-WearOS
         # Specifies arguments for Gradle execution
         arguments: |
-          --configure-on-demand
           assembleGithubWearos
         # Gradle version to use for execution:
         #   wrapper (default), current, rc, nightly, release-nightly, or
@@ -72,7 +71,6 @@ jobs:
         gradle-version: wrapper
         # Properties are passed as -Pname=value
         properties: |
-          org.gradle.unsafe.configuration-cache=true
           org.gradle.configuration-cache=true
 
     - uses: r0adkll/sign-android-release@v1

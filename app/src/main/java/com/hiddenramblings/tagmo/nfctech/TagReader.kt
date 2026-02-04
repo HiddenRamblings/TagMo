@@ -12,11 +12,12 @@ object TagReader {
     private const val BULK_READ_PAGE_COUNT = 4
     @Throws(IOException::class)
     fun validateBlankTag(mifare: NTAG215) {
-        mifare.readPages(0x02)?.let {
-            Debug.info(TagWriter::class.java, it.toHex())
-            if (it[2] == 0x0F.toByte() && it[3] == 0xE0.toByte())
-                throw IOException(TagMo.appContext.getString(R.string.error_tag_rewrite))
-        }
+        val pages = mifare.readPages(0x02)
+        if (null == pages || pages.size < NfcByte.PAGE_SIZE)
+            throw IOException(TagMo.appContext.getString(R.string.fail_invalid_size))
+        Debug.info(TagWriter::class.java, pages.toHex())
+        if (pages[2] == 0x0F.toByte() && pages[3] == 0xE0.toByte())
+            throw IOException(TagMo.appContext.getString(R.string.error_tag_rewrite))
         Debug.verbose(TagWriter::class.java, R.string.validation_success)
     }
 

@@ -108,7 +108,7 @@ android {
         jvmTarget = javaVersion.toString()
     }
     compileOptions {
-        coreLibraryDesugaringEnabled true
+        isCoreLibraryDesugaringEnabled = true
         sourceCompatibility javaVersion
         targetCompatibility javaVersion
     }
@@ -171,4 +171,5 @@ dependencies {
     // implementation platform('com.google.firebase:firebase-bom:33.9.0')
     // implementation("com.google.firebase:firebase-appcheck-playintegrity")
     // implementation("com.google.firebase:firebase-crashlytics")
+
 }

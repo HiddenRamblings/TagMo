@@ -215,8 +215,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                 }
             })
         }
-        val bIntent = intent
-        bIntent?.let {
+        intent?.let {
             if (componentName == FilterComponent) {
                 startActivity(Intent(this, BrowserActivity::class.java).apply {
                     intent.action?.let { action = it}

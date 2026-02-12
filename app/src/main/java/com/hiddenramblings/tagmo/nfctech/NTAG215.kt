@@ -307,14 +307,28 @@ class NTAG215 : TagTechnology {
             // Note that issuing a command to an out-of-bounds block is safe - the
             // tag will wrap the read to an addressable area. This validation is a
             // helper to guard against obvious programming mistakes.
-            if (pageIndex < 0 || pageIndex >= MAX_PAGE_COUNT)
+            if (pageIndex !in 0..<MAX_PAGE_COUNT)
                 throw IndexOutOfBoundsException("page out of bounds: $pageIndex")
+        }
+
+        private fun getMifareUltralight(tag: Tag?): NTAG215? {
+            return MifareUltralight.get(tag)?.let {
+                NTAG215(it)
+            }
+        }
+
+        private fun getNfcA(tag: Tag?): NTAG215? {
+            return NfcA.get(tag)?.let {
+                if (it.sak equals 0x00 && it.tag.id[0].toInt() == NXP_MANUFACTURER_ID)
+                    NTAG215(it)
+                else
+                    null
+            }
         }
 
         @Throws(IOException::class)
         fun getBlind(tag: Tag?): NTAG215 {
             return try {
-                // sak equals 0x00 && tag.id[0].toInt() == NXP_MANUFACTURER_ID
                 NTAG215(NfcA.get(tag)).apply { connect() }
             } catch (ex: IOException) {
                 Debug.warn(ex)
@@ -323,9 +337,14 @@ class NTAG215 : TagTechnology {
         }
 
         @Throws(IOException::class)
-        operator fun get(tag: Tag?): NTAG215? {
+        operator fun get(tag: Tag?): NTAG215 {
             return try {
-                NTAG215(MifareUltralight.get(tag)).apply { connect() }
+                getMifareUltralight(tag)?.apply { connect() }
+            } catch (ex: IOException) {
+                Debug.warn(ex)
+                null
+            } ?:  try {
+                getNfcA(tag)?.apply { connect() }
             } catch (ex: IOException) {
                 Debug.warn(ex)
                 null

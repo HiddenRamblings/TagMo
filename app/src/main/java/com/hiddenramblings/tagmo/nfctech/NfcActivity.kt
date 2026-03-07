@@ -521,7 +521,9 @@ class NfcActivity : AppCompatActivity() {
                 } finally {
                     closeTagSilently(mifare)
                 }
-                finish()
+                Handler(Looper.getMainLooper()).postDelayed({
+                    finish()
+                }, 3000)
             } ?: if (prefs.eliteEnabled()) {
                 onEliteVerificationFailed(intent)
             } else {
@@ -863,4 +865,5 @@ class NfcActivity : AppCompatActivity() {
             return super.onOptionsItemSelected(item)
         return true
     }
+
 }

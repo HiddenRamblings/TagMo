@@ -356,7 +356,8 @@ class NfcActivity : AppCompatActivity() {
                             update = TagReader.readFromTag(mifare)
                             TagWriter.writeToTagRaw(
                                 mifare, data!!, prefs.tagTypeValidation(), skipLockInfo
-                            )
+                            ) { current, total -> showProgress(current, total) }
+                            hideProgress()
                             setResult(RESULT_OK)
                         }
                         NFCIntent.ACTION_WRITE_TAG_FULL -> {
@@ -393,7 +394,8 @@ class NfcActivity : AppCompatActivity() {
                                 update = TagReader.readFromTag(mifare)
                                 TagWriter.writeToTagAuto(
                                     mifare, data!!, keyManager, prefs.tagTypeValidation(), skipLockInfo
-                                )
+                                ) { current, total -> showProgress(current, total) }
+                                hideProgress()
                                 setResult(RESULT_OK)
                             }
                         }
@@ -403,7 +405,8 @@ class NfcActivity : AppCompatActivity() {
                             )
                             TagWriter.restoreTag(
                                     mifare, data!!, ignoreUid, keyManager, prefs.tagTypeValidation()
-                            )
+                            ) { current, total -> showProgress(current, total) }
+                            hideProgress()
                             setResult(RESULT_OK)
                         }
                         NFCIntent.ACTION_WRITE_ALL_TAGS -> {

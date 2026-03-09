@@ -10,6 +10,8 @@ import android.nfc.NfcAdapter
 import android.nfc.Tag
 import android.nfc.TagLostException
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.provider.Settings
 import android.view.Menu
 import android.view.MenuItem
@@ -900,3 +902,4 @@ class NfcActivity : AppCompatActivity() {
     }
 
 }
+

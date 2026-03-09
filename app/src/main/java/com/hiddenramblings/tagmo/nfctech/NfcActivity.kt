@@ -16,6 +16,8 @@ import android.view.MenuItem
 import android.view.ViewTreeObserver.OnGlobalLayoutListener
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
+import android.widget.LinearLayout
+import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.contract.ActivityResultContracts
@@ -56,6 +58,10 @@ class NfcActivity : AppCompatActivity() {
 
     private lateinit var txtMessage: TextView
     private lateinit var txtError: TextView
+    private lateinit var errorContainer: LinearLayout
+    private lateinit var progressLayout: LinearLayout
+    private lateinit var progressBar: ProgressBar
+    private lateinit var txtProgress: TextView
     private lateinit var imgNfcBar: AppCompatImageView
     private lateinit var imgNfcCircle: AppCompatImageView
     private lateinit var bankPicker: NumberPicker
@@ -100,6 +106,10 @@ class NfcActivity : AppCompatActivity() {
         nfcAdapter = NfcAdapter.getDefaultAdapter(this)
         txtMessage = findViewById(R.id.txtMessage)
         txtError = findViewById(R.id.txtError)
+        errorContainer = findViewById(R.id.errorContainer)
+        progressLayout = findViewById(R.id.progress_layout)
+        progressBar = findViewById(R.id.progress_bar)
+        txtProgress = findViewById(R.id.txtProgress)
         imgNfcBar = findViewById(R.id.imgNfcBar)
         imgNfcCircle = findViewById(R.id.imgNfcCircle)
         bankPicker = findViewById(R.id.number_picker_nfc)
@@ -203,19 +213,36 @@ class NfcActivity : AppCompatActivity() {
         CoroutineScope(Dispatchers.Main).launch { txtMessage.text = getString(msgRes, params, size) }
     }
 
+    private fun showProgress(current: Int, total: Int) {
+        CoroutineScope(Dispatchers.Main).launch {
+            val percentage = if (total > 0) (current * 100) / total else 0
+            progressBar.progress = percentage
+            txtProgress.text = getString(R.string.progress_percent, current, total, percentage)
+            progressLayout.isVisible = true
+        }
+    }
+
+    private fun hideProgress() {
+        CoroutineScope(Dispatchers.Main).launch {
+            progressLayout.isGone = true
+            progressBar.progress = 0
+        }
+    }
+
     private fun showError(msg: String) {
         CoroutineScope(Dispatchers.Main).launch {
             txtError.text = msg
-            txtError.isVisible = true
+            errorContainer.isVisible = true
             txtMessage.isGone = true
             imgNfcCircle.isGone = true
             imgNfcBar.isGone = true
             imgNfcBar.clearAnimation()
+            progressLayout.isGone = true
         }
     }
 
     private fun clearError() {
-        txtError.isGone = true
+        errorContainer.isGone = true
         txtMessage.isVisible = true
         imgNfcCircle.isVisible = true
         imgNfcBar.isVisible = true
@@ -236,6 +263,7 @@ class NfcActivity : AppCompatActivity() {
                 )
                 amiiboList?.forEachIndexed { x, amiiboData ->
                     showMessage(R.string.bank_writing, x + 1, amiiboList.size)
+                    showProgress(x + 1, amiiboList.size)
                     TagWriter.writeEliteAuto(ntag215, amiiboData.array, x)
                 }
             }
@@ -246,6 +274,7 @@ class NfcActivity : AppCompatActivity() {
                 amiiboList?.forEachIndexed { x, amiiboFile ->
                     val tagData = amiiboFile.data ?: Foomiibo.getSignedData(amiiboFile.id)
                     showMessage(R.string.bank_writing, x + 1, amiiboList.size)
+                    showProgress(x + 1, amiiboList.size)
                     TagWriter.writeEliteAuto(ntag215, tagData, x)
                 }
             }
@@ -256,10 +285,12 @@ class NfcActivity : AppCompatActivity() {
                 amiiboList?.forEachIndexed { x, eliteTag ->
                     val tagData = eliteTag.data ?: Foomiibo.getSignedData(eliteTag.id)
                     showMessage(R.string.bank_writing, x + 1, amiiboList.size)
+                    showProgress(x + 1, amiiboList.size)
                     TagWriter.writeEliteAuto(ntag215, tagData, x)
                 }
             }
         }
+        hideProgress()
     }
 
     private suspend fun onMifareUltralight(tag: Tag?) {
@@ -426,9 +457,11 @@ class NfcActivity : AppCompatActivity() {
                             var x = 1
                             while (x < writeCount) {
                                 showMessage(R.string.bank_erasing, x + 1, writeCount)
+                                showProgress(x + 1, writeCount)
                                 TagWriter.wipeBankData(mifare, x)
                                 x++
                             }
+                            hideProgress()
                             setResult(RESULT_OK, Intent(NFCIntent.ACTION_NFC_SCANNED).apply {
                                 putExtras(Bundle().apply {
                                     putInt(NFCIntent.EXTRA_BANK_COUNT, writeCount)

@@ -125,6 +125,10 @@
         </menu>
     </item>
     <item
+        android:id="@+id/clean_duplicates"
+        android:title="@string/clean_duplicates"
+        app:showAsAction="never"/>
+    <item
         android:id="@+id/report_problem"
         android:icon="@drawable/ic_report_required_24dp"
         android:title="@string/report_problem"

@@ -1635,6 +1635,9 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
             R.id.filter_game_titles -> {
                 onFilterGameTitlesClick()
             }
+            R.id.clean_duplicates -> {
+                cleanDuplicates()
+            }
         }
         return TagMo.isWearable || super.onOptionsItemSelected(item)
     }
@@ -2277,6 +2280,87 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                 }
                 .show()
         } ?: deleteAmiiboFile(amiiboFile)
+    }
+
+    private fun cleanDuplicates() {
+        val processDialog = ProgressAlert.show(this, getString(R.string.clean_duplicates_scanning))
+        CoroutineScope(Dispatchers.IO).launch {
+            val allFiles = settings?.amiiboFiles?.filterNotNull() ?: emptyList()
+            val total = allFiles.size
+            val seen = LinkedHashSet<String>()
+            val duplicates = mutableListOf<AmiiboFile>()
+            val digest = java.security.MessageDigest.getInstance("SHA-256")
+            allFiles.forEachIndexed { index, amiiboFile ->
+                val progress = index + 1
+                withContext(Dispatchers.Main) {
+                    processDialog.setMessage(
+                        getString(R.string.clean_duplicates_progress, progress, total)
+                    )
+                }
+                try {
+                    val bytes = amiiboFile.filePath?.let { TagReader.readTagFile(it) }
+                        ?: amiiboFile.docUri?.let { TagReader.readTagDocument(it.uri) }
+                        ?: amiiboFile.data
+                    if (bytes != null) {
+                        val hash = digest.digest(bytes).joinToString("") { "%02x".format(it) }
+                        if (!seen.add(hash)) {
+                            duplicates.add(amiiboFile)
+                        }
+                    }
+                } catch (e: Exception) {
+                    Debug.warn(e)
+                }
+            }
+            withContext(Dispatchers.Main) {
+                processDialog.dismiss()
+                if (duplicates.isEmpty()) {
+                    Toasty(this@BrowserActivity).Short(R.string.clean_duplicates_none)
+                } else {
+                    AlertDialog.Builder(this@BrowserActivity)
+                        .setMessage(getString(R.string.clean_duplicates_confirm, duplicates.size))
+                        .setPositiveButton(R.string.cancel) { dialog, _ -> dialog.dismiss() }
+                        .setNegativeButton(R.string.delete) { dialog, _ ->
+                            dialog.dismiss()
+                            val deleteDialog = ProgressAlert.show(
+                                this@BrowserActivity,
+                                getString(R.string.clean_duplicates_deleting, 0, duplicates.size)
+                            )
+                            CoroutineScope(Dispatchers.IO).launch {
+                                duplicates.forEachIndexed { index, amiiboFile ->
+                                    val current = index + 1
+                                    withContext(Dispatchers.Main) {
+                                        deleteDialog.setMessage(
+                                            getString(
+                                                R.string.clean_duplicates_deleting,
+                                                current, duplicates.size
+                                            )
+                                        )
+                                    }
+                                    try {
+                                        amiiboFile.docUri?.delete()
+                                            ?: amiiboFile.filePath?.delete()
+                                    } catch (e: Exception) {
+                                        Debug.warn(e)
+                                    }
+                                }
+                                withContext(Dispatchers.Main) {
+                                    deleteDialog.dismiss()
+                                    IconifiedSnackbar(this@BrowserActivity, viewPager)
+                                        .buildSnackbar(
+                                            getString(
+                                                R.string.clean_duplicates_result,
+                                                duplicates.size
+                                            ),
+                                            Snackbar.LENGTH_SHORT
+                                        ).show()
+                                    onRootFolderChanged(true)
+                                }
+                            }
+                        }
+                        .show()
+                }
+            }
+        }
     }
 
     fun setAmiiboInfoText(textView: TextView?, text: CharSequence?, hasTagInfo: Boolean) {

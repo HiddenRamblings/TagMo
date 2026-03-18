@@ -2287,9 +2287,8 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
         CoroutineScope(Dispatchers.IO).launch {
             val allFiles = settings?.amiiboFiles?.filterNotNull() ?: emptyList()
             val total = allFiles.size
-            val seen = LinkedHashSet<String>()
+            val seen = mutableListOf<ByteArray>()
             val duplicates = mutableListOf<AmiiboFile>()
-            val digest = java.security.MessageDigest.getInstance("SHA-256")
             allFiles.forEachIndexed { index, amiiboFile ->
                 val progress = index + 1
                 withContext(Dispatchers.Main) {
@@ -2302,9 +2301,10 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                         ?: amiiboFile.docUri?.let { TagReader.readTagDocument(it.uri) }
                         ?: amiiboFile.data
                     if (bytes != null) {
-                        val hash = digest.digest(bytes).joinToString("") { "%02x".format(it) }
-                        if (!seen.add(hash)) {
+                        if (seen.any { it.contentEquals(bytes) }) {
                             duplicates.add(amiiboFile)
+                        } else {
+                            seen.add(bytes)
                         }
                     }
                 } catch (e: Exception) {

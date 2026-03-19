@@ -314,7 +314,7 @@
     <string name="clean_duplicates">Clean Duplicates</string>
     <string name="clean_duplicates_scanning">Scanning for duplicates&#8230;</string>
     <string name="clean_duplicates_progress">Comparing file %1$d of %2$d&#8230;</string>
-    <string name="clean_duplicates_confirm">%1$d duplicate file(s) found.\nDelete them?</string>
+    <string name="clean_duplicates_confirm">%1$d duplicate file(s) found.\nPermanently delete all?</string>
     <string name="clean_duplicates_deleting">Deleting duplicate %1$d of %2$d&#8230;</string>
     <string name="clean_duplicates_none">No duplicates found.</string>
     <string name="clean_duplicates_result">%1$d duplicate(s) removed.</string>

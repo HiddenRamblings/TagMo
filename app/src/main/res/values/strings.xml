@@ -311,6 +311,13 @@
     <string name="elite_write_confirm">Write selections to N2 Elite?</string>
     <string name="elite_erase_confirm">Erase all banks from N2 Elite?</string>
     <string name="warn_delete_file">%1$s\nwill be deleted. Are you sure?</string>
+    <string name="clean_duplicates">Clean Duplicates</string>
+    <string name="clean_duplicates_scanning">Scanning for duplicates&#8230;</string>
+    <string name="clean_duplicates_progress">Comparing file %1$d of %2$d&#8230;</string>
+    <string name="clean_duplicates_confirm">%1$d duplicate file(s) found.\nDelete them?</string>
+    <string name="clean_duplicates_deleting">Deleting duplicate %1$d of %2$d&#8230;</string>
+    <string name="clean_duplicates_none">No duplicates found.</string>
+    <string name="clean_duplicates_result">%1$d duplicate(s) removed.</string>
     <string name="delete_missing">Cannot delete a scanned tag!</string>
     <string name="delete_virtual">Cannot delete a virtual tag!</string>
     <string name="erase_active">Cannot erase the active bank!</string>

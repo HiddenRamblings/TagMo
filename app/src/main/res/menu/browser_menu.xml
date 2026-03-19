@@ -126,6 +126,7 @@
     </item>
     <item
         android:id="@+id/clean_duplicates"
+        android:icon="@drawable/ic_file_copy_off_24dp"
         android:title="@string/clean_duplicates"
         app:showAsAction="never"/>
     <item

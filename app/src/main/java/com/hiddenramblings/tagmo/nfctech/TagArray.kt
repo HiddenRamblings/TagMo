@@ -344,6 +344,7 @@ object TagArray {
         var validated = try {
             validateData(data)
         } catch (e: Exception) {
+            if (data.isNotEmpty() && data[0] == 0x04.toByte()) throw e
             validateData(keyManager.encrypt(data))
         }
         validated = keyManager.decrypt(validated)

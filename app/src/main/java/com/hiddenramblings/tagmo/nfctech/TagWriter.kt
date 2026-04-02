@@ -34,14 +34,15 @@ object TagWriter {
 
     @Throws(Exception::class)
     fun writeToTagRaw(
-        mifare: NTAG215, tagData: ByteArray, validateNtag: Boolean, skipLock: Boolean = false
+        mifare: NTAG215, tagData: ByteArray, validateNtag: Boolean, skipLock: Boolean = false,
+        listener: ((Int, Int) -> Unit)? = null
     ) {
         val context = TagMo.appContext
         TagArray.validateNtag(mifare, tagData, validateNtag)
         TagReader.validateBlankTag(mifare)
         try {
             val pages = splitPages(tagData)
-            writePages(mifare, 3, 129, pages)
+            writePages(mifare, 3, 129, pages, listener)
             Debug.verbose(TagWriter::class.java, R.string.data_write)
         } catch (e: Exception) {
             throw Exception(context.getString(R.string.error_data_write), e)
@@ -66,11 +67,14 @@ object TagWriter {
 
     @Throws(IOException::class)
     private fun writePages(
-        tag: NTAG215, pagestart: Int, pageend: Int, data: Array<ByteArray?>
+        tag: NTAG215, pagestart: Int, pageend: Int, data: Array<ByteArray?>,
+        listener: ((Int, Int) -> Unit)? = null, offset: Int = 0,
+        total: Int = pageend - pagestart + 1
     ) {
         for (i in pagestart..pageend) {
             tag.writePage(i, data[i]!!)
             Debug.info(TagWriter::class.java, R.string.write_page, i.toString())
+            listener?.invoke(offset + i - pagestart + 1, total)
         }
     }
 
@@ -105,7 +109,8 @@ object TagWriter {
 
     @Throws(Exception::class)
     fun writeToTagAuto(
-        mifare: NTAG215, tagData: ByteArray, keyManager: KeyManager, validateNtag: Boolean, skipLock: Boolean = false
+        mifare: NTAG215, tagData: ByteArray, keyManager: KeyManager, validateNtag: Boolean,
+        skipLock: Boolean = false, listener: ((Int, Int) -> Unit)? = null
     ) {
         val idPages = mifare.readPages(0)
         if (null == idPages || idPages.size != NfcByte.PAGE_SIZE * 4)
@@ -155,7 +160,7 @@ object TagWriter {
             mifare.writePage(0x00, pages[0]!!) //UID
         } else {
             try {
-                writePages(mifare, 3, 129, pages)
+                writePages(mifare, 3, 129, pages, listener)
                 Debug.verbose(TagWriter::class.java, R.string.data_write)
             } catch (e: Exception) {
                 throw Exception(TagMo.appContext.getString(R.string.error_data_write), e)
@@ -180,7 +185,7 @@ object TagWriter {
     @Throws(Exception::class)
     fun restoreTag(
         mifare: NTAG215, tagData: ByteArray, ignoreUid: Boolean,
-        keyManager: KeyManager, validateNtag: Boolean
+        keyManager: KeyManager, validateNtag: Boolean, listener: ((Int, Int) -> Unit)? = null
     ) {
         var restoreData = tagData.toTagArray()
         if (!ignoreUid) TagArray.validateNtag(mifare, restoreData, validateNtag) else {
@@ -196,8 +201,10 @@ object TagWriter {
         }
         doAuth(mifare)
         val pages = splitPages(restoreData)
-        writePages(mifare, 4, 12, pages)
-        writePages(mifare, 32, 129, pages)
+        val firstCount = 12 - 4 + 1
+        val total = firstCount + (129 - 32 + 1)
+        writePages(mifare, 4, 12, pages, listener, 0, total)
+        writePages(mifare, 32, 129, pages, listener, firstCount, total)
     }
 
     /**

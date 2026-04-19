@@ -12,6 +12,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageInstaller
 import android.widget.Toast
+import androidx.core.content.IntentSanitizer
 import com.hiddenramblings.tagmo.BuildConfig
 import com.hiddenramblings.tagmo.eightbit.os.Version
 import com.hiddenramblings.tagmo.parcelable
@@ -29,16 +30,23 @@ class UpdateReceiver : BroadcastReceiver() {
         if (!BuildConfig.GOOGLE_PLAY && Version.isLollipop) {
             when (intent.getIntExtra(PackageInstaller.EXTRA_STATUS, -1)) {
                 PackageInstaller.STATUS_PENDING_USER_ACTION -> {
-                    intent.parcelable<Intent>(Intent.EXTRA_INTENT)?.let {
-                        try {
-                            startLauncherActivity(context, Intent.parseUri(
-                                it.toUri(0),
-                                if (Version.isLollipopMR)
-                                    Intent.URI_ALLOW_UNSAFE or Intent.URI_INTENT_SCHEME
-                                else
-                                    Intent.URI_INTENT_SCHEME
-                            ))
-                        } catch (_: URISyntaxException) { }
+                    intent.parcelable<Intent>(Intent.EXTRA_INTENT)?.let { userIntent ->
+                        val sanitizedIntent = IntentSanitizer.Builder()
+                            .allowAnyComponent()
+                            .build()
+                            .sanitizeByFiltering(userIntent)
+
+                        if (sanitizedIntent != null) {
+                            try {
+                                startLauncherActivity(context, Intent.parseUri(
+                                    sanitizedIntent.toUri(0),
+                                    if (Version.isLollipopMR)
+                                        Intent.URI_ALLOW_UNSAFE or Intent.URI_INTENT_SCHEME
+                                    else
+                                        Intent.URI_INTENT_SCHEME
+                                ))
+                            } catch (_: URISyntaxException) { }
+                        }
                     } ?: Toasty(context).Long(R.string.install_rejected)
                 }
                 PackageInstaller.STATUS_FAILURE_BLOCKED -> {

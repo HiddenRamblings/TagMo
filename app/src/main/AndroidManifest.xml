@@ -134,7 +134,7 @@
             android:process=":TagMo" />
         <receiver
             android:name=".update.UpdateReceiver"
-            android:exported="true" />
+            android:exported="false" />
         <meta-data
             android:name="com.android.packageinstaller.notification.smallIcon"
             android:resource="@mipmap/ic_launcher" />

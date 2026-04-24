@@ -4,16 +4,41 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/drawer_layout"
     android:layout_height="match_parent"
-    android:layout_width="match_parent">
+    android:layout_width="match_parent"
+    android:background="?android:attr/colorBackground">
 
     <androidx.wear.widget.BoxInsetLayout
         android:layout_height="match_parent"
         android:layout_width="match_parent">
 
-        <LinearLayout
+        <androidx.coordinatorlayout.widget.CoordinatorLayout
+            android:id="@+id/coordinator"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:orientation="vertical">
+            app:layout_boxedEdges="all">
+
+            <androidx.viewpager2.widget.ViewPager2
+                android:id="@+id/browser_pager"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+
+            <include
+                android:id="@+id/overlay_browser"
+                layout="@layout/overlay_browser" />
+
+            <com.hiddenramblings.tagmo.eightbit.widget.FABulous
+                android:id="@+id/nfc_fab"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:clickable="true"
+                android:focusable="true"
+                android:contentDescription="@string/fabDescription"
+                app:fabSize="mini"
+                app:useCompatPadding="true"
+                app:layout_anchor="@+id/browser_pager"
+                app:layout_anchorGravity="bottom|end"
+                app:maxImageSize="40dp"
+                app:srcCompat="@mipmap/ic_nfc_icon" />
 
             <com.hiddenramblings.tagmo.eightbit.view.AnimatedLinearLayout
                 android:id="@+id/fake_snackbar"
@@ -21,86 +46,34 @@
                 android:layout_height="wrap_content"
                 android:background="?attr/colorAccent"
                 android:orientation="horizontal"
-                android:paddingLeft="24dp"
-                android:paddingRight="24dp"
-                android:visibility="gone">
+                android:visibility="gone"
+                app:layout_anchor="@+id/browser_pager"
+                app:layout_anchorGravity="top">
 
-                <RelativeLayout
+                <TextView
+                    android:id="@+id/snackbar_text"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
-
-                    <androidx.appcompat.widget.AppCompatImageView
-                        android:id="@+id/snackbar_icon"
-                        android:layout_width="36dp"
-                        android:layout_height="36dp"
-                        android:layout_marginRight="4dp"
-                        android:layout_marginEnd="4dp"
-                        android:contentDescription="@string/imageview_icon"
-                        app:srcCompat="@drawable/ic_stat_notice_24dp" />
-
-                    <androidx.appcompat.widget.AppCompatButton
-                        android:id="@+id/snackbar_item"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentRight="true"
-                        android:layout_alignParentEnd="true"
-                        android:layout_marginLeft="4dp"
-                        android:layout_marginStart="4dp"
-                        android:visibility="invisible" />
-
-                    <TextView
-                        android:id="@+id/snackbar_text"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_centerInParent="true"
-                        android:layout_toStartOf="@id/snackbar_item"
-                        android:layout_toEndOf="@id/snackbar_icon"
-                        android:gravity="center"
-                        android:singleLine="true"
-                        android:textColor="@color/snackbarText"
-                        android:textSize="16sp" />
-                </RelativeLayout>
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:padding="8dp"
+                    android:textColor="@color/snackbarText"
+                    android:textSize="12sp" />
             </com.hiddenramblings.tagmo.eightbit.view.AnimatedLinearLayout>
 
-            <androidx.coordinatorlayout.widget.CoordinatorLayout
-                xmlns:tools="http://schemas.android.com/tools"
-                android:id="@+id/coordinator"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent">
-
-                <androidx.viewpager2.widget.ViewPager2
-                    android:id="@+id/browser_pager"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent" />
-
-                <include
-                    android:id="@+id/overlay_browser"
-                    layout="@layout/overlay_browser" />
-
-                <com.hiddenramblings.tagmo.eightbit.widget.FABulous
-                    android:id="@+id/nfc_fab"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentRight="true"
-                    android:layout_alignParentEnd="true"
-                    android:layout_alignParentBottom="true"
-                    android:clickable="true"
-                    android:focusable="true"
-                    android:contentDescription="@string/fabDescription"
-                    app:fabSize="mini"
-                    app:useCompatPadding="true"
-                    app:layout_anchor="@+id/browser_pager"
-                    app:layout_anchorGravity="bottom|end"
-                    app:maxImageSize="56dp"
-                    app:srcCompat="@mipmap/ic_nfc_icon"
-                    tools:ignore="RelativeOverlap" />
-            </androidx.coordinatorlayout.widget.CoordinatorLayout>
-        </LinearLayout>
-
-        <androidx.wear.widget.drawer.WearableNavigationDrawerView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
-            <include layout="@layout/fragment_settings" />
-        </androidx.wear.widget.drawer.WearableNavigationDrawerView>
+        </androidx.coordinatorlayout.widget.CoordinatorLayout>
     </androidx.wear.widget.BoxInsetLayout>
+
+    <androidx.wear.widget.drawer.WearableNavigationDrawerView
+        android:id="@+id/top_navigation_drawer"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:enableAutoPeek="true" />
+
+    <androidx.wear.widget.drawer.WearableActionDrawerView
+        android:id="@+id/bottom_action_drawer"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:enableAutoPeek="true"
+        app:actionMenu="@menu/browser_menu" />
+
 </androidx.wear.widget.drawer.WearableDrawerLayout>

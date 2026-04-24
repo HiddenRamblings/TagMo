@@ -47,18 +47,21 @@ class TagMo : Application() {
     }
 
     override fun attachBaseContext(base: Context) {
-        super.attachBaseContext(base)
-        if (isWearable)
-            appContext = ScaledContext(this).watch(2f)
+        val uiModeManager = base.getSystemService(Context.UI_MODE_SERVICE) as? UiModeManager
+        isWearable = uiModeManager?.currentModeType == Configuration.UI_MODE_TYPE_WATCH || BuildConfig.WEAR_OS
+        if (isWearable) {
+            appContext = ScaledContext(base).watch(2f)
+            super.attachBaseContext(appContext)
+        } else {
+            appContext = base
+            super.attachBaseContext(base)
+        }
         if (Version.isLollipop) Reflection.unseal(base)
     }
 
     override fun onCreate() {
         super.onCreate()
         AppCompatDelegate.setCompatVectorFromResourcesEnabled(true)
-
-        val uiModeManager: UiModeManager = getSystemService(UI_MODE_SERVICE) as UiModeManager
-        isWearable = uiModeManager.currentModeType == Configuration.UI_MODE_TYPE_WATCH || BuildConfig.WEAR_OS
 
         if (isWearable)
             appContext.setTheme(R.style.AppTheme)

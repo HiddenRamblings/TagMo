@@ -449,6 +449,18 @@
 					]
 				},
 				{
+					"gameName": "Super Mario Bros. Wonder",
+					"gameID": [
+						"010015100B514000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Change to character-themed decoration in Bellabel Park hub (Switch 2 Edition only)",
+							"write": false
+						}
+					]
+				},
+				{
 					"gameName": "Super Mario Galaxy",
 					"gameID": [
 						"010099C022B96000"
@@ -998,6 +1010,30 @@
 					"amiiboUsage": [
 						{
 							"Usage": "Receive a particular power-up depending on the character",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Super Mario Bros. Wonder",
+					"gameID": [
+						"010015100B514000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Change to character-themed decoration in Bellabel Park hub (Switch 2 Edition only)",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Super Mario Bros. Wonder",
+					"gameID": [
+						"010015100B514000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a particular power-up depending on the amiibo",
 							"write": false
 						}
 					]
@@ -1562,6 +1598,30 @@
 					"amiiboUsage": [
 						{
 							"Usage": "Receive a particular power-up depending on the character",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Super Mario Bros. Wonder",
+					"gameID": [
+						"010015100B514000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Change to character-themed decoration in Bellabel Park hub (Switch 2 Edition only)",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Super Mario Bros. Wonder",
+					"gameID": [
+						"010015100B514000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a particular power-up depending on the amiibo",
 							"write": false
 						}
 					]
@@ -2139,6 +2199,30 @@
 					]
 				},
 				{
+					"gameName": "Super Mario Bros. Wonder",
+					"gameID": [
+						"010015100B514000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Change to character-themed decoration in Bellabel Park hub (Switch 2 Edition only)",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Super Mario Bros. Wonder",
+					"gameID": [
+						"010015100B514000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a particular power-up depending on the amiibo",
+							"write": false
+						}
+					]
+				},
+				{
 					"gameName": "Super Mario Galaxy",
 					"gameID": [
 						"010099C022B96000"
@@ -2700,6 +2784,18 @@
 					]
 				},
 				{
+					"gameName": "Super Mario Bros. Wonder",
+					"gameID": [
+						"010015100B514000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Change to character-themed decoration in Bellabel Park hub (Switch 2 Edition only)",
+							"write": false
+						}
+					]
+				},
+				{
 					"gameName": "Super Mario Galaxy",
 					"gameID": [
 						"010099C022B96000"
@@ -3248,6 +3344,18 @@
 					"amiiboUsage": [
 						{
 							"Usage": "Receive a particular power-up depending on the character",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Super Mario Bros. Wonder",
+					"gameID": [
+						"010015100B514000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Change to character-themed decoration in Bellabel Park hub (Switch 2 Edition only)",
 							"write": false
 						}
 					]
@@ -3817,6 +3925,30 @@
 					]
 				},
 				{
+					"gameName": "Super Mario Bros. Wonder",
+					"gameID": [
+						"010015100B514000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Change to character-themed decoration in Bellabel Park hub (Switch 2 Edition only)",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Super Mario Bros. Wonder",
+					"gameID": [
+						"010015100B514000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a particular power-up depending on the amiibo",
+							"write": false
+						}
+					]
+				},
+				{
 					"gameName": "Super Mario Galaxy",
 					"gameID": [
 						"010099C022B96000"
@@ -3968,6 +4100,18 @@
 					]
 				},
 				{
+					"gameName": "Super Mario Bros. Wonder",
+					"gameID": [
+						"010015100B514000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Change to character-themed decoration in Bellabel Park hub (Switch 2 Edition only)",
+							"write": false
+						}
+					]
+				},
+				{
 					"gameName": "Super Mario Galaxy",
 					"gameID": [
 						"010099C022B96000"
@@ -4094,6 +4238,18 @@
 					"amiiboUsage": [
 						{
 							"Usage": "Receive a particular power-up depending on the character",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Super Mario Bros. Wonder",
+					"gameID": [
+						"010015100B514000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Change to character-themed decoration in Bellabel Park hub (Switch 2 Edition only)",
 							"write": false
 						}
 					]
@@ -4626,6 +4782,18 @@
 					]
 				},
 				{
+					"gameName": "Super Mario Bros. Wonder",
+					"gameID": [
+						"010015100B514000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Change to character-themed decoration in Bellabel Park hub (Switch 2 Edition only)",
+							"write": false
+						}
+					]
+				},
+				{
 					"gameName": "Super Mario Galaxy",
 					"gameID": [
 						"010099C022B96000"
@@ -4913,18 +5081,6 @@
 					]
 				},
 				{
-					"gameName": "One Piece: Super Grand Battle! X",
-					"gameID": [
-						"0004000000144400"
-					],
-					"amiiboUsage": [
-						{
-							"Usage": "Unlock a character-based costume with special abilities",
-							"write": false
-						}
-					]
-				},
-				{
 					"gameName": "Picross 3D Round 2",
 					"gameID": [
 						"0004000000187E00"
@@ -5162,6 +5318,18 @@
 					"amiiboUsage": [
 						{
 							"Usage": "Receive a particular power-up depending on the character",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Super Mario Bros. Wonder",
+					"gameID": [
+						"010015100B514000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Change to character-themed decoration in Bellabel Park hub (Switch 2 Edition only)",
 							"write": false
 						}
 					]
@@ -5440,13 +5608,536 @@
 					]
 				},
 				{
-					"gameName": "One Piece: Super Grand Battle! X",
+					"gameName": "Picross 3D Round 2",
 					"gameID": [
-						"0004000000144400"
+						"0004000000187E00"
 					],
 					"amiiboUsage": [
 						{
-							"Usage": "Unlock a character-based costume with special abilities",
+							"Usage": "Unlock a character-based puzzle",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Style Savvy: Fashion Forward",
+					"gameID": [
+						"0004000000196500"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Unlock a character-themed accessory",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Style Savvy: Styling Star",
+					"gameID": [
+						"00040000001C2500"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Unlock a character-themed pattern",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Super Smash Bros. for Nintendo 3DS",
+					"gameID": [
+						"00040000000EDF00",
+						"00040000000EE000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Battle and train up a computer-controlled Figure Player of the character",
+							"write": true
+						}
+					]
+				},
+				{
+					"gameName": "WarioWare Gold",
+					"gameID": [
+						"00040000001D1C00"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a sketch of the character from Wario which can be exchanged for in-game coins",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Yoshi's Woolly World",
+					"gameID": [
+						"00040000001A4100",
+						"00040000001A4200",
+						"00040000001B6C00",
+						"00040000001B6D00"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Unlock a character-based Yoshi yarn pattern",
+							"write": false
+						}
+					]
+				}
+			],
+			"gamesWiiU": [
+				{
+					"gameName": "Mario & Sonic at the Rio 2016 Olympic Games",
+					"gameID": [
+						"0005000010190300",
+						"00050000101E5300",
+						"00050000101E5400"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Play the Mario League, for a chance to unlock the Mario Mii costume",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Mario Kart 8",
+					"gameID": [
+						"000500001010EB00",
+						"000500001010EC00",
+						"000500001010ED00"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Unlock a character-themed Mii racing suit",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Mario Party 10",
+					"gameID": [
+						"0005000010161F00",
+						"0005000010162D00",
+						"0005000010162E00"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Customize game board in amiibo Party",
+							"write": false
+						},
+						{
+							"Usage": "Use as game piece in amiibo Party",
+							"write": true
+						}
+					]
+				},
+				{
+					"gameName": "Mario Tennis: Ultra Smash",
+					"gameID": [
+						"0005000010199000",
+						"00050000101A3500",
+						"00050000101A3600"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Play alongside and train up a computer-controlled character",
+							"write": true
+						}
+					]
+				},
+				{
+					"gameName": "Mini Mario & Friends amiibo Challenge",
+					"gameID": [
+						"00050000101C6100",
+						"00050000101C6200",
+						"00050000101C6300"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Play stages as a Mini version of this character, with a unique special ability, and unlock character-specific stages",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Super Mario Maker",
+					"gameID": [
+						"000500001018DB00",
+						"000500001018DC00",
+						"000500001018DD00"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Unlock a character-based Mystery Mushroom costume",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Super Smash Bros. for Wii U",
+					"gameID": [
+						"0005000010110E00",
+						"0005000010144F00",
+						"0005000010145000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Battle and train up a computer-controlled Figure Player of the character",
+							"write": true
+						}
+					]
+				},
+				{
+					"gameName": "Yoshi's Woolly World",
+					"gameID": [
+						"0005000010131F00"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Unlock a character-based Yoshi yarn pattern",
+							"write": false
+						}
+					]
+				}
+			],
+			"gamesSwitch": [
+				{
+					"gameName": "Conga Master Party!",
+					"gameID": [
+						"01007EF00399C000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Unlock a special costume",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Mario + Rabbids: Kingdom Battle",
+					"gameID": [
+						"010067300059A000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Unlock an amiibo-exclusive weapon for the character and their Rabbid counterpart",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Mario Kart 8 Deluxe",
+					"gameID": [
+						"0100152000022000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Unlock a character-themed Mii racing suit",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Miitopia",
+					"gameID": [
+						"01003DA010E8A000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Unlock a character-based costume",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Super Mario 3D World + Bowser's Fury",
+					"gameID": [
+						"010028600EBDA000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a particular power-up depending on the character",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Super Mario Bros. Wonder",
+					"gameID": [
+						"010015100B514000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Change to character-themed decoration in Bellabel Park hub (Switch 2 Edition only)",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Super Mario Bros. Wonder",
+					"gameID": [
+						"010015100B514000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a particular power-up depending on the amiibo",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Super Mario Galaxy",
+					"gameID": [
+						"010099C022B96000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a helpful item depending on the character",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Super Mario Galaxy 2",
+					"gameID": [
+						"0100FD8022DAA000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a helpful item depending on the character",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Super Mario Party",
+					"gameID": [
+						"010036B0034E4000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Unlock the character's shiny sticker",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Super Smash Bros. Ultimate",
+					"gameID": [
+						"01006A800016E000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Battle and train up a computer-controlled Figure Player of the character",
+							"write": true
+						}
+					]
+				},
+				{
+					"gameName": "Yoshi's Crafted World",
+					"gameID": [
+						"01006000040C2000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Unlock a character-based costume",
+							"write": false
+						}
+					]
+				}
+			],
+			"gamesSwitch2": []
+		},
+		"0x0000040004c10102": {
+			"games3DS": [
+				{
+					"gameName": "Ace Combat Assault Horizon Legacy+",
+					"gameID": [
+						"0004000000064900",
+						"000400000006CC00",
+						"000400000015A300",
+						"000400000015C000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Unlock a character-themed aircraft early, plus a bonus skin and tuning part",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Chibi-Robo! Zip Lash",
+					"gameID": [
+						"0004000000162F00",
+						"0004000000163000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Unlock figure in an amiibo-exclusive pose of the character (requires Chibi-Robo amiibo)",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Kirby: Planet Robobot",
+					"gameID": [
+						"0004000000183600",
+						"0004000000189600",
+						"0004000000189800"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Give Kirby a Copy ability based on the character's abilities and a health item",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Luigi's Mansion",
+					"gameID": [
+						"0004000000055F00",
+						"0004000000076500",
+						"00040000000D0000",
+						"00040000001D1900",
+						"00040000001D1A00"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Mushrooms you find will be health-restoring Super Mushrooms instead of Poison Mushrooms",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Mario & Luigi: Bowser's Inside Story + Bowser Jr.'s Journey",
+					"gameID": [
+						"00040000001D1400",
+						"00040000001D1500"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a helpful item",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Mario & Luigi: Paper Jam",
+					"gameID": [
+						"0004000000132700",
+						"0004000000132800",
+						"000400000018A100"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Unlock character cards to help you in battle",
+							"write": true
+						}
+					]
+				},
+				{
+					"gameName": "Mario & Luigi: Superstar Saga + Bowser's Minions",
+					"gameID": [
+						"00040000001B8F00",
+						"00040000001B9000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a stamp and equipment for the main quest",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Mario & Sonic at the Rio 2016 Olympic Games",
+					"gameID": [
+						"000400000017E200",
+						"000400000017E300",
+						"0004000000192400"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Boost power of the Mario Mii suit for the day",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Mario Party: Star Rush",
+					"gameID": [
+						"0004000000193900",
+						"000400000019BD00",
+						"000400000019BE00"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Play as or receive bonus from this character, depending on the mode",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Mario Party: The Top 100",
+					"gameID": [
+						"00040000001C4D00",
+						"00040000001C4E00"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Minigame Island: If you land on an amiibo space, use to receive coins / Use to revive your character once",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Metroid Prime: Blast Ball",
+					"gameID": [
+						"0004000000175300"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Unlock an armor paint job based on the character",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Metroid Prime: Federation Force",
+					"gameID": [
+						"000400000016CE00",
+						"000400000016E300",
+						"0004000000175200"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Unlock an armor paint job based on the character for use in Blast Ball",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Miitopia",
+					"gameID": [
+						"0004000000178800",
+						"00040000001B4E00",
+						"00040000001B4F00"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Unlock a character-based costume",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Mini Mario & Friends amiibo Challenge",
+					"gameID": [
+						"000400000016C200",
+						"000400000016C300"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Play stages as a Mini version of this character, with a unique special ability, and unlock character-specific stages",
 							"write": false
 						}
 					]
@@ -5701,6 +6392,557 @@
 					"amiiboUsage": [
 						{
 							"Usage": "Receive a particular power-up depending on the character",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Super Mario Bros. Wonder",
+					"gameID": [
+						"010015100B514000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Change to character-themed decoration in Bellabel Park hub (Switch 2 Edition only)",
+							"write": false
+						},
+						{
+							"Usage": "Receive a particular power-up depending on the amiibo",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Super Mario Galaxy",
+					"gameID": [
+						"010099C022B96000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a helpful item depending on the character",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Super Mario Galaxy 2",
+					"gameID": [
+						"0100FD8022DAA000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a helpful item depending on the character",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Super Mario Party",
+					"gameID": [
+						"010036B0034E4000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Unlock the character's shiny sticker",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Super Smash Bros. Ultimate",
+					"gameID": [
+						"01006A800016E000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Battle and train up a computer-controlled Figure Player of the character",
+							"write": true
+						}
+					]
+				},
+				{
+					"gameName": "Yoshi's Crafted World",
+					"gameID": [
+						"01006000040C2000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Unlock a character-based costume",
+							"write": false
+						}
+					]
+				}
+			],
+			"gamesSwitch2": []
+		},
+		"0x0000050004e90102": {
+			"games3DS": [
+				{
+					"gameName": "Ace Combat Assault Horizon Legacy+",
+					"gameID": [
+						"0004000000064900",
+						"000400000006CC00",
+						"000400000015A300",
+						"000400000015C000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Unlock a character-themed aircraft early, plus a bonus skin and tuning part",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Chibi-Robo! Zip Lash",
+					"gameID": [
+						"0004000000162F00",
+						"0004000000163000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Unlock figure in an amiibo-exclusive pose of the character (requires Chibi-Robo amiibo)",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Kirby: Planet Robobot",
+					"gameID": [
+						"0004000000183600",
+						"0004000000189600",
+						"0004000000189800"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Give Kirby a Copy ability based on the character's abilities and a health item",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Luigi's Mansion",
+					"gameID": [
+						"0004000000055F00",
+						"0004000000076500",
+						"00040000000D0000",
+						"00040000001D1900",
+						"00040000001D1A00"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Mushrooms you find will be health-restoring Super Mushrooms instead of Poison Mushrooms",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Mario & Luigi: Bowser's Inside Story + Bowser Jr.'s Journey",
+					"gameID": [
+						"00040000001D1400",
+						"00040000001D1500"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a helpful item",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Mario & Luigi: Paper Jam",
+					"gameID": [
+						"0004000000132700",
+						"0004000000132800",
+						"000400000018A100"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Unlock character cards to help you in battle",
+							"write": true
+						}
+					]
+				},
+				{
+					"gameName": "Mario & Luigi: Superstar Saga + Bowser's Minions",
+					"gameID": [
+						"00040000001B8F00",
+						"00040000001B9000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a stamp and equipment for the main quest",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Mario & Sonic at the Rio 2016 Olympic Games",
+					"gameID": [
+						"000400000017E200",
+						"000400000017E300",
+						"0004000000192400"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Boost power of the Mario Mii suit for the day",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Mario Party: Star Rush",
+					"gameID": [
+						"0004000000193900",
+						"000400000019BD00",
+						"000400000019BE00"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Play as or receive bonus from this character, depending on the mode",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Mario Party: The Top 100",
+					"gameID": [
+						"00040000001C4D00",
+						"00040000001C4E00"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Minigame Island: If you land on an amiibo space, use to receive coins / Use to revive your character once",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Metroid Prime: Blast Ball",
+					"gameID": [
+						"0004000000175300"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Unlock an armor paint job based on the character",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Metroid Prime: Federation Force",
+					"gameID": [
+						"000400000016CE00",
+						"000400000016E300",
+						"0004000000175200"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Unlock an armor paint job based on the character for use in Blast Ball",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Miitopia",
+					"gameID": [
+						"0004000000178800",
+						"00040000001B4E00",
+						"00040000001B4F00"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Unlock a character-based costume",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Mini Mario & Friends amiibo Challenge",
+					"gameID": [
+						"000400000016C200",
+						"000400000016C300"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Play stages as a Mini version of this character, with a unique special ability, and unlock character-specific stages",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Picross 3D Round 2",
+					"gameID": [
+						"0004000000187E00"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Unlock a character-based puzzle",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Style Savvy: Fashion Forward",
+					"gameID": [
+						"0004000000196500"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Unlock a character-themed accessory",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Style Savvy: Styling Star",
+					"gameID": [
+						"00040000001C2500"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Unlock a character-themed pattern",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Super Smash Bros. for Nintendo 3DS",
+					"gameID": [
+						"00040000000EDF00",
+						"00040000000EE000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Battle and train up a computer-controlled Figure Player of the character",
+							"write": true
+						}
+					]
+				},
+				{
+					"gameName": "WarioWare Gold",
+					"gameID": [
+						"00040000001D1C00"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a sketch of the character from Wario which can be exchanged for in-game coins",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Yoshi's Woolly World",
+					"gameID": [
+						"00040000001A4100",
+						"00040000001A4200",
+						"00040000001B6C00",
+						"00040000001B6D00"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Unlock a character-based Yoshi yarn pattern",
+							"write": false
+						}
+					]
+				}
+			],
+			"gamesWiiU": [
+				{
+					"gameName": "Mario & Sonic at the Rio 2016 Olympic Games",
+					"gameID": [
+						"0005000010190300",
+						"00050000101E5300",
+						"00050000101E5400"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Play the Mario League, for a chance to unlock the Mario Mii costume",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Mario Kart 8",
+					"gameID": [
+						"000500001010EB00",
+						"000500001010EC00",
+						"000500001010ED00"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Unlock a character-themed Mii racing suit",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Mario Party 10",
+					"gameID": [
+						"0005000010161F00",
+						"0005000010162D00",
+						"0005000010162E00"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Customize game board in amiibo Party",
+							"write": false
+						},
+						{
+							"Usage": "Use as game piece in amiibo Party",
+							"write": true
+						}
+					]
+				},
+				{
+					"gameName": "Mario Tennis: Ultra Smash",
+					"gameID": [
+						"0005000010199000",
+						"00050000101A3500",
+						"00050000101A3600"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Play alongside and train up a computer-controlled character",
+							"write": true
+						}
+					]
+				},
+				{
+					"gameName": "Mini Mario & Friends amiibo Challenge",
+					"gameID": [
+						"00050000101C6100",
+						"00050000101C6200",
+						"00050000101C6300"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Play stages as a Mini version of this character, with a unique special ability, and unlock character-specific stages",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Super Mario Maker",
+					"gameID": [
+						"000500001018DB00",
+						"000500001018DC00",
+						"000500001018DD00"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Unlock a character-based Mystery Mushroom costume",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Super Smash Bros. for Wii U",
+					"gameID": [
+						"0005000010110E00",
+						"0005000010144F00",
+						"0005000010145000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Battle and train up a computer-controlled Figure Player of the character",
+							"write": true
+						}
+					]
+				},
+				{
+					"gameName": "Yoshi's Woolly World",
+					"gameID": [
+						"0005000010131F00"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Unlock a character-based Yoshi yarn pattern",
+							"write": false
+						}
+					]
+				}
+			],
+			"gamesSwitch": [
+				{
+					"gameName": "Conga Master Party!",
+					"gameID": [
+						"01007EF00399C000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Unlock a special costume",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Mario + Rabbids: Kingdom Battle",
+					"gameID": [
+						"010067300059A000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Unlock an amiibo-exclusive weapon for the character and their Rabbid counterpart",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Mario Kart 8 Deluxe",
+					"gameID": [
+						"0100152000022000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Unlock a character-themed Mii racing suit",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Miitopia",
+					"gameID": [
+						"01003DA010E8A000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Unlock a character-based costume",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Super Mario 3D World + Bowser's Fury",
+					"gameID": [
+						"010028600EBDA000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a particular power-up depending on the character",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Super Mario Bros. Wonder",
+					"gameID": [
+						"010015100B514000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Change to character-themed decoration in Bellabel Park hub (Switch 2 Edition only)",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Super Mario Bros. Wonder",
+					"gameID": [
+						"010015100B514000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a particular power-up depending on the amiibo",
 							"write": false
 						}
 					]
@@ -6682,6 +7924,18 @@
 					"amiiboUsage": [
 						{
 							"Usage": "Receive a particular power-up depending on the character",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Super Mario Bros. Wonder",
+					"gameID": [
+						"010015100B514000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a particular power-up depending on the amiibo",
 							"write": false
 						}
 					]
@@ -7776,6 +9030,18 @@
 					]
 				},
 				{
+					"gameName": "Super Mario Bros. Wonder",
+					"gameID": [
+						"010015100B514000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Change to character-themed decoration in Bellabel Park hub (Switch 2 Edition only)",
+							"write": false
+						}
+					]
+				},
+				{
 					"gameName": "Super Mario Galaxy",
 					"gameID": [
 						"010099C022B96000"
@@ -8277,6 +9543,30 @@
 					"amiiboUsage": [
 						{
 							"Usage": "Receive a particular power-up depending on the character",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Super Mario Bros. Wonder",
+					"gameID": [
+						"010015100B514000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Change to character-themed decoration in Bellabel Park hub (Switch 2 Edition only)",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Super Mario Bros. Wonder",
+					"gameID": [
+						"010015100B514000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a particular power-up depending on the amiibo",
 							"write": false
 						}
 					]
@@ -8798,6 +10088,30 @@
 					]
 				},
 				{
+					"gameName": "Super Mario Bros. Wonder",
+					"gameID": [
+						"010015100B514000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Change to character-themed decoration in Bellabel Park hub (Switch 2 Edition only)",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Super Mario Bros. Wonder",
+					"gameID": [
+						"010015100B514000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a particular power-up depending on the amiibo",
+							"write": false
+						}
+					]
+				},
+				{
 					"gameName": "Super Mario Galaxy",
 					"gameID": [
 						"010099C022B96000"
@@ -8956,6 +10270,18 @@
 					"amiiboUsage": [
 						{
 							"Usage": "Receive a particular power-up depending on the character",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Super Mario Bros. Wonder",
+					"gameID": [
+						"010015100B514000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Change to character-themed decoration in Bellabel Park hub (Switch 2 Edition only)",
 							"write": false
 						}
 					]
@@ -9435,6 +10761,18 @@
 					"amiiboUsage": [
 						{
 							"Usage": "Receive a particular power-up depending on the character",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Super Mario Bros. Wonder",
+					"gameID": [
+						"010015100B514000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Change to character-themed decoration in Bellabel Park hub (Switch 2 Edition only)",
 							"write": false
 						}
 					]
@@ -9931,6 +11269,30 @@
 					]
 				},
 				{
+					"gameName": "Super Mario Bros. Wonder",
+					"gameID": [
+						"010015100B514000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Change to character-themed decoration in Bellabel Park hub (Switch 2 Edition only)",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Super Mario Bros. Wonder",
+					"gameID": [
+						"010015100B514000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a particular power-up depending on the amiibo",
+							"write": false
+						}
+					]
+				},
+				{
 					"gameName": "Super Mario Galaxy",
 					"gameID": [
 						"010099C022B96000"
@@ -10339,6 +11701,18 @@
 					"amiiboUsage": [
 						{
 							"Usage": "Receive a particular power-up depending on the character",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Super Mario Bros. Wonder",
+					"gameID": [
+						"010015100B514000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Change to character-themed decoration in Bellabel Park hub (Switch 2 Edition only)",
 							"write": false
 						}
 					]
@@ -10784,6 +12158,30 @@
 					]
 				},
 				{
+					"gameName": "Super Mario Bros. Wonder",
+					"gameID": [
+						"010015100B514000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Change to character-themed decoration in Bellabel Park hub (Switch 2 Edition only)",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Super Mario Bros. Wonder",
+					"gameID": [
+						"010015100B514000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a particular power-up depending on the amiibo",
+							"write": false
+						}
+					]
+				},
+				{
 					"gameName": "Super Mario Galaxy",
 					"gameID": [
 						"010099C022B96000"
@@ -10894,6 +12292,18 @@
 					"amiiboUsage": [
 						{
 							"Usage": "Receive a particular power-up depending on the character",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Super Mario Bros. Wonder",
+					"gameID": [
+						"010015100B514000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Change to character-themed decoration in Bellabel Park hub (Switch 2 Edition only)",
 							"write": false
 						}
 					]
@@ -11312,6 +12722,18 @@
 					]
 				},
 				{
+					"gameName": "Super Mario Bros. Wonder",
+					"gameID": [
+						"010015100B514000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Change to character-themed decoration in Bellabel Park hub (Switch 2 Edition only)",
+							"write": false
+						}
+					]
+				},
+				{
 					"gameName": "Super Mario Galaxy",
 					"gameID": [
 						"010099C022B96000"
@@ -11480,18 +12902,6 @@
 					"amiiboUsage": [
 						{
 							"Usage": "Play stages as a Mini version of this character, with a unique special ability, and unlock character-specific stages",
-							"write": false
-						}
-					]
-				},
-				{
-					"gameName": "One Piece: Super Grand Battle! X",
-					"gameID": [
-						"0004000000144400"
-					],
-					"amiiboUsage": [
-						{
-							"Usage": "Unlock a character-based costume with special abilities",
 							"write": false
 						}
 					]
@@ -11740,6 +13150,18 @@
 					"amiiboUsage": [
 						{
 							"Usage": "Receive a particular power-up depending on the character",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Super Mario Bros. Wonder",
+					"gameID": [
+						"010015100B514000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Change to character-themed decoration in Bellabel Park hub (Switch 2 Edition only)",
 							"write": false
 						}
 					]
@@ -11918,18 +13340,6 @@
 					]
 				},
 				{
-					"gameName": "One Piece: Super Grand Battle! X",
-					"gameID": [
-						"0004000000144400"
-					],
-					"amiiboUsage": [
-						{
-							"Usage": "Unlock a character-based costume with special abilities",
-							"write": false
-						}
-					]
-				},
-				{
 					"gameName": "Picross 3D Round 2",
 					"gameID": [
 						"0004000000187E00"
@@ -12192,6 +13602,18 @@
 					"amiiboUsage": [
 						{
 							"Usage": "Receive a particular power-up depending on the character",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Super Mario Bros. Wonder",
+					"gameID": [
+						"010015100B514000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Change to character-themed decoration in Bellabel Park hub (Switch 2 Edition only)",
 							"write": false
 						}
 					]
@@ -12370,18 +13792,6 @@
 					]
 				},
 				{
-					"gameName": "One Piece: Super Grand Battle! X",
-					"gameID": [
-						"0004000000144400"
-					],
-					"amiiboUsage": [
-						{
-							"Usage": "Unlock a character-based costume with special abilities",
-							"write": false
-						}
-					]
-				},
-				{
 					"gameName": "Picross 3D Round 2",
 					"gameID": [
 						"0004000000187E00"
@@ -12644,6 +14054,18 @@
 					"amiiboUsage": [
 						{
 							"Usage": "Receive a particular power-up depending on the character",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Super Mario Bros. Wonder",
+					"gameID": [
+						"010015100B514000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Change to character-themed decoration in Bellabel Park hub (Switch 2 Edition only)",
 							"write": false
 						}
 					]
@@ -12822,18 +14244,6 @@
 					]
 				},
 				{
-					"gameName": "One Piece: Super Grand Battle! X",
-					"gameID": [
-						"0004000000144400"
-					],
-					"amiiboUsage": [
-						{
-							"Usage": "Unlock a character-based costume with special abilities",
-							"write": false
-						}
-					]
-				},
-				{
 					"gameName": "Picross 3D Round 2",
 					"gameID": [
 						"0004000000187E00"
@@ -13077,6 +14487,18 @@
 					"amiiboUsage": [
 						{
 							"Usage": "Receive a particular power-up depending on the character",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Super Mario Bros. Wonder",
+					"gameID": [
+						"010015100B514000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Change to character-themed decoration in Bellabel Park hub (Switch 2 Edition only)",
 							"write": false
 						}
 					]
@@ -13473,6 +14895,30 @@
 					]
 				},
 				{
+					"gameName": "Super Mario Bros. Wonder",
+					"gameID": [
+						"010015100B514000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Change to character-themed decoration in Bellabel Park hub (Switch 2 Edition only)",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Super Mario Bros. Wonder",
+					"gameID": [
+						"010015100B514000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a particular power-up depending on the amiibo",
+							"write": false
+						}
+					]
+				},
+				{
 					"gameName": "Super Mario Galaxy",
 					"gameID": [
 						"010099C022B96000"
@@ -13820,6 +15266,406 @@
 					"amiiboUsage": [
 						{
 							"Usage": "Receive a particular power-up depending on the character",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Super Mario Bros. Wonder",
+					"gameID": [
+						"010015100B514000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Change to character-themed decoration in Bellabel Park hub (Switch 2 Edition only)",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Super Mario Galaxy",
+					"gameID": [
+						"010099C022B96000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a helpful item depending on the character",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Super Mario Galaxy 2",
+					"gameID": [
+						"0100FD8022DAA000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a helpful item depending on the character",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Super Mario Party",
+					"gameID": [
+						"010036B0034E4000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Unlock the character's shiny sticker",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Super Smash Bros. Ultimate",
+					"gameID": [
+						"01006A800016E000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Battle and train up a computer-controlled Figure Player of the character",
+							"write": true
+						}
+					]
+				}
+			],
+			"gamesSwitch2": []
+		},
+		"0x0004010004ea0102": {
+			"games3DS": [
+				{
+					"gameName": "Chibi-Robo! Zip Lash",
+					"gameID": [
+						"0004000000162F00",
+						"0004000000163000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Unlock figure in an amiibo-exclusive pose of the character (requires Chibi-Robo amiibo)",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Kirby: Planet Robobot",
+					"gameID": [
+						"0004000000183600",
+						"0004000000189600",
+						"0004000000189800"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Give Kirby a Copy ability based on the character's abilities and a health item",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Mario Party: Star Rush",
+					"gameID": [
+						"0004000000193900",
+						"000400000019BD00",
+						"000400000019BE00"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Play as or receive bonus from this character, depending on the mode",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Mario Party: The Top 100",
+					"gameID": [
+						"00040000001C4D00",
+						"00040000001C4E00"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Minigame Island: If you land on an amiibo space, use to receive coins / Use to revive your character once",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Metroid Prime: Blast Ball",
+					"gameID": [
+						"0004000000175300"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Unlock an armor paint job based on the character",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Metroid Prime: Federation Force",
+					"gameID": [
+						"000400000016CE00",
+						"000400000016E300",
+						"0004000000175200"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Unlock an armor paint job based on the character for use in Blast Ball",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Miitopia",
+					"gameID": [
+						"0004000000178800",
+						"00040000001B4E00",
+						"00040000001B4F00"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Unlock a character-based costume",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Mini Mario & Friends amiibo Challenge",
+					"gameID": [
+						"000400000016C200",
+						"000400000016C300"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Play stages as a Mini version of this character, with a unique special ability, and unlock character-specific stages",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Style Savvy: Fashion Forward",
+					"gameID": [
+						"0004000000196500"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Unlock a character-themed accessory",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Super Smash Bros. for Nintendo 3DS",
+					"gameID": [
+						"00040000000EDF00",
+						"00040000000EE000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Battle and train up a computer-controlled Figure Player of the character",
+							"write": true
+						}
+					]
+				},
+				{
+					"gameName": "WarioWare Gold",
+					"gameID": [
+						"00040000001D1C00"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a sketch of the character from Wario which can be exchanged for in-game coins",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Yoshi's Woolly World",
+					"gameID": [
+						"00040000001A4100",
+						"00040000001A4200",
+						"00040000001B6C00",
+						"00040000001B6D00"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Unlock a character-based Yoshi yarn pattern",
+							"write": false
+						}
+					]
+				}
+			],
+			"gamesWiiU": [
+				{
+					"gameName": "Mario Kart 8",
+					"gameID": [
+						"000500001010EB00",
+						"000500001010EC00",
+						"000500001010ED00"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Unlock a character-themed Mii racing suit",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Mario Party 10",
+					"gameID": [
+						"0005000010161F00",
+						"0005000010162D00",
+						"0005000010162E00"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Customize game board in amiibo Party",
+							"write": false
+						},
+						{
+							"Usage": "Use as game piece in amiibo Party",
+							"write": true
+						}
+					]
+				},
+				{
+					"gameName": "Mario Tennis: Ultra Smash",
+					"gameID": [
+						"0005000010199000",
+						"00050000101A3500",
+						"00050000101A3600"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Play alongside and train up a computer-controlled character",
+							"write": true
+						}
+					]
+				},
+				{
+					"gameName": "Mini Mario & Friends amiibo Challenge",
+					"gameID": [
+						"00050000101C6100",
+						"00050000101C6200",
+						"00050000101C6300"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Play stages as a Mini version of this character, with a unique special ability, and unlock character-specific stages",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Super Mario Maker",
+					"gameID": [
+						"000500001018DB00",
+						"000500001018DC00",
+						"000500001018DD00"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Unlock a character-based Mystery Mushroom costume",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Super Smash Bros. for Wii U",
+					"gameID": [
+						"0005000010110E00",
+						"0005000010144F00",
+						"0005000010145000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Battle and train up a computer-controlled Figure Player of the character",
+							"write": true
+						}
+					]
+				},
+				{
+					"gameName": "Yoshi's Woolly World",
+					"gameID": [
+						"0005000010131F00"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Unlock a character-based Yoshi yarn pattern",
+							"write": false
+						}
+					]
+				}
+			],
+			"gamesSwitch": [
+				{
+					"gameName": "Conga Master Party!",
+					"gameID": [
+						"01007EF00399C000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Unlock a special costume",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Mario Kart 8 Deluxe",
+					"gameID": [
+						"0100152000022000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Unlock a character-themed Mii racing suit",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Miitopia",
+					"gameID": [
+						"01003DA010E8A000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Unlock a character-based costume",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Super Mario 3D World + Bowser's Fury",
+					"gameID": [
+						"010028600EBDA000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a particular power-up depending on the character",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Super Mario Bros. Wonder",
+					"gameID": [
+						"010015100B514000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Change to character-themed decoration in Bellabel Park hub (Switch 2 Edition only)",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Super Mario Bros. Wonder",
+					"gameID": [
+						"010015100B514000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a particular power-up depending on the amiibo",
 							"write": false
 						}
 					]
@@ -14243,6 +16089,18 @@
 						},
 						{
 							"Usage": "Receive a particular power-up depending on the character",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Super Mario Bros. Wonder",
+					"gameID": [
+						"010015100B514000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Change to character-themed decoration in Bellabel Park hub (Switch 2 Edition only)",
 							"write": false
 						}
 					]
@@ -14717,6 +16575,30 @@
 						},
 						{
 							"Usage": "Receive a particular power-up depending on the character",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Super Mario Bros. Wonder",
+					"gameID": [
+						"010015100B514000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Change to character-themed decoration in Bellabel Park hub (Switch 2 Edition only)",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Super Mario Bros. Wonder",
+					"gameID": [
+						"010015100B514000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a particular power-up depending on the amiibo",
 							"write": false
 						}
 					]
@@ -15206,6 +17088,30 @@
 					]
 				},
 				{
+					"gameName": "Super Mario Bros. Wonder",
+					"gameID": [
+						"010015100B514000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Change to character-themed decoration in Bellabel Park hub (Switch 2 Edition only)",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Super Mario Bros. Wonder",
+					"gameID": [
+						"010015100B514000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a particular power-up depending on the amiibo",
+							"write": false
+						}
+					]
+				},
+				{
 					"gameName": "Super Mario Galaxy",
 					"gameID": [
 						"010099C022B96000"
@@ -15677,6 +17583,18 @@
 					]
 				},
 				{
+					"gameName": "Super Mario Bros. Wonder",
+					"gameID": [
+						"010015100B514000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Change to character-themed decoration in Bellabel Park hub (Switch 2 Edition only)",
+							"write": false
+						}
+					]
+				},
+				{
 					"gameName": "Super Mario Galaxy",
 					"gameID": [
 						"010099C022B96000"
@@ -16001,6 +17919,18 @@
 					]
 				},
 				{
+					"gameName": "Super Mario Bros. Wonder",
+					"gameID": [
+						"010015100B514000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Change to character-themed decoration in Bellabel Park hub (Switch 2 Edition only)",
+							"write": false
+						}
+					]
+				},
+				{
 					"gameName": "Super Mario Galaxy",
 					"gameID": [
 						"010099C022B96000"
@@ -16257,6 +18187,18 @@
 					"amiiboUsage": [
 						{
 							"Usage": "Receive a particular power-up depending on the character",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Super Mario Bros. Wonder",
+					"gameID": [
+						"010015100B514000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Change to character-themed decoration in Bellabel Park hub (Switch 2 Edition only)",
 							"write": false
 						}
 					]
@@ -16557,6 +18499,30 @@
 					"amiiboUsage": [
 						{
 							"Usage": "Receive a particular power-up depending on the character",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Super Mario Bros. Wonder",
+					"gameID": [
+						"010015100B514000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Change to character-themed decoration in Bellabel Park hub (Switch 2 Edition only)",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Super Mario Bros. Wonder",
+					"gameID": [
+						"010015100B514000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a particular power-up depending on the amiibo",
 							"write": false
 						}
 					]
@@ -16910,6 +18876,18 @@
 					"amiiboUsage": [
 						{
 							"Usage": "Receive a particular power-up depending on the character",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Super Mario Bros. Wonder",
+					"gameID": [
+						"010015100B514000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Change to character-themed decoration in Bellabel Park hub (Switch 2 Edition only)",
 							"write": false
 						}
 					]
@@ -17296,6 +19274,30 @@
 					]
 				},
 				{
+					"gameName": "Super Mario Bros. Wonder",
+					"gameID": [
+						"010015100B514000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Change to character-themed decoration in Bellabel Park hub (Switch 2 Edition only)",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Super Mario Bros. Wonder",
+					"gameID": [
+						"010015100B514000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a particular power-up depending on the amiibo",
+							"write": false
+						}
+					]
+				},
+				{
 					"gameName": "Super Mario Galaxy",
 					"gameID": [
 						"010099C022B96000"
@@ -17395,6 +19397,18 @@
 					"amiiboUsage": [
 						{
 							"Usage": "Receive a particular power-up depending on the character",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Super Mario Bros. Wonder",
+					"gameID": [
+						"010015100B514000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Change to character-themed decoration in Bellabel Park hub (Switch 2 Edition only)",
 							"write": false
 						}
 					]
@@ -17557,18 +19571,6 @@
 					"amiiboUsage": [
 						{
 							"Usage": "Play stages as a Mini version of this character, with a unique special ability, and unlock character-specific stages",
-							"write": false
-						}
-					]
-				},
-				{
-					"gameName": "One Piece: Super Grand Battle! X",
-					"gameID": [
-						"0004000000144400"
-					],
-					"amiiboUsage": [
-						{
-							"Usage": "Unlock a character-based costume with special abilities",
 							"write": false
 						}
 					]
@@ -17749,6 +19751,18 @@
 					"amiiboUsage": [
 						{
 							"Usage": "Receive a particular power-up depending on the character",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Super Mario Bros. Wonder",
+					"gameID": [
+						"010015100B514000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Change to character-themed decoration in Bellabel Park hub (Switch 2 Edition only)",
 							"write": false
 						}
 					]
@@ -17928,18 +19942,6 @@
 					]
 				},
 				{
-					"gameName": "One Piece: Super Grand Battle! X",
-					"gameID": [
-						"0004000000144400"
-					],
-					"amiiboUsage": [
-						{
-							"Usage": "Unlock a character-based costume with special abilities",
-							"write": false
-						}
-					]
-				},
-				{
 					"gameName": "Super Smash Bros. for Nintendo 3DS",
 					"gameID": [
 						"00040000000EDF00",
@@ -18115,6 +20117,18 @@
 					"amiiboUsage": [
 						{
 							"Usage": "Receive a particular power-up depending on the character",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Super Mario Bros. Wonder",
+					"gameID": [
+						"010015100B514000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Change to character-themed decoration in Bellabel Park hub (Switch 2 Edition only)",
 							"write": false
 						}
 					]
@@ -18358,6 +20372,18 @@
 					"amiiboUsage": [
 						{
 							"Usage": "Receive a particular power-up depending on the character",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Super Mario Bros. Wonder",
+					"gameID": [
+						"010015100B514000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Change to character-themed decoration in Bellabel Park hub (Switch 2 Edition only)",
 							"write": false
 						}
 					]
@@ -18645,6 +20671,30 @@
 					]
 				},
 				{
+					"gameName": "Super Mario Bros. Wonder",
+					"gameID": [
+						"010015100B514000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Change to character-themed decoration in Bellabel Park hub (Switch 2 Edition only)",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Super Mario Bros. Wonder",
+					"gameID": [
+						"010015100B514000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a particular power-up depending on the amiibo",
+							"write": false
+						}
+					]
+				},
+				{
 					"gameName": "Super Mario Galaxy",
 					"gameID": [
 						"010099C022B96000"
@@ -18732,6 +20782,18 @@
 					"amiiboUsage": [
 						{
 							"Usage": "Receive a particular power-up depending on the character",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Super Mario Bros. Wonder",
+					"gameID": [
+						"010015100B514000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Change to character-themed decoration in Bellabel Park hub (Switch 2 Edition only)",
 							"write": false
 						}
 					]
@@ -19183,6 +21245,30 @@
 					]
 				},
 				{
+					"gameName": "Super Mario Bros. Wonder",
+					"gameID": [
+						"010015100B514000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Change to character-themed decoration in Bellabel Park hub (Switch 2 Edition only)",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Super Mario Bros. Wonder",
+					"gameID": [
+						"010015100B514000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a particular power-up depending on the amiibo",
+							"write": false
+						}
+					]
+				},
+				{
 					"gameName": "Super Mario Galaxy",
 					"gameID": [
 						"010099C022B96000"
@@ -19286,6 +21372,18 @@
 					]
 				},
 				{
+					"gameName": "Super Mario Bros. Wonder",
+					"gameID": [
+						"010015100B514000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Change to character-themed decoration in Bellabel Park hub (Switch 2 Edition only)",
+							"write": false
+						}
+					]
+				},
+				{
 					"gameName": "Super Mario Galaxy",
 					"gameID": [
 						"010099C022B96000"
@@ -19317,6 +21415,391 @@
 					"amiiboUsage": [
 						{
 							"Usage": "Receive a Spirit of the character",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Yoshi's Crafted World",
+					"gameID": [
+						"01006000040C2000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Unlock a character-based costume",
+							"write": false
+						}
+					]
+				}
+			],
+			"gamesSwitch2": []
+		},
+		"0x000a010004c20102": {
+			"games3DS": [
+				{
+					"gameName": "Chibi-Robo! Zip Lash",
+					"gameID": [
+						"0004000000162F00",
+						"0004000000163000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Unlock figure in an amiibo-exclusive pose of the character (requires Chibi-Robo amiibo)",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Kirby: Planet Robobot",
+					"gameID": [
+						"0004000000183600",
+						"0004000000189600",
+						"0004000000189800"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Give Kirby a Copy ability based on the character's abilities and a health item",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Luigi's Mansion",
+					"gameID": [
+						"0004000000055F00",
+						"0004000000076500",
+						"00040000000D0000",
+						"00040000001D1900",
+						"00040000001D1A00"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Make talking to Toad restore health",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Mario & Luigi: Bowser's Inside Story + Bowser Jr.'s Journey",
+					"gameID": [
+						"00040000001D1400",
+						"00040000001D1500"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a helpful item",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Mario & Luigi: Paper Jam",
+					"gameID": [
+						"0004000000132700",
+						"0004000000132800",
+						"000400000018A100"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Unlock character cards to help you in battle",
+							"write": true
+						}
+					]
+				},
+				{
+					"gameName": "Mario & Luigi: Superstar Saga + Bowser's Minions",
+					"gameID": [
+						"00040000001B8F00",
+						"00040000001B9000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a stamp and equipment for the main quest",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Mario Party: Star Rush",
+					"gameID": [
+						"0004000000193900",
+						"000400000019BD00",
+						"000400000019BE00"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Play as or receive bonus from this character, depending on the mode",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Mario Party: The Top 100",
+					"gameID": [
+						"00040000001C4D00",
+						"00040000001C4E00"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Minigame Island: If you land on an amiibo space, use to receive coins / Use to revive your character once",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Miitopia",
+					"gameID": [
+						"0004000000178800",
+						"00040000001B4E00",
+						"00040000001B4F00"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Unlock a character-based costume",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Mini Mario & Friends amiibo Challenge",
+					"gameID": [
+						"000400000016C200",
+						"000400000016C300"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Play stages as a Mini version of this character, with a unique special ability, and unlock character-specific stages",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Picross 3D Round 2",
+					"gameID": [
+						"0004000000187E00"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Unlock a character-based puzzle",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "WarioWare Gold",
+					"gameID": [
+						"00040000001D1C00"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a sketch of the character from Wario which can be exchanged for in-game coins",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Yoshi's Woolly World",
+					"gameID": [
+						"00040000001A4100",
+						"00040000001A4200",
+						"00040000001B6C00",
+						"00040000001B6D00"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Unlock a character-based Yoshi yarn pattern",
+							"write": false
+						}
+					]
+				}
+			],
+			"gamesWiiU": [
+				{
+					"gameName": "Captain Toad: Treasure Tracker",
+					"gameID": [
+						"0005000010180500",
+						"0005000010180600",
+						"0005000010180700"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Unlock Pixel Toad hide-and-seek challenges",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Mario Kart 8",
+					"gameID": [
+						"000500001010EB00",
+						"000500001010EC00",
+						"000500001010ED00"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Unlock a character-themed Mii racing suit",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Mario Party 10",
+					"gameID": [
+						"0005000010161F00",
+						"0005000010162D00",
+						"0005000010162E00"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Customize game board in amiibo Party",
+							"write": false
+						},
+						{
+							"Usage": "Use as game piece in amiibo Party",
+							"write": true
+						}
+					]
+				},
+				{
+					"gameName": "Mario Tennis: Ultra Smash",
+					"gameID": [
+						"0005000010199000",
+						"00050000101A3500",
+						"00050000101A3600"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Play alongside and train up a computer-controlled character",
+							"write": true
+						}
+					]
+				},
+				{
+					"gameName": "Mini Mario & Friends amiibo Challenge",
+					"gameID": [
+						"00050000101C6100",
+						"00050000101C6200",
+						"00050000101C6300"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Play stages as a Mini version of this character, with a unique special ability, and unlock character-specific stages",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Super Mario Maker",
+					"gameID": [
+						"000500001018DB00",
+						"000500001018DC00",
+						"000500001018DD00"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Unlock a character-based Mystery Mushroom costume",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Yoshi's Woolly World",
+					"gameID": [
+						"0005000010131F00"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Unlock a character-based Yoshi yarn pattern",
+							"write": false
+						}
+					]
+				}
+			],
+			"gamesSwitch": [
+				{
+					"gameName": "Conga Master Party!",
+					"gameID": [
+						"01007EF00399C000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Unlock a special costume",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Mario Kart 8 Deluxe",
+					"gameID": [
+						"0100152000022000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Unlock a character-themed Mii racing suit",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Miitopia",
+					"gameID": [
+						"01003DA010E8A000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Unlock a character-based costume",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Super Mario 3D World + Bowser's Fury",
+					"gameID": [
+						"010028600EBDA000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a particular power-up depending on the character",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Super Mario Bros. Wonder",
+					"gameID": [
+						"010015100B514000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Change to character-themed decoration in Bellabel Park hub (Switch 2 Edition only)",
+							"write": false
+						},
+						{
+							"Usage": "Receive a particular power-up depending on the amiibo",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Super Mario Galaxy",
+					"gameID": [
+						"010099C022B96000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a helpful item depending on the character",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Super Mario Galaxy 2",
+					"gameID": [
+						"0100FD8022DAA000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a helpful item depending on the character",
 							"write": false
 						}
 					]
@@ -19480,6 +21963,30 @@
 					"amiiboUsage": [
 						{
 							"Usage": "Receive a particular power-up depending on the character",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Super Mario Bros. Wonder",
+					"gameID": [
+						"010015100B514000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Change to character-themed decoration in Bellabel Park hub (Switch 2 Edition only)",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Super Mario Bros. Wonder",
+					"gameID": [
+						"010015100B514000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a particular power-up depending on the amiibo",
 							"write": false
 						}
 					]
@@ -19657,6 +22164,18 @@
 					]
 				},
 				{
+					"gameName": "Super Mario Bros. Wonder",
+					"gameID": [
+						"010015100B514000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Change to character-themed decoration in Bellabel Park hub (Switch 2 Edition only)",
+							"write": false
+						}
+					]
+				},
+				{
 					"gameName": "Super Mario Galaxy",
 					"gameID": [
 						"010099C022B96000"
@@ -19755,6 +22274,18 @@
 					"amiiboUsage": [
 						{
 							"Usage": "Receive a particular power-up depending on the character",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Super Mario Bros. Wonder",
+					"gameID": [
+						"010015100B514000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Change to character-themed decoration in Bellabel Park hub (Switch 2 Edition only)",
 							"write": false
 						}
 					]
@@ -19919,6 +22450,30 @@
 					"amiiboUsage": [
 						{
 							"Usage": "Receive a particular power-up depending on the character",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Super Mario Bros. Wonder",
+					"gameID": [
+						"010015100B514000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Change to character-themed decoration in Bellabel Park hub (Switch 2 Edition only)",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Super Mario Bros. Wonder",
+					"gameID": [
+						"010015100B514000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a particular power-up depending on the amiibo",
 							"write": false
 						}
 					]
@@ -20097,6 +22652,30 @@
 					"amiiboUsage": [
 						{
 							"Usage": "Receive a particular power-up depending on the character",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Super Mario Bros. Wonder",
+					"gameID": [
+						"010015100B514000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Change to character-themed decoration in Bellabel Park hub (Switch 2 Edition only)",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Super Mario Bros. Wonder",
+					"gameID": [
+						"010015100B514000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a particular power-up depending on the amiibo",
 							"write": false
 						}
 					]
@@ -20313,6 +22892,30 @@
 					]
 				},
 				{
+					"gameName": "Super Mario Bros. Wonder",
+					"gameID": [
+						"010015100B514000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Change to character-themed decoration in Bellabel Park hub (Switch 2 Edition only)",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Super Mario Bros. Wonder",
+					"gameID": [
+						"010015100B514000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a particular power-up depending on the amiibo",
+							"write": false
+						}
+					]
+				},
+				{
 					"gameName": "Super Mario Galaxy",
 					"gameID": [
 						"010099C022B96000"
@@ -20464,6 +23067,30 @@
 					]
 				},
 				{
+					"gameName": "Super Mario Bros. Wonder",
+					"gameID": [
+						"010015100B514000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Change to character-themed decoration in Bellabel Park hub (Switch 2 Edition only)",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Super Mario Bros. Wonder",
+					"gameID": [
+						"010015100B514000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a particular power-up depending on the amiibo",
+							"write": false
+						}
+					]
+				},
+				{
 					"gameName": "Super Mario Galaxy",
 					"gameID": [
 						"010099C022B96000"
@@ -20543,6 +23170,18 @@
 					]
 				},
 				{
+					"gameName": "Super Mario Bros. Wonder",
+					"gameID": [
+						"010015100B514000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Change to character-themed decoration in Bellabel Park hub (Switch 2 Edition only)",
+							"write": false
+						}
+					]
+				},
+				{
 					"gameName": "Super Mario Galaxy",
 					"gameID": [
 						"010099C022B96000"
@@ -20575,6 +23214,41 @@
 						{
 							"Usage": "Battle and train up a computer-controlled Figure Player of the character",
 							"write": true
+						}
+					]
+				}
+			],
+			"gamesSwitch2": []
+		},
+		"0x0025010004c30102": {
+			"games3DS": [],
+			"gamesWiiU": [],
+			"gamesSwitch": [
+				{
+					"gameName": "Conga Master Party!",
+					"gameID": [
+						"01007EF00399C000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Unlock a special costume",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Super Mario Bros. Wonder",
+					"gameID": [
+						"010015100B514000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Change to character-themed decoration in Bellabel Park hub (Switch 2 Edition only)",
+							"write": false
+						},
+						{
+							"Usage": "Receive a particular power-up depending on the amiibo",
+							"write": false
 						}
 					]
 				}
@@ -20634,6 +23308,18 @@
 					"amiiboUsage": [
 						{
 							"Usage": "Unlock a special costume",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Super Mario Bros. Wonder",
+					"gameID": [
+						"010015100B514000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Change to character-themed decoration in Bellabel Park hub (Switch 2 Edition only)",
 							"write": false
 						}
 					]
@@ -20976,7 +23662,7 @@
 					],
 					"amiiboUsage": [
 						{
-							"Usage": "Invite amiibo-exclusive villager Tulin",
+							"Usage": "Invite amiibo-exclusive villager Tulin / Unlock Legend of Zelda-themed items in shopping catalog",
 							"write": false
 						}
 					]
@@ -21407,7 +24093,7 @@
 					],
 					"amiiboUsage": [
 						{
-							"Usage": "Invite amiibo-exclusive villager Mineru",
+							"Usage": "Invite amiibo-exclusive villager Mineru / Unlock Legend of Zelda-themed items in shopping catalog",
 							"write": false
 						}
 					]
@@ -21842,7 +24528,7 @@
 					],
 					"amiiboUsage": [
 						{
-							"Usage": "Invite amiibo-exclusive villager Tulin",
+							"Usage": "Invite amiibo-exclusive villager Tulin / Unlock Legend of Zelda-themed items in shopping catalog",
 							"write": false
 						}
 					]
@@ -22281,7 +24967,7 @@
 					],
 					"amiiboUsage": [
 						{
-							"Usage": "Invite amiibo-exclusive villager Mineru",
+							"Usage": "Invite amiibo-exclusive villager Mineru / Unlock Legend of Zelda-themed items in shopping catalog",
 							"write": false
 						}
 					]
@@ -22724,7 +25410,7 @@
 					],
 					"amiiboUsage": [
 						{
-							"Usage": "Invite amiibo-exclusive villager Tulin",
+							"Usage": "Invite amiibo-exclusive villager Tulin / Unlock Legend of Zelda-themed items in shopping catalog",
 							"write": false
 						}
 					]
@@ -23159,7 +25845,7 @@
 					],
 					"amiiboUsage": [
 						{
-							"Usage": "Invite amiibo-exclusive villager Mineru",
+							"Usage": "Invite amiibo-exclusive villager Mineru / Unlock Legend of Zelda-themed items in shopping catalog",
 							"write": false
 						}
 					]
@@ -23594,7 +26280,7 @@
 					],
 					"amiiboUsage": [
 						{
-							"Usage": "Invite amiibo-exclusive villager Tulin",
+							"Usage": "Invite amiibo-exclusive villager Tulin / Unlock Legend of Zelda-themed items in shopping catalog",
 							"write": false
 						}
 					]
@@ -24029,7 +26715,7 @@
 					],
 					"amiiboUsage": [
 						{
-							"Usage": "Invite amiibo-exclusive villager Mineru",
+							"Usage": "Invite amiibo-exclusive villager Mineru / Unlock Legend of Zelda-themed items in shopping catalog",
 							"write": false
 						}
 					]
@@ -24464,7 +27150,7 @@
 					],
 					"amiiboUsage": [
 						{
-							"Usage": "Invite amiibo-exclusive villager Tulin",
+							"Usage": "Invite amiibo-exclusive villager Tulin / Unlock Legend of Zelda-themed items in shopping catalog",
 							"write": false
 						}
 					]
@@ -24887,7 +27573,7 @@
 					],
 					"amiiboUsage": [
 						{
-							"Usage": "Invite amiibo-exclusive villager Mineru",
+							"Usage": "Invite amiibo-exclusive villager Mineru / Unlock Legend of Zelda-themed items in shopping catalog",
 							"write": false
 						}
 					]
@@ -25334,7 +28020,7 @@
 					],
 					"amiiboUsage": [
 						{
-							"Usage": "Invite amiibo-exclusive villager Tulin",
+							"Usage": "Invite amiibo-exclusive villager Tulin / Unlock Legend of Zelda-themed items in shopping catalog",
 							"write": false
 						}
 					]
@@ -25583,18 +28269,6 @@
 					]
 				},
 				{
-					"gameName": "One Piece: Super Grand Battle! X",
-					"gameID": [
-						"0004000000144400"
-					],
-					"amiiboUsage": [
-						{
-							"Usage": "Unlock a character-based costume with special abilities",
-							"write": false
-						}
-					]
-				},
-				{
 					"gameName": "Picross 3D Round 2",
 					"gameID": [
 						"0004000000187E00"
@@ -25779,7 +28453,7 @@
 					],
 					"amiiboUsage": [
 						{
-							"Usage": "Invite amiibo-exclusive villager Tulin",
+							"Usage": "Invite amiibo-exclusive villager Tulin / Unlock Legend of Zelda-themed items in shopping catalog",
 							"write": false
 						}
 					]
@@ -26016,18 +28690,6 @@
 					]
 				},
 				{
-					"gameName": "One Piece: Super Grand Battle! X",
-					"gameID": [
-						"0004000000144400"
-					],
-					"amiiboUsage": [
-						{
-							"Usage": "Unlock a character-based costume with special abilities",
-							"write": false
-						}
-					]
-				},
-				{
 					"gameName": "Picross 3D Round 2",
 					"gameID": [
 						"0004000000187E00"
@@ -26212,7 +28874,7 @@
 					],
 					"amiiboUsage": [
 						{
-							"Usage": "Invite amiibo-exclusive villager Tulin",
+							"Usage": "Invite amiibo-exclusive villager Tulin / Unlock Legend of Zelda-themed items in shopping catalog",
 							"write": false
 						}
 					]
@@ -26617,7 +29279,7 @@
 					],
 					"amiiboUsage": [
 						{
-							"Usage": "Invite amiibo-exclusive villager Mineru",
+							"Usage": "Invite amiibo-exclusive villager Mineru / Unlock Legend of Zelda-themed items in shopping catalog",
 							"write": false
 						}
 					]
@@ -26998,7 +29660,7 @@
 					],
 					"amiiboUsage": [
 						{
-							"Usage": "Invite amiibo-exclusive villager Tulin",
+							"Usage": "Invite amiibo-exclusive villager Tulin / Unlock Legend of Zelda-themed items in shopping catalog",
 							"write": false
 						}
 					]
@@ -27391,7 +30053,7 @@
 					],
 					"amiiboUsage": [
 						{
-							"Usage": "Invite amiibo-exclusive villager Mineru",
+							"Usage": "Invite amiibo-exclusive villager Mineru / Unlock Legend of Zelda-themed items in shopping catalog",
 							"write": false
 						}
 					]
@@ -27784,7 +30446,7 @@
 					],
 					"amiiboUsage": [
 						{
-							"Usage": "Invite amiibo-exclusive villager Mineru",
+							"Usage": "Invite amiibo-exclusive villager Mineru / Unlock Legend of Zelda-themed items in shopping catalog",
 							"write": false
 						}
 					]
@@ -28177,7 +30839,7 @@
 					],
 					"amiiboUsage": [
 						{
-							"Usage": "Invite amiibo-exclusive villager Mineru",
+							"Usage": "Invite amiibo-exclusive villager Mineru / Unlock Legend of Zelda-themed items in shopping catalog",
 							"write": false
 						}
 					]
@@ -28544,7 +31206,7 @@
 					],
 					"amiiboUsage": [
 						{
-							"Usage": "Invite amiibo-exclusive villager Tulin",
+							"Usage": "Invite amiibo-exclusive villager Tulin / Unlock Legend of Zelda-themed items in shopping catalog",
 							"write": false
 						}
 					]
@@ -28910,7 +31572,7 @@
 					],
 					"amiiboUsage": [
 						{
-							"Usage": "Invite amiibo-exclusive villager Mineru",
+							"Usage": "Invite amiibo-exclusive villager Mineru / Unlock Legend of Zelda-themed items in shopping catalog",
 							"write": false
 						}
 					]
@@ -29264,7 +31926,7 @@
 					],
 					"amiiboUsage": [
 						{
-							"Usage": "Invite amiibo-exclusive villager Tulin",
+							"Usage": "Invite amiibo-exclusive villager Tulin / Unlock Legend of Zelda-themed items in shopping catalog",
 							"write": false
 						}
 					]
@@ -29550,7 +32212,7 @@
 					],
 					"amiiboUsage": [
 						{
-							"Usage": "Invite amiibo-exclusive villager Mineru",
+							"Usage": "Invite amiibo-exclusive villager Mineru / Unlock Legend of Zelda-themed items in shopping catalog",
 							"write": false
 						}
 					]
@@ -29737,7 +32399,7 @@
 					],
 					"amiiboUsage": [
 						{
-							"Usage": "Invite amiibo-exclusive villager Tulin",
+							"Usage": "Invite amiibo-exclusive villager Tulin / Unlock Legend of Zelda-themed items in shopping catalog",
 							"write": false
 						}
 					]
@@ -29912,7 +32574,7 @@
 					],
 					"amiiboUsage": [
 						{
-							"Usage": "Invite amiibo-exclusive villager Mineru",
+							"Usage": "Invite amiibo-exclusive villager Mineru / Unlock Legend of Zelda-themed items in shopping catalog",
 							"write": false
 						}
 					]
@@ -30087,7 +32749,7 @@
 					],
 					"amiiboUsage": [
 						{
-							"Usage": "Invite amiibo-exclusive villager Mineru",
+							"Usage": "Invite amiibo-exclusive villager Mineru / Unlock Legend of Zelda-themed items in shopping catalog",
 							"write": false
 						}
 					]
@@ -30262,7 +32924,7 @@
 					],
 					"amiiboUsage": [
 						{
-							"Usage": "Invite amiibo-exclusive villager Tulin",
+							"Usage": "Invite amiibo-exclusive villager Tulin / Unlock Legend of Zelda-themed items in shopping catalog",
 							"write": false
 						}
 					]
@@ -30410,7 +33072,7 @@
 					],
 					"amiiboUsage": [
 						{
-							"Usage": "Invite amiibo-exclusive villager Mineru",
+							"Usage": "Invite amiibo-exclusive villager Mineru / Unlock Legend of Zelda-themed items in shopping catalog",
 							"write": false
 						}
 					]
@@ -30504,7 +33166,7 @@
 					],
 					"amiiboUsage": [
 						{
-							"Usage": "Invite amiibo-exclusive villager Mineru",
+							"Usage": "Invite amiibo-exclusive villager Mineru / Unlock Legend of Zelda-themed items in shopping catalog",
 							"write": false
 						}
 					]
@@ -30592,7 +33254,7 @@
 					],
 					"amiiboUsage": [
 						{
-							"Usage": "Invite amiibo-exclusive villager Tulin",
+							"Usage": "Invite amiibo-exclusive villager Tulin / Unlock Legend of Zelda-themed items in shopping catalog",
 							"write": false
 						}
 					]
@@ -30680,7 +33342,7 @@
 					],
 					"amiiboUsage": [
 						{
-							"Usage": "Invite amiibo-exclusive villager Tulin",
+							"Usage": "Invite amiibo-exclusive villager Tulin / Unlock Legend of Zelda-themed items in shopping catalog",
 							"write": false
 						}
 					]
@@ -30810,7 +33472,7 @@
 					],
 					"amiiboUsage": [
 						{
-							"Usage": "Invite amiibo-exclusive villager Mineru",
+							"Usage": "Invite amiibo-exclusive villager Mineru / Unlock Legend of Zelda-themed items in shopping catalog",
 							"write": false
 						}
 					]
@@ -31000,7 +33662,7 @@
 					],
 					"amiiboUsage": [
 						{
-							"Usage": "Invite amiibo-exclusive villager Tulin",
+							"Usage": "Invite amiibo-exclusive villager Tulin / Unlock Legend of Zelda-themed items in shopping catalog",
 							"write": false
 						}
 					]
@@ -95413,6 +98075,18 @@
 					]
 				},
 				{
+					"gameName": "Metroid Prime 4: Beyond",
+					"gameID": [
+						"010019A01E2F2000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Play a musical jingle",
+							"write": false
+						}
+					]
+				},
+				{
 					"gameName": "Miitopia",
 					"gameID": [
 						"01003DA010E8A000"
@@ -95707,6 +98381,18 @@
 					"amiiboUsage": [
 						{
 							"Usage": "Restore a random amount of health once per day",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Metroid Prime 4: Beyond",
+					"gameID": [
+						"010019A01E2F2000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Play a musical jingle",
 							"write": false
 						}
 					]
@@ -96015,6 +98701,18 @@
 					]
 				},
 				{
+					"gameName": "Metroid Prime 4: Beyond",
+					"gameID": [
+						"010019A01E2F2000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Play a musical jingle",
+							"write": false
+						}
+					]
+				},
+				{
 					"gameName": "Miitopia",
 					"gameID": [
 						"01003DA010E8A000"
@@ -96314,6 +99012,18 @@
 					]
 				},
 				{
+					"gameName": "Metroid Prime 4: Beyond",
+					"gameID": [
+						"010019A01E2F2000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Change Vi-O-La's color / Improve Vi-O-La boost regeneration once per day / See total distance traveled on Vi-O-La",
+							"write": false
+						}
+					]
+				},
+				{
 					"gameName": "Miitopia",
 					"gameID": [
 						"01003DA010E8A000"
@@ -96338,12 +99048,6 @@
 					]
 				}
 			],
-			"gamesSwitch2": []
-		},
-		"0x05c50000043c1302": {
-			"games3DS": [],
-			"gamesWiiU": [],
-			"gamesSwitch": [],
 			"gamesSwitch2": []
 		},
 		"0x05c00000043b1302": {
@@ -96623,6 +99327,18 @@
 					]
 				},
 				{
+					"gameName": "Metroid Prime 4: Beyond",
+					"gameID": [
+						"010019A01E2F2000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Play a musical jingle",
+							"write": false
+						}
+					]
+				},
+				{
 					"gameName": "Miitopia",
 					"gameID": [
 						"01003DA010E8A000"
@@ -96759,18 +99475,6 @@
 					"amiiboUsage": [
 						{
 							"Usage": "Unlock a character-based costume",
-							"write": false
-						}
-					]
-				},
-				{
-					"gameName": "One Piece: Super Grand Battle! X",
-					"gameID": [
-						"0004000000144400"
-					],
-					"amiiboUsage": [
-						{
-							"Usage": "Unlock a character-based costume with special abilities",
 							"write": false
 						}
 					]
@@ -96922,6 +99626,18 @@
 					]
 				},
 				{
+					"gameName": "Metroid Prime 4: Beyond",
+					"gameID": [
+						"010019A01E2F2000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Play a musical jingle",
+							"write": false
+						}
+					]
+				},
+				{
 					"gameName": "Miitopia",
 					"gameID": [
 						"01003DA010E8A000"
@@ -97046,6 +99762,18 @@
 					]
 				},
 				{
+					"gameName": "Metroid Prime 4: Beyond",
+					"gameID": [
+						"010019A01E2F2000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Play a musical jingle",
+							"write": false
+						}
+					]
+				},
+				{
 					"gameName": "Super Smash Bros. Ultimate",
 					"gameID": [
 						"01006A800016E000"
@@ -97089,6 +99817,18 @@
 					]
 				},
 				{
+					"gameName": "Metroid Prime 4: Beyond",
+					"gameID": [
+						"010019A01E2F2000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Play a musical jingle",
+							"write": false
+						}
+					]
+				},
+				{
 					"gameName": "Super Smash Bros. Ultimate",
 					"gameID": [
 						"01006A800016E000"
@@ -97127,6 +99867,18 @@
 					"amiiboUsage": [
 						{
 							"Usage": "Replenish a random amount of missiles once per day",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Metroid Prime 4: Beyond",
+					"gameID": [
+						"010019A01E2F2000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Play a musical jingle",
 							"write": false
 						}
 					]
@@ -97191,6 +99943,18 @@
 					]
 				},
 				{
+					"gameName": "Metroid Prime 4: Beyond",
+					"gameID": [
+						"010019A01E2F2000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Play a musical jingle",
+							"write": false
+						}
+					]
+				},
+				{
 					"gameName": "Super Smash Bros. Ultimate",
 					"gameID": [
 						"01006A800016E000"
@@ -97198,6 +99962,49 @@
 					"amiiboUsage": [
 						{
 							"Usage": "Receive a Spirit of the character",
+							"write": false
+						}
+					]
+				}
+			],
+			"gamesSwitch2": []
+		},
+		"0x05c50000043c1302": {
+			"games3DS": [],
+			"gamesWiiU": [],
+			"gamesSwitch": [
+				{
+					"gameName": "Conga Master Party!",
+					"gameID": [
+						"01007EF00399C000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Unlock a special costume",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Mario Kart 8 Deluxe",
+					"gameID": [
+						"0100152000022000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Unlock a Metroid-themed Mii racing suit",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Metroid Prime 4: Beyond",
+					"gameID": [
+						"010019A01E2F2000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "View a particular completed cutscene after beating game without needing 100% completion / Hear a random voice line from Sylux",
 							"write": false
 						}
 					]
@@ -99309,7 +102116,7 @@
 					],
 					"amiiboUsage": [
 						{
-							"Usage": "Invite amiibo-exclusive villager Viché",
+							"Usage": "Invite amiibo-exclusive villager Viché / Unlock Splatoon-themed items in shopping catalog",
 							"write": false
 						}
 					]
@@ -99565,7 +102372,7 @@
 					],
 					"amiiboUsage": [
 						{
-							"Usage": "Invite amiibo-exclusive villager Viché",
+							"Usage": "Invite amiibo-exclusive villager Viché / Unlock Splatoon-themed items in shopping catalog",
 							"write": false
 						}
 					]
@@ -99806,7 +102613,7 @@
 					],
 					"amiiboUsage": [
 						{
-							"Usage": "Invite amiibo-exclusive villager Viché",
+							"Usage": "Invite amiibo-exclusive villager Viché / Unlock Splatoon-themed items in shopping catalog",
 							"write": false
 						}
 					]
@@ -100035,7 +102842,7 @@
 					],
 					"amiiboUsage": [
 						{
-							"Usage": "Invite amiibo-exclusive villager Viché",
+							"Usage": "Invite amiibo-exclusive villager Viché / Unlock Splatoon-themed items in shopping catalog",
 							"write": false
 						}
 					]
@@ -100264,7 +103071,7 @@
 					],
 					"amiiboUsage": [
 						{
-							"Usage": "Invite amiibo-exclusive villager Viché",
+							"Usage": "Invite amiibo-exclusive villager Viché / Unlock Splatoon-themed items in shopping catalog",
 							"write": false
 						}
 					]
@@ -100508,7 +103315,7 @@
 					],
 					"amiiboUsage": [
 						{
-							"Usage": "Invite amiibo-exclusive villager Viché",
+							"Usage": "Invite amiibo-exclusive villager Viché / Unlock Splatoon-themed items in shopping catalog",
 							"write": false
 						}
 					]
@@ -100752,7 +103559,7 @@
 					],
 					"amiiboUsage": [
 						{
-							"Usage": "Invite amiibo-exclusive villager Viché",
+							"Usage": "Invite amiibo-exclusive villager Viché / Unlock Splatoon-themed items in shopping catalog",
 							"write": false
 						}
 					]
@@ -100981,7 +103788,7 @@
 					],
 					"amiiboUsage": [
 						{
-							"Usage": "Invite amiibo-exclusive villager Viché",
+							"Usage": "Invite amiibo-exclusive villager Viché / Unlock Splatoon-themed items in shopping catalog",
 							"write": false
 						}
 					]
@@ -101225,7 +104032,7 @@
 					],
 					"amiiboUsage": [
 						{
-							"Usage": "Invite amiibo-exclusive villager Viché",
+							"Usage": "Invite amiibo-exclusive villager Viché / Unlock Splatoon-themed items in shopping catalog",
 							"write": false
 						}
 					]
@@ -101469,7 +104276,7 @@
 					],
 					"amiiboUsage": [
 						{
-							"Usage": "Invite amiibo-exclusive villager Viché",
+							"Usage": "Invite amiibo-exclusive villager Viché / Unlock Splatoon-themed items in shopping catalog",
 							"write": false
 						}
 					]
@@ -101698,7 +104505,7 @@
 					],
 					"amiiboUsage": [
 						{
-							"Usage": "Invite amiibo-exclusive villager Viché",
+							"Usage": "Invite amiibo-exclusive villager Viché / Unlock Splatoon-themed items in shopping catalog",
 							"write": false
 						}
 					]
@@ -101915,7 +104722,7 @@
 					],
 					"amiiboUsage": [
 						{
-							"Usage": "Invite amiibo-exclusive villager Cece",
+							"Usage": "Invite amiibo-exclusive villager Cece / Unlock Splatoon-themed items in shopping catalog",
 							"write": false
 						}
 					]
@@ -102109,7 +104916,7 @@
 					],
 					"amiiboUsage": [
 						{
-							"Usage": "Invite amiibo-exclusive villager Cece",
+							"Usage": "Invite amiibo-exclusive villager Cece / Unlock Splatoon-themed items in shopping catalog",
 							"write": false
 						}
 					]
@@ -102326,7 +105133,7 @@
 					],
 					"amiiboUsage": [
 						{
-							"Usage": "Invite amiibo-exclusive villager Viché",
+							"Usage": "Invite amiibo-exclusive villager Viché / Unlock Splatoon-themed items in shopping catalog",
 							"write": false
 						}
 					]
@@ -102520,7 +105327,7 @@
 					],
 					"amiiboUsage": [
 						{
-							"Usage": "Invite amiibo-exclusive villager Viché",
+							"Usage": "Invite amiibo-exclusive villager Viché / Unlock Splatoon-themed items in shopping catalog",
 							"write": false
 						}
 					]
@@ -102636,7 +105443,7 @@
 					],
 					"amiiboUsage": [
 						{
-							"Usage": "Invite amiibo-exclusive villager Viché",
+							"Usage": "Invite amiibo-exclusive villager Viché / Unlock Splatoon-themed items in shopping catalog",
 							"write": false
 						}
 					]
@@ -102744,7 +105551,7 @@
 					],
 					"amiiboUsage": [
 						{
-							"Usage": "Invite amiibo-exclusive villager Viché",
+							"Usage": "Invite amiibo-exclusive villager Viché / Unlock Splatoon-themed items in shopping catalog",
 							"write": false
 						}
 					]
@@ -102848,7 +105655,7 @@
 					],
 					"amiiboUsage": [
 						{
-							"Usage": "Invite amiibo-exclusive villager Cece",
+							"Usage": "Invite amiibo-exclusive villager Cece / Unlock Splatoon-themed items in shopping catalog",
 							"write": false
 						}
 					]
@@ -102956,7 +105763,7 @@
 					],
 					"amiiboUsage": [
 						{
-							"Usage": "Invite amiibo-exclusive villager Cece",
+							"Usage": "Invite amiibo-exclusive villager Cece / Unlock Splatoon-themed items in shopping catalog",
 							"write": false
 						}
 					]
@@ -103048,7 +105855,7 @@
 					],
 					"amiiboUsage": [
 						{
-							"Usage": "Invite amiibo-exclusive villager Cece",
+							"Usage": "Invite amiibo-exclusive villager Cece / Unlock Splatoon-themed items in shopping catalog",
 							"write": false
 						}
 					]
@@ -103140,7 +105947,7 @@
 					],
 					"amiiboUsage": [
 						{
-							"Usage": "Invite amiibo-exclusive villager Cece",
+							"Usage": "Invite amiibo-exclusive villager Cece / Unlock Splatoon-themed items in shopping catalog",
 							"write": false
 						}
 					]
@@ -103232,7 +106039,7 @@
 					],
 					"amiiboUsage": [
 						{
-							"Usage": "Invite amiibo-exclusive villager Cece",
+							"Usage": "Invite amiibo-exclusive villager Cece / Unlock Splatoon-themed items in shopping catalog",
 							"write": false
 						}
 					]
@@ -103312,7 +106119,7 @@
 					],
 					"amiiboUsage": [
 						{
-							"Usage": "Invite amiibo-exclusive villager Cece",
+							"Usage": "Invite amiibo-exclusive villager Cece / Unlock Splatoon-themed items in shopping catalog",
 							"write": false
 						}
 					]
@@ -103404,7 +106211,7 @@
 					],
 					"amiiboUsage": [
 						{
-							"Usage": "Invite amiibo-exclusive villager Cece",
+							"Usage": "Invite amiibo-exclusive villager Cece / Unlock Splatoon-themed items in shopping catalog",
 							"write": false
 						}
 					]
@@ -103472,7 +106279,7 @@
 					],
 					"amiiboUsage": [
 						{
-							"Usage": "Invite amiibo-exclusive villager Cece",
+							"Usage": "Invite amiibo-exclusive villager Cece / Unlock Splatoon-themed items in shopping catalog",
 							"write": false
 						}
 					]
@@ -103544,7 +106351,7 @@
 					],
 					"amiiboUsage": [
 						{
-							"Usage": "Invite amiibo-exclusive villager Viché",
+							"Usage": "Invite amiibo-exclusive villager Viché / Unlock Splatoon-themed items in shopping catalog",
 							"write": false
 						}
 					]
@@ -103616,11 +106423,11 @@
 					],
 					"amiiboUsage": [
 						{
-							"Usage": "Invite amiibo-exclusive villager Cece",
+							"Usage": "Invite amiibo-exclusive villager Cece / Unlock Splatoon-themed items in shopping catalog",
 							"write": false
 						},
 						{
-							"Usage": "Invite amiibo-exclusive villager Viché",
+							"Usage": "Invite amiibo-exclusive villager Viché / Unlock Splatoon-themed items in shopping catalog",
 							"write": false
 						}
 					]
@@ -103686,7 +106493,20 @@
 				}
 			],
 			"gamesWiiU": [],
-			"gamesSwitch": [],
+			"gamesSwitch": [
+				{
+					"gameName": "Super Mario Bros. Wonder",
+					"gameID": [
+						"010015100B514000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a particular power-up depending on the amiibo",
+							"write": false
+						}
+					]
+				}
+			],
 			"gamesSwitch2": []
 		},
 		"0x09c00201026a0e02": {
@@ -103707,7 +106527,20 @@
 				}
 			],
 			"gamesWiiU": [],
-			"gamesSwitch": [],
+			"gamesSwitch": [
+				{
+					"gameName": "Super Mario Bros. Wonder",
+					"gameID": [
+						"010015100B514000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a particular power-up depending on the amiibo",
+							"write": false
+						}
+					]
+				}
+			],
 			"gamesSwitch2": []
 		},
 		"0x09c00301026b0e02": {
@@ -103728,7 +106561,20 @@
 				}
 			],
 			"gamesWiiU": [],
-			"gamesSwitch": [],
+			"gamesSwitch": [
+				{
+					"gameName": "Super Mario Bros. Wonder",
+					"gameID": [
+						"010015100B514000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a particular power-up depending on the amiibo",
+							"write": false
+						}
+					]
+				}
+			],
 			"gamesSwitch2": []
 		},
 		"0x09c00401026c0e02": {
@@ -103749,7 +106595,20 @@
 				}
 			],
 			"gamesWiiU": [],
-			"gamesSwitch": [],
+			"gamesSwitch": [
+				{
+					"gameName": "Super Mario Bros. Wonder",
+					"gameID": [
+						"010015100B514000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a particular power-up depending on the amiibo",
+							"write": false
+						}
+					]
+				}
+			],
 			"gamesSwitch2": []
 		},
 		"0x09c00501026d0e02": {
@@ -103770,7 +106629,20 @@
 				}
 			],
 			"gamesWiiU": [],
-			"gamesSwitch": [],
+			"gamesSwitch": [
+				{
+					"gameName": "Super Mario Bros. Wonder",
+					"gameID": [
+						"010015100B514000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a particular power-up depending on the amiibo",
+							"write": false
+						}
+					]
+				}
+			],
 			"gamesSwitch2": []
 		},
 		"0x09c10101026e0e02": {
@@ -103791,7 +106663,20 @@
 				}
 			],
 			"gamesWiiU": [],
-			"gamesSwitch": [],
+			"gamesSwitch": [
+				{
+					"gameName": "Super Mario Bros. Wonder",
+					"gameID": [
+						"010015100B514000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a particular power-up depending on the amiibo",
+							"write": false
+						}
+					]
+				}
+			],
 			"gamesSwitch2": []
 		},
 		"0x09c10201026f0e02": {
@@ -103812,7 +106697,20 @@
 				}
 			],
 			"gamesWiiU": [],
-			"gamesSwitch": [],
+			"gamesSwitch": [
+				{
+					"gameName": "Super Mario Bros. Wonder",
+					"gameID": [
+						"010015100B514000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a particular power-up depending on the amiibo",
+							"write": false
+						}
+					]
+				}
+			],
 			"gamesSwitch2": []
 		},
 		"0x09c1030102700e02": {
@@ -103833,7 +106731,20 @@
 				}
 			],
 			"gamesWiiU": [],
-			"gamesSwitch": [],
+			"gamesSwitch": [
+				{
+					"gameName": "Super Mario Bros. Wonder",
+					"gameID": [
+						"010015100B514000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a particular power-up depending on the amiibo",
+							"write": false
+						}
+					]
+				}
+			],
 			"gamesSwitch2": []
 		},
 		"0x09c1040102710e02": {
@@ -103854,7 +106765,20 @@
 				}
 			],
 			"gamesWiiU": [],
-			"gamesSwitch": [],
+			"gamesSwitch": [
+				{
+					"gameName": "Super Mario Bros. Wonder",
+					"gameID": [
+						"010015100B514000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a particular power-up depending on the amiibo",
+							"write": false
+						}
+					]
+				}
+			],
 			"gamesSwitch2": []
 		},
 		"0x09c1050102720e02": {
@@ -103875,7 +106799,20 @@
 				}
 			],
 			"gamesWiiU": [],
-			"gamesSwitch": [],
+			"gamesSwitch": [
+				{
+					"gameName": "Super Mario Bros. Wonder",
+					"gameID": [
+						"010015100B514000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a particular power-up depending on the amiibo",
+							"write": false
+						}
+					]
+				}
+			],
 			"gamesSwitch2": []
 		},
 		"0x09c2010102730e02": {
@@ -103896,7 +106833,20 @@
 				}
 			],
 			"gamesWiiU": [],
-			"gamesSwitch": [],
+			"gamesSwitch": [
+				{
+					"gameName": "Super Mario Bros. Wonder",
+					"gameID": [
+						"010015100B514000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a particular power-up depending on the amiibo",
+							"write": false
+						}
+					]
+				}
+			],
 			"gamesSwitch2": []
 		},
 		"0x09c2020102740e02": {
@@ -103917,7 +106867,20 @@
 				}
 			],
 			"gamesWiiU": [],
-			"gamesSwitch": [],
+			"gamesSwitch": [
+				{
+					"gameName": "Super Mario Bros. Wonder",
+					"gameID": [
+						"010015100B514000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a particular power-up depending on the amiibo",
+							"write": false
+						}
+					]
+				}
+			],
 			"gamesSwitch2": []
 		},
 		"0x09c2030102750e02": {
@@ -103938,7 +106901,20 @@
 				}
 			],
 			"gamesWiiU": [],
-			"gamesSwitch": [],
+			"gamesSwitch": [
+				{
+					"gameName": "Super Mario Bros. Wonder",
+					"gameID": [
+						"010015100B514000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a particular power-up depending on the amiibo",
+							"write": false
+						}
+					]
+				}
+			],
 			"gamesSwitch2": []
 		},
 		"0x09c2040102760e02": {
@@ -103959,7 +106935,20 @@
 				}
 			],
 			"gamesWiiU": [],
-			"gamesSwitch": [],
+			"gamesSwitch": [
+				{
+					"gameName": "Super Mario Bros. Wonder",
+					"gameID": [
+						"010015100B514000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a particular power-up depending on the amiibo",
+							"write": false
+						}
+					]
+				}
+			],
 			"gamesSwitch2": []
 		},
 		"0x09c2050102770e02": {
@@ -103980,7 +106969,20 @@
 				}
 			],
 			"gamesWiiU": [],
-			"gamesSwitch": [],
+			"gamesSwitch": [
+				{
+					"gameName": "Super Mario Bros. Wonder",
+					"gameID": [
+						"010015100B514000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a particular power-up depending on the amiibo",
+							"write": false
+						}
+					]
+				}
+			],
 			"gamesSwitch2": []
 		},
 		"0x09c3010102780e02": {
@@ -104001,7 +107003,20 @@
 				}
 			],
 			"gamesWiiU": [],
-			"gamesSwitch": [],
+			"gamesSwitch": [
+				{
+					"gameName": "Super Mario Bros. Wonder",
+					"gameID": [
+						"010015100B514000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a particular power-up depending on the amiibo",
+							"write": false
+						}
+					]
+				}
+			],
 			"gamesSwitch2": []
 		},
 		"0x09c3020102790e02": {
@@ -104022,7 +107037,20 @@
 				}
 			],
 			"gamesWiiU": [],
-			"gamesSwitch": [],
+			"gamesSwitch": [
+				{
+					"gameName": "Super Mario Bros. Wonder",
+					"gameID": [
+						"010015100B514000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a particular power-up depending on the amiibo",
+							"write": false
+						}
+					]
+				}
+			],
 			"gamesSwitch2": []
 		},
 		"0x09c30301027a0e02": {
@@ -104043,7 +107071,20 @@
 				}
 			],
 			"gamesWiiU": [],
-			"gamesSwitch": [],
+			"gamesSwitch": [
+				{
+					"gameName": "Super Mario Bros. Wonder",
+					"gameID": [
+						"010015100B514000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a particular power-up depending on the amiibo",
+							"write": false
+						}
+					]
+				}
+			],
 			"gamesSwitch2": []
 		},
 		"0x09c30401027b0e02": {
@@ -104064,7 +107105,20 @@
 				}
 			],
 			"gamesWiiU": [],
-			"gamesSwitch": [],
+			"gamesSwitch": [
+				{
+					"gameName": "Super Mario Bros. Wonder",
+					"gameID": [
+						"010015100B514000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a particular power-up depending on the amiibo",
+							"write": false
+						}
+					]
+				}
+			],
 			"gamesSwitch2": []
 		},
 		"0x09c30501027c0e02": {
@@ -104085,7 +107139,20 @@
 				}
 			],
 			"gamesWiiU": [],
-			"gamesSwitch": [],
+			"gamesSwitch": [
+				{
+					"gameName": "Super Mario Bros. Wonder",
+					"gameID": [
+						"010015100B514000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a particular power-up depending on the amiibo",
+							"write": false
+						}
+					]
+				}
+			],
 			"gamesSwitch2": []
 		},
 		"0x09c40101027d0e02": {
@@ -104106,7 +107173,20 @@
 				}
 			],
 			"gamesWiiU": [],
-			"gamesSwitch": [],
+			"gamesSwitch": [
+				{
+					"gameName": "Super Mario Bros. Wonder",
+					"gameID": [
+						"010015100B514000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a particular power-up depending on the amiibo",
+							"write": false
+						}
+					]
+				}
+			],
 			"gamesSwitch2": []
 		},
 		"0x09c40201027e0e02": {
@@ -104127,7 +107207,20 @@
 				}
 			],
 			"gamesWiiU": [],
-			"gamesSwitch": [],
+			"gamesSwitch": [
+				{
+					"gameName": "Super Mario Bros. Wonder",
+					"gameID": [
+						"010015100B514000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a particular power-up depending on the amiibo",
+							"write": false
+						}
+					]
+				}
+			],
 			"gamesSwitch2": []
 		},
 		"0x09c40301027f0e02": {
@@ -104148,7 +107241,20 @@
 				}
 			],
 			"gamesWiiU": [],
-			"gamesSwitch": [],
+			"gamesSwitch": [
+				{
+					"gameName": "Super Mario Bros. Wonder",
+					"gameID": [
+						"010015100B514000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a particular power-up depending on the amiibo",
+							"write": false
+						}
+					]
+				}
+			],
 			"gamesSwitch2": []
 		},
 		"0x09c4040102800e02": {
@@ -104169,7 +107275,20 @@
 				}
 			],
 			"gamesWiiU": [],
-			"gamesSwitch": [],
+			"gamesSwitch": [
+				{
+					"gameName": "Super Mario Bros. Wonder",
+					"gameID": [
+						"010015100B514000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a particular power-up depending on the amiibo",
+							"write": false
+						}
+					]
+				}
+			],
 			"gamesSwitch2": []
 		},
 		"0x09c4050102810e02": {
@@ -104190,7 +107309,20 @@
 				}
 			],
 			"gamesWiiU": [],
-			"gamesSwitch": [],
+			"gamesSwitch": [
+				{
+					"gameName": "Super Mario Bros. Wonder",
+					"gameID": [
+						"010015100B514000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a particular power-up depending on the amiibo",
+							"write": false
+						}
+					]
+				}
+			],
 			"gamesSwitch2": []
 		},
 		"0x09c5010102820e02": {
@@ -104211,7 +107343,20 @@
 				}
 			],
 			"gamesWiiU": [],
-			"gamesSwitch": [],
+			"gamesSwitch": [
+				{
+					"gameName": "Super Mario Bros. Wonder",
+					"gameID": [
+						"010015100B514000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a particular power-up depending on the amiibo",
+							"write": false
+						}
+					]
+				}
+			],
 			"gamesSwitch2": []
 		},
 		"0x09c5020102830e02": {
@@ -104232,7 +107377,20 @@
 				}
 			],
 			"gamesWiiU": [],
-			"gamesSwitch": [],
+			"gamesSwitch": [
+				{
+					"gameName": "Super Mario Bros. Wonder",
+					"gameID": [
+						"010015100B514000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a particular power-up depending on the amiibo",
+							"write": false
+						}
+					]
+				}
+			],
 			"gamesSwitch2": []
 		},
 		"0x09c5030102840e02": {
@@ -104253,7 +107411,20 @@
 				}
 			],
 			"gamesWiiU": [],
-			"gamesSwitch": [],
+			"gamesSwitch": [
+				{
+					"gameName": "Super Mario Bros. Wonder",
+					"gameID": [
+						"010015100B514000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a particular power-up depending on the amiibo",
+							"write": false
+						}
+					]
+				}
+			],
 			"gamesSwitch2": []
 		},
 		"0x09c5040102850e02": {
@@ -104274,7 +107445,20 @@
 				}
 			],
 			"gamesWiiU": [],
-			"gamesSwitch": [],
+			"gamesSwitch": [
+				{
+					"gameName": "Super Mario Bros. Wonder",
+					"gameID": [
+						"010015100B514000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a particular power-up depending on the amiibo",
+							"write": false
+						}
+					]
+				}
+			],
 			"gamesSwitch2": []
 		},
 		"0x09c5050102860e02": {
@@ -104295,7 +107479,20 @@
 				}
 			],
 			"gamesWiiU": [],
-			"gamesSwitch": [],
+			"gamesSwitch": [
+				{
+					"gameName": "Super Mario Bros. Wonder",
+					"gameID": [
+						"010015100B514000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a particular power-up depending on the amiibo",
+							"write": false
+						}
+					]
+				}
+			],
 			"gamesSwitch2": []
 		},
 		"0x09c6010102870e02": {
@@ -104316,7 +107513,20 @@
 				}
 			],
 			"gamesWiiU": [],
-			"gamesSwitch": [],
+			"gamesSwitch": [
+				{
+					"gameName": "Super Mario Bros. Wonder",
+					"gameID": [
+						"010015100B514000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a particular power-up depending on the amiibo",
+							"write": false
+						}
+					]
+				}
+			],
 			"gamesSwitch2": []
 		},
 		"0x09c6020102880e02": {
@@ -104337,7 +107547,20 @@
 				}
 			],
 			"gamesWiiU": [],
-			"gamesSwitch": [],
+			"gamesSwitch": [
+				{
+					"gameName": "Super Mario Bros. Wonder",
+					"gameID": [
+						"010015100B514000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a particular power-up depending on the amiibo",
+							"write": false
+						}
+					]
+				}
+			],
 			"gamesSwitch2": []
 		},
 		"0x09c6030102890e02": {
@@ -104358,7 +107581,20 @@
 				}
 			],
 			"gamesWiiU": [],
-			"gamesSwitch": [],
+			"gamesSwitch": [
+				{
+					"gameName": "Super Mario Bros. Wonder",
+					"gameID": [
+						"010015100B514000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a particular power-up depending on the amiibo",
+							"write": false
+						}
+					]
+				}
+			],
 			"gamesSwitch2": []
 		},
 		"0x09c60401028a0e02": {
@@ -104379,7 +107615,20 @@
 				}
 			],
 			"gamesWiiU": [],
-			"gamesSwitch": [],
+			"gamesSwitch": [
+				{
+					"gameName": "Super Mario Bros. Wonder",
+					"gameID": [
+						"010015100B514000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a particular power-up depending on the amiibo",
+							"write": false
+						}
+					]
+				}
+			],
 			"gamesSwitch2": []
 		},
 		"0x09c60501028b0e02": {
@@ -104400,7 +107649,20 @@
 				}
 			],
 			"gamesWiiU": [],
-			"gamesSwitch": [],
+			"gamesSwitch": [
+				{
+					"gameName": "Super Mario Bros. Wonder",
+					"gameID": [
+						"010015100B514000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a particular power-up depending on the amiibo",
+							"write": false
+						}
+					]
+				}
+			],
 			"gamesSwitch2": []
 		},
 		"0x09c70101028c0e02": {
@@ -104421,7 +107683,20 @@
 				}
 			],
 			"gamesWiiU": [],
-			"gamesSwitch": [],
+			"gamesSwitch": [
+				{
+					"gameName": "Super Mario Bros. Wonder",
+					"gameID": [
+						"010015100B514000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a particular power-up depending on the amiibo",
+							"write": false
+						}
+					]
+				}
+			],
 			"gamesSwitch2": []
 		},
 		"0x09c70201028d0e02": {
@@ -104442,7 +107717,20 @@
 				}
 			],
 			"gamesWiiU": [],
-			"gamesSwitch": [],
+			"gamesSwitch": [
+				{
+					"gameName": "Super Mario Bros. Wonder",
+					"gameID": [
+						"010015100B514000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a particular power-up depending on the amiibo",
+							"write": false
+						}
+					]
+				}
+			],
 			"gamesSwitch2": []
 		},
 		"0x09c70301028e0e02": {
@@ -104463,7 +107751,20 @@
 				}
 			],
 			"gamesWiiU": [],
-			"gamesSwitch": [],
+			"gamesSwitch": [
+				{
+					"gameName": "Super Mario Bros. Wonder",
+					"gameID": [
+						"010015100B514000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a particular power-up depending on the amiibo",
+							"write": false
+						}
+					]
+				}
+			],
 			"gamesSwitch2": []
 		},
 		"0x09c70401028f0e02": {
@@ -104484,7 +107785,20 @@
 				}
 			],
 			"gamesWiiU": [],
-			"gamesSwitch": [],
+			"gamesSwitch": [
+				{
+					"gameName": "Super Mario Bros. Wonder",
+					"gameID": [
+						"010015100B514000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a particular power-up depending on the amiibo",
+							"write": false
+						}
+					]
+				}
+			],
 			"gamesSwitch2": []
 		},
 		"0x09c7050102900e02": {
@@ -104505,7 +107819,20 @@
 				}
 			],
 			"gamesWiiU": [],
-			"gamesSwitch": [],
+			"gamesSwitch": [
+				{
+					"gameName": "Super Mario Bros. Wonder",
+					"gameID": [
+						"010015100B514000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a particular power-up depending on the amiibo",
+							"write": false
+						}
+					]
+				}
+			],
 			"gamesSwitch2": []
 		},
 		"0x09c8010102910e02": {
@@ -104526,7 +107853,20 @@
 				}
 			],
 			"gamesWiiU": [],
-			"gamesSwitch": [],
+			"gamesSwitch": [
+				{
+					"gameName": "Super Mario Bros. Wonder",
+					"gameID": [
+						"010015100B514000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a particular power-up depending on the amiibo",
+							"write": false
+						}
+					]
+				}
+			],
 			"gamesSwitch2": []
 		},
 		"0x09c8020102920e02": {
@@ -104547,7 +107887,20 @@
 				}
 			],
 			"gamesWiiU": [],
-			"gamesSwitch": [],
+			"gamesSwitch": [
+				{
+					"gameName": "Super Mario Bros. Wonder",
+					"gameID": [
+						"010015100B514000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a particular power-up depending on the amiibo",
+							"write": false
+						}
+					]
+				}
+			],
 			"gamesSwitch2": []
 		},
 		"0x09c8030102930e02": {
@@ -104568,7 +107921,20 @@
 				}
 			],
 			"gamesWiiU": [],
-			"gamesSwitch": [],
+			"gamesSwitch": [
+				{
+					"gameName": "Super Mario Bros. Wonder",
+					"gameID": [
+						"010015100B514000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a particular power-up depending on the amiibo",
+							"write": false
+						}
+					]
+				}
+			],
 			"gamesSwitch2": []
 		},
 		"0x09c8040102940e02": {
@@ -104589,7 +107955,20 @@
 				}
 			],
 			"gamesWiiU": [],
-			"gamesSwitch": [],
+			"gamesSwitch": [
+				{
+					"gameName": "Super Mario Bros. Wonder",
+					"gameID": [
+						"010015100B514000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a particular power-up depending on the amiibo",
+							"write": false
+						}
+					]
+				}
+			],
 			"gamesSwitch2": []
 		},
 		"0x09c8050102950e02": {
@@ -104610,7 +107989,20 @@
 				}
 			],
 			"gamesWiiU": [],
-			"gamesSwitch": [],
+			"gamesSwitch": [
+				{
+					"gameName": "Super Mario Bros. Wonder",
+					"gameID": [
+						"010015100B514000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a particular power-up depending on the amiibo",
+							"write": false
+						}
+					]
+				}
+			],
 			"gamesSwitch2": []
 		},
 		"0x09c9010102960e02": {
@@ -104631,7 +108023,20 @@
 				}
 			],
 			"gamesWiiU": [],
-			"gamesSwitch": [],
+			"gamesSwitch": [
+				{
+					"gameName": "Super Mario Bros. Wonder",
+					"gameID": [
+						"010015100B514000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a particular power-up depending on the amiibo",
+							"write": false
+						}
+					]
+				}
+			],
 			"gamesSwitch2": []
 		},
 		"0x09c9020102970e02": {
@@ -104652,7 +108057,20 @@
 				}
 			],
 			"gamesWiiU": [],
-			"gamesSwitch": [],
+			"gamesSwitch": [
+				{
+					"gameName": "Super Mario Bros. Wonder",
+					"gameID": [
+						"010015100B514000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a particular power-up depending on the amiibo",
+							"write": false
+						}
+					]
+				}
+			],
 			"gamesSwitch2": []
 		},
 		"0x09c9030102980e02": {
@@ -104673,7 +108091,20 @@
 				}
 			],
 			"gamesWiiU": [],
-			"gamesSwitch": [],
+			"gamesSwitch": [
+				{
+					"gameName": "Super Mario Bros. Wonder",
+					"gameID": [
+						"010015100B514000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a particular power-up depending on the amiibo",
+							"write": false
+						}
+					]
+				}
+			],
 			"gamesSwitch2": []
 		},
 		"0x09c9040102990e02": {
@@ -104694,7 +108125,20 @@
 				}
 			],
 			"gamesWiiU": [],
-			"gamesSwitch": [],
+			"gamesSwitch": [
+				{
+					"gameName": "Super Mario Bros. Wonder",
+					"gameID": [
+						"010015100B514000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a particular power-up depending on the amiibo",
+							"write": false
+						}
+					]
+				}
+			],
 			"gamesSwitch2": []
 		},
 		"0x09c90501029a0e02": {
@@ -104715,7 +108159,20 @@
 				}
 			],
 			"gamesWiiU": [],
-			"gamesSwitch": [],
+			"gamesSwitch": [
+				{
+					"gameName": "Super Mario Bros. Wonder",
+					"gameID": [
+						"010015100B514000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a particular power-up depending on the amiibo",
+							"write": false
+						}
+					]
+				}
+			],
 			"gamesSwitch2": []
 		},
 		"0x09ca0101029b0e02": {
@@ -104736,7 +108193,20 @@
 				}
 			],
 			"gamesWiiU": [],
-			"gamesSwitch": [],
+			"gamesSwitch": [
+				{
+					"gameName": "Super Mario Bros. Wonder",
+					"gameID": [
+						"010015100B514000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a particular power-up depending on the amiibo",
+							"write": false
+						}
+					]
+				}
+			],
 			"gamesSwitch2": []
 		},
 		"0x09ca0201029c0e02": {
@@ -104757,7 +108227,20 @@
 				}
 			],
 			"gamesWiiU": [],
-			"gamesSwitch": [],
+			"gamesSwitch": [
+				{
+					"gameName": "Super Mario Bros. Wonder",
+					"gameID": [
+						"010015100B514000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a particular power-up depending on the amiibo",
+							"write": false
+						}
+					]
+				}
+			],
 			"gamesSwitch2": []
 		},
 		"0x09ca0301029d0e02": {
@@ -104778,7 +108261,20 @@
 				}
 			],
 			"gamesWiiU": [],
-			"gamesSwitch": [],
+			"gamesSwitch": [
+				{
+					"gameName": "Super Mario Bros. Wonder",
+					"gameID": [
+						"010015100B514000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a particular power-up depending on the amiibo",
+							"write": false
+						}
+					]
+				}
+			],
 			"gamesSwitch2": []
 		},
 		"0x09ca0401029e0e02": {
@@ -104799,7 +108295,20 @@
 				}
 			],
 			"gamesWiiU": [],
-			"gamesSwitch": [],
+			"gamesSwitch": [
+				{
+					"gameName": "Super Mario Bros. Wonder",
+					"gameID": [
+						"010015100B514000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a particular power-up depending on the amiibo",
+							"write": false
+						}
+					]
+				}
+			],
 			"gamesSwitch2": []
 		},
 		"0x09ca0501029f0e02": {
@@ -104820,7 +108329,20 @@
 				}
 			],
 			"gamesWiiU": [],
-			"gamesSwitch": [],
+			"gamesSwitch": [
+				{
+					"gameName": "Super Mario Bros. Wonder",
+					"gameID": [
+						"010015100B514000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a particular power-up depending on the amiibo",
+							"write": false
+						}
+					]
+				}
+			],
 			"gamesSwitch2": []
 		},
 		"0x09cb010102a00e02": {
@@ -104841,7 +108363,20 @@
 				}
 			],
 			"gamesWiiU": [],
-			"gamesSwitch": [],
+			"gamesSwitch": [
+				{
+					"gameName": "Super Mario Bros. Wonder",
+					"gameID": [
+						"010015100B514000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a particular power-up depending on the amiibo",
+							"write": false
+						}
+					]
+				}
+			],
 			"gamesSwitch2": []
 		},
 		"0x09cb020102a10e02": {
@@ -104862,7 +108397,20 @@
 				}
 			],
 			"gamesWiiU": [],
-			"gamesSwitch": [],
+			"gamesSwitch": [
+				{
+					"gameName": "Super Mario Bros. Wonder",
+					"gameID": [
+						"010015100B514000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a particular power-up depending on the amiibo",
+							"write": false
+						}
+					]
+				}
+			],
 			"gamesSwitch2": []
 		},
 		"0x09cb030102a20e02": {
@@ -104883,7 +108431,20 @@
 				}
 			],
 			"gamesWiiU": [],
-			"gamesSwitch": [],
+			"gamesSwitch": [
+				{
+					"gameName": "Super Mario Bros. Wonder",
+					"gameID": [
+						"010015100B514000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a particular power-up depending on the amiibo",
+							"write": false
+						}
+					]
+				}
+			],
 			"gamesSwitch2": []
 		},
 		"0x09cb040102a30e02": {
@@ -104904,7 +108465,20 @@
 				}
 			],
 			"gamesWiiU": [],
-			"gamesSwitch": [],
+			"gamesSwitch": [
+				{
+					"gameName": "Super Mario Bros. Wonder",
+					"gameID": [
+						"010015100B514000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a particular power-up depending on the amiibo",
+							"write": false
+						}
+					]
+				}
+			],
 			"gamesSwitch2": []
 		},
 		"0x09cb050102a40e02": {
@@ -104925,7 +108499,20 @@
 				}
 			],
 			"gamesWiiU": [],
-			"gamesSwitch": [],
+			"gamesSwitch": [
+				{
+					"gameName": "Super Mario Bros. Wonder",
+					"gameID": [
+						"010015100B514000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a particular power-up depending on the amiibo",
+							"write": false
+						}
+					]
+				}
+			],
 			"gamesSwitch2": []
 		},
 		"0x09cc010102a50e02": {
@@ -104946,7 +108533,20 @@
 				}
 			],
 			"gamesWiiU": [],
-			"gamesSwitch": [],
+			"gamesSwitch": [
+				{
+					"gameName": "Super Mario Bros. Wonder",
+					"gameID": [
+						"010015100B514000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a particular power-up depending on the amiibo",
+							"write": false
+						}
+					]
+				}
+			],
 			"gamesSwitch2": []
 		},
 		"0x09cc020102a60e02": {
@@ -104967,7 +108567,20 @@
 				}
 			],
 			"gamesWiiU": [],
-			"gamesSwitch": [],
+			"gamesSwitch": [
+				{
+					"gameName": "Super Mario Bros. Wonder",
+					"gameID": [
+						"010015100B514000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a particular power-up depending on the amiibo",
+							"write": false
+						}
+					]
+				}
+			],
 			"gamesSwitch2": []
 		},
 		"0x09cc030102a70e02": {
@@ -104988,7 +108601,20 @@
 				}
 			],
 			"gamesWiiU": [],
-			"gamesSwitch": [],
+			"gamesSwitch": [
+				{
+					"gameName": "Super Mario Bros. Wonder",
+					"gameID": [
+						"010015100B514000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a particular power-up depending on the amiibo",
+							"write": false
+						}
+					]
+				}
+			],
 			"gamesSwitch2": []
 		},
 		"0x09cc040102a80e02": {
@@ -105009,7 +108635,20 @@
 				}
 			],
 			"gamesWiiU": [],
-			"gamesSwitch": [],
+			"gamesSwitch": [
+				{
+					"gameName": "Super Mario Bros. Wonder",
+					"gameID": [
+						"010015100B514000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a particular power-up depending on the amiibo",
+							"write": false
+						}
+					]
+				}
+			],
 			"gamesSwitch2": []
 		},
 		"0x09cc050102a90e02": {
@@ -105030,7 +108669,20 @@
 				}
 			],
 			"gamesWiiU": [],
-			"gamesSwitch": [],
+			"gamesSwitch": [
+				{
+					"gameName": "Super Mario Bros. Wonder",
+					"gameID": [
+						"010015100B514000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a particular power-up depending on the amiibo",
+							"write": false
+						}
+					]
+				}
+			],
 			"gamesSwitch2": []
 		},
 		"0x09cd010102aa0e02": {
@@ -105051,7 +108703,20 @@
 				}
 			],
 			"gamesWiiU": [],
-			"gamesSwitch": [],
+			"gamesSwitch": [
+				{
+					"gameName": "Super Mario Bros. Wonder",
+					"gameID": [
+						"010015100B514000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a particular power-up depending on the amiibo",
+							"write": false
+						}
+					]
+				}
+			],
 			"gamesSwitch2": []
 		},
 		"0x09cd020102ab0e02": {
@@ -105072,7 +108737,20 @@
 				}
 			],
 			"gamesWiiU": [],
-			"gamesSwitch": [],
+			"gamesSwitch": [
+				{
+					"gameName": "Super Mario Bros. Wonder",
+					"gameID": [
+						"010015100B514000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a particular power-up depending on the amiibo",
+							"write": false
+						}
+					]
+				}
+			],
 			"gamesSwitch2": []
 		},
 		"0x09cd030102ac0e02": {
@@ -105093,7 +108771,20 @@
 				}
 			],
 			"gamesWiiU": [],
-			"gamesSwitch": [],
+			"gamesSwitch": [
+				{
+					"gameName": "Super Mario Bros. Wonder",
+					"gameID": [
+						"010015100B514000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a particular power-up depending on the amiibo",
+							"write": false
+						}
+					]
+				}
+			],
 			"gamesSwitch2": []
 		},
 		"0x09cd040102ad0e02": {
@@ -105114,7 +108805,20 @@
 				}
 			],
 			"gamesWiiU": [],
-			"gamesSwitch": [],
+			"gamesSwitch": [
+				{
+					"gameName": "Super Mario Bros. Wonder",
+					"gameID": [
+						"010015100B514000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a particular power-up depending on the amiibo",
+							"write": false
+						}
+					]
+				}
+			],
 			"gamesSwitch2": []
 		},
 		"0x09cd050102ae0e02": {
@@ -105135,7 +108839,20 @@
 				}
 			],
 			"gamesWiiU": [],
-			"gamesSwitch": [],
+			"gamesSwitch": [
+				{
+					"gameName": "Super Mario Bros. Wonder",
+					"gameID": [
+						"010015100B514000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a particular power-up depending on the amiibo",
+							"write": false
+						}
+					]
+				}
+			],
 			"gamesSwitch2": []
 		},
 		"0x09ce010102af0e02": {
@@ -105156,7 +108873,20 @@
 				}
 			],
 			"gamesWiiU": [],
-			"gamesSwitch": [],
+			"gamesSwitch": [
+				{
+					"gameName": "Super Mario Bros. Wonder",
+					"gameID": [
+						"010015100B514000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a particular power-up depending on the amiibo",
+							"write": false
+						}
+					]
+				}
+			],
 			"gamesSwitch2": []
 		},
 		"0x09ce020102b00e02": {
@@ -105177,7 +108907,20 @@
 				}
 			],
 			"gamesWiiU": [],
-			"gamesSwitch": [],
+			"gamesSwitch": [
+				{
+					"gameName": "Super Mario Bros. Wonder",
+					"gameID": [
+						"010015100B514000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a particular power-up depending on the amiibo",
+							"write": false
+						}
+					]
+				}
+			],
 			"gamesSwitch2": []
 		},
 		"0x09ce030102b10e02": {
@@ -105198,7 +108941,20 @@
 				}
 			],
 			"gamesWiiU": [],
-			"gamesSwitch": [],
+			"gamesSwitch": [
+				{
+					"gameName": "Super Mario Bros. Wonder",
+					"gameID": [
+						"010015100B514000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a particular power-up depending on the amiibo",
+							"write": false
+						}
+					]
+				}
+			],
 			"gamesSwitch2": []
 		},
 		"0x09ce040102b20e02": {
@@ -105219,7 +108975,20 @@
 				}
 			],
 			"gamesWiiU": [],
-			"gamesSwitch": [],
+			"gamesSwitch": [
+				{
+					"gameName": "Super Mario Bros. Wonder",
+					"gameID": [
+						"010015100B514000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a particular power-up depending on the amiibo",
+							"write": false
+						}
+					]
+				}
+			],
 			"gamesSwitch2": []
 		},
 		"0x09ce050102b30e02": {
@@ -105240,7 +109009,20 @@
 				}
 			],
 			"gamesWiiU": [],
-			"gamesSwitch": [],
+			"gamesSwitch": [
+				{
+					"gameName": "Super Mario Bros. Wonder",
+					"gameID": [
+						"010015100B514000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a particular power-up depending on the amiibo",
+							"write": false
+						}
+					]
+				}
+			],
 			"gamesSwitch2": []
 		},
 		"0x09cf010102b40e02": {
@@ -105261,7 +109043,20 @@
 				}
 			],
 			"gamesWiiU": [],
-			"gamesSwitch": [],
+			"gamesSwitch": [
+				{
+					"gameName": "Super Mario Bros. Wonder",
+					"gameID": [
+						"010015100B514000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a particular power-up depending on the amiibo",
+							"write": false
+						}
+					]
+				}
+			],
 			"gamesSwitch2": []
 		},
 		"0x09cf020102b50e02": {
@@ -105282,7 +109077,20 @@
 				}
 			],
 			"gamesWiiU": [],
-			"gamesSwitch": [],
+			"gamesSwitch": [
+				{
+					"gameName": "Super Mario Bros. Wonder",
+					"gameID": [
+						"010015100B514000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a particular power-up depending on the amiibo",
+							"write": false
+						}
+					]
+				}
+			],
 			"gamesSwitch2": []
 		},
 		"0x09cf030102b60e02": {
@@ -105303,7 +109111,20 @@
 				}
 			],
 			"gamesWiiU": [],
-			"gamesSwitch": [],
+			"gamesSwitch": [
+				{
+					"gameName": "Super Mario Bros. Wonder",
+					"gameID": [
+						"010015100B514000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a particular power-up depending on the amiibo",
+							"write": false
+						}
+					]
+				}
+			],
 			"gamesSwitch2": []
 		},
 		"0x09cf040102b70e02": {
@@ -105324,7 +109145,20 @@
 				}
 			],
 			"gamesWiiU": [],
-			"gamesSwitch": [],
+			"gamesSwitch": [
+				{
+					"gameName": "Super Mario Bros. Wonder",
+					"gameID": [
+						"010015100B514000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a particular power-up depending on the amiibo",
+							"write": false
+						}
+					]
+				}
+			],
 			"gamesSwitch2": []
 		},
 		"0x09cf050102b80e02": {
@@ -105345,7 +109179,20 @@
 				}
 			],
 			"gamesWiiU": [],
-			"gamesSwitch": [],
+			"gamesSwitch": [
+				{
+					"gameName": "Super Mario Bros. Wonder",
+					"gameID": [
+						"010015100B514000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a particular power-up depending on the amiibo",
+							"write": false
+						}
+					]
+				}
+			],
 			"gamesSwitch2": []
 		},
 		"0x09d0010102b90e02": {
@@ -105366,7 +109213,20 @@
 				}
 			],
 			"gamesWiiU": [],
-			"gamesSwitch": [],
+			"gamesSwitch": [
+				{
+					"gameName": "Super Mario Bros. Wonder",
+					"gameID": [
+						"010015100B514000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a particular power-up depending on the amiibo",
+							"write": false
+						}
+					]
+				}
+			],
 			"gamesSwitch2": []
 		},
 		"0x09d0020102ba0e02": {
@@ -105387,7 +109247,20 @@
 				}
 			],
 			"gamesWiiU": [],
-			"gamesSwitch": [],
+			"gamesSwitch": [
+				{
+					"gameName": "Super Mario Bros. Wonder",
+					"gameID": [
+						"010015100B514000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a particular power-up depending on the amiibo",
+							"write": false
+						}
+					]
+				}
+			],
 			"gamesSwitch2": []
 		},
 		"0x09d0030102bb0e02": {
@@ -105408,7 +109281,20 @@
 				}
 			],
 			"gamesWiiU": [],
-			"gamesSwitch": [],
+			"gamesSwitch": [
+				{
+					"gameName": "Super Mario Bros. Wonder",
+					"gameID": [
+						"010015100B514000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a particular power-up depending on the amiibo",
+							"write": false
+						}
+					]
+				}
+			],
 			"gamesSwitch2": []
 		},
 		"0x09d0040102bc0e02": {
@@ -105429,7 +109315,20 @@
 				}
 			],
 			"gamesWiiU": [],
-			"gamesSwitch": [],
+			"gamesSwitch": [
+				{
+					"gameName": "Super Mario Bros. Wonder",
+					"gameID": [
+						"010015100B514000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a particular power-up depending on the amiibo",
+							"write": false
+						}
+					]
+				}
+			],
 			"gamesSwitch2": []
 		},
 		"0x09d0050102bd0e02": {
@@ -105450,7 +109349,20 @@
 				}
 			],
 			"gamesWiiU": [],
-			"gamesSwitch": [],
+			"gamesSwitch": [
+				{
+					"gameName": "Super Mario Bros. Wonder",
+					"gameID": [
+						"010015100B514000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a particular power-up depending on the amiibo",
+							"write": false
+						}
+					]
+				}
+			],
 			"gamesSwitch2": []
 		},
 		"0x09d1010102be0e02": {
@@ -105471,7 +109383,20 @@
 				}
 			],
 			"gamesWiiU": [],
-			"gamesSwitch": [],
+			"gamesSwitch": [
+				{
+					"gameName": "Super Mario Bros. Wonder",
+					"gameID": [
+						"010015100B514000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a particular power-up depending on the amiibo",
+							"write": false
+						}
+					]
+				}
+			],
 			"gamesSwitch2": []
 		},
 		"0x09d1020102bf0e02": {
@@ -105492,7 +109417,20 @@
 				}
 			],
 			"gamesWiiU": [],
-			"gamesSwitch": [],
+			"gamesSwitch": [
+				{
+					"gameName": "Super Mario Bros. Wonder",
+					"gameID": [
+						"010015100B514000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a particular power-up depending on the amiibo",
+							"write": false
+						}
+					]
+				}
+			],
 			"gamesSwitch2": []
 		},
 		"0x09d1030102c00e02": {
@@ -105513,7 +109451,20 @@
 				}
 			],
 			"gamesWiiU": [],
-			"gamesSwitch": [],
+			"gamesSwitch": [
+				{
+					"gameName": "Super Mario Bros. Wonder",
+					"gameID": [
+						"010015100B514000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a particular power-up depending on the amiibo",
+							"write": false
+						}
+					]
+				}
+			],
 			"gamesSwitch2": []
 		},
 		"0x09d1040102c10e02": {
@@ -105534,7 +109485,20 @@
 				}
 			],
 			"gamesWiiU": [],
-			"gamesSwitch": [],
+			"gamesSwitch": [
+				{
+					"gameName": "Super Mario Bros. Wonder",
+					"gameID": [
+						"010015100B514000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a particular power-up depending on the amiibo",
+							"write": false
+						}
+					]
+				}
+			],
 			"gamesSwitch2": []
 		},
 		"0x09d1050102c20e02": {
@@ -105555,7 +109519,20 @@
 				}
 			],
 			"gamesWiiU": [],
-			"gamesSwitch": [],
+			"gamesSwitch": [
+				{
+					"gameName": "Super Mario Bros. Wonder",
+					"gameID": [
+						"010015100B514000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive a particular power-up depending on the amiibo",
+							"write": false
+						}
+					]
+				}
+			],
 			"gamesSwitch2": []
 		},
 		"0x0a00000103ab0502": {
@@ -107681,7 +111658,7 @@
 					],
 					"amiiboUsage": [
 						{
-							"Usage": "Receive 10 Fragments",
+							"Usage": "Receive 10-20 Fragments",
 							"write": false
 						}
 					]
@@ -107702,7 +111679,9 @@
 			"gamesSwitch2": [
 				{
 					"gameName": "Kirby Air Riders",
-					"gameID": [],
+					"gameID": [
+						"040077201BE50000"
+					],
 					"amiiboUsage": [
 						{
 							"Usage": "Receive better rewards",
@@ -108033,7 +112012,7 @@
 					],
 					"amiiboUsage": [
 						{
-							"Usage": "Receive 20 Fragments",
+							"Usage": "Receive 10-20 Fragments",
 							"write": false
 						}
 					]
@@ -108054,11 +112033,117 @@
 			"gamesSwitch2": [
 				{
 					"gameName": "Kirby Air Riders",
-					"gameID": [],
+					"gameID": [
+						"040077201BE50000"
+					],
 					"amiiboUsage": [
 						{
 							"Usage": "Receive better rewards",
 							"write": false
+						}
+					]
+				}
+			]
+		},
+		"0x1f00000004c41e03": {
+			"games3DS": [],
+			"gamesWiiU": [],
+			"gamesSwitch": [
+				{
+					"gameName": "Kirby and the Forgotten Land",
+					"gameID": [
+						"01004D300C5AE000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive star coins and a boost item",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Kirby Star Allies",
+					"gameID": [
+						"01007E3006DDA000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive two Picture Pieces, a Maxim Tomato, and two Point Stars",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Kirby's Return to Dream Land Deluxe",
+					"gameID": [
+						"01006B601380E000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive more useful items",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Mario Kart 8 Deluxe",
+					"gameID": [
+						"0100152000022000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Unlock a Kirby-themed racing suit",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Miitopia",
+					"gameID": [
+						"01003DA010E8A000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Unlock a character-based costume",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Super Kirby Clash",
+					"gameID": [
+						"01003FB00C5A8000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive 10-20 Fragments",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Super Smash Bros. Ultimate",
+					"gameID": [
+						"01006A800016E000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Battle and train up a computer-controlled Figure Player of the character",
+							"write": true
+						}
+					]
+				}
+			],
+			"gamesSwitch2": [
+				{
+					"gameName": "Kirby Air Riders",
+					"gameID": [
+						"040077201BE50000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Race and train up a computer-controlled Figure Player of the character / Change main menu cursor doll to match amiibo",
+							"write": true
 						}
 					]
 				}
@@ -108307,7 +112392,7 @@
 					],
 					"amiiboUsage": [
 						{
-							"Usage": "Receive 10 Fragments",
+							"Usage": "Receive 10-20 Fragments",
 							"write": false
 						}
 					]
@@ -108328,7 +112413,9 @@
 			"gamesSwitch2": [
 				{
 					"gameName": "Kirby Air Riders",
-					"gameID": [],
+					"gameID": [
+						"040077201BE50000"
+					],
 					"amiiboUsage": [
 						{
 							"Usage": "Receive better rewards",
@@ -108581,7 +112668,7 @@
 					],
 					"amiiboUsage": [
 						{
-							"Usage": "Receive 20 Fragments",
+							"Usage": "Receive 10-20 Fragments",
 							"write": false
 						}
 					]
@@ -108602,11 +112689,105 @@
 			"gamesSwitch2": [
 				{
 					"gameName": "Kirby Air Riders",
-					"gameID": [],
+					"gameID": [
+						"040077201BE50000"
+					],
 					"amiiboUsage": [
 						{
 							"Usage": "Receive better rewards",
 							"write": false
+						}
+					]
+				}
+			]
+		},
+		"0x1f01000004c61e03": {
+			"games3DS": [],
+			"gamesWiiU": [],
+			"gamesSwitch": [
+				{
+					"gameName": "Kirby and the Forgotten Land",
+					"gameID": [
+						"01004D300C5AE000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive star coins and a boost item",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Kirby Star Allies",
+					"gameID": [
+						"01007E3006DDA000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive two Picture Pieces, a Maxim Tomato, and two Point Stars",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Kirby's Return to Dream Land Deluxe",
+					"gameID": [
+						"01006B601380E000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive more useful items",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Mario Kart 8 Deluxe",
+					"gameID": [
+						"0100152000022000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Unlock a Kirby-themed racing suit",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Super Kirby Clash",
+					"gameID": [
+						"01003FB00C5A8000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive 10-20 Fragments",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Super Smash Bros. Ultimate",
+					"gameID": [
+						"01006A800016E000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Battle and train up a computer-controlled Figure Player of the character",
+							"write": true
+						}
+					]
+				}
+			],
+			"gamesSwitch2": [
+				{
+					"gameName": "Kirby Air Riders",
+					"gameID": [
+						"040077201BE50000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Race and train up a computer-controlled Figure Player of the character / Change main menu cursor doll to match amiibo",
+							"write": true
 						}
 					]
 				}
@@ -108869,7 +113050,7 @@
 					],
 					"amiiboUsage": [
 						{
-							"Usage": "Receive 10 Fragments",
+							"Usage": "Receive 10-20 Fragments",
 							"write": false
 						}
 					]
@@ -108890,7 +113071,9 @@
 			"gamesSwitch2": [
 				{
 					"gameName": "Kirby Air Riders",
-					"gameID": [],
+					"gameID": [
+						"040077201BE50000"
+					],
 					"amiiboUsage": [
 						{
 							"Usage": "Receive better rewards",
@@ -109157,7 +113340,7 @@
 					],
 					"amiiboUsage": [
 						{
-							"Usage": "Receive 20 Fragments",
+							"Usage": "Receive 10-20 Fragments",
 							"write": false
 						}
 					]
@@ -109178,7 +113361,9 @@
 			"gamesSwitch2": [
 				{
 					"gameName": "Kirby Air Riders",
-					"gameID": [],
+					"gameID": [
+						"040077201BE50000"
+					],
 					"amiiboUsage": [
 						{
 							"Usage": "Receive better rewards",
@@ -109353,7 +113538,7 @@
 					],
 					"amiiboUsage": [
 						{
-							"Usage": "Receive 20 Fragments",
+							"Usage": "Receive 10-20 Fragments",
 							"write": false
 						}
 					]
@@ -109374,11 +113559,81 @@
 			"gamesSwitch2": [
 				{
 					"gameName": "Kirby Air Riders",
-					"gameID": [],
+					"gameID": [
+						"040077201BE50000"
+					],
 					"amiiboUsage": [
 						{
 							"Usage": "Receive better rewards",
 							"write": false
+						}
+					]
+				}
+			]
+		},
+		"0x1f03010004c91e03": {
+			"games3DS": [],
+			"gamesWiiU": [],
+			"gamesSwitch": [
+				{
+					"gameName": "Kirby and the Forgotten Land",
+					"gameID": [
+						"01004D300C5AE000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive star coins and a boost item",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Kirby Star Allies",
+					"gameID": [
+						"01007E3006DDA000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive two Picture Pieces, a Maxim Tomato, and two Point Stars",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Kirby's Return to Dream Land Deluxe",
+					"gameID": [
+						"01006B601380E000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive more useful items",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Super Kirby Clash",
+					"gameID": [
+						"01003FB00C5A8000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive 10-20 Fragments",
+							"write": false
+						}
+					]
+				}
+			],
+			"gamesSwitch2": [
+				{
+					"gameName": "Kirby Air Riders",
+					"gameID": [
+						"040077201BE50000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Race and train up a computer-controlled Figure Player of the character / Change main menu cursor doll to match amiibo",
+							"write": true
 						}
 					]
 				}
@@ -109471,7 +113726,7 @@
 					],
 					"amiiboUsage": [
 						{
-							"Usage": "Receive 20 Fragments",
+							"Usage": "Receive 10-20 Fragments",
 							"write": false
 						}
 					]
@@ -115204,6 +119459,69 @@
 			],
 			"gamesSwitch2": []
 		},
+		"0x350c000004fa0f02": {
+			"games3DS": [],
+			"gamesWiiU": [],
+			"gamesSwitch": [
+				{
+					"gameName": "Monster Hunter Rise",
+					"gameID": [
+						"0100B04011742000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Unlock Monster Hunter Stories 2 sticker set",
+							"write": false
+						}
+					]
+				}
+			],
+			"gamesSwitch2": []
+		},
+		"0x350d000004fb0f02": {
+			"games3DS": [],
+			"gamesWiiU": [],
+			"gamesSwitch": [
+				{
+					"gameName": "Monster Hunter Rise",
+					"gameID": [
+						"0100B04011742000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Unlock Monster Hunter Stories 2 sticker set",
+							"write": false
+						}
+					]
+				}
+			],
+			"gamesSwitch2": []
+		},
+		"0x350e000004fc0f02": {
+			"games3DS": [],
+			"gamesWiiU": [],
+			"gamesSwitch": [
+				{
+					"gameName": "Monster Hunter Rise",
+					"gameID": [
+						"0100B04011742000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Unlock Monster Hunter Stories 2 sticker set",
+							"write": false
+						}
+					]
+				}
+			],
+			"gamesSwitch2": []
+		},
+		"0x3580000005062102": {
+			"games3DS": [],
+			"gamesWiiU": [],
+			"gamesSwitch": [],
+			"gamesSwitch2": []
+		},
 		"0x35c0000002500a02": {
 			"games3DS": [
 				{
@@ -116208,9 +120526,9 @@
 			"gamesWiiU": [],
 			"gamesSwitch": [
 				{
-					"gameName": "Yu-Gi-Oh! Rush Duel Saikyo Battle Royale",
+					"gameName": "Yu-Gi-Oh! RUSH DUEL: Dawn of the Battle Royale!!",
 					"gameID": [
-						"01003C101454A000"
+						"0100261015BE2000"
 					],
 					"amiiboUsage": [
 						{
@@ -116227,9 +120545,9 @@
 			"gamesWiiU": [],
 			"gamesSwitch": [
 				{
-					"gameName": "Yu-Gi-Oh! Rush Duel Saikyo Battle Royale",
+					"gameName": "Yu-Gi-Oh! RUSH DUEL: Dawn of the Battle Royale!!",
 					"gameID": [
-						"01003C101454A000"
+						"0100261015BE2000"
 					],
 					"amiiboUsage": [
 						{
@@ -116246,9 +120564,9 @@
 			"gamesWiiU": [],
 			"gamesSwitch": [
 				{
-					"gameName": "Yu-Gi-Oh! Rush Duel Saikyo Battle Royale",
+					"gameName": "Yu-Gi-Oh! RUSH DUEL: Dawn of the Battle Royale!!",
 					"gameID": [
-						"01003C101454A000"
+						"0100261015BE2000"
 					],
 					"amiiboUsage": [
 						{
@@ -116265,9 +120583,9 @@
 			"gamesWiiU": [],
 			"gamesSwitch": [
 				{
-					"gameName": "Yu-Gi-Oh! Rush Duel Saikyo Battle Royale",
+					"gameName": "Yu-Gi-Oh! RUSH DUEL: Dawn of the Battle Royale!!",
 					"gameID": [
-						"01003C101454A000"
+						"0100261015BE2000"
 					],
 					"amiiboUsage": [
 						{
@@ -116284,9 +120602,9 @@
 			"gamesWiiU": [],
 			"gamesSwitch": [
 				{
-					"gameName": "Yu-Gi-Oh! Rush Duel Saikyo Battle Royale",
+					"gameName": "Yu-Gi-Oh! RUSH DUEL: Dawn of the Battle Royale!!",
 					"gameID": [
-						"01003C101454A000"
+						"0100261015BE2000"
 					],
 					"amiiboUsage": [
 						{
@@ -116303,9 +120621,9 @@
 			"gamesWiiU": [],
 			"gamesSwitch": [
 				{
-					"gameName": "Yu-Gi-Oh! Rush Duel Saikyo Battle Royale",
+					"gameName": "Yu-Gi-Oh! RUSH DUEL: Dawn of the Battle Royale!!",
 					"gameID": [
-						"01003C101454A000"
+						"0100261015BE2000"
 					],
 					"amiiboUsage": [
 						{
@@ -116322,9 +120640,9 @@
 			"gamesWiiU": [],
 			"gamesSwitch": [
 				{
-					"gameName": "Yu-Gi-Oh! Rush Duel Saikyo Battle Royale",
+					"gameName": "Yu-Gi-Oh! RUSH DUEL: Dawn of the Battle Royale!!",
 					"gameID": [
-						"01003C101454A000"
+						"0100261015BE2000"
 					],
 					"amiiboUsage": [
 						{
@@ -116582,18 +120900,6 @@
 					]
 				}
 			],
-			"gamesSwitch2": []
-		},
-		"0x1f00000004c41e03": {
-			"games3DS": [],
-			"gamesWiiU": [],
-			"gamesSwitch": [],
-			"gamesSwitch2": []
-		},
-		"0x1f03010004c91e03": {
-			"games3DS": [],
-			"gamesWiiU": [],
-			"gamesSwitch": [],
 			"gamesSwitch2": []
 		}
 	}

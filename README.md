@@ -6,12 +6,12 @@
   TagMo is an Android NTAG215, Power Tag, N2 Elite, & Bluetooth tag manager for 3DS, WiiU, and Switch
 </p>
 <p align="center">
+  <a href="https://discord.gg/uc2YheD4CK"><img src="https://invidget.switchblade.xyz/uc2YheD4CK"></a>
+</p>
+<p align="center">
   <a href="https://github.com/HiddenRamblings/TagMo/releases"><img src="https://img.shields.io/github/actions/workflow/status/HiddenRamblings/TagMo/android.yml?logo=github&style=for-the-badge"></a>
   <img src="https://img.shields.io/badge/platforms-android-blueviolet?logo=android&style=for-the-badge"/>
   <a href="https://github.com/HiddenRamblings/TagMo/releases"><img src="https://img.shields.io/github/downloads/HiddenRamblings/TagMo/total?color=%233DDC84&logo=github&style=for-the-badge"></a>
-</p>
-<p align="center">
-  <a href="https://discord.gg/uc2YheD4CK"><img src="https://invidget.switchblade.xyz/uc2YheD4CK"></a>
 </p>
 <br />
 

@@ -18,6 +18,9 @@ import android.webkit.WebResourceResponse
 import android.webkit.WebSettings
 import android.webkit.WebView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.updatePadding
 import androidx.webkit.ServiceWorkerClientCompat
 import androidx.webkit.ServiceWorkerControllerCompat
 import androidx.webkit.WebViewAssetLoader
@@ -51,6 +54,12 @@ class DimensionActivity : AppCompatActivity() {
         setResult(RESULT_CANCELED)
 
         mWebView = findViewById(R.id.webview_content)
+
+        ViewCompat.setOnApplyWindowInsetsListener(mWebView) { view, insets ->
+            val navBars = insets.getInsets(WindowInsetsCompat.Type.navigationBars())
+            view.updatePadding(bottom = navBars.bottom)
+            insets
+        }
 
         mPendingIntent = PendingIntent.getActivity(
             this,

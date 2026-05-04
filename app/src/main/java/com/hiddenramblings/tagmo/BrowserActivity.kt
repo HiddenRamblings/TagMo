@@ -45,8 +45,11 @@ import androidx.core.database.getStringOrNull
 import androidx.core.net.toUri
 import androidx.core.view.GravityCompat
 import androidx.core.view.MenuCompat
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.isGone
 import androidx.core.view.isVisible
+import androidx.core.view.updatePadding
 import androidx.documentfile.provider.DocumentFile
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.drawerlayout.widget.DrawerLayout.SimpleDrawerListener
@@ -181,6 +184,14 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
             }
         }
         setContentView(R.layout.activity_browser)
+
+        ViewCompat.setOnApplyWindowInsetsListener(
+            findViewById<CoordinatorLayout>(R.id.coordinator)
+        ) { view, insets ->
+            val navBars = insets.getInsets(WindowInsetsCompat.Type.navigationBars())
+            view.updatePadding(bottom = navBars.bottom)
+            insets
+        }
 
         fakeSnackbar = findViewById(R.id.fake_snackbar)
         fakeSnackbarText = findViewById(R.id.snackbar_text)

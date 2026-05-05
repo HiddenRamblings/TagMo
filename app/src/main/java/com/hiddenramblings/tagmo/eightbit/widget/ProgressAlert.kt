@@ -1,9 +1,9 @@
 /*
  * ====================================================================
  * https://stackoverflow.com/a/49272722/461982
- * Copyright (c) 2023 AbandonedCart.  All rights reserved.
+ * Copyright (c) 2023 AbandonedCart
  *
- * https://github.com/AbandonedCart/AbandonedCart/blob/main/LICENSE#L4
+ * LICENSE.AbandonedCart
  * ====================================================================
  */
 package com.hiddenramblings.tagmo.eightbit.widget

@@ -1,8 +1,8 @@
 /*
  * ====================================================================
- * Copyright (c) 2024 AbandonedCart.  All rights reserved.
+ * Copyright (c) 2024 AbandonedCart
  *
- * https://github.com/AbandonedCart/AbandonedCart/blob/main/LICENSE#L4
+ * LICENSE.AbandonedCart
  * ====================================================================.
  */
 

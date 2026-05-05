@@ -1,6 +1,6 @@
 /*
  * ====================================================================
- * Copyright (c) 2021-2023 AbandonedCart.  All rights reserved.
+ * Copyright (c) 2021-2023 AbandonedCart
  *
  * See https://github.com/HiddenRamblings/TagMo/LICENSE#L680
  * ====================================================================

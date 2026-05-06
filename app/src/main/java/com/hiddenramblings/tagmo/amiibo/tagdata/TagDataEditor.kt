@@ -22,6 +22,8 @@ import androidx.appcompat.widget.SwitchCompat
 import androidx.appcompat.widget.Toolbar
 import androidx.core.view.isGone
 import androidx.core.view.isVisible
+import com.hiddenramblings.tagmo.applySystemBarInsets
+import com.hiddenramblings.tagmo.enableEdgeToEdgeContent
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
@@ -150,7 +152,9 @@ class TagDataEditor : AppCompatActivity() {
 
     public override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        enableEdgeToEdgeContent()
         setContentView(R.layout.activity_tag_data)
+        findViewById<View>(android.R.id.content).applySystemBarInsets()
         window.setLayout(
             ViewGroup.LayoutParams.MATCH_PARENT,
             ViewGroup.LayoutParams.MATCH_PARENT

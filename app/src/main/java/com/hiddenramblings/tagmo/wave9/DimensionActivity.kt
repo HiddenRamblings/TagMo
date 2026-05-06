@@ -12,21 +12,21 @@ import android.os.Bundle
 import android.os.Parcelable
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
 import android.webkit.SslErrorHandler
 import android.webkit.WebResourceRequest
 import android.webkit.WebResourceResponse
 import android.webkit.WebSettings
 import android.webkit.WebView
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
-import androidx.core.view.updatePadding
 import androidx.webkit.ServiceWorkerClientCompat
 import androidx.webkit.ServiceWorkerControllerCompat
 import androidx.webkit.WebViewAssetLoader
 import androidx.webkit.WebViewClientCompat
 import androidx.webkit.WebViewFeature
 import com.hiddenramblings.tagmo.R
+import com.hiddenramblings.tagmo.applySystemBarInsets
+import com.hiddenramblings.tagmo.enableEdgeToEdgeContent
 import com.hiddenramblings.tagmo.eightbit.os.Version
 import com.hiddenramblings.tagmo.parcelable
 
@@ -46,20 +46,16 @@ class DimensionActivity : AppCompatActivity() {
     @SuppressLint("AddJavascriptInterface", "SetJavaScriptEnabled")
     public override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        enableEdgeToEdgeContent()
 
         supportActionBar?.setHomeButtonEnabled(true)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         setContentView(R.layout.activity_webview)
+        findViewById<View>(android.R.id.content).applySystemBarInsets()
 
         setResult(RESULT_CANCELED)
 
         mWebView = findViewById(R.id.webview_content)
-
-        ViewCompat.setOnApplyWindowInsetsListener(mWebView) { view, insets ->
-            val navBars = insets.getInsets(WindowInsetsCompat.Type.navigationBars())
-            view.updatePadding(bottom = navBars.bottom)
-            insets
-        }
 
         mPendingIntent = PendingIntent.getActivity(
             this,

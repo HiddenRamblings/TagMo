@@ -33,12 +33,8 @@ import androidx.appcompat.widget.AppCompatImageView
 import androidx.camera.core.*
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
-import androidx.coordinatorlayout.widget.CoordinatorLayout
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.isGone
 import androidx.core.view.isVisible
-import androidx.core.view.updatePadding
 import androidx.lifecycle.ViewModelProvider
 import com.bumptech.glide.Glide
 import com.google.mlkit.vision.barcode.BarcodeScanner
@@ -90,18 +86,12 @@ class QRCodeScanner : AppCompatActivity() {
 
     public override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        enableEdgeToEdgeContent()
 
         supportActionBar?.setHomeButtonEnabled(true)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         setContentView(R.layout.activity_qr_code)
-
-        ViewCompat.setOnApplyWindowInsetsListener(
-            findViewById<CoordinatorLayout>(R.id.coordinator)
-        ) { view, insets ->
-            val navBars = insets.getInsets(WindowInsetsCompat.Type.navigationBars())
-            view.updatePadding(bottom = navBars.bottom)
-            insets
-        }
+        findViewById<View>(android.R.id.content).applySystemBarInsets()
 
         setResult(RESULT_CANCELED)
 

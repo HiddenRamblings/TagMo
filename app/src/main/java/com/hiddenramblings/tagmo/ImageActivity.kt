@@ -49,8 +49,10 @@ class ImageActivity : AppCompatActivity() {
 
     public override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        enableEdgeToEdgeContent()
         val prefs = Preferences(applicationContext)
         setContentView(R.layout.activity_image)
+        findViewById<View>(android.R.id.content).applySystemBarInsets()
         window.setLayout(
             ViewGroup.LayoutParams.MATCH_PARENT,
             ViewGroup.LayoutParams.MATCH_PARENT

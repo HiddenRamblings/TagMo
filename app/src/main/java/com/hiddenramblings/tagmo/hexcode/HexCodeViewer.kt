@@ -22,8 +22,10 @@ import com.hiddenramblings.tagmo.NFCIntent
 import com.hiddenramblings.tagmo.Preferences
 import com.hiddenramblings.tagmo.R
 import com.hiddenramblings.tagmo.TagMo
+import com.hiddenramblings.tagmo.applySystemBarInsets
 import com.hiddenramblings.tagmo.amiibo.Amiibo
 import com.hiddenramblings.tagmo.amiibo.KeyManager
+import com.hiddenramblings.tagmo.enableEdgeToEdgeContent
 import com.hiddenramblings.tagmo.eightbit.io.Debug
 import com.hiddenramblings.tagmo.eightbit.os.Storage
 import com.hiddenramblings.tagmo.eightbit.os.Version
@@ -38,8 +40,10 @@ import java.io.IOException
 class HexCodeViewer : AppCompatActivity() {
     public override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        enableEdgeToEdgeContent()
         val prefs = Preferences(applicationContext)
         setContentView(R.layout.activity_hex_viewer)
+        findViewById<View>(android.R.id.content).applySystemBarInsets()
         window.setLayout(
             ViewGroup.LayoutParams.MATCH_PARENT,
             ViewGroup.LayoutParams.MATCH_PARENT

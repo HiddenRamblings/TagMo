@@ -11,7 +11,7 @@ class WearableAdapter(private val context: Context) : WearableNavigationDrawerVi
 
     val items = mutableListOf<Item>().apply {
         add(Item(context.getString(R.string.menu_amiibo), R.drawable.ic_nfc_scanner_menu))
-        add(Item(context.getString(R.string.menu_foomiibo), R.drawable.ic_amiibo_menu))
+        add(Item(context.getString(R.string.menu_foomiibo), R.drawable.ic_foomiibo_menu))
         add(Item(context.getString(R.string.menu_guides), R.drawable.ic_support_required_menu))
         if (isEliteEnabled) {
             add(Item(context.getString(R.string.menu_elite), R.drawable.ic_nfc_icon_menu))

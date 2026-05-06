@@ -58,6 +58,12 @@
                     android:padding="8dp"
                     android:textColor="@color/snackbarText"
                     android:textSize="12sp" />
+
+                <androidx.appcompat.widget.AppCompatButton
+                    android:id="@+id/snackbar_item"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:visibility="gone" />
             </com.hiddenramblings.tagmo.eightbit.view.AnimatedLinearLayout>
 
         </androidx.coordinatorlayout.widget.CoordinatorLayout>

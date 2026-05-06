@@ -188,8 +188,13 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
         ViewCompat.setOnApplyWindowInsetsListener(
             findViewById<CoordinatorLayout>(R.id.coordinator)
         ) { view, insets ->
-            val navBars = insets.getInsets(WindowInsetsCompat.Type.navigationBars())
-            view.updatePadding(bottom = navBars.bottom)
+            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            view.updatePadding(
+                left = systemBars.left,
+                top = systemBars.top,
+                right = systemBars.right,
+                bottom = systemBars.bottom
+            )
             insets
         }
 

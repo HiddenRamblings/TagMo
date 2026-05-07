@@ -18,10 +18,11 @@ private data class InitialPadding(
 )
 
 fun ComponentActivity.enableEdgeToEdgeContent() {
-    val appThemeColor = ContextCompat.getColor(this, R.color.colorPrimary)
+    val appThemeLightColor = ContextCompat.getColor(this, R.color.colorPrimary)
+    val appThemeDarkColor = ContextCompat.getColor(this, R.color.colorPrimaryDark)
     enableEdgeToEdge(
-        statusBarStyle = SystemBarStyle.auto(appThemeColor, appThemeColor),
-        navigationBarStyle = SystemBarStyle.auto(appThemeColor, appThemeColor)
+        statusBarStyle = SystemBarStyle.auto(appThemeLightColor, appThemeDarkColor),
+        navigationBarStyle = SystemBarStyle.auto(appThemeLightColor, appThemeDarkColor)
     )
     WindowCompat.setDecorFitsSystemWindows(window, false)
 }

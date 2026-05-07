@@ -21615,20 +21615,6 @@
 			],
 			"gamesWiiU": [
 				{
-					"gameName": "Captain Toad: Treasure Tracker",
-					"gameID": [
-						"0005000010180500",
-						"0005000010180600",
-						"0005000010180700"
-					],
-					"amiiboUsage": [
-						{
-							"Usage": "Unlock Pixel Toad hide-and-seek challenges",
-							"write": false
-						}
-					]
-				},
-				{
 					"gameName": "Mario Kart 8",
 					"gameID": [
 						"000500001010EB00",
@@ -21716,6 +21702,18 @@
 				}
 			],
 			"gamesSwitch": [
+				{
+					"gameName": "Captain Toad: Treasure Tracker",
+					"gameID": [
+						"01009BF0072D4000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive an invincibility mushroom",
+							"write": false
+						}
+					]
+				},
 				{
 					"gameName": "Conga Master Party!",
 					"gameID": [

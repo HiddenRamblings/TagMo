@@ -8,7 +8,6 @@
         <item name="colorAccent">@color/colorAccent</item>
         <item name="buttonStyle">@style/SlimButton</item>
         <item name="android:windowLightStatusBar">true</item>
-        <item name="android:navigationBarColor">@color/colorPrimary</item>
         <item name="android:windowLightNavigationBar">true</item>
         <item name="android:windowSplashScreenBackground">@color/colorPrimary</item>
 

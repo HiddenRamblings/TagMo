@@ -1,9 +1,11 @@
 package com.hiddenramblings.tagmo
 
-import android.app.Activity
 import android.view.View
+import androidx.activity.ComponentActivity
+import androidx.activity.SystemBarStyle
+import androidx.activity.enableEdgeToEdge
+import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
-import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updatePadding
 
@@ -14,8 +16,13 @@ private data class InitialPadding(
     val bottom: Int
 )
 
-fun Activity.enableEdgeToEdgeContent() {
-    WindowCompat.setDecorFitsSystemWindows(window, false)
+fun ComponentActivity.enableEdgeToEdgeContent() {
+    val appThemeLightColor = ContextCompat.getColor(this, R.color.colorPrimary)
+    val appThemeDarkColor = ContextCompat.getColor(this, R.color.colorPrimaryDark)
+    enableEdgeToEdge(
+        statusBarStyle = SystemBarStyle.auto(appThemeLightColor, appThemeDarkColor),
+        navigationBarStyle = SystemBarStyle.auto(appThemeLightColor, appThemeDarkColor)
+    )
 }
 
 fun View.applySystemBarInsets(

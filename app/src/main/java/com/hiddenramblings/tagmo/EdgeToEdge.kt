@@ -6,7 +6,6 @@ import androidx.activity.SystemBarStyle
 import androidx.activity.enableEdgeToEdge
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
-import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updatePadding
 
@@ -24,7 +23,6 @@ fun ComponentActivity.enableEdgeToEdgeContent() {
         statusBarStyle = SystemBarStyle.auto(appThemeLightColor, appThemeDarkColor),
         navigationBarStyle = SystemBarStyle.auto(appThemeLightColor, appThemeDarkColor)
     )
-    WindowCompat.setDecorFitsSystemWindows(window, false)
 }
 
 fun View.applySystemBarInsets(

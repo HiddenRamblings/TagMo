@@ -41,7 +41,7 @@ Additional thanks go out to (alphabetically):
 * turbospok - [Flipper NTAG215 password converter](https://github.com/turbospok/Flipper-NTAG215-password-converter)
 
 ##
-![TagMo Logo](assets/tagmo_feature.gif)
+![TagMo Logo](assets/tagmo_feature.png)
 ###
 *TagMo is not affiliated, authorized, sponsored, endorsed, or in any way connected with Nintendo Co., Ltd or its subsidiaries. amiibo is a registered trademark of Nintendo of America Inc. TagMo does not claim ownership of any licensed resources. Files created with or resulting from TagMo are not intended for sale or distribution. TagMo is for educational and archival purposes only.*
 

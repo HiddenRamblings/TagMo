@@ -4,16 +4,21 @@
     <dimen name="activity_vertical_margin">16dp</dimen>
     <dimen name="fab_horizontal_margin">18dp</dimen>
     <dimen name="fab_vertical_margin">24dp</dimen>
-    <dimen name="list_card_radius">8dp</dimen>
-    <dimen name="menu_card_radius">32dp</dimen>
-    <dimen name="card_horizontal_margin">6dp</dimen>
-    <dimen name="card_vertical_margin">4dp</dimen>
+    <dimen name="list_card_radius">20dp</dimen>
+    <dimen name="menu_card_radius">28dp</dimen>
+    <dimen name="card_horizontal_margin">8dp</dimen>
+    <dimen name="card_vertical_margin">6dp</dimen>
     <dimen name="divider_radius">12dp</dimen>
     <dimen name="snackbar_icon_padding">12dp</dimen>
     <dimen name="swipe_progress_end">48dp</dimen>
     <dimen name="button_height_min">36dp</dimen>
     <dimen name="sliding_bar_margin">10dp</dimen>
     <dimen name="recyclerview_padding">48dp</dimen>
+    <dimen name="drawer_section_margin">14dp</dimen>
+    <dimen name="drawer_item_height">72dp</dimen>
+    <dimen name="sheet_corner_radius">28dp</dimen>
+    <dimen name="sheet_content_spacing">20dp</dimen>
+    <dimen name="browser_content_bottom_padding">108dp</dimen>
 
     <dimen name="wear_drawable_size">18dp</dimen>
 </resources>

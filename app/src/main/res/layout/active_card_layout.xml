@@ -3,7 +3,8 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <androidx.cardview.widget.CardView
+    <com.google.android.material.card.MaterialCardView
+        style="@style/Widget.TagMo.Card.Surface"
         android:id="@+id/active_card_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -29,13 +30,13 @@
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
                     android:animateLayoutChanges="true"
-                    android:padding="8dp">
+                    android:padding="12dp">
 
                     <TextView
                         android:id="@+id/txtError"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:padding="8dp"
+                        android:padding="12dp"
                         android:text="@string/error_caps"
                         android:layout_gravity="center"
                         android:textAlignment="center"
@@ -81,8 +82,7 @@
                                 android:layout_weight="3"
                                 android:gravity="start"
                                 android:text="@string/amiibo_name_caps"
-                                android:textColor="@color/tag_text"
-                                android:textSize="16sp"/>
+                                android:textAppearance="@style/TextAppearance.TagMo.Title"/>
 
                             <View
                                 android:layout_width="4dp"
@@ -228,5 +228,5 @@
                 </LinearLayout>
             </LinearLayout>
         </ScrollView>
-    </androidx.cardview.widget.CardView>
+    </com.google.android.material.card.MaterialCardView>
 </merge>

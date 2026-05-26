@@ -1,15 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#3F51B5</color>
-    <color name="colorPrimaryDark">#303F9F</color>
-    <color name="colorAccent">#FF4081</color>
-    <color name="backgroundWhite">#22FFFFFF</color>
-    <color name="highlightWhite">#33FFFFFF</color>
-    <color name="backgroundBlack">#22000000</color>
-    <color name="highlightBlack">#33000000</color>
-    <color name="bottomSheetTint">#B3333333</color>
+    <color name="colorPrimary">#60A5FA</color>
+    <color name="colorPrimaryDark">#2563EB</color>
+    <color name="colorAccent">#2DD4BF</color>
+    <color name="backgroundWhite">#1E293B</color>
+    <color name="highlightWhite">#24344F</color>
+    <color name="backgroundBlack">#050B16</color>
+    <color name="highlightBlack">#0F172A</color>
+    <color name="bottomSheetTint">#E60B1220</color>
     <color name="tagWarningLight">#FF0000</color>
     <color name="tagWarningDark">#FF00FF</color>
+    <color name="tag_text">#E5EDF8</color>
+
+    <color name="ui_app_background">#081120</color>
+    <color name="ui_surface">#0F1B2E</color>
+    <color name="ui_surface_variant">#16253B</color>
+    <color name="ui_outline">#263654</color>
+    <color name="ui_drawer_background">#0D182B</color>
+    <color name="ui_sheet_background">#0B1220</color>
+    <color name="ui_sheet_outline">#334155</color>
+    <color name="ui_button_disabled">#334155</color>
+    <color name="ui_meta_text">#9DB0CC</color>
 
     <color name="tabText">@android:color/white</color>
     <color name="snackbarText">@android:color/white</color>

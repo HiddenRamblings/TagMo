@@ -4,7 +4,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <androidx.cardview.widget.CardView
+    <com.google.android.material.card.MaterialCardView
+        style="@style/Widget.TagMo.Card.Surface"
         android:id="@+id/active_tile_layout"
         android:layout_width="match_parent"
         android:layout_height="80dp"
@@ -30,7 +31,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:padding="8dp">
+                android:padding="12dp">
 
                 <androidx.appcompat.widget.AppCompatImageView
                     android:id="@+id/imageAmiibo"
@@ -55,8 +56,8 @@
                         android:layout_height="wrap_content"
                         android:layout_marginBottom="2dp"
                         android:text="@string/amiibo_name_caps"
-                        android:textColor="@android:color/white"
-                        android:textSize="16sp"/>
+                        android:textAppearance="@style/TextAppearance.TagMo.Title"
+                        android:textColor="@android:color/white"/>
 
                     <LinearLayout
                         android:id="@+id/group1"
@@ -132,5 +133,5 @@
                 android:textSize="10sp"
                 android:visibility="gone"/>
         </FrameLayout>
-    </androidx.cardview.widget.CardView>
+    </com.google.android.material.card.MaterialCardView>
 </merge>

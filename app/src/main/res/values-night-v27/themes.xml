@@ -2,15 +2,19 @@
 <resources>
 
     <style name="AppTheme" parent="Theme.MaterialComponents.DayNight.DarkActionBar.Bridge">
-        <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
+        <item name="colorSurface">@color/ui_surface</item>
+        <item name="colorSecondary">@color/colorAccent</item>
+        <item name="android:colorBackground">@color/ui_app_background</item>
+        <item name="android:windowBackground">@color/ui_app_background</item>
+        <item name="android:navigationBarColor">@color/ui_app_background</item>
         <item name="buttonStyle">@style/SlimButton</item>
         <item name="android:windowLightStatusBar">false</item>
         <item name="android:windowLightNavigationBar">false</item>
+        <item name="materialCardViewStyle">@style/Widget.TagMo.Card.Surface</item>
 
-        <!-- Theme for the Preferences -->
         <item name="preferenceTheme">@style/PreferenceThemeOverlay.v14.Material</item>
     </style>
 </resources>

@@ -5,7 +5,7 @@
     android:id="@+id/main_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/backgroundBlack">
+    android:background="@drawable/modern_app_background">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -16,14 +16,18 @@
             android:id="@+id/chip_list"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginHorizontal="12dp"
+            android:layout_marginTop="12dp"
+            android:layout_marginBottom="8dp"
+            android:background="@drawable/modern_chip_background"
             android:orientation="horizontal"
-            android:padding="4dp"/>
+            android:padding="8dp"/>
 
         <View
             android:id="@+id/divider"
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:background="?android:attr/listDivider"/>
+            android:background="@color/ui_outline"/>
 
         <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
             android:id="@+id/browser_wrapper"
@@ -35,8 +39,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:clipToPadding="false"
-                android:paddingTop="4dp"
-                android:paddingBottom="@dimen/button_height_min"
+                android:paddingTop="8dp"
+                android:paddingBottom="@dimen/browser_content_bottom_padding"
                 android:scrollbars="vertical"
                 android:scrollbarSize="0dp"
                 android:scrollbarStyle="outsideOverlay"/>
@@ -47,8 +51,8 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:clipToPadding="false"
-            android:layout_marginTop="4dp"
-            android:paddingBottom="@dimen/button_height_min"
+            android:layout_marginTop="8dp"
+            android:paddingBottom="@dimen/browser_content_bottom_padding"
             android:scrollbars="vertical"
             android:scrollbarSize="0dp"
             android:scrollbarStyle="outsideOverlay"
@@ -59,7 +63,8 @@
         android:id="@+id/bottom_sheet"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/bottomSheetTint"
+        android:background="@drawable/modern_sheet_background"
+        android:elevation="10dp"
         android:clickable="true"
         android:focusable="true"
         android:orientation="vertical"
@@ -69,8 +74,9 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginHorizontal="16dp"
-            android:layout_marginVertical="8dp"
+            android:layout_marginHorizontal="@dimen/sheet_content_spacing"
+            android:layout_marginTop="14dp"
+            android:layout_marginBottom="10dp"
             android:orientation="horizontal">
 
             <androidx.appcompat.widget.AppCompatImageView
@@ -81,6 +87,7 @@
                 android:layout_marginRight="4dp"
                 android:layout_marginEnd="4dp"
                 android:contentDescription="@string/imageview_folder"
+                android:tint="@color/bottomSheetText"
                 app:srcCompat="@drawable/ic_folder_open_white_24dp" />
 
             <TextView
@@ -91,8 +98,9 @@
                 android:layout_weight="1"
                 android:ellipsize="marquee"
                 android:singleLine="true"
-                android:textColor="@android:color/white"
-                android:textSize="14sp" />
+                android:textColor="@color/bottomSheetText"
+                android:textSize="15sp"
+                android:textStyle="bold" />
 
             <androidx.appcompat.widget.AppCompatImageView
                 android:id="@+id/toggle"
@@ -100,31 +108,35 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
                 android:contentDescription="@string/imageview_toggle"
+                android:tint="@color/bottomSheetText"
                 app:srcCompat="@drawable/ic_expand_less_white_24dp" />
         </LinearLayout>
 
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/switch_storage_root"
+            style="@style/Widget.TagMo.Button.Filled"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginHorizontal="@dimen/sheet_content_spacing"
             android:layout_marginVertical="4dp"
-            android:background="@drawable/rounded_button"
             android:text="@string/physical_storage_root" />
 
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/switch_storage_type"
+            style="@style/Widget.TagMo.Button.Filled"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginHorizontal="@dimen/sheet_content_spacing"
             android:layout_marginVertical="4dp"
-            android:background="@drawable/rounded_button"
             android:text="@string/grant_file_permission" />
 
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/select_zip_file"
+            style="@style/Widget.TagMo.Button.Filled"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginHorizontal="@dimen/sheet_content_spacing"
             android:layout_marginVertical="4dp"
-            android:background="@drawable/rounded_button"
             android:text="@string/unzip_archive" />
 
         <TextView
@@ -133,9 +145,9 @@
             android:layout_height="wrap_content"
             android:gravity="center"
             android:singleLine="true"
-            android:textColor="@android:color/white"
+            android:textColor="@color/ui_meta_text"
             android:textSize="12sp"
-            android:layout_marginTop="8dp"
+            android:layout_marginTop="16dp"
             android:layout_marginBottom="12dp"
             android:text="@string/database_stats"/>
 
@@ -145,7 +157,7 @@
             android:layout_height="wrap_content"
             android:gravity="center"
             android:singleLine="true"
-            android:textColor="@android:color/white"
+            android:textColor="@color/bottomSheetText"
             android:textSize="16sp"
             android:layout_marginBottom="12dp" />
 
@@ -155,7 +167,7 @@
             android:layout_height="wrap_content"
             android:gravity="center"
             android:singleLine="true"
-            android:textColor="@android:color/white"
+            android:textColor="@color/bottomSheetText"
             android:textSize="16sp"
             android:layout_marginBottom="12dp" />
 
@@ -165,13 +177,15 @@
             android:layout_height="wrap_content"
             android:gravity="center"
             android:singleLine="true"
-            android:textColor="@android:color/white"
+            android:textColor="@color/bottomSheetText"
             android:textSize="16sp"
             android:layout_marginBottom="16dp" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/folders_list"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_height="match_parent"
+            android:clipToPadding="false"
+            android:paddingBottom="20dp" />
     </LinearLayout>
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

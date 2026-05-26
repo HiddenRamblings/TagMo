@@ -9,6 +9,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:background="@drawable/modern_app_background"
         android:orientation="vertical">
 
         <com.hiddenramblings.tagmo.eightbit.view.AnimatedLinearLayout
@@ -98,6 +99,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_gravity="start"
+        android:background="@drawable/modern_drawer_background"
         android:fitsSystemWindows="true">
 
         <include layout="@layout/fragment_settings" />

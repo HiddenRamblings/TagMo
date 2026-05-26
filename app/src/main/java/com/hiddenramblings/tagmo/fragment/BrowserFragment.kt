@@ -35,6 +35,7 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.google.android.flexbox.FlexboxLayout
 import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.google.android.material.color.MaterialColors
 import com.google.android.material.snackbar.Snackbar
 import com.hiddenramblings.tagmo.BrowserActivity
 import com.hiddenramblings.tagmo.BrowserSettings
@@ -153,6 +154,13 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
             chipList?.isGone = true
 
             browserWrapper = view.findViewById<SwipeRefreshLayout>(R.id.browser_wrapper).apply {
+                setColorSchemeColors(
+                    MaterialColors.getColor(this, com.google.android.material.R.attr.colorPrimary),
+                    MaterialColors.getColor(this, com.google.android.material.R.attr.colorSecondary)
+                )
+                setProgressBackgroundColorSchemeColor(
+                    MaterialColors.getColor(this, com.google.android.material.R.attr.colorSurface)
+                )
                 setOnRefreshListener {
                     if (!activity.isRefreshing) activity.onRefresh(true)
                     isRefreshing = false
@@ -183,6 +191,7 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
             }
 
             currentFolderView = view.findViewById(R.id.current_folder)
+            currentFolderView?.isSelected = true
             view.findViewById<RecyclerView>(R.id.folders_list).apply {
                 layoutManager = LinearLayoutManager(requireContext())
                 adapter = FoldersAdapter(settings)

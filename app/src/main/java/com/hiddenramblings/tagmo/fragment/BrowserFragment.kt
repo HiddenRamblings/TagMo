@@ -155,11 +155,11 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
 
             browserWrapper = view.findViewById<SwipeRefreshLayout>(R.id.browser_wrapper).apply {
                 setColorSchemeColors(
-                    MaterialColors.getColor(this, com.google.android.material.R.attr.colorPrimary),
-                    MaterialColors.getColor(this, com.google.android.material.R.attr.colorSecondary)
+                    MaterialColors.getColor(this, R.attr.colorPrimary),
+                    MaterialColors.getColor(this, R.attr.colorSecondary)
                 )
                 setProgressBackgroundColorSchemeColor(
-                    MaterialColors.getColor(this, com.google.android.material.R.attr.colorSurface)
+                    MaterialColors.getColor(this, R.attr.colorSurface)
                 )
                 setOnRefreshListener {
                     if (!activity.isRefreshing) activity.onRefresh(true)

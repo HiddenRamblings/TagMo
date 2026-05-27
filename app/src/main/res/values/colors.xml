@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#2563EB</color>
-    <color name="colorPrimaryDark">#1D4ED8</color>
-    <color name="colorAccent">#14B8A6</color>
+    <color name="colorPrimary">#00B8BA</color>
+    <color name="colorPrimaryDark">#00A2A5</color>
+    <color name="colorAccent">#FE8084</color>
     <color name="backgroundWhite">#FFFFFFFF</color>
     <color name="highlightWhite">#F5F8FF</color>
     <color name="backgroundBlack">#101828</color>
@@ -10,6 +10,7 @@
     <color name="bottomSheetTint">#CC0F172A</color>
     <color name="tagWarningLight">#FF0000</color>
     <color name="tagWarningDark">#FF00FF</color>
+    <color name="tag_text">#152238</color>
 
     <color name="ui_app_background">#EFF4FB</color>
     <color name="ui_surface">#FFFFFFFF</color>

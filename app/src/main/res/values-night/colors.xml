@@ -10,7 +10,6 @@
     <color name="bottomSheetTint">#E60B1220</color>
     <color name="tagWarningLight">#FF0000</color>
     <color name="tagWarningDark">#FF00FF</color>
-    <color name="tag_text">#E5EDF8</color>
 
     <color name="ui_app_background">#081120</color>
     <color name="ui_surface">#0F1B2E</color>

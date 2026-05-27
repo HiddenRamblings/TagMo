@@ -10,6 +10,7 @@
     app:cardCornerRadius="@dimen/list_card_radius"
     app:cardElevation="0dp"
     android:layout_marginHorizontal="4dp"
+    android:layout_marginVertical="4dp"
     android:layout_gravity="center"
     app:cardUseCompatPadding="false">
 

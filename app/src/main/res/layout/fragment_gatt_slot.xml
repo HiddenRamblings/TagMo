@@ -5,8 +5,7 @@
     android:id="@+id/coordinator"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_margin="6dp"
-    android:background="@color/backgroundBlack"
+    android:background="@drawable/modern_app_background"
     android:orientation="vertical"
     tools:context=".fragment.GattSlotFragment">
 
@@ -30,7 +29,7 @@
             android:marqueeRepeatLimit="marquee_forever"
             android:singleLine="true"
             android:text="@string/sort_mode_set"
-            android:textColor="@color/bottomSheetText"
+            android:textColor="@color/tag_text"
             android:textSize="14sp" />
 
         <Spinner
@@ -57,7 +56,7 @@
         android:id="@+id/bottom_sheet_slot"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="?attr/colorPrimaryDark"
+        android:background="@drawable/modern_sheet_background"
         android:clickable="true"
         android:focusable="true"
         android:orientation="vertical"
@@ -67,8 +66,9 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginHorizontal="16dp"
-            android:layout_marginVertical="6dp"
+            android:layout_marginHorizontal="@dimen/sheet_content_spacing"
+            android:layout_marginTop="14dp"
+            android:layout_marginBottom="10dp"
             android:orientation="horizontal">
 
             <androidx.appcompat.widget.AppCompatImageView
@@ -78,6 +78,7 @@
                 android:layout_gravity="center"
                 android:layout_marginRight="4dp"
                 android:layout_marginEnd="4dp"
+                android:tint="@color/bottomSheetText"
                 app:srcCompat="@drawable/ic_bluup_labs_18dp" />
 
             <TextView
@@ -99,6 +100,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
+                android:tint="@color/bottomSheetText"
                 app:srcCompat="@drawable/ic_expand_more_24dp"
                 android:contentDescription="@string/imageview_toggle" />
         </LinearLayout>
@@ -129,21 +131,29 @@
 
             <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/write_slot_file"
+                style="@style/Widget.TagMo.Button.Filled"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginHorizontal="@dimen/sheet_content_spacing"
                 android:layout_marginTop="2dp"
                 android:text="@string/write_slot_file" />
 
             <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/create_blank"
+                style="@style/Widget.TagMo.Button.Filled"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginHorizontal="@dimen/sheet_content_spacing"
+                android:layout_marginVertical="4dp"
                 android:text="@string/create_blank" />
 
             <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/reset_device"
+                style="@style/Widget.TagMo.Button.Filled"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginHorizontal="@dimen/sheet_content_spacing"
+                android:layout_marginBottom="4dp"
                 android:text="@string/reset_device" />
 
             <androidx.appcompat.widget.SwitchCompat
@@ -151,7 +161,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:layout_marginHorizontal="2dp"
+                android:layout_marginHorizontal="@dimen/sheet_content_spacing"
                 android:defaultValue="false"
                 android:text="@string/clone_random"
                 app:switchPadding="4dp" />
@@ -159,27 +169,28 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginHorizontal="@dimen/sheet_content_spacing"
                 android:layout_marginBottom="6dp"
                 android:orientation="horizontal" >
 
                 <androidx.appcompat.widget.AppCompatButton
                     android:id="@+id/write_slot_count"
-                    android:layout_width="match_parent"
+                    style="@style/Widget.TagMo.Button.Filled"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginRight="-2dp"
-                    android:layout_marginEnd="-2dp"
+                    android:layout_marginRight="4dp"
+                    android:layout_marginEnd="4dp"
                     android:layout_weight="1"
-                    android:textSize="14sp"
                     android:text="@string/write_slots" />
 
                 <androidx.appcompat.widget.AppCompatButton
                     android:id="@+id/erase_slot_count"
-                    android:layout_width="match_parent"
+                    style="@style/Widget.TagMo.Button.Filled"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="-2dp"
-                    android:layout_marginStart="-2dp"
+                    android:layout_marginLeft="4dp"
+                    android:layout_marginStart="4dp"
                     android:layout_weight="1"
-                    android:textSize="14sp"
                     android:text="@string/erase_slots" />
             </LinearLayout>
 
@@ -187,8 +198,7 @@
                 android:id="@+id/number_picker_slot"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="8dp"
-                android:layout_marginRight="8dp"
+                android:layout_marginHorizontal="@dimen/sheet_content_spacing"
                 android:background="@drawable/picker_border_sheet"
                 app:np_min="1"
                 app:np_max="85"
@@ -206,6 +216,7 @@
                 android:id="@+id/screen_options"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:layout_marginHorizontal="@dimen/sheet_content_spacing"
                 android:layout_marginTop="10dp"
                 android:orientation="horizontal" >
 
@@ -241,21 +252,26 @@
             android:id="@+id/switch_menu_btn"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginHorizontal="@dimen/sheet_content_spacing"
             android:layout_marginTop="4dp"
             android:textOff="@string/view_device_options"
             android:textOn="@string/view_amiibo_details"/>
 
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/switch_devices"
+            style="@style/Widget.TagMo.Button.Filled"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="10dp"
+            android:layout_marginHorizontal="@dimen/sheet_content_spacing"
+            android:layout_marginVertical="4dp"
             android:text="@string/switch_devices" />
 
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/device_portal"
+            style="@style/Widget.TagMo.Button.Filled"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginHorizontal="@dimen/sheet_content_spacing"
             android:layout_marginBottom="10dp"
             android:text="@string/switch_devices" />
 
@@ -272,8 +288,7 @@
                 android:id="@+id/amiibo_search"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/button_height_min"
-                android:layout_marginRight="2dp"
-                android:layout_marginEnd="2dp"
+                android:layout_marginHorizontal="@dimen/sheet_content_spacing"
                 android:lineSpacingExtra="0dp"
                 android:lineSpacingMultiplier="0" />
 
@@ -283,7 +298,7 @@
                 android:layout_height="match_parent"
                 android:clipToPadding="false"
                 android:paddingBottom="@dimen/recyclerview_padding"
-                android:background="?attr/colorPrimaryDark"
+                android:background="@color/ui_surface"
                 android:scrollbars="vertical" />
         </LinearLayout>
     </LinearLayout>

@@ -715,7 +715,7 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
                             2 -> { Nordic.DEVICE.SLIDE }
                             3 -> { Nordic.DEVICE.LOOP }
                             4 -> { Nordic.DEVICE.LINK }
-                            5 -> { Nordic.DEVICE.PIXL }
+                            5 -> { Nordic.DEVICE.PIXL_JS }
                             6 -> { Nordic.DEVICE.PUCK }
                             else -> { detectedType }
                         }
@@ -725,7 +725,7 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
                         deviceType = detectedType
                     }
                 }
-                if (deviceType == Nordic.DEVICE.PIXL) {
+                if (deviceType == Nordic.DEVICE.PIXL || deviceType == Nordic.DEVICE.PIXL_JS) {
                     setSelection(5, false)
                 }
             }

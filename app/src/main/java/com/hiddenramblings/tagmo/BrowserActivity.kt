@@ -526,6 +526,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
         findViewById<CardView>(R.id.menu_gatt).apply {
             setOnClickListener {
                 closePrefsDrawer()
+                pagerAdapter.gattSlots.setConnectionMode(null)
                 if (!prefs.eliteEnabled()) {
                     if (viewPager.currentItem != 2) viewPager.setCurrentItem(2, false)
                 } else {

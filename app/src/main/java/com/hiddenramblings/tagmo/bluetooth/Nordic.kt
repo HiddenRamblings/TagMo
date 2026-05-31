@@ -6,7 +6,7 @@ import java.util.UUID
 
 object Nordic {
     enum class DEVICE {
-        FLASK, SLIDE, BLUUP, LINK, LOOP, PIXL, PUCK, GATT;
+        FLASK, SLIDE, BLUUP, LINK, LOOP, PIXL, PIXL_JS, PUCK, GATT;
     }
 
     val NUS  = UUID.fromString("6e400001-b5a3-f393-e0a9-e50e24dcca9e")
@@ -34,6 +34,7 @@ object Nordic {
             DEVICE.LINK -> context.getString(R.string.device_link)
             DEVICE.LOOP -> context.getString(R.string.device_loop)
             DEVICE.PIXL -> context.getString(R.string.device_pixl)
+            DEVICE.PIXL_JS -> context.getString(R.string.device_pixl)
             DEVICE.PUCK -> context.getString(R.string.device_puck)
             else -> context.getString(R.string.unknown)
         }

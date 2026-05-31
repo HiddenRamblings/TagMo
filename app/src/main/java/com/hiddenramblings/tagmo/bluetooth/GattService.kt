@@ -73,6 +73,9 @@ class GattService : Service() {
     private var tempInfoData = byteArrayOf()
 
     private var chunkNumber = 0
+    private var pixlFileId: Byte = 0
+    private var pixlWriteChunks = emptyList<ByteArray>()
+    private var pixlWriteIndex = 0
 
     enum class SORTING {
         MANUAL, SEQUENTIAL, AUTO;
@@ -155,8 +158,8 @@ class GattService : Service() {
             if (characteristic.hasProperty(BluetoothGattCharacteristic.PROPERTY_NOTIFY)) {
                 val hexData = data.toHex()
                 when (serviceType) {
-                    Nordic.DEVICE.PIXL -> {
-
+                    Nordic.DEVICE.PIXL_JS -> {
+                        parsePixlResponse(data)
                     }
 
                     Nordic.DEVICE.LOOP -> {
@@ -426,7 +429,7 @@ class GattService : Service() {
             Nordic.DEVICE.BLUUP, Nordic.DEVICE.FLASK, Nordic.DEVICE.SLIDE -> {
                 getCharacteristicValue(characteristic, characteristic.getStringValue(0x0))
             }
-            Nordic.DEVICE.PIXL, Nordic.DEVICE.LOOP, Nordic.DEVICE.LINK -> {
+            Nordic.DEVICE.PIXL, Nordic.DEVICE.PIXL_JS, Nordic.DEVICE.LOOP, Nordic.DEVICE.LINK -> {
                 getCharacteristicValue(characteristic, characteristic.value)
             }
             Nordic.DEVICE.PUCK -> {
@@ -458,7 +461,7 @@ class GattService : Service() {
                     Nordic.DEVICE.BLUUP, Nordic.DEVICE.FLASK, Nordic.DEVICE.SLIDE -> {
                         listener?.onBluupServicesDiscovered()
                     }
-                    Nordic.DEVICE.PIXL, Nordic.DEVICE.LOOP, Nordic.DEVICE.LINK -> {
+                    Nordic.DEVICE.PIXL, Nordic.DEVICE.PIXL_JS, Nordic.DEVICE.LOOP, Nordic.DEVICE.LINK -> {
                         listener?.onPixlServicesDiscovered()
                     }
                     Nordic.DEVICE.PUCK -> {
@@ -504,7 +507,7 @@ class GattService : Service() {
                 Nordic.DEVICE.BLUUP, Nordic.DEVICE.FLASK, Nordic.DEVICE.SLIDE -> {
                     getCharacteristicValue(characteristic, value.decodeToString())
                 }
-                Nordic.DEVICE.PIXL, Nordic.DEVICE.LOOP, Nordic.DEVICE.LINK -> {
+                Nordic.DEVICE.PIXL, Nordic.DEVICE.PIXL_JS, Nordic.DEVICE.LOOP, Nordic.DEVICE.LINK -> {
                     getCharacteristicValue(characteristic, value)
                 }
                 Nordic.DEVICE.PUCK -> {
@@ -764,6 +767,73 @@ class GattService : Service() {
         }
     }
 
+    private fun pixlChunkValue(chunk: Int, hasNext: Boolean): ByteArray {
+        val value = if (hasNext) chunk or 0x8000 else chunk
+        return byteArrayOf((value and 0xFF).toByte(), ((value shr 8) and 0xFF).toByte())
+    }
+
+    private fun pixlOpenWriteRequest(path: String): ByteArray {
+        val pathBytes = path.encodeToByteArray()
+        val pathLength = byteArrayOf(pathBytes.size.toByte(), ((pathBytes.size shr 8) and 0xFF).toByte())
+        val modeWriteCreate = 0x0A.toByte()
+        return byteArrayOf(PIXL.OPEN.bytes, 0x00, 0x00, 0x00).plus(pathLength).plus(pathBytes).plus(modeWriteCreate)
+    }
+
+    private fun processPixlUpload(tagData: ByteArray) {
+        pixlWriteChunks = tagData.toTagArray().toPortions(200)
+        pixlWriteIndex = 0
+        queueByteCharacteristic(pixlOpenWriteRequest("E:/amiibolink/99.bin"))
+    }
+
+    private fun queuePixlWriteChunk() {
+        if (pixlWriteIndex >= pixlWriteChunks.size) return
+        val payload = pixlWriteChunks[pixlWriteIndex]
+        val chunk = pixlChunkValue(pixlWriteIndex, pixlWriteIndex < pixlWriteChunks.lastIndex)
+        queueByteCharacteristic(byteArrayOf(
+            PIXL.WRITE.bytes, 0x00, chunk[0], chunk[1], pixlFileId
+        ).plus(payload))
+        pixlWriteIndex += 1
+    }
+
+    private fun parsePixlResponse(data: ByteArray) {
+        if (data.size < 4) return
+        val cmd = data[0]
+        val status = data[1]
+        if (status.toInt() != 0) {
+            listener?.onProcessFinish(true)
+            return
+        }
+        when (cmd) {
+            PIXL.VERSION.bytes -> {
+                if (data.size >= 6) {
+                    val firmwareLength = (data[4].toInt() and 0xFF) or ((data[5].toInt() and 0xFF) shl 8)
+                    val firmwareStart = 6
+                    val firmwareEnd = (firmwareStart + firmwareLength).coerceAtMost(data.size)
+                    if (firmwareEnd > firmwareStart) {
+                        listener?.onPixlConnected(data.copyOfRange(firmwareStart, firmwareEnd)
+                            .toString(Charset.defaultCharset()))
+                    }
+                }
+            }
+            PIXL.OPEN.bytes -> {
+                if (data.size > 4) {
+                    pixlFileId = data[4]
+                    queuePixlWriteChunk()
+                }
+            }
+            PIXL.WRITE.bytes -> {
+                if (pixlWriteIndex < pixlWriteChunks.size) {
+                    queuePixlWriteChunk()
+                } else {
+                    queueByteCharacteristic(byteArrayOf(PIXL.CLOSE.bytes, 0x00, 0x00, 0x00, pixlFileId))
+                }
+            }
+            PIXL.CLOSE.bytes -> {
+                listener?.onProcessFinish(true)
+            }
+        }
+    }
+
     val deviceDetails: Unit
         get() {
             if (legacyInterface) {
@@ -793,6 +863,9 @@ class GattService : Service() {
                             0xC2.toByte(), 0x6D, 0xE5.toByte(), 0x35, 0x27,
                             0x4B, 0x52, 0xE0.toByte(), 0x1F, 0x26
                     ))
+                }
+                Nordic.DEVICE.PIXL_JS -> {
+                    queueByteCharacteristic(byteArrayOf(PIXL.VERSION.bytes, 0x00, 0x00, 0x00))
                 }
                 Nordic.DEVICE.PUCK -> {
                     puckArray = ArrayList(slotsCount)
@@ -885,6 +958,9 @@ class GattService : Service() {
                     commandCallbacks[0].run()
                     commandCallbacks.removeAt(0)
                 }
+            }
+            Nordic.DEVICE.PIXL_JS -> {
+                processPixlUpload(tagData)
             }
             else -> { }
         }

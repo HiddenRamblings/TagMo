@@ -527,6 +527,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
         findViewById<CardView>(R.id.menu_gatt).apply {
             setOnClickListener {
                 closePrefsDrawer()
+                pagerAdapter.gattSlots.setConnectionMode(null)
                 if (!prefs.eliteEnabled()) {
                     if (viewPager.currentItem != 2) viewPager.setCurrentItem(2, false)
                 } else {
@@ -538,7 +539,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
 
         findViewById<CardView>(R.id.menu_pixl).setOnClickListener {
             closePrefsDrawer()
-            pagerAdapter.gattSlots.setDeviceType(Nordic.DEVICE.PIXL)
+            pagerAdapter.gattSlots.setConnectionMode(Nordic.DEVICE.PIXL_JS)
             if (!prefs.eliteEnabled()) {
                 if (viewPager.currentItem != 2) viewPager.setCurrentItem(2, false)
             } else {

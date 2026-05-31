@@ -135,8 +135,10 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
         private set
     private var mBluetoothAdapter: BluetoothAdapter? = null
     private var scanCallbackNordicLP: ScanCallback? = null
+    private var scanCallbackOmllboLP: ScanCallback? = null
     private var scanCallbackLegacyLP: ScanCallback? = null
     private var scanCallbackNordic: LeScanCallback? = null
+    private var scanCallbackOmllbo: LeScanCallback? = null
     private var scanCallbackLegacy: LeScanCallback? = null
     private var serviceGatt: GattService? = null
     private var isServiceDiscovered = false
@@ -717,6 +719,9 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
                     deviceType = detectedType
                 }
             }
+            if (deviceType == Nordic.DEVICE.PIXL) {
+                setSelection(5, false)
+            }
         }
         item.findViewById<View>(R.id.connect_device).setOnClickListener {
             deviceDialog.dismiss()
@@ -730,17 +735,18 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
     }
 
     private fun getDeviceType(device: BluetoothDevice): Nordic.DEVICE {
-        return device.name.let {
+        return device.name?.lowercase()?.let {
              when {
-                 it.lowercase().startsWith("flask") -> Nordic.DEVICE.FLASK
-                 it.lowercase().startsWith("slide") -> Nordic.DEVICE.SLIDE
-                 it.lowercase().startsWith("puck.js") -> Nordic.DEVICE.PUCK
-                 it.lowercase().startsWith("amiibolink") -> Nordic.DEVICE.LINK
-                 it.lowercase().startsWith("amiloop") -> Nordic.DEVICE.LOOP
-                 it.lowercase().startsWith("pixl.js")-> Nordic.DEVICE.PIXL
-                else -> Nordic.DEVICE.GATT
+                it.startsWith("flask") -> Nordic.DEVICE.FLASK
+                it.startsWith("slide") -> Nordic.DEVICE.SLIDE
+                it.startsWith("puck.js") || it.startsWith("puckjs") -> Nordic.DEVICE.PUCK
+                it.startsWith("amiibolink") || it.startsWith("amiibo link") -> Nordic.DEVICE.LINK
+                it.startsWith("amiloop") -> Nordic.DEVICE.LOOP
+                it.startsWith("pixl.js") || it.startsWith("pixljs") || it.startsWith("pixl ") ->
+                    Nordic.DEVICE.PIXL
+               else -> Nordic.DEVICE.GATT
             }
-        }
+        } ?: Nordic.DEVICE.GATT
     }
 
     private fun getServiceUUIDs(scanResult: ScanResult): List<UUID> {
@@ -782,6 +788,20 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
             }
             scanner?.startScan(listOf(filterNordic), settings, scanCallbackNordicLP)
 
+            val filterOmllbo = ScanFilter.Builder().setServiceUuid(ParcelUuid(Nordic.OmllboNUS)).build()
+            scanCallbackOmllboLP = object : ScanCallback() {
+                override fun onScanResult(callbackType: Int, result: ScanResult) {
+                    super.onScanResult(callbackType, result)
+                    if (!devices.contains(result.device)) {
+                        devices.add(result.device)
+                        deviceDialog.findViewById<LinearLayout>(R.id.bluetooth_result)?.addView(
+                            displayScanResult(deviceDialog, result.device, getServiceUUIDs(result))
+                        )
+                    }
+                }
+            }
+            scanner?.startScan(listOf(filterOmllbo), settings, scanCallbackOmllboLP)
+
             val filterLegacy = ScanFilter.Builder().setServiceUuid(ParcelUuid(Nordic.LegacyNUS)).build()
             scanCallbackLegacyLP = object : ScanCallback() {
                 override fun onScanResult(callbackType: Int, result: ScanResult) {
@@ -807,8 +827,19 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
                 }
             mBluetoothAdapter?.startLeScan(arrayOf(Nordic.NUS), scanCallbackNordic)
 
-            scanCallbackLegacy =
+                scanCallbackOmllbo =
                     LeScanCallback { device: BluetoothDevice, _: Int, _: ByteArray? ->
+                        if (!devices.contains(device)) {
+                            devices.add(device)
+                            deviceDialog.findViewById<LinearLayout>(R.id.bluetooth_result)?.addView(
+                                displayScanResult(deviceDialog, device)
+                            )
+                        }
+                    }
+                mBluetoothAdapter?.startLeScan(arrayOf(Nordic.OmllboNUS), scanCallbackOmllbo)
+
+                scanCallbackLegacy =
+                        LeScanCallback { device: BluetoothDevice, _: Int, _: ByteArray? ->
                         if (!devices.contains(device)) {
                             devices.add(device)
                             deviceDialog.findViewById<LinearLayout>(R.id.bluetooth_result)?.addView(
@@ -1086,11 +1117,20 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
                     adapter.bluetoothLeScanner.stopScan(it)
                     adapter.bluetoothLeScanner.flushPendingScanResults(it)
                 }
+                scanCallbackOmllboLP?.let {
+                    adapter.bluetoothLeScanner.stopScan(it)
+                    adapter.bluetoothLeScanner.flushPendingScanResults(it)
+                }
             } else @Suppress("deprecation") {
                 scanCallbackNordic?.let { adapter.stopLeScan(it) }
                 scanCallbackLegacy?.let { adapter.stopLeScan(it) }
+                scanCallbackOmllbo?.let { adapter.stopLeScan(it) }
             }
         }
+    }
+
+    fun setDeviceType(type: Nordic.DEVICE) {
+        deviceType = type
     }
 
     private fun handleImageClicked(amiiboFile: AmiiboFile?) {

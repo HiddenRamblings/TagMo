@@ -235,6 +235,7 @@
     <string name="menu_foomiibo">Foomiibo Panel</string>
     <string name="menu_elite">N2 Elite Connect</string>
     <string name="menu_gatt">Bluetooth Connect</string>
+    <string name="menu_pixl">Pixl.js Connect</string>
     <string name="menu_qr_code">QR Code Toolkit</string>
     <string name="menu_guides">Guides and Help</string>
     <string name="menu_settings">TagMo Settings</string>

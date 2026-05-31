@@ -71,6 +71,7 @@ import com.hiddenramblings.tagmo.amiibo.AmiiboManager.listAmiiboFiles
 import com.hiddenramblings.tagmo.amiibo.games.GamesManager
 import com.hiddenramblings.tagmo.amiibo.games.GamesManager.Companion.getGamesManager
 import com.hiddenramblings.tagmo.amiibo.tagdata.TagDataEditor
+import com.hiddenramblings.tagmo.bluetooth.Nordic
 import com.hiddenramblings.tagmo.eightbit.io.Debug
 import com.hiddenramblings.tagmo.eightbit.material.IconifiedSnackbar
 import com.hiddenramblings.tagmo.eightbit.os.Storage
@@ -532,6 +533,16 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                     if (viewPager.currentItem != 3) viewPager.setCurrentItem(3, false)
                 }
 
+            }
+        }
+
+        findViewById<CardView>(R.id.menu_pixl).setOnClickListener {
+            closePrefsDrawer()
+            pagerAdapter.gattSlots.setDeviceType(Nordic.DEVICE.PIXL)
+            if (!prefs.eliteEnabled()) {
+                if (viewPager.currentItem != 2) viewPager.setCurrentItem(2, false)
+            } else {
+                if (viewPager.currentItem != 3) viewPager.setCurrentItem(3, false)
             }
         }
 

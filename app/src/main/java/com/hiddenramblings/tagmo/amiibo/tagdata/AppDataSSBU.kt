@@ -126,7 +126,7 @@ class AppDataSSBU(appData: ByteArray?) : AppData(appData!!) {
     @set:Throws(NumberFormatException::class)
     var statSpeed: Int
         get() {
-            val value: Int = appData.getShort(STATS_SPEED_OFFSET).toInt() and 0xFFFF
+            val value: Int = appData.getShort(STATS_SPEED_OFFSET).toInt()
             checkStat(value)
             return value
         }
@@ -237,12 +237,12 @@ class AppDataSSBU(appData: ByteArray?) : AppData(appData!!) {
         const val PHYSICAL_MAX_VALUE = 2500
         const val STATS_ATTACK_OFFSET = 0x74
         const val STATS_DEFENSE_OFFSET = 0x76
-        const val STATS_SPEED_OFFSET = 0x14
+        const val STATS_SPEED_OFFSET = 0x78
         const val BONUS_MIN_VALUE = 0
         const val BONUS_MAX_VALUE = 0xFF
-        const val BONUS_EFFECT1_OFFSET = 0x0D
-        const val BONUS_EFFECT2_OFFSET = 0x0E
-        const val BONUS_EFFECT3_OFFSET = 0x0F
+        const val BONUS_EFFECT1_OFFSET = 0x10
+        const val BONUS_EFFECT2_OFFSET = 0x11
+        const val BONUS_EFFECT3_OFFSET = 0x12
         const val LEVEL_MIN_VALUE = 1
         const val EXPERIENCE_MIN_VALUE = 0x0000
         const val EXPERIENCE_MAX_VALUE = 0x0F48

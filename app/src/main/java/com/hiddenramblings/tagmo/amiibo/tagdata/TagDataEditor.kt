@@ -139,6 +139,13 @@ class TagDataEditor : AppCompatActivity() {
     private var txtLevelSSBU: EditText? = null
     private var txtGiftCount: EditText? = null
     private var txtLevelCPU: EditText? = null
+    private var spnSpecialNeutralU: Spinner? = null
+    private var spnSpecialSideU: Spinner? = null
+    private var spnSpecialUpU: Spinner? = null
+    private var spnSpecialDownU: Spinner? = null
+    private var spnEffect1U: Spinner? = null
+    private var spnEffect2U: Spinner? = null
+    private var spnEffect3U: Spinner? = null
     private var txtStatAttackU: EditText? = null
     private var txtStatDefenseU: EditText? = null
     private var txtStatSpeedU: EditText? = null
@@ -1539,6 +1546,27 @@ class TagDataEditor : AppCompatActivity() {
                 statSpeed = try {
                     it.statSpeed
                 } catch (e: Exception) { 0 }
+                specialNeutral = try {
+                    it.specialNeutral
+                } catch (e: Exception) { 0 }
+                specialSide = try {
+                    it.specialSide
+                } catch (e: Exception) { 0 }
+                specialUp = try {
+                    it.specialUp
+                } catch (e: Exception) { 0 }
+                specialDown = try {
+                    it.specialDown
+                } catch (e: Exception) { 0 }
+                bonusEffect1 = try {
+                    it.bonusEffect1
+                } catch (e: Exception) { 0xFF }
+                bonusEffect2 = try {
+                    it.bonusEffect2
+                } catch (e: Exception) { 0xFF }
+                bonusEffect3 = try {
+                    it.bonusEffect3
+                } catch (e: Exception) { 0xFF }
             }
         }
         spnAppearanceU = findViewById<Spinner>(R.id.spnAppearanceU).also {
@@ -1566,9 +1594,31 @@ class TagDataEditor : AppCompatActivity() {
         }
         txtGiftCount = findViewById<EditText>(R.id.txtGiftCount).apply {
             setText(giftCount.toString())
+            isEnabled = false
         }
         txtLevelCPU = findViewById<EditText>(R.id.txtLevelCPU).apply {
             setText(levelCPU.toString())
+            isEnabled = false
+        }
+        spnSpecialNeutralU = findViewById<Spinner>(R.id.spnSpecial1U).also {
+            setListForSpinner(it, R.array.ssb_specials_values)
+        }.apply {
+            setSelection(specialNeutral)
+        }
+        spnSpecialSideU = findViewById<Spinner>(R.id.spnSpecial2U).also {
+            setListForSpinner(it, R.array.ssb_specials_values)
+        }.apply {
+            setSelection(specialSide)
+        }
+        spnSpecialUpU = findViewById<Spinner>(R.id.spnSpecial3U).also {
+            setListForSpinner(it, R.array.ssb_specials_values)
+        }.apply {
+            setSelection(specialUp)
+        }
+        spnSpecialDownU = findViewById<Spinner>(R.id.spnSpecial4U).also {
+            setListForSpinner(it, R.array.ssb_specials_values)
+        }.apply {
+            setSelection(specialDown)
         }
         txtStatAttackU = findViewById<EditText>(R.id.txtStatAttackU).apply {
             setText(statAttack.toString())
@@ -1577,13 +1627,13 @@ class TagDataEditor : AppCompatActivity() {
                 override fun onTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {
                     error = try {
                         try {
-                            appDataSSBU?.checkStat(charSequence.toString().toInt())
+                            appDataSSBU?.checkPhysicalStats(charSequence.toString().toInt())
                             null
                         } catch (e: Exception) {
-                            getString(R.string.error_min_max, -0, 2500)
+                            getString(R.string.error_min_max, -2500, 2500)
                         }
                     } catch (e: NumberFormatException) {
-                        getString(R.string.error_min_max, 0, 2500)
+                        getString(R.string.error_min_max, -2500, 2500)
                     }
                 }
 
@@ -1597,13 +1647,13 @@ class TagDataEditor : AppCompatActivity() {
                 override fun onTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {
                     error = try {
                         try {
-                            appDataSSBU?.checkStat(charSequence.toString().toInt())
+                            appDataSSBU?.checkPhysicalStats(charSequence.toString().toInt())
                             null
                         } catch (e: Exception) {
-                            getString(R.string.error_min_max, 0, 2500)
+                            getString(R.string.error_min_max, -2500, 2500)
                         }
                     } catch (e: NumberFormatException) {
-                        getString(R.string.error_min_max, 0, 2500)
+                        getString(R.string.error_min_max, -2500, 2500)
                     }
                 }
 
@@ -1612,7 +1662,37 @@ class TagDataEditor : AppCompatActivity() {
         }
         txtStatSpeedU = findViewById<EditText>(R.id.txtStatSpeedU).apply {
             setText(statSpeed.toString())
+            addTextChangedListener(object : TextWatcher {
+                override fun beforeTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {}
+                override fun onTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {
+                    error = try {
+                        try {
+                            appDataSSBU?.checkStat(charSequence.toString().toInt())
+                            null
+                        } catch (e: Exception) {
+                            getString(R.string.error_min_max, -200, 200)
+                        }
+                    } catch (e: NumberFormatException) {
+                        getString(R.string.error_min_max, -200, 200)
+                    }
+                }
+
+                override fun afterTextChanged(editable: Editable) {}
+            })
         }
+        spnEffect1U = findViewById<Spinner>(R.id.spnEffect1U).also {
+            setListForSpinner(it, R.array.ssb_bonus_effects)
+            setEffectValue(it, bonusEffect1)
+        }
+        spnEffect2U = findViewById<Spinner>(R.id.spnEffect2U).also {
+            setListForSpinner(it, R.array.ssb_bonus_effects)
+            setEffectValue(it, bonusEffect2)
+        }
+        spnEffect3U = findViewById<Spinner>(R.id.spnEffect3U).also {
+            setListForSpinner(it, R.array.ssb_bonus_effects)
+            setEffectValue(it, bonusEffect3)
+        }
+        onAppDataSSBUChecked(isAppDataInitialized)
     }
 
     private fun onAppDataChibiRoboChecked(enabled: Boolean) {
@@ -1690,10 +1770,18 @@ class TagDataEditor : AppCompatActivity() {
         spnAppearanceU?.let {
             it.isEnabled = enabled
             txtLevelSSBU?.isEnabled = enabled
-            // txtGiftCount?.isEnabled = enabled
-            txtLevelCPU?.isEnabled = enabled
+            txtGiftCount?.isEnabled = false
+            txtLevelCPU?.isEnabled = false
+            spnSpecialNeutralU?.isEnabled = false
+            spnSpecialSideU?.isEnabled = false
+            spnSpecialUpU?.isEnabled = false
+            spnSpecialDownU?.isEnabled = false
             txtStatAttackU?.isEnabled = enabled
             txtStatDefenseU?.isEnabled = enabled
+            txtStatSpeedU?.isEnabled = enabled
+            spnEffect1U?.isEnabled = enabled
+            spnEffect2U?.isEnabled = enabled
+            spnEffect3U?.isEnabled = enabled
         }
     }
 
@@ -1843,6 +1931,30 @@ class TagDataEditor : AppCompatActivity() {
                 txtStatDefenseU?.text.toString().toInt()
             } catch (e: NumberFormatException) {
                 txtStatDefenseU?.requestFocus()
+                throw e
+            }
+            this.statSpeed = try {
+                txtStatSpeedU?.text.toString().toInt()
+            } catch (e: NumberFormatException) {
+                txtStatSpeedU?.requestFocus()
+                throw e
+            }
+            this.bonusEffect1 = try {
+                getEffectValue(spnEffect1U)
+            } catch (e: NumberFormatException) {
+                spnEffect1U?.requestFocus()
+                throw e
+            }
+            this.bonusEffect2 = try {
+                getEffectValue(spnEffect2U)
+            } catch (e: NumberFormatException) {
+                spnEffect2U?.requestFocus()
+                throw e
+            }
+            this.bonusEffect3 = try {
+                getEffectValue(spnEffect3U)
+            } catch (e: NumberFormatException) {
+                spnEffect3U?.requestFocus()
                 throw e
             }
         }?.array

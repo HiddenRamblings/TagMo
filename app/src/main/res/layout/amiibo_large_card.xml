@@ -153,7 +153,10 @@
                     android:id="@+id/txtUsage"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginVertical="2dp"
+                    android:layout_marginTop="10dp"
+                    android:background="@drawable/modern_chip_background"
+                    android:lineSpacingExtra="2dp"
+                    android:padding="12dp"
                     android:textAppearance="@style/TextAppearance.TagMo.Meta"
                     tools:ignore="SmallSp"
                     android:visibility="gone"/>

@@ -19,11 +19,11 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:padding="12dp">
+        android:padding="14dp">
 
         <androidx.appcompat.widget.AppCompatImageView
-            android:layout_width="48dp"
-            android:layout_height="48dp"
+            android:layout_width="52dp"
+            android:layout_height="52dp"
             android:layout_gravity="center_vertical"
             android:layout_marginRight="12dp"
             android:layout_marginEnd="12dp"
@@ -53,6 +53,62 @@
                 android:layout_marginTop="2dp"
                 android:text="@string/amiibo_titles"
                 android:textAppearance="@style/TextAppearance.TagMo.Meta" />
+
+            <com.google.android.flexbox.FlexboxLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                app:flexWrap="wrap">
+
+                <TextView
+                    android:id="@+id/platform3DS"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="6dp"
+                    android:layout_marginEnd="6dp"
+                    android:layout_marginBottom="4dp"
+                    android:background="@drawable/modern_chip_background"
+                    android:paddingHorizontal="9dp"
+                    android:paddingVertical="4dp"
+                    android:text="@string/platform_3ds"
+                    android:textAppearance="@style/TextAppearance.TagMo.Meta" />
+
+                <TextView
+                    android:id="@+id/platformWiiU"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="6dp"
+                    android:layout_marginEnd="6dp"
+                    android:layout_marginBottom="4dp"
+                    android:background="@drawable/modern_chip_background"
+                    android:paddingHorizontal="9dp"
+                    android:paddingVertical="4dp"
+                    android:text="@string/platform_wiiu"
+                    android:textAppearance="@style/TextAppearance.TagMo.Meta" />
+
+                <TextView
+                    android:id="@+id/platformSwitch"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="6dp"
+                    android:layout_marginEnd="6dp"
+                    android:layout_marginBottom="4dp"
+                    android:background="@drawable/modern_chip_background"
+                    android:paddingHorizontal="9dp"
+                    android:paddingVertical="4dp"
+                    android:text="@string/platform_switch"
+                    android:textAppearance="@style/TextAppearance.TagMo.Meta" />
+            </com.google.android.flexbox.FlexboxLayout>
         </LinearLayout>
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_gravity="center_vertical"
+            android:layout_marginLeft="8dp"
+            android:layout_marginStart="8dp"
+            android:contentDescription="@string/imageview_toggle"
+            android:tint="@color/ui_meta_text"
+            app:srcCompat="@drawable/ic_expand_more_24dp" />
     </LinearLayout>
 </com.google.android.material.card.MaterialCardView>

@@ -6,11 +6,13 @@ import android.view.ViewGroup
 import android.widget.Filter
 import android.widget.Filterable
 import android.widget.TextView
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import com.hiddenramblings.tagmo.BrowserSettings
 import com.hiddenramblings.tagmo.BrowserSettings.BrowserSettingsListener
 import com.hiddenramblings.tagmo.R
 import com.hiddenramblings.tagmo.amiibo.games.GameTitles
+import com.hiddenramblings.tagmo.amiibo.games.GamesManager.GamePlatform
 import me.zhanghai.android.fastscroll.PopupTextProvider
 import java.util.Locale
 
@@ -117,6 +119,9 @@ class GameTitlesAdapter(
     inner class GameTitleViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         private val txtName: TextView = itemView.findViewById(R.id.txtName)
         private val txtCompatible: TextView = itemView.findViewById(R.id.txtCompatible)
+        private val platform3DS: TextView = itemView.findViewById(R.id.platform3DS)
+        private val platformWiiU: TextView = itemView.findViewById(R.id.platformWiiU)
+        private val platformSwitch: TextView = itemView.findViewById(R.id.platformSwitch)
 
         fun bind(gameTitle: GameTitles?) {
             txtName.text = gameTitle?.name ?: ""
@@ -126,6 +131,11 @@ class GameTitlesAdapter(
             txtCompatible.text = itemView.context.resources.getQuantityString(
                 R.plurals.compatible_amiibo_count, count, count
             )
+            val platforms = settings.gamesManager?.getGameCompatibilityPlatforms(gameTitle?.name)
+                ?: emptySet()
+            platform3DS.isVisible = platforms.contains(GamePlatform.THREE_DS)
+            platformWiiU.isVisible = platforms.contains(GamePlatform.WII_U)
+            platformSwitch.isVisible = platforms.contains(GamePlatform.SWITCH)
         }
     }
 

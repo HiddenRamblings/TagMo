@@ -1795,7 +1795,13 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                         it.query = query
                         it.notifyChanges()
                     }
-                    if (query.isEmpty()) pagerAdapter.browser.setAmiiboStats()
+                    if (query.isEmpty()) {
+                        if (pagerAdapter.browser.isGameTitlesVisible()) {
+                            pagerAdapter.browser.setGameTitlesVisibility(true)
+                        } else {
+                            pagerAdapter.browser.setAmiiboStats()
+                        }
+                    }
                     return true
                 }
             })
@@ -2281,7 +2287,11 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                 it.setFilter(filter, "")
                 it.notifyChanges()
             }
-            pagerAdapter.browser.setAmiiboStats()
+            if (filter == FILTER.GAME_TITLES) {
+                showGameTitlesPage()
+            } else {
+                pagerAdapter.browser.setAmiiboStats()
+            }
         }
     }
 

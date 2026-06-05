@@ -25,38 +25,54 @@ class GamesManager {
         val usage = StringBuilder()
         if (prefs.showCompat3DS()) {
             val amiibo3DS = games3DS[amiiboId]
-            if (amiibo3DS?.stringList?.isNotBlank() == true) {
-                usage.append(TagMo.appContext.getString(R.string.games_ds))
-                usage.append(Debug.separator).append(Debug.separator)
-                usage.append(amiibo3DS.stringList)
-            } else {
-                usage.append(TagMo.appContext.getString(R.string.no_games_ds))
-            }
-            usage.append(Debug.separator).append(Debug.separator)
+            appendCompatibilitySection(
+                usage,
+                TagMo.appContext.getString(R.string.games_ds),
+                TagMo.appContext.getString(R.string.no_games_ds),
+                amiibo3DS?.stringList
+            )
         }
         if (prefs.showCompatWiiU()) {
             val amiiboWiiU = gamesWiiU[amiiboId]
-            if (amiiboWiiU?.stringList?.isNotBlank() == true) {
-                usage.append(TagMo.appContext.getString(R.string.games_wiiu))
-                usage.append(Debug.separator).append(Debug.separator)
-                usage.append(amiiboWiiU.stringList)
-            } else {
-                usage.append(TagMo.appContext.getString(R.string.no_games_wiiu))
-            }
-            usage.append(Debug.separator).append(Debug.separator)
+            appendCompatibilitySection(
+                usage,
+                TagMo.appContext.getString(R.string.games_wiiu),
+                TagMo.appContext.getString(R.string.no_games_wiiu),
+                amiiboWiiU?.stringList
+            )
         }
         if (prefs.showCompatSwitch()) {
             val amiiboSwitch = gamesSwitch[amiiboId]
-            if (amiiboSwitch?.stringList?.isNotBlank() == true) {
-                usage.append(TagMo.appContext.getString(R.string.games_nx))
-                usage.append(Debug.separator).append(Debug.separator)
-                usage.append(amiiboSwitch.stringList)
-            } else {
-                usage.append(TagMo.appContext.getString(R.string.no_games_nx))
-            }
-            usage.append(Debug.separator).append(Debug.separator)
+            appendCompatibilitySection(
+                usage,
+                TagMo.appContext.getString(R.string.games_nx),
+                TagMo.appContext.getString(R.string.no_games_nx),
+                amiiboSwitch?.stringList
+            )
         }
         return usage.toString()
+    }
+
+    private fun appendCompatibilitySection(
+        usage: StringBuilder,
+        title: String,
+        emptyTitle: String,
+        gamesList: String?
+    ) {
+        if (usage.isNotEmpty()) usage.append(Debug.separator).append(Debug.separator)
+        val games = gamesList
+            ?.split(Debug.separator)
+            ?.map { it.trim() }
+            ?.filter { it.isNotEmpty() }
+            ?: emptyList()
+        if (games.isEmpty()) {
+            usage.append(emptyTitle)
+            return
+        }
+        usage.append(title)
+        games.forEach { game ->
+            usage.append(Debug.separator).append("- ").append(game)
+        }
     }
 
     val gameTitles: Collection<GameTitles>
@@ -64,6 +80,15 @@ class GamesManager {
 
     fun getCompatibleAmiiboCount(manager: AmiiboManager, name: String?): Int {
         return getGameAmiiboIds(manager, name).size
+    }
+
+    fun getGameCompatibilityPlatforms(name: String?): Set<GamePlatform> {
+        if (name.isNullOrBlank()) return emptySet()
+        val platforms = linkedSetOf<GamePlatform>()
+        if (games3DS.values.any { it.hasUsage(name) }) platforms.add(GamePlatform.THREE_DS)
+        if (gamesWiiU.values.any { it.hasUsage(name) }) platforms.add(GamePlatform.WII_U)
+        if (gamesSwitch.values.any { it.hasUsage(name) }) platforms.add(GamePlatform.SWITCH)
+        return platforms
     }
 
     fun getGameAmiiboIds(manager: AmiiboManager, name: String?): ArrayList<Long> {
@@ -211,5 +236,9 @@ class GamesManager {
             }
             return gamesManager ?: getDefaultGamesManager(context)
         }
+    }
+
+    enum class GamePlatform {
+        THREE_DS, WII_U, SWITCH
     }
 }

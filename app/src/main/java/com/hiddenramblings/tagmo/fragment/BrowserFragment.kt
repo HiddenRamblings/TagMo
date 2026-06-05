@@ -216,8 +216,10 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener, OnGameTitleClickLis
                 addBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback() {
                     override fun onStateChanged(bottomSheet: View, newState: Int) {
                         if (newState == BottomSheetBehavior.STATE_COLLAPSED) {
+                            setBottomDrawerContentVisible(false)
                             toggle.setImageResource(R.drawable.ic_expand_less_white_24dp)
                         } else if (newState == BottomSheetBehavior.STATE_EXPANDED) {
+                            setBottomDrawerContentVisible(true)
                             setFolderText(settings)
                             setStorageButtons()
                             toggle.setImageResource(R.drawable.ic_expand_more_white_24dp)
@@ -235,6 +237,7 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener, OnGameTitleClickLis
                     }
                 }
             }
+            setBottomDrawerContentVisible(false)
 
             view.findViewById<View>(R.id.select_zip_file).setOnClickListener {
                 onSelectArchiveFile.launch(arrayOf(getString(R.string.mimetype_zip)))
@@ -439,6 +442,11 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener, OnGameTitleClickLis
         browserActivity?.let { activity ->
             val switchStorageRoot = requireView().findViewById<AppCompatButton>(R.id.switch_storage_root)
             val switchStorageType = requireView().findViewById<AppCompatButton>(R.id.switch_storage_type)
+            if (bottomSheet?.state != BottomSheetBehavior.STATE_EXPANDED) {
+                switchStorageRoot?.isGone = true
+                switchStorageType?.isGone = true
+                return
+            }
             if (prefs.isDocumentStorage) {
                 switchStorageRoot?.let { button ->
                     button.isVisible = true
@@ -517,6 +525,23 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener, OnGameTitleClickLis
         }
     }
 
+    private fun setBottomDrawerContentVisible(isVisible: Boolean) {
+        view?.let { contentView ->
+            arrayOf(
+                R.id.switch_storage_root,
+                R.id.switch_storage_type,
+                R.id.select_zip_file,
+                R.id.stats_heading,
+                R.id.stats_character,
+                R.id.stats_amiibo_type,
+                R.id.stats_amiibo_titles,
+                R.id.folders_list
+            ).forEach { id ->
+                contentView.findViewById<View>(id)?.isVisible = isVisible
+            }
+        }
+    }
+
     fun setFoomiiboVisibility(isActive: Boolean) {
         browserWrapper?.isVisible = !isActive
         foomiiboContent?.isVisible = isActive
@@ -530,6 +555,10 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener, OnGameTitleClickLis
         if (isActive) {
             (gameTitlesContent?.adapter as? GameTitlesAdapter)?.refresh()
         }
+    }
+
+    fun isGameTitlesVisible(): Boolean {
+        return gameTitlesContent?.isVisible == true
     }
 
     fun deleteFoomiiboFile(tagData: ByteArray?) {

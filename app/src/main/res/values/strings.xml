@@ -121,6 +121,9 @@
     <string name="games_ds">3DS Compatibility</string>
     <string name="games_wiiu">WiiU Compatibility</string>
     <string name="games_nx">Switch Compatibility</string>
+    <string name="platform_3ds">3DS</string>
+    <string name="platform_wiiu">Wii U</string>
+    <string name="platform_switch">Switch</string>
     <string name="no_games_ds">No 3DS compatibility</string>
     <string name="no_games_wiiu">No WiiU compatibility</string>
     <string name="no_games_nx">No Switch compatibility</string>

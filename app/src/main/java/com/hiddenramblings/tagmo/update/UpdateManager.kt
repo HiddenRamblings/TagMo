@@ -58,8 +58,12 @@ class UpdateManager internal constructor(activity: BrowserActivity) {
     private var appUpdateType = AppUpdateType.IMMEDIATE
     private val isPlayUpdateSource get() = browserActivity.isInstalledFromGooglePlay()
     private val updateInstallListener = InstallStateUpdatedListener { state ->
-        if (state.installStatus() == InstallStatus.DOWNLOADED) {
-            appUpdateManager?.completeUpdate()
+        when (state.installStatus()) {
+            InstallStatus.DOWNLOADED -> {
+                setUpdateAvailable(false)
+                appUpdateManager?.completeUpdate()
+            }
+            InstallStatus.INSTALLED -> setUpdateAvailable(false)
         }
     }
 
@@ -99,14 +103,11 @@ class UpdateManager internal constructor(activity: BrowserActivity) {
                 appUpdateInfo.isUpdateTypeAllowed(AppUpdateType.FLEXIBLE) -> AppUpdateType.FLEXIBLE
                 else -> AppUpdateType.IMMEDIATE
             }
-            isUpdateAvailable = (appUpdateInfo.updateAvailability()
+            val isAvailable = (appUpdateInfo.updateAvailability()
                     == UpdateAvailability.UPDATE_AVAILABLE
                     && (appUpdateInfo.isUpdateTypeAllowed(AppUpdateType.IMMEDIATE)
                     || appUpdateInfo.isUpdateTypeAllowed(AppUpdateType.FLEXIBLE)))
-            if (isUpdateAvailable) {
-                appUpdate = appUpdateInfo
-                updateListener?.onUpdateFound()
-            }
+            setUpdateAvailable(isAvailable, appUpdateInfo = appUpdateInfo)
         }
     }
 
@@ -231,16 +232,24 @@ class UpdateManager internal constructor(activity: BrowserActivity) {
                 .take(7)
             val assets = jsonObject["assets"] as JSONArray
             val asset = getUpdateAsset(assets)
-            isUpdateAvailable = lastCommit.isNotEmpty()
+            val isAvailable = lastCommit.isNotEmpty()
                     && !BuildConfig.COMMIT.startsWith(lastCommit)
                     && null != asset
-            if (isUpdateAvailable && null != asset) {
-                updateUrl = asset.optString("browser_download_url")
-                updateListener?.onUpdateFound()
-            }
+            setUpdateAvailable(isAvailable, updateUrl = asset?.optString("browser_download_url"))
         } catch (e: JSONException) {
             Debug.warn(e)
         }
+    }
+
+    private fun setUpdateAvailable(
+        isAvailable: Boolean,
+        updateUrl: String? = null,
+        appUpdateInfo: AppUpdateInfo? = null
+    ) {
+        isUpdateAvailable = isAvailable
+        this.updateUrl = updateUrl?.takeIf { isAvailable }
+        appUpdate = appUpdateInfo?.takeIf { isAvailable }
+        updateListener?.onUpdateStatusChanged(isUpdateAvailable)
     }
 
     private fun getUpdateAsset(assets: JSONArray): JSONObject? {
@@ -299,10 +308,11 @@ class UpdateManager internal constructor(activity: BrowserActivity) {
 
     fun setUpdateListener(listener: UpdateListener?) {
         updateListener = listener
+        listener?.onUpdateStatusChanged(isUpdateAvailable)
     }
 
     interface UpdateListener {
-        fun onUpdateFound()
+        fun onUpdateStatusChanged(hasUpdate: Boolean)
     }
 
     companion object {

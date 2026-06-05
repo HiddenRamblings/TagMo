@@ -213,7 +213,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
             updateManager = UpdateManager(this)
             settings?.lastUpdatedGit = System.currentTimeMillis()
             updateManager?.setUpdateListener(object : UpdateManager.UpdateListener {
-                override fun onUpdateFound() {
+                override fun onUpdateStatusChanged(hasUpdate: Boolean) {
                     if (TagMo.isWearable) onCreateWearOptionsMenu() else invalidateOptionsMenu()
                 }
             })
@@ -2966,6 +2966,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
 
     override fun onStart() {
         super.onStart()
+        if (!TagMo.isWearable) updateManager?.refreshUpdateStatus()
         onBackPressedDispatcher.addCallback(object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
                 if (TagMo.isWearable) {

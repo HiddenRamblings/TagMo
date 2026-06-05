@@ -122,6 +122,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
     private var ignoreTagId = false
     private var skipLockInfo = false
     private var updateManager: UpdateManager? = null
+    private var hasStartedUpdateCheck = false
     private var fragmentSettings: SettingsFragment? = null
     private var browserSheet: BottomSheetBehavior<View>? = null
     var reloadTabCollection = false
@@ -213,7 +214,11 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
             updateManager = UpdateManager(this)
             settings?.lastUpdatedGit = System.currentTimeMillis()
             updateManager?.setUpdateListener(object : UpdateManager.UpdateListener {
-                override fun onUpdateStatusChanged(hasUpdate: Boolean) {
+                override fun onUpdateFound() {
+                    if (TagMo.isWearable) onCreateWearOptionsMenu() else invalidateOptionsMenu()
+                }
+
+                override fun onUpdateCleared() {
                     if (TagMo.isWearable) onCreateWearOptionsMenu() else invalidateOptionsMenu()
                 }
             })
@@ -2964,9 +2969,18 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
         tagScanner.onNewIntent(this@BrowserActivity, intent)
     }
 
+    override fun onResume() {
+        super.onResume()
+        updateManager?.resumePlayUpdateIfNeeded()
+    }
+
     override fun onStart() {
         super.onStart()
-        if (!TagMo.isWearable) updateManager?.refreshUpdateStatus()
+        if (hasStartedUpdateCheck) {
+            updateManager?.refreshUpdateStatus()
+        } else {
+            hasStartedUpdateCheck = true
+        }
         onBackPressedDispatcher.addCallback(object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
                 if (TagMo.isWearable) {

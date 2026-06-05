@@ -11,6 +11,7 @@ import android.app.SearchManager
 import android.content.ActivityNotFoundException
 import android.content.ClipData
 import android.content.ClipboardManager
+import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.ActivityInfo
@@ -379,6 +380,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
 
         if (TagMo.isWearable) {
             onCreateWearOptionsMenu()
+            onCreateWearNavigation()
         } else {
             prefsDrawer = findViewById(R.id.drawer_layout)
             val settingsBanner = findViewById<TextView>(R.id.donation_banner)
@@ -1656,6 +1658,87 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
         onRecursiveFilesChanged()
     }
 
+    private fun onCreateWearNavigation() {
+        val navigationId = resources.getIdentifier("top_navigation_drawer", "id", packageName)
+        val actionId = resources.getIdentifier("bottom_action_drawer", "id", packageName)
+        if (navigationId == 0 || actionId == 0) return
+        try {
+            val adapter = Class.forName("com.hiddenramblings.tagmo.WearableAdapter")
+                .getConstructor(Context::class.java)
+                .newInstance(this)
+            findViewById<View>(navigationId)?.let { drawer ->
+                val drawerClass = Class.forName(
+                    "androidx.wear.widget.drawer.WearableNavigationDrawerView"
+                )
+                val adapterClass = Class.forName(
+                    "androidx.wear.widget.drawer.WearableNavigationDrawerView\$WearableNavigationDrawerAdapter"
+                )
+                val listenerClass = Class.forName(
+                    "androidx.wear.widget.drawer.WearableNavigationDrawerView\$OnItemSelectedListener"
+                )
+                drawerClass.getMethod("setAdapter", adapterClass).invoke(drawer, adapter)
+                val listener = java.lang.reflect.Proxy.newProxyInstance(
+                    listenerClass.classLoader, arrayOf(listenerClass)
+                ) { _, _, args ->
+                    onWearNavigationSelected(adapter, args?.firstOrNull() as? Int ?: 0)
+                    null
+                }
+                drawerClass.getMethod("addOnItemSelectedListener", listenerClass)
+                    .invoke(drawer, listener)
+            }
+            findViewById<View>(actionId)?.let { drawer ->
+                val actionDrawerClass = Class.forName("androidx.wear.widget.drawer.WearableActionDrawerView")
+                val wearMenu = actionDrawerClass.getMethod("getMenu").invoke(drawer) as? Menu
+                wearMenu?.let {
+                    MenuCompat.setGroupDividerEnabled(it, true)
+                    setOptionalIconsVisible(it)
+                    bindBrowserMenuItems(it)
+                    it.findItem(R.id.search)?.isVisible = false
+                    it.findItem(R.id.install_update)?.isVisible = false
+                    onCreateWearOptionsMenu()
+                }
+                actionDrawerClass.getMethod(
+                        "setOnMenuItemClickListener",
+                        MenuItem.OnMenuItemClickListener::class.java
+                    ).invoke(drawer, MenuItem.OnMenuItemClickListener { item ->
+                        onMenuItemClicked(item)
+                    })
+            }
+        } catch (e: Exception) {
+            Debug.warn(e)
+        }
+    }
+
+    private fun onWearNavigationSelected(adapter: Any, position: Int) {
+        val action = try {
+            adapter.javaClass.getMethod("getItemAction", Int::class.javaPrimitiveType)
+                .invoke(adapter, position) as? Int
+        } catch (e: Exception) {
+            Debug.warn(e)
+            null
+        }
+        when (action) {
+            0 -> showBrowserPage()
+            1 -> showGameTitlesPage()
+            2 -> {
+                if (viewPager.currentItem != 0) viewPager.setCurrentItem(0, false)
+                pagerAdapter.browser.setFoomiiboVisibility(true)
+            }
+            3 -> {
+                if (viewPager.currentItem != 1) viewPager.setCurrentItem(1, false)
+            }
+            4 -> {
+                if (viewPager.currentItem != 2) viewPager.setCurrentItem(2, false)
+            }
+            5 -> {
+                pagerAdapter.gattSlots.setConnectionMode(null)
+                val index = if (prefs.eliteEnabled()) 3 else 2
+                if (viewPager.currentItem != index) viewPager.setCurrentItem(index, false)
+            }
+            6 -> onShowSettingsFragment()
+        }
+    }
+
     @SuppressLint("RestrictedApi")
     private fun setOptionalIconsVisible(menu: Menu) {
         if (menu is MenuBuilder) menu.setOptionalIconsVisible(true)
@@ -1668,22 +1751,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
         setOptionalIconsVisible(menu)
         val menuSearch = menu.findItem(R.id.search)
         val menuUpdate = menu.findItem(R.id.install_update)
-        menuSortId = menu.findItem(R.id.sort_id)
-        menuSortName = menu.findItem(R.id.sort_name)
-        menuSortCharacter = menu.findItem(R.id.sort_character)
-        menuSortGameSeries = menu.findItem(R.id.sort_game_series)
-        menuSortAmiiboSeries = menu.findItem(R.id.sort_amiibo_series)
-        menuSortAmiiboType = menu.findItem(R.id.sort_amiibo_type)
-        menuSortFilePath = menu.findItem(R.id.sort_file_path)
-        menuFilterGameSeries = menu.findItem(R.id.filter_game_series)
-        menuFilterCharacter = menu.findItem(R.id.filter_character)
-        menuFilterAmiiboSeries = menu.findItem(R.id.filter_amiibo_series)
-        menuFilterAmiiboType = menu.findItem(R.id.filter_amiibo_type)
-        menuFilterGameTitles = menu.findItem(R.id.filter_game_titles)
-        menuViewCompact = menu.findItem(R.id.view_compact)
-        menuViewLarge = menu.findItem(R.id.view_large)
-        menuViewImage = menu.findItem(R.id.view_image)
-        menuRecursiveFiles = menu.findItem(R.id.recursive)
+        bindBrowserMenuItems(menu)
         if (null == settings) return false
         onSortChanged()
         onViewChanged()
@@ -1740,6 +1808,25 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
             }
         }
         return super.onCreateOptionsMenu(menu)
+    }
+
+    private fun bindBrowserMenuItems(menu: Menu) {
+        menuSortId = menu.findItem(R.id.sort_id)
+        menuSortName = menu.findItem(R.id.sort_name)
+        menuSortCharacter = menu.findItem(R.id.sort_character)
+        menuSortGameSeries = menu.findItem(R.id.sort_game_series)
+        menuSortAmiiboSeries = menu.findItem(R.id.sort_amiibo_series)
+        menuSortAmiiboType = menu.findItem(R.id.sort_amiibo_type)
+        menuSortFilePath = menu.findItem(R.id.sort_file_path)
+        menuFilterGameSeries = menu.findItem(R.id.filter_game_series)
+        menuFilterCharacter = menu.findItem(R.id.filter_character)
+        menuFilterAmiiboSeries = menu.findItem(R.id.filter_amiibo_series)
+        menuFilterAmiiboType = menu.findItem(R.id.filter_amiibo_type)
+        menuFilterGameTitles = menu.findItem(R.id.filter_game_titles)
+        menuViewCompact = menu.findItem(R.id.view_compact)
+        menuViewLarge = menu.findItem(R.id.view_large)
+        menuViewImage = menu.findItem(R.id.view_image)
+        menuRecursiveFiles = menu.findItem(R.id.recursive)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {

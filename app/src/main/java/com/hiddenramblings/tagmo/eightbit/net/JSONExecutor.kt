@@ -32,6 +32,9 @@ class JSONExecutor(activity: Activity, server: String, path: String? = null) {
 
     var jsonListener: ResultListener? = null
     var dbListener: DatabaseListener? = null
+    private var hasPendingResult = false
+    private var pendingResult: String? = null
+    private var pendingException: Exception? = null
 
     init {
         SecurityHandler(activity, object : SecurityHandler.ProviderInstallListener {
@@ -49,7 +52,7 @@ class JSONExecutor(activity: Activity, server: String, path: String? = null) {
                 )
                 if (activity is BrowserActivity)
                     CoroutineScope(Dispatchers.Main).launch { activity.settings?.notifyChanges() }
-                jsonListener?.onResults(null) ?: dbListener?.onResults(null)
+                onResults(null)
             }
         })
     }
@@ -73,7 +76,7 @@ class JSONExecutor(activity: Activity, server: String, path: String? = null) {
             val url = path?.let { "$server/$path" } ?: server
             try {
                 val result = URL(url).readText()
-                dbListener?.onResults(result) ?: jsonListener?.onResults(result)
+                onResults(result)
                 return@launch
             } catch (fnf: FileNotFoundException) {
                 Debug.warn(fnf)
@@ -110,18 +113,39 @@ class JSONExecutor(activity: Activity, server: String, path: String? = null) {
                         var inputStr: String?
                         while (null != streamReader.readLine().also { inputStr = it })
                             responseStrBuilder.append(inputStr)
-                        dbListener?.onResults(
-                            responseStrBuilder.toString()
-                        ) ?: jsonListener?.onResults(
-                            responseStrBuilder.toString()
-                        )
+                        onResults(responseStrBuilder.toString())
                         conn.disconnect()
                     }
                 }
             } catch (e: Exception) {
                 Debug.warn(e)
-                dbListener?.onException(e) ?: jsonListener?.onException(e)
+                onException(e)
             }
+        }
+    }
+
+    private fun onResults(result: String?) {
+        dbListener?.onResults(result) ?: jsonListener?.onResults(result) ?: run {
+            pendingResult = result
+            hasPendingResult = true
+        }
+    }
+
+    private fun onException(e: Exception) {
+        dbListener?.onException(e) ?: jsonListener?.onException(e) ?: run {
+            pendingException = e
+        }
+    }
+
+    private fun dispatchPending() {
+        if (hasPendingResult) {
+            hasPendingResult = false
+            onResults(pendingResult)
+            pendingResult = null
+        }
+        pendingException?.let {
+            pendingException = null
+            onException(it)
         }
     }
 
@@ -140,6 +164,7 @@ class JSONExecutor(activity: Activity, server: String, path: String? = null) {
 
     fun setResultListener(listener: ResultListener?) {
         jsonListener = listener
+        dispatchPending()
     }
 
     interface DatabaseListener {
@@ -149,6 +174,7 @@ class JSONExecutor(activity: Activity, server: String, path: String? = null) {
 
     fun setDatabaseListener(listener: DatabaseListener?) {
         dbListener = listener
+        dispatchPending()
     }
 
     companion object {

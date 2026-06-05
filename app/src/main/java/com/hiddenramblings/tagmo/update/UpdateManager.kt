@@ -19,6 +19,8 @@ import com.google.android.play.core.appupdate.AppUpdateInfo
 import com.google.android.play.core.appupdate.AppUpdateManager
 import com.google.android.play.core.appupdate.AppUpdateManagerFactory
 import com.google.android.play.core.appupdate.AppUpdateOptions
+import com.google.android.play.core.install.InstallStateUpdatedListener
+import com.google.android.play.core.install.model.InstallStatus
 import com.google.android.play.core.install.model.AppUpdateType
 import com.google.android.play.core.install.model.UpdateAvailability
 import com.hiddenramblings.tagmo.BrowserActivity
@@ -53,9 +55,16 @@ class UpdateManager internal constructor(activity: BrowserActivity) {
 
     private var updateUrl: String? = null
     private var appUpdate: AppUpdateInfo? = null
+    private var appUpdateType = AppUpdateType.IMMEDIATE
+    private val isPlayUpdateSource get() = browserActivity.isInstalledFromGooglePlay()
+    private val updateInstallListener = InstallStateUpdatedListener { state ->
+        if (state.installStatus() == InstallStatus.DOWNLOADED) {
+            appUpdateManager?.completeUpdate()
+        }
+    }
 
     init {
-        if (BuildConfig.GOOGLE_PLAY) {
+        if (isPlayUpdateSource) {
             configurePlay()
         } else {
             if (Version.isLollipop) {
@@ -75,17 +84,25 @@ class UpdateManager internal constructor(activity: BrowserActivity) {
     }
 
     fun refreshUpdateStatus() {
-        if (BuildConfig.GOOGLE_PLAY) configurePlay() else configureGit()
+        if (isPlayUpdateSource) configurePlay() else configureGit()
     }
 
     private fun configurePlay() {
-        if (null == appUpdateManager)
+        if (null == appUpdateManager) {
             appUpdateManager = AppUpdateManagerFactory.create(browserActivity)
+            appUpdateManager?.registerListener(updateInstallListener)
+        }
         val appUpdateInfoTask = appUpdateManager?.appUpdateInfo
         appUpdateInfoTask?.addOnSuccessListener { appUpdateInfo: AppUpdateInfo ->
+            appUpdateType = when {
+                appUpdateInfo.isUpdateTypeAllowed(AppUpdateType.IMMEDIATE) -> AppUpdateType.IMMEDIATE
+                appUpdateInfo.isUpdateTypeAllowed(AppUpdateType.FLEXIBLE) -> AppUpdateType.FLEXIBLE
+                else -> AppUpdateType.IMMEDIATE
+            }
             isUpdateAvailable = (appUpdateInfo.updateAvailability()
                     == UpdateAvailability.UPDATE_AVAILABLE
-                    && appUpdateInfo.isUpdateTypeAllowed(AppUpdateType.IMMEDIATE))
+                    && (appUpdateInfo.isUpdateTypeAllowed(AppUpdateType.IMMEDIATE)
+                    || appUpdateInfo.isUpdateTypeAllowed(AppUpdateType.FLEXIBLE)))
             if (isUpdateAvailable) {
                 appUpdate = appUpdateInfo
                 updateListener?.onUpdateFound()
@@ -134,7 +151,7 @@ class UpdateManager internal constructor(activity: BrowserActivity) {
                                 val params = PackageInstaller.SessionParams(
                                     PackageInstaller.SessionParams.MODE_FULL_INSTALL
                                 )
-                                if (!BuildConfig.GOOGLE_PLAY && Version.isSnowCone) {
+                                if (!isPlayUpdateSource && Version.isSnowCone) {
                                     params.setRequireUserAction(
                                         PackageInstaller.SessionParams.USER_ACTION_NOT_REQUIRED
                                     )
@@ -209,14 +226,16 @@ class UpdateManager internal constructor(activity: BrowserActivity) {
     private fun parseUpdateJSON(result: String) {
         try {
             val jsonObject = JSONTokener(result).nextValue() as JSONObject
-            val lastCommit = (jsonObject["name"] as String).substring(
-                browserActivity.getString(R.string.tagmo).length + 1
-            ).also { if (it.length > 7) it.substring(0, 7) }
+            val lastCommit = jsonObject.optString("name")
+                .substringAfter("${browserActivity.getString(R.string.tagmo)} ")
+                .take(7)
             val assets = jsonObject["assets"] as JSONArray
-            val asset = assets[0] as JSONObject
-            isUpdateAvailable = BuildConfig.COMMIT != lastCommit
-            if (isUpdateAvailable) {
-                updateUrl = asset["browser_download_url"] as String
+            val asset = getUpdateAsset(assets)
+            isUpdateAvailable = lastCommit.isNotEmpty()
+                    && !BuildConfig.COMMIT.startsWith(lastCommit)
+                    && null != asset
+            if (isUpdateAvailable && null != asset) {
+                updateUrl = asset.optString("browser_download_url")
                 updateListener?.onUpdateFound()
             }
         } catch (e: JSONException) {
@@ -224,12 +243,26 @@ class UpdateManager internal constructor(activity: BrowserActivity) {
         }
     }
 
+    private fun getUpdateAsset(assets: JSONArray): JSONObject? {
+        var fallback: JSONObject? = null
+        for (index in 0 until assets.length()) {
+            val asset = assets.optJSONObject(index) ?: continue
+            val url = asset.optString("browser_download_url")
+            val name = asset.optString("name", url.substringAfterLast("/"))
+            if (!url.lowercase().endsWith(".apk")) continue
+            if (null == fallback) fallback = asset
+            val isWearAsset = name.lowercase().contains("wear")
+            if (TagMo.isWearable == isWearAsset) return asset
+        }
+        return fallback
+    }
+
     private fun startPlayUpdateFlow(appUpdateInfo: AppUpdateInfo?) {
         try {
             appUpdateManager?.startUpdateFlowForResult( // Pass the intent that is returned by 'getAppUpdateInfo()'.
                 appUpdateInfo!!,
                 browserActivity,
-                AppUpdateOptions.defaultOptions(AppUpdateType.IMMEDIATE),
+                AppUpdateOptions.defaultOptions(appUpdateType),
                 Random.nextInt()
             )
         } catch (ex: SendIntentException) {
@@ -242,10 +275,25 @@ class UpdateManager internal constructor(activity: BrowserActivity) {
     }
 
     fun onUpdateRequested() {
-        if (BuildConfig.GOOGLE_PLAY) {
+        if (isPlayUpdateSource) {
             appUpdate?.let { startPlayUpdateFlow(it) }
         } else {
             updateUrl?.let { requestDownload(it) }
+        }
+    }
+
+    private fun BrowserActivity.isInstalledFromGooglePlay(): Boolean {
+        return try {
+            if (Version.isRedVelvet) {
+                val installSourceInfo = packageManager.getInstallSourceInfo(packageName)
+                installSourceInfo.installingPackageName == GOOGLE_PLAY_PACKAGE
+                        || installSourceInfo.initiatingPackageName == GOOGLE_PLAY_PACKAGE
+                        || installSourceInfo.originatingPackageName == GOOGLE_PLAY_PACKAGE
+            } else @Suppress("deprecation") {
+                packageManager.getInstallerPackageName(packageName) == GOOGLE_PLAY_PACKAGE
+            }
+        } catch (_: Exception) {
+            false
         }
     }
 
@@ -262,5 +310,6 @@ class UpdateManager internal constructor(activity: BrowserActivity) {
             "https://api.github.com/repos/HiddenRamblings/TagMo/releases/tags/wearos"
         else
             "https://api.github.com/repos/HiddenRamblings/TagMo/releases/tags/master"
+        private const val GOOGLE_PLAY_PACKAGE = "com.android.vending"
     }
 }

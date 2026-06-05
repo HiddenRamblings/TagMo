@@ -13,7 +13,6 @@ import android.content.Intent
 import android.content.pm.PackageInstaller
 import android.widget.Toast
 import androidx.core.content.IntentSanitizer
-import com.hiddenramblings.tagmo.BuildConfig
 import com.hiddenramblings.tagmo.eightbit.os.Version
 import com.hiddenramblings.tagmo.parcelable
 import com.hiddenramblings.tagmo.widget.Toasty
@@ -27,7 +26,7 @@ class UpdateReceiver : BroadcastReceiver() {
         intent.setPackage(context.packageName)
         intent.flags = 0
         intent.data = null
-        if (!BuildConfig.GOOGLE_PLAY && Version.isLollipop) {
+        if (Version.isLollipop) {
             when (intent.getIntExtra(PackageInstaller.EXTRA_STATUS, -1)) {
                 PackageInstaller.STATUS_PENDING_USER_ACTION -> {
                     intent.parcelable<Intent>(Intent.EXTRA_INTENT)?.let { userIntent ->

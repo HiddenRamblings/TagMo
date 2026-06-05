@@ -195,6 +195,7 @@ open class BrowserSettings : Parcelable {
     private fun copy(): BrowserSettings {
         return BrowserSettings().also {
             it.amiiboManager = amiiboManager
+            it.gamesManager = gamesManager
             it.amiiboFiles = amiiboFiles
             it.folders = folders
             it.query = query

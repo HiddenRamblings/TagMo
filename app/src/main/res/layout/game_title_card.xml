@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView
+    style="@style/Widget.TagMo.Card.Surface"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginVertical="@dimen/card_vertical_margin"
+    android:layout_marginHorizontal="@dimen/card_horizontal_margin"
+    android:clickable="true"
+    android:focusable="true"
+    android:foreground="@drawable/card_foreground"
+    app:cardCornerRadius="@dimen/list_card_radius"
+    app:cardUseCompatPadding="false"
+    tools:ignore="SmallSp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="12dp">
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_gravity="center_vertical"
+            android:layout_marginRight="12dp"
+            android:layout_marginEnd="12dp"
+            android:background="@drawable/modern_chip_background"
+            android:contentDescription="@string/imageview_icon"
+            android:padding="10dp"
+            app:srcCompat="@drawable/ic_joystick_24dp" />
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/txtName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/amiibo_titles"
+                android:textAppearance="@style/TextAppearance.TagMo.Title" />
+
+            <TextView
+                android:id="@+id/txtCompatible"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:text="@string/amiibo_titles"
+                android:textAppearance="@style/TextAppearance.TagMo.Meta" />
+        </LinearLayout>
+    </LinearLayout>
+</com.google.android.material.card.MaterialCardView>

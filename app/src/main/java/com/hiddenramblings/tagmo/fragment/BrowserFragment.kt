@@ -50,10 +50,13 @@ import com.hiddenramblings.tagmo.adapter.BrowserAdapter
 import com.hiddenramblings.tagmo.adapter.FoldersAdapter
 import com.hiddenramblings.tagmo.adapter.FoomiiboAdapter
 import com.hiddenramblings.tagmo.adapter.FoomiiboAdapter.OnFoomiiboClickListener
+import com.hiddenramblings.tagmo.adapter.GameTitlesAdapter
+import com.hiddenramblings.tagmo.adapter.GameTitlesAdapter.OnGameTitleClickListener
 import com.hiddenramblings.tagmo.amiibo.Amiibo
 import com.hiddenramblings.tagmo.amiibo.AmiiboManager
 import com.hiddenramblings.tagmo.amiibo.Character
 import com.hiddenramblings.tagmo.amiibo.KeyManager
+import com.hiddenramblings.tagmo.amiibo.games.GameTitles
 import com.hiddenramblings.tagmo.eightbit.io.Debug
 import com.hiddenramblings.tagmo.eightbit.material.IconifiedSnackbar
 import com.hiddenramblings.tagmo.eightbit.os.Storage
@@ -75,7 +78,7 @@ val Number.toPx get() = TypedValue.applyDimension(
     TypedValue.COMPLEX_UNIT_DIP, this.toFloat(), Resources.getSystem().displayMetrics
 ).toInt()
 
-class BrowserFragment : Fragment(), OnFoomiiboClickListener {
+class BrowserFragment : Fragment(), OnFoomiiboClickListener, OnGameTitleClickListener {
     private val prefs: Preferences by lazy { Preferences(TagMo.appContext) }
     private val keyManager: KeyManager by lazy { (requireActivity() as BrowserActivity).keyManager }
 
@@ -85,6 +88,7 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
         private set
     var foomiiboContent: RecyclerView? = null
         private set
+    private var gameTitlesContent: RecyclerView? = null
     private lateinit var settings: BrowserSettings
     var bottomSheet: BottomSheetBehavior<View>? = null
         private set
@@ -185,6 +189,14 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
                 else
                     LinearLayoutManager(activity)
                 adapter = FoomiiboAdapter(settings, this@BrowserFragment).also {
+                    settings.addChangeListener(it)
+                }
+                FastScrollerBuilder(this).build()
+            }
+
+            gameTitlesContent = view.findViewById<RecyclerView>(R.id.game_titles_list).apply {
+                layoutManager = LinearLayoutManager(activity)
+                adapter = GameTitlesAdapter(settings, this@BrowserFragment).also {
                     settings.addChangeListener(it)
                 }
                 FastScrollerBuilder(this).build()
@@ -508,6 +520,16 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
     fun setFoomiiboVisibility(isActive: Boolean) {
         browserWrapper?.isVisible = !isActive
         foomiiboContent?.isVisible = isActive
+        gameTitlesContent?.isGone = true
+    }
+
+    fun setGameTitlesVisibility(isActive: Boolean) {
+        browserWrapper?.isVisible = !isActive
+        foomiiboContent?.isGone = true
+        gameTitlesContent?.isVisible = isActive
+        if (isActive) {
+            (gameTitlesContent?.adapter as? GameTitlesAdapter)?.refresh()
+        }
     }
 
     fun deleteFoomiiboFile(tagData: ByteArray?) {
@@ -631,5 +653,9 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener {
                 putLong(NFCIntent.EXTRA_AMIIBO_ID, amiibo.id)
             })
         )
+    }
+
+    override fun onGameTitleClicked(gameTitle: GameTitles) {
+        browserActivity?.selectGameTitle(gameTitle.name)
     }
 }

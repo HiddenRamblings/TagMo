@@ -175,7 +175,7 @@ class FoomiiboAdapter(
             }
             settings.query = constraint?.toString() ?: ""
             val queryText = query.lowercase(Locale.getDefault())
-            val tempList: List<Amiibo> = data.filter { settings.amiiboContainsQuery(it, queryText) }
+            val tempList = ArrayList(data.filter { settings.amiiboContainsQuery(it, queryText) })
             filterResults.count = tempList.size
             filterResults.values = tempList
             return filterResults

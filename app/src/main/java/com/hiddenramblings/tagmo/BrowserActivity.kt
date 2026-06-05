@@ -514,6 +514,11 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
             pagerAdapter.browser.setFoomiiboVisibility(true)
         }
 
+        findViewById<CardView>(R.id.menu_games).setOnClickListener {
+            closePrefsDrawer()
+            showGameTitlesPage()
+        }
+
         findViewById<CardView>(R.id.menu_elite).apply {
             setOnClickListener {
                 closePrefsDrawer()
@@ -2600,6 +2605,21 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
     fun showBrowserPage() {
         if (viewPager.currentItem != 0) viewPager.setCurrentItem(0, false)
         pagerAdapter.browser.setFoomiiboVisibility(false)
+    }
+
+    private fun showGameTitlesPage() {
+        if (viewPager.currentItem != 0) viewPager.setCurrentItem(0, false)
+        pagerAdapter.browser.setGameTitlesVisibility(true)
+    }
+
+    fun selectGameTitle(gameTitle: String) {
+        settings?.let {
+            it.setFilter(FILTER.GAME_TITLES, gameTitle)
+            it.query = ""
+            it.notifyChanges()
+        }
+        filteredCount = getFilteredCount(gameTitle, FILTER.GAME_TITLES)
+        pagerAdapter.browser.setFoomiiboVisibility(true)
     }
 
     private fun showGattPage(extras: Bundle) {

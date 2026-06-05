@@ -232,6 +232,7 @@
     <string name="donate">Donate</string>
 
     <string name="menu_amiibo">Backup Browser</string>
+    <string name="menu_games">Game Compatibility</string>
     <string name="menu_foomiibo">Foomiibo Panel</string>
     <string name="menu_elite">N2 Elite Connect</string>
     <string name="menu_gatt">Bluetooth Connect</string>
@@ -276,6 +277,10 @@
     <string name="number_character">%1$d Character(s)</string>
     <string name="number_type">%1$d amiibo Type(s)</string>
     <string name="number_titles">%1$d Enabled Game(s)</string>
+    <plurals name="compatible_amiibo_count">
+        <item quantity="one">%1$d compatible amiibo</item>
+        <item quantity="other">%1$d compatible amiibo</item>
+    </plurals>
     <string name="pref_advanced">Advanced</string>
     <string name="pref_tagmo_theme">TagMo System Theme</string>
     <string name="tagmo_theme_details">Change local theme independent of system theme settings</string>

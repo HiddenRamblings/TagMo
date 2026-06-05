@@ -57,6 +57,18 @@
             android:scrollbarSize="0dp"
             android:scrollbarStyle="outsideOverlay"
             android:visibility="invisible"/>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/game_titles_list"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:clipToPadding="false"
+            android:layout_marginTop="8dp"
+            android:paddingBottom="@dimen/browser_content_bottom_padding"
+            android:scrollbars="vertical"
+            android:scrollbarSize="0dp"
+            android:scrollbarStyle="outsideOverlay"
+            android:visibility="gone"/>
     </LinearLayout>
 
     <LinearLayout

@@ -62,6 +62,10 @@ class GamesManager {
     val gameTitles: Collection<GameTitles>
         get() = games.values
 
+    fun getCompatibleAmiiboCount(manager: AmiiboManager, name: String?): Int {
+        return getGameAmiiboIds(manager, name).size
+    }
+
     fun getGameAmiiboIds(manager: AmiiboManager, name: String?): ArrayList<Long> {
         val amiiboIds = ArrayList<Long>()
         for (amiibo in manager.amiibos.values) {
@@ -162,6 +166,18 @@ class GamesManager {
                         manager, name, game.getJSONArray("gameID")
                     )
                     if (!manager.games.containsKey(name)) manager.games[name] = gameTitles
+                }
+                val gamesSwitch2JSON = amiiboJSON.optJSONArray("gamesSwitch2")
+                if (null != gamesSwitch2JSON) {
+                    for (i in 0 until gamesSwitch2JSON.length()) {
+                        val game = gamesSwitch2JSON.getJSONObject(i)
+                        val name = game.getString("gameName")
+                        amiiboSwitch.add(name)
+                        val gameTitles = GameTitles(
+                            manager, name, game.getJSONArray("gameID")
+                        )
+                        if (!manager.games.containsKey(name)) manager.games[name] = gameTitles
+                    }
                 }
                 val gamesSwitch = GamesSwitch(manager, amiiboId, amiiboSwitch)
                 manager.gamesSwitch[amiiboId] = gamesSwitch

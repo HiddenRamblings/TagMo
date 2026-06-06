@@ -546,6 +546,9 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener, OnGameTitleClickLis
         browserWrapper?.isVisible = !isActive
         foomiiboContent?.isVisible = isActive
         gameTitlesContent?.isGone = true
+        if (isActive) {
+            (foomiiboContent?.adapter as? FoomiiboAdapter)?.refresh()
+        }
     }
 
     fun setGameTitlesVisibility(isActive: Boolean) {

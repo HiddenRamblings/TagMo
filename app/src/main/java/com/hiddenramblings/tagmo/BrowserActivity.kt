@@ -1939,6 +1939,12 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                     it.amiiboManager = amiiboManager
                     it.gamesManager = gamesManager
                     it.notifyChanges()
+                    it.getFilter(FILTER.GAME_TITLES).takeIf { gameTitle ->
+                        gameTitle.isNotEmpty()
+                    }?.let { gameTitle ->
+                        filteredCount = getFilteredCount(gameTitle, FILTER.GAME_TITLES)
+                        pagerAdapter.browser.setFoomiiboVisibility(true)
+                    }
                     pagerAdapter.browser.managerStats
                 }
             }
@@ -2306,6 +2312,10 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
         onFilterContentsChanged(FILTER.AMIIBO_SERIES)
         onFilterContentsChanged(FILTER.AMIIBO_TYPE)
         onFilterContentsChanged(FILTER.GAME_TITLES)
+        settings?.getFilter(FILTER.GAME_TITLES)?.takeIf { it.isNotEmpty() }?.let {
+            filteredCount = getFilteredCount(it, FILTER.GAME_TITLES)
+            pagerAdapter.browser.setFoomiiboVisibility(true)
+        }
     }
 
     private fun onRecursiveFilesChanged() {

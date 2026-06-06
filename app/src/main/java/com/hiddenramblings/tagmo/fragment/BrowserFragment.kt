@@ -247,11 +247,22 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener, OnGameTitleClickLis
     }
 
     fun onConfigurationChanged() {
-        if (!this::settings.isInitialized || settings.amiiboView
-            != BrowserSettings.VIEW.IMAGE.value) return
-        browserActivity?.let { activity ->
-            browserContent?.layoutManager = GridLayoutManager(activity, activity.columnCount)
-            foomiiboContent?.layoutManager = GridLayoutManager(activity, activity.columnCount)
+        bottomSheet?.let { sheet ->
+            val expanded = sheet.state == BottomSheetBehavior.STATE_EXPANDED
+            setBottomDrawerContentVisible(expanded)
+            if (expanded) setStorageButtons()
+            view?.post {
+                sheet.peekHeight = resources.getDimensionPixelSize(R.dimen.button_height_min)
+                view?.findViewById<View>(R.id.bottom_sheet)?.requestLayout()
+            }
+        }
+        if (this::settings.isInitialized && settings.amiiboView
+            == BrowserSettings.VIEW.IMAGE.value
+        ) {
+            browserActivity?.let { activity ->
+                browserContent?.layoutManager = GridLayoutManager(activity, activity.columnCount)
+                foomiiboContent?.layoutManager = GridLayoutManager(activity, activity.columnCount)
+            }
         }
     }
 

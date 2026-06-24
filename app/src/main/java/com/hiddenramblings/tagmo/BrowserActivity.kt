@@ -2737,11 +2737,25 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
     private fun showGattPage(extras: Bundle) {
         val index = if (prefs.eliteEnabled()) 3 else 2
         pagerAdapter.gattSlots.arguments = extras
-        if (viewPager.currentItem != index) {
-            viewPager.setCurrentItem(index, false)
-        } else {
+        if (viewPager.currentItem == index) {
             pagerAdapter.gattSlots.processArguments()
+            return
         }
+        // Like showElitePage: after navigating to the GATT page, trigger processArguments once the
+        // scroll completes (otherwise the amiibo passed via "Export to GATT" is ignored).
+        if (TagMo.isUserInputEnabled) {
+            setScrollListener(object : ScrollListener {
+                override fun onScrollComplete() {
+                    pagerAdapter.gattSlots.processArguments()
+                    scrollListener = null
+                }
+            })
+        } else {
+            viewPager.postDelayed({
+                pagerAdapter.gattSlots.processArguments()
+            }, TagMo.uiDelay.toLong())
+        }
+        viewPager.setCurrentItem(index, false)
     }
 
     fun showElitePage(extras: Bundle) {

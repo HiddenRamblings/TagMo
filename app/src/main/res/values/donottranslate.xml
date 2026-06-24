@@ -71,6 +71,7 @@
     <string name="device_loop" translatable="false">AmiLoop</string>
     <string name="device_pixl" translatable="false">Pixl.js</string>
     <string name="device_espruino" translatable="false">Espruino</string>
+    <string name="device_chameleon_ultra" translatable="false">Chameleon Ultra</string>
 
     <string name="mifare_classic" translatable="false">Mifare Classic</string>
     <string name="mifare_plus" translatable="false">Mifare Plus</string>

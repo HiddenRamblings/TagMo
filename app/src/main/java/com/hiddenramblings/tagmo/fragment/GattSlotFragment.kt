@@ -85,6 +85,8 @@ import com.hiddenramblings.tagmo.nfctech.TagArray
 import com.hiddenramblings.tagmo.nfctech.TagArray.toByteArray
 import com.hiddenramblings.tagmo.nfctech.TagArray.toHex
 import com.hiddenramblings.tagmo.nfctech.TagArray.withRandomSerials
+import com.hiddenramblings.tagmo.bluetooth.chameleon.ChameleonClient
+import androidx.lifecycle.lifecycleScope
 import com.hiddenramblings.tagmo.widget.Toasty
 import com.shawnlin.numberpicker.NumberPicker
 import kotlinx.coroutines.CoroutineScope
@@ -141,6 +143,9 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
     private var scanCallbackOmllbo: LeScanCallback? = null
     private var scanCallbackLegacy: LeScanCallback? = null
     private var serviceGatt: GattService? = null
+    private var chameleonClient: ChameleonClient? = null
+    private var chameleonSlotDialog: AlertDialog? = null
+    private var pendingUploadData: ByteArray? = null
     private var isServiceDiscovered = false
     private var deviceProfile: String? = null
     private var deviceAddress: String? = null
@@ -477,6 +482,25 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
                     switchDevices.isGone = true
                 }
             }
+            // The Chameleon has no GattService-style slot management: hide all the inert controls,
+            // keeping only the upload (write_slot_file) + disconnect.
+            if (deviceType == Nordic.DEVICE.CHAMELEON_ULTRA
+                && (sheet == SHEET.MENU || sheet == SHEET.AMIIBO)) {
+                createBlank?.isGone = true
+                resetDevice?.isGone = true
+                writeRandom?.isVisible = true            // "Clone with random serial" (TagMo generation)
+                eraseSlots?.isGone = true
+                writeSlots?.isGone = true               // "Device full"
+                sortModeLabel?.isGone = true
+                sortModeSpinner?.isGone = true
+                gattSlotCount.isGone = true
+                amiiboTile?.isGone = true                // "NFC Tag Name" slot navigators
+                amiiboCard?.isGone = true                // carte amiibo (ACTIVER/SUPPRIMER)
+                screenOptions?.isGone = true
+                switchMenuOptions?.isGone = true         // "N2 ELITE options" toggle
+                view?.findViewById<View>(R.id.device_portal)?.isGone = true
+                slotOptionsMenu?.isVisible = true        // conteneur du bouton d'upload
+            }
         }
     }
 
@@ -751,6 +775,7 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
                 it.startsWith("amiloop") -> Nordic.DEVICE.LOOP
                 it.startsWith("pixl.js") || it.startsWith("pixljs") || it.startsWith("pixl ") ->
                    Nordic.DEVICE.PIXL_JS
+                it.startsWith("chameleon") -> Nordic.DEVICE.CHAMELEON_ULTRA
                else -> Nordic.DEVICE.GATT
             }
         } ?: Nordic.DEVICE.GATT
@@ -964,6 +989,9 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
                     Nordic.DEVICE.PUCK -> {
                         serviceGatt?.uploadPuckAmiibo(data, gattSlotCount.value - 1)
                     }
+                    Nordic.DEVICE.CHAMELEON_ULTRA -> {
+                        uploadChameleonAmiibo(data)
+                    }
                     else -> {
 
                     }
@@ -998,6 +1026,9 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
                         }
                         Nordic.DEVICE.PUCK -> {
                             serviceGatt?.uploadPuckAmiibo(data, gattSlotCount.value - 1)
+                        }
+                        Nordic.DEVICE.CHAMELEON_ULTRA -> {
+                            uploadChameleonAmiibo(data)
                         }
                         else -> {
 
@@ -1096,6 +1127,10 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
     }
 
     private fun startGattService() {
+        if (deviceType == Nordic.DEVICE.CHAMELEON_ULTRA) {
+            connectChameleon()
+            return
+        }
         val service = Intent(requireContext(), GattService::class.java)
         requireContext().startService(service)
         requireContext().bindService(service, gattServerConn, Context.BIND_AUTO_CREATE)
@@ -1116,8 +1151,181 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
 
     fun disconnectService() {
         dismissSnackbarNotice(true)
+        chameleonSlotDialog?.dismiss()
+        chameleonSlotDialog = null
+        chameleonClient?.close()
+        chameleonClient = null
+        pendingUploadData = null
         serviceGatt?.disconnect()
         stopGattService()
+    }
+
+    /**
+     * Connexion native au ChameleonUltra via [ChameleonClient][com.hiddenramblings.tagmo.bluetooth.chameleon.ChameleonClient]
+     * (transport BLE binaire dédié, distinct du GattService texte). Réutilise le scan/sélecteur existant.
+     * Smoke test M3 inclus : getAppVersion() prouve le lien BLE et le framing.
+     */
+    @SuppressLint("MissingPermission")
+    private fun connectChameleon() {
+        val address = deviceAddress
+        val adapter = mBluetoothAdapter
+            ?: bluetoothHandler?.getBluetoothAdapter(requireContext())
+        val device = try {
+            if (address != null) adapter?.getRemoteDevice(address) else null
+        } catch (e: Exception) { Debug.warn(e); null }
+        if (device == null) {
+            Toasty(requireActivity()).Long(R.string.fail_no_device)
+            return
+        }
+        val client = ChameleonClient(requireContext().applicationContext) {
+            fragmentHandler.post { if (isFragmentVisible) onChameleonDisconnected() }
+        }
+        chameleonClient = client
+        // Lifecycle-scoped: auto-cancelled if the view is destroyed during the (up to 15s) connect,
+        // and each UI step is guarded by isAdded to avoid requireActivity()/requireView() crashes.
+        viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
+            try {
+                client.connect(device)
+                val version = client.getAppVersion()
+                withContext(Dispatchers.Main) {
+                    if (!isAdded) return@withContext
+                    dismissSnackbarNotice(true)
+                    isServiceDiscovered = true
+                    deviceType = Nordic.DEVICE.CHAMELEON_ULTRA
+                    // SHEET.MENU holds the "Upload binary to GATT device" button (write_slot_file),
+                    // the only relevant entry point for the Chameleon; onBottomSheetChanged hides the rest.
+                    onBottomSheetChanged(SHEET.MENU)
+                    requireView().findViewById<TextView>(R.id.hardware_info).text =
+                        "${deviceProfile ?: deviceType.logTag} (v$version)"
+                    // "Export to GATT" from the browser: upload the chosen amiibo directly
+                    // (slot picker only), without asking to re-select it.
+                    pendingUploadData?.let { data ->
+                        pendingUploadData = null
+                        uploadChameleonAmiibo(data)
+                    }
+                }
+            } catch (e: Exception) {
+                Debug.warn(e)
+                withContext(Dispatchers.Main) {
+                    if (!isAdded) return@withContext
+                    Toasty(requireActivity()).Short(Debug.getExceptionCause(e))
+                    onChameleonDisconnected()
+                }
+            }
+        }
+    }
+
+    private fun onChameleonDisconnected() {
+        chameleonClient?.close()
+        chameleonClient = null
+        pendingUploadData = null
+        isServiceDiscovered = false
+        deviceProfile = null
+        deviceAddress = null
+        deviceType = Nordic.DEVICE.GATT
+        onBottomSheetChanged(SHEET.LOCKED)
+        showDisconnectNotice()
+    }
+
+    /** Asks for the slot (0..7) then pushes the NTAG215 dump (540 bytes) via the uploader. */
+    private fun uploadChameleonAmiibo(tagData: ByteArray) {
+        val client = chameleonClient
+        if (null == client) {
+            processDialog?.dismiss()
+            Toasty(requireActivity()).Short(R.string.gatt_disconnect)
+            return
+        }
+        // The write_slot_file flow shows a notice BEFORE the slot is chosen: dismiss it while the
+        // user picks (otherwise a double dialog / progress without a slot).
+        processDialog?.dismiss()
+        val appContext = requireContext().applicationContext
+        val slotLabels = Array(8) { getString(R.string.chameleon_slot_label, it + 1) }
+        chameleonSlotDialog = AlertDialog.Builder(requireContext())
+            .setTitle(R.string.chameleon_slot_picker)
+            .setItems(slotLabels) { _, which ->
+                // "Clone with random serial": generated by TagMo (random UID + re-signing with the
+                // user's amiibo keys). Our code only transports the result.
+                val randomize = writeRandom?.isChecked == true
+                showProcessingNotice(NOTICE.UPLOAD)
+                viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
+                    try {
+                        val payload: ByteArray = if (randomize) {
+                            val generated = tagData.withRandomSerials(1, keyManager).firstOrNull()
+                            if (null == generated) {
+                                withContext(Dispatchers.Main) {
+                                    if (!isAdded) return@withContext
+                                    processDialog?.dismiss()
+                                    Toasty(requireActivity()).Long(getString(R.string.chameleon_keys_required))
+                                }
+                                return@launch
+                            }
+                            // withRandomSerials returns DECRYPTED data (random UID patched in): it must be
+                            // re-encrypted/re-signed for the new UID (like TagWriter), otherwise the written
+                            // image is not a valid amiibo and no reader recognizes it.
+                            keyManager.encrypt(generated.array)
+                        } else {
+                            tagData
+                        }
+                        client.uploadAmiibo(amiiboPatchTo540(payload), which) { done, total ->
+                            // onProgress is not suspend: post the UI update on the main thread.
+                            // Use the application context: the fragment may be detached.
+                            fragmentHandler.post {
+                                processDialog?.setMessage(
+                                    appContext.getString(R.string.chameleon_upload_progress, which + 1, done, total)
+                                )
+                            }
+                        }
+                        withContext(Dispatchers.Main) {
+                            if (!isAdded) return@withContext
+                            processDialog?.dismiss()
+                            Toasty(requireActivity()).Short(
+                                getString(R.string.chameleon_upload_done, which + 1)
+                            )
+                        }
+                    } catch (e: Exception) {
+                        Debug.warn(e)
+                        withContext(Dispatchers.Main) {
+                            if (!isAdded) return@withContext
+                            processDialog?.dismiss()
+                            Toasty(requireActivity()).Short(Debug.getExceptionCause(e))
+                        }
+                    }
+                }
+            }
+            .setNegativeButton(R.string.cancel, null)
+            .show()
+    }
+
+    /**
+     * Amiibo-specific patch so a Switch accepts the emulated tag: ensures the NTAG215 password page
+     * (0x85, derived from the UID), PACK (0x86 = 80 80) and AUTH0 (0x04) are present. Mirrors the
+     * chameleon-ultra-amiibo reference (and TagMo's own write path) for 532-byte dumps that lack them.
+     */
+    private fun amiiboPatchTo540(dump: ByteArray): ByteArray {
+        val base = when {
+            dump.size >= 540 -> dump.copyOf(540)   // 540/572 -> first 540
+            dump.size == 532 -> dump.copyOf(540)    // pad; PWD/PACK filled below
+            else -> return dump                     // aberrant size: let the uploader validate/normalize
+        }
+        // AUTH0 (CFG0 byte 3, page 0x83): protect pages 4+ if unset.
+        if (base[527] == 0x00.toByte() || base[527] == 0xFF.toByte()) base[527] = 0x04
+        // If PACK already set (page 0x86 = 80 80), assume the password pages are valid.
+        if (base[536] == 0x80.toByte() && base[537] == 0x80.toByte()) return base
+        val uid = byteArrayOf(base[0], base[1], base[2], base[4], base[5], base[6], base[7])
+        amiiboKeygen(uid).copyInto(base, 532)       // page 0x85: PWD
+        base[536] = 0x80.toByte(); base[537] = 0x80.toByte(); base[538] = 0x00; base[539] = 0x00 // 0x86: PACK+RFU
+        return base
+    }
+
+    /** NTAG215 amiibo password derived from the 7-byte UID (public algorithm, from AmiiManage GPL). */
+    private fun amiiboKeygen(uid: ByteArray): ByteArray {
+        val u = IntArray(uid.size) { uid[it].toInt() and 0xFF }
+        return byteArrayOf(
+            (0xAA xor (u[1] xor u[3])).toByte(),
+            (0x55 xor (u[2] xor u[4])).toByte(),
+            (0xAA xor (u[3] xor u[5])).toByte(),
+            (0x55 xor (u[4] xor u[6])).toByte(),
+        )
     }
 
     @SuppressLint("MissingPermission")
@@ -1212,11 +1420,18 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
                     if (isServiceDiscovered) {
                         try {
                             extras.getByteArray(NFCIntent.EXTRA_TAG_DATA)?.let {
-                                uploadAmiiboData(AmiiboData(it))
+                                if (deviceType == Nordic.DEVICE.CHAMELEON_ULTRA)
+                                    uploadChameleonAmiibo(it)        // direct: skip Amiibo resolution
+                                else
+                                    uploadAmiiboData(AmiiboData(it))
                             }
                         } catch (_: Exception) { }
                     } else {
-                        Toasty(requireActivity()).Long(R.string.fail_no_device)
+                        // Not connected yet (e.g. "Export to GATT" from the browser): remember the amiibo
+                        // and open device selection; the upload will start after connection
+                        // (see connectChameleon), without re-selection.
+                        pendingUploadData = extras.getByteArray(NFCIntent.EXTRA_TAG_DATA)
+                        selectBluetoothDevice()
                     }
                 }
             }

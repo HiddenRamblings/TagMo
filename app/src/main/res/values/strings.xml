@@ -377,6 +377,11 @@
     <string name="gatt_erase_confirm">Erase all slots from %1$s?</string>
     <string name="gatt_write_confirm">Write selections to %1$s?</string>
     <string name="gatt_upload">Uploading binary&#8230;</string>
+    <string name="chameleon_slot_picker">Select Chameleon slot</string>
+    <string name="chameleon_slot_label">Slot %1$d</string>
+    <string name="chameleon_upload_done">Sent to Chameleon slot %1$d</string>
+    <string name="chameleon_upload_progress">Slot %1$d — block %2$d/%3$d</string>
+    <string name="chameleon_keys_required">Load your amiibo keys in TagMo to generate a random serial</string>
     <string name="gatt_remove">Wiping slot data&#8230;</string>
     <string name="gatt_create">Creating blank tag&#8230;</string>
     <string name="gatt_format">Formatting device&#8230;</string>

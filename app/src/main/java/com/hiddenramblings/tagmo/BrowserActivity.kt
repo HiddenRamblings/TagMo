@@ -352,8 +352,9 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
             }
         })
 
+        settingsPage = findViewById(R.id.preferences)
         onLoadSettingsFragment()
-        findViewById<TextView>(R.id.build_text).apply {
+        findViewById<TextView>(R.id.build_text)?.apply {
             movementMethod = LinkMovementMethod.getInstance()
             text = TagMo.versionLabelLinked
         }
@@ -381,12 +382,11 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
             } catch (_: PackageManager.NameNotFoundException) { }
         }
 
-        onCreateMainMenuLayout()
-
         if (TagMo.isWearable) {
             onCreateWearOptionsMenu()
             onCreateWearNavigation()
         } else {
+            onCreateMainMenuLayout()
             prefsDrawer = findViewById(R.id.drawer_layout)
             val settingsBanner = findViewById<TextView>(R.id.donation_banner)
             prefsDrawer?.addDrawerListener(object : SimpleDrawerListener() {
@@ -576,7 +576,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
     fun onTabCollectionChanged() {
         showBrowserPage()
         if (Version.isTiramisu) onApplicationRecreate() else pagerAdapter.notifyDataSetChanged()
-        onCreateMainMenuLayout()
+        if (!TagMo.isWearable) onCreateMainMenuLayout()
     }
 
     private fun requestStoragePermission() {
@@ -1695,11 +1695,8 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                 val actionDrawerClass = Class.forName("androidx.wear.widget.drawer.WearableActionDrawerView")
                 val wearMenu = actionDrawerClass.getMethod("getMenu").invoke(drawer) as? Menu
                 wearMenu?.let {
-                    MenuCompat.setGroupDividerEnabled(it, true)
-                    setOptionalIconsVisible(it)
+                    addWearMenuItems(it)
                     bindBrowserMenuItems(it)
-                    it.findItem(R.id.search)?.isVisible = false
-                    it.findItem(R.id.install_update)?.isVisible = false
                     onCreateWearOptionsMenu()
                 }
                 actionDrawerClass.getMethod(
@@ -1712,6 +1709,22 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
         } catch (e: Exception) {
             Debug.warn(e)
         }
+    }
+
+    private fun addWearMenuItems(menu: Menu) {
+        menu.clear()
+        menu.add(0, R.id.refresh, 0, R.string.refresh_browser)
+            .setIcon(R.drawable.ic_refresh_24dp)
+        menu.add(0, R.id.view_compact, 0, R.string.compact)
+        menu.add(0, R.id.view_large, 0, R.string.large)
+        menu.add(0, R.id.view_image, 0, R.string.image)
+        menu.add(0, R.id.recursive, 0, R.string.recursive_folders)
+        menu.add(0, R.id.clean_duplicates, 0, R.string.clean_duplicates)
+            .setIcon(R.drawable.ic_file_copy_off_24dp)
+        menu.add(0, R.id.report_problem, 0, R.string.report_problem)
+            .setIcon(R.drawable.ic_report_required_24dp)
+        menu.add(0, R.id.send_donation, 0, R.string.send_donation)
+            .setIcon(R.drawable.ic_github_sponsor_24dp)
     }
 
     private fun onWearNavigationSelected(adapter: Any, position: Int) {
@@ -2697,6 +2710,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
     }
 
     private fun onLoadSettingsFragment() {
+        if (settingsPage == null) return
         if (null == fragmentSettings) fragmentSettings = SettingsFragment()
         fragmentSettings?.let {
             if (!it.isAdded) supportFragmentManager.beginTransaction().replace(R.id.preferences, it).commit()

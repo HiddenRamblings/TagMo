@@ -26,6 +26,19 @@
                 android:id="@+id/overlay_browser"
                 layout="@layout/overlay_browser" />
 
+            <androidx.coordinatorlayout.widget.CoordinatorLayout
+                android:id="@+id/preferences"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="?android:attr/colorBackground"
+                android:visibility="gone" />
+
+            <TextView
+                android:id="@+id/build_text"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:visibility="gone" />
+
             <com.hiddenramblings.tagmo.eightbit.widget.FABulous
                 android:id="@+id/nfc_fab"
                 android:layout_width="wrap_content"
@@ -74,6 +87,6 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:enableAutoPeek="true"
-        app:actionMenu="@menu/browser_menu" />
+        app:showOverflowInPeek="true" />
 
 </androidx.wear.widget.drawer.WearableDrawerLayout>

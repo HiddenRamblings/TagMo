@@ -97,6 +97,7 @@ import org.json.JSONObject
 import java.io.IOException
 import java.text.ParseException
 import java.util.UUID
+import kotlin.experimental.xor
 
 
 @SuppressLint("NewApi")
@@ -187,7 +188,7 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        
+
         amiiboTile = view.findViewById(R.id.active_tile_layout)
         amiiboCard = view.findViewById<CardView>(R.id.active_card_layout).apply {
             findViewById<View>(R.id.txtError)?.isGone = true
@@ -1311,24 +1312,23 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
             else -> return dump                     // aberrant size: let the uploader validate/normalize
         }
         // AUTH0 (CFG0 byte 3, page 0x83): protect pages 4+ if unset.
-        if (base[527] == 0x00.toByte() || base[527] == 0xFF.toByte()) base[527] = 0x04
+        if (base[527] == 0x00.toByte() || base[527] == 0xFF.toByte())
+            base[527] = 0x04
         // If PACK already set (page 0x86 = 80 80), assume the password pages are valid.
-        if (base[536] == 0x80.toByte() && base[537] == 0x80.toByte()) return base
-        val uid = byteArrayOf(base[0], base[1], base[2], base[4], base[5], base[6], base[7])
-        amiiboKeygen(uid).copyInto(base, 532)       // page 0x85: PWD
-        base[536] = 0x80.toByte(); base[537] = 0x80.toByte(); base[538] = 0x00; base[539] = 0x00 // 0x86: PACK+RFU
+        if (base[536] == 0x80.toByte() && base[537] == 0x80.toByte())
+            return base
+        val uid = base.copyOfRange(0, 8)
+        byteArrayOf(
+            (0xAA.toByte() xor (uid[1] xor uid[3])),
+            (0x55.toByte() xor (uid[2] xor uid[4])),
+            (0xAA.toByte() xor (uid[3] xor uid[5])),
+            (0x55.toByte() xor (uid[4] xor uid[6])),
+        ).copyInto(base, 532)       // page 0x85: PWD
+        base[536] = 0x80.toByte()
+        base[537] = 0x80.toByte()
+        base[538] = 0x00.toByte()
+        base[539] = 0x00.toByte() // 0x86: PACK+RFU
         return base
-    }
-
-    /** NTAG215 amiibo password derived from the 7-byte UID (public algorithm, from AmiiManage GPL). */
-    private fun amiiboKeygen(uid: ByteArray): ByteArray {
-        val u = IntArray(uid.size) { uid[it].toInt() and 0xFF }
-        return byteArrayOf(
-            (0xAA xor (u[1] xor u[3])).toByte(),
-            (0x55 xor (u[2] xor u[4])).toByte(),
-            (0xAA xor (u[3] xor u[5])).toByte(),
-            (0x55 xor (u[4] xor u[6])).toByte(),
-        )
     }
 
     @SuppressLint("MissingPermission")

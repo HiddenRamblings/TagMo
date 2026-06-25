@@ -2752,6 +2752,9 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
         val index = if (prefs.eliteEnabled()) 3 else 2
         pagerAdapter.gattSlots.arguments = extras
         if (viewPager.currentItem != index) {
+            viewPager.postDelayed({
+                pagerAdapter.gattSlots.processArguments()
+            }, TagMo.uiDelay.toLong())
             viewPager.setCurrentItem(index, false)
         } else {
             pagerAdapter.gattSlots.processArguments()

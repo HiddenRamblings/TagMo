@@ -167,10 +167,6 @@ dependencies {
     implementation 'io.github.vicmikhailau:MaskedEditText:5.0.1'
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.10.2'
 
-    /* JVM unit tests for the ChameleonUltra protocol/codec/uploader (pure Kotlin) */
-    testImplementation 'junit:junit:4.13.2'
-    testImplementation 'org.jetbrains.kotlinx:kotlinx-coroutines-test:1.10.2'
-
     /* Firebase */
     // implementation platform('com.google.firebase:firebase-bom:33.9.0')
     // implementation("com.google.firebase:firebase-appcheck-playintegrity")

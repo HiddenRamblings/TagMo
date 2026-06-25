@@ -44,6 +44,7 @@ import androidx.core.view.isGone
 import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -75,6 +76,7 @@ import com.hiddenramblings.tagmo.bluetooth.BluetoothHandler.BluetoothListener
 import com.hiddenramblings.tagmo.bluetooth.GattService
 import com.hiddenramblings.tagmo.bluetooth.Nordic
 import com.hiddenramblings.tagmo.bluetooth.Nordic.logTag
+import com.hiddenramblings.tagmo.bluetooth.chameleon.ChameleonClient
 import com.hiddenramblings.tagmo.eightbit.io.Debug
 import com.hiddenramblings.tagmo.eightbit.material.IconifiedSnackbar
 import com.hiddenramblings.tagmo.eightbit.os.Version
@@ -85,8 +87,6 @@ import com.hiddenramblings.tagmo.nfctech.TagArray
 import com.hiddenramblings.tagmo.nfctech.TagArray.toByteArray
 import com.hiddenramblings.tagmo.nfctech.TagArray.toHex
 import com.hiddenramblings.tagmo.nfctech.TagArray.withRandomSerials
-import com.hiddenramblings.tagmo.bluetooth.chameleon.ChameleonClient
-import androidx.lifecycle.lifecycleScope
 import com.hiddenramblings.tagmo.widget.Toasty
 import com.shawnlin.numberpicker.NumberPicker
 import kotlinx.coroutines.CoroutineScope
@@ -119,6 +119,7 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
     private lateinit var gattSlotCount: NumberPicker
     private lateinit var switchDevices: AppCompatButton
     private var screenOptions: LinearLayout? = null
+    private var devicePortal: View? = null
     private var writeSlots: AppCompatButton? = null
     private var writeRandom: SwitchCompat? = null
     private var eraseSlots: AppCompatButton? = null
@@ -241,6 +242,7 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
             }
 
             screenOptions = view.findViewById(R.id.screen_options)
+            devicePortal = view.findViewById(R.id.device_portal)
 
             val searchView = view.findViewById<SearchView>(R.id.amiibo_search)
             if (TagMo.isWearable) {
@@ -482,26 +484,30 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
                     switchDevices.isGone = true
                 }
             }
-            // The Chameleon has no GattService-style slot management: hide all the inert controls,
-            // keeping only the upload (write_slot_file) + disconnect.
-            if (deviceType == Nordic.DEVICE.CHAMELEON_ULTRA
-                && (sheet == SHEET.MENU || sheet == SHEET.AMIIBO)) {
-                createBlank?.isGone = true
-                resetDevice?.isGone = true
-                writeRandom?.isVisible = true            // "Clone with random serial" (TagMo generation)
-                eraseSlots?.isGone = true
-                writeSlots?.isGone = true               // "Device full"
-                sortModeLabel?.isGone = true
-                sortModeSpinner?.isGone = true
-                gattSlotCount.isGone = true
-                amiiboTile?.isGone = true                // "NFC Tag Name" slot navigators
-                amiiboCard?.isGone = true                // carte amiibo (ACTIVER/SUPPRIMER)
-                screenOptions?.isGone = true
-                switchMenuOptions?.isGone = true         // "N2 ELITE options" toggle
-                view?.findViewById<View>(R.id.device_portal)?.isGone = true
-                slotOptionsMenu?.isVisible = true        // conteneur du bouton d'upload
-            }
+            applyChameleonSheetState(sheet)
         }
+    }
+
+    private fun applyChameleonSheetState(sheet: SHEET) {
+        if (deviceType != Nordic.DEVICE.CHAMELEON_ULTRA
+            || (sheet != SHEET.MENU && sheet != SHEET.AMIIBO)
+        ) return
+
+        createBlank?.isGone = true
+        resetDevice?.isGone = true
+        eraseSlots?.isGone = true
+        writeSlots?.isGone = true
+        sortModeLabel?.isGone = true
+        sortModeSpinner?.isGone = true
+        gattSlotCount.isGone = true
+        amiiboTile?.isGone = true
+        amiiboCard?.isGone = true
+        screenOptions?.isGone = true
+        switchMenuOptions?.isGone = true
+        devicePortal?.isGone = true
+
+        writeRandom?.isVisible = true
+        slotOptionsMenu?.isVisible = true
     }
 
     fun setAmiiboInfoText(textView: TextView?, text: CharSequence?) {

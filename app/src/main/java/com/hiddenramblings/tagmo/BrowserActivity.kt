@@ -2748,58 +2748,47 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
         pagerAdapter.browser.setFoomiiboVisibility(true)
     }
 
+    private fun switchPages(index: Int, response: () -> Unit) {
+        if (viewPager.currentItem == index) {
+            response.invoke()
+            return
+        }
+        if (TagMo.isUserInputEnabled) {
+            setScrollListener(object : ScrollListener {
+                override fun onScrollComplete() {
+                    response.invoke()
+                    scrollListener = null
+                }
+            })
+        } else {
+            viewPager.postDelayed({
+                response.invoke()
+            }, TagMo.uiDelay.toLong())
+        }
+        val target = index.takeUnless { it == pagerAdapter.itemCount - 1 } ?: 1
+        viewPager.setCurrentItem(target, false)
+    }
+
     private fun showGattPage(extras: Bundle) {
         val index = if (prefs.eliteEnabled()) 3 else 2
         pagerAdapter.gattSlots.arguments = extras
-        if (viewPager.currentItem != index) {
-            viewPager.postDelayed({
-                pagerAdapter.gattSlots.processArguments()
-            }, TagMo.uiDelay.toLong())
-            viewPager.setCurrentItem(index, false)
-        } else {
+        switchPages(index) {
             pagerAdapter.gattSlots.processArguments()
         }
     }
 
     fun showElitePage(extras: Bundle) {
         pagerAdapter.eliteBanks.arguments = extras
-        if (viewPager.currentItem == 2) {
+        switchPages(2) {
             pagerAdapter.eliteBanks.processArguments()
-            return
         }
-        if (TagMo.isUserInputEnabled) {
-            setScrollListener(object : ScrollListener {
-                override fun onScrollComplete() {
-                    pagerAdapter.eliteBanks.processArguments()
-                    scrollListener = null
-                }
-            })
-        } else {
-            viewPager.postDelayed({
-                pagerAdapter.eliteBanks.processArguments()
-            }, TagMo.uiDelay.toLong())
-        }
-        viewPager.setCurrentItem(2, false)
+
     }
 
     fun showWebsite(address: String?) {
-        if (viewPager.currentItem == pagerAdapter.itemCount - 1) {
+        switchPages(pagerAdapter.itemCount - 1) {
             pagerAdapter.website.loadWebsite(address)
-            return
         }
-        if (TagMo.isUserInputEnabled) {
-            setScrollListener(object : ScrollListener {
-                override fun onScrollComplete() {
-                    pagerAdapter.website.loadWebsite(address)
-                    scrollListener = null
-                }
-            })
-        } else {
-            viewPager.postDelayed({
-                pagerAdapter.website.loadWebsite(address)
-            }, TagMo.uiDelay.toLong())
-        }
-        viewPager.setCurrentItem(1, false)
     }
 
     private fun keyNameMatcher(name: String): Boolean {

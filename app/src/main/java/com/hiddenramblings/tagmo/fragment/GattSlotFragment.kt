@@ -15,8 +15,6 @@ import android.content.DialogInterface
 import android.content.Intent
 import android.content.ServiceConnection
 import android.graphics.Bitmap
-import android.net.Uri
-import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.IBinder
@@ -40,6 +38,7 @@ import androidx.appcompat.widget.SearchView
 import androidx.appcompat.widget.SwitchCompat
 import androidx.appcompat.widget.Toolbar
 import androidx.cardview.widget.CardView
+import androidx.core.net.toUri
 import androidx.core.view.isGone
 import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
@@ -55,7 +54,6 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior.BottomSheetCa
 import com.google.android.material.snackbar.Snackbar
 import com.hiddenramblings.tagmo.BrowserActivity
 import com.hiddenramblings.tagmo.BrowserSettings
-import com.hiddenramblings.tagmo.BuildConfig
 import com.hiddenramblings.tagmo.ImageActivity
 import com.hiddenramblings.tagmo.NFCIntent
 import com.hiddenramblings.tagmo.Preferences
@@ -81,7 +79,6 @@ import com.hiddenramblings.tagmo.eightbit.io.Debug
 import com.hiddenramblings.tagmo.eightbit.material.IconifiedSnackbar
 import com.hiddenramblings.tagmo.eightbit.os.Version
 import com.hiddenramblings.tagmo.eightbit.request.ImageTarget
-import com.hiddenramblings.tagmo.eightbit.webkit.ChromeIntegration
 import com.hiddenramblings.tagmo.eightbit.widget.ProgressAlert
 import com.hiddenramblings.tagmo.nfctech.TagArray
 import com.hiddenramblings.tagmo.nfctech.TagArray.toByteArray
@@ -190,8 +187,7 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR2) return
-
+        
         amiiboTile = view.findViewById(R.id.active_tile_layout)
         amiiboCard = view.findViewById<CardView>(R.id.active_card_layout).apply {
             findViewById<View>(R.id.txtError)?.isGone = true
@@ -910,7 +906,7 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
         val view = this.layoutInflater.inflate(R.layout.dialog_devices, null) as LinearLayout
         view.findViewById<AppCompatButton>(R.id.shop_hardware).setOnClickListener {
             startActivity(Intent(
-                Intent.ACTION_VIEW, Uri.parse("https://www.nintendo.com/store/hardware/amiibo/")
+                Intent.ACTION_VIEW, "https://www.nintendo.com/store/hardware/amiibo/".toUri()
             ))
         }
         deviceDialog = AlertDialog.Builder(requireActivity()).setView(view).show().apply {
@@ -1201,8 +1197,9 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
                     // SHEET.MENU holds the "Upload binary to GATT device" button (write_slot_file),
                     // the only relevant entry point for the Chameleon; onBottomSheetChanged hides the rest.
                     onBottomSheetChanged(SHEET.MENU)
-                    requireView().findViewById<TextView>(R.id.hardware_info).text =
-                        "${deviceProfile ?: deviceType.logTag} (v$version)"
+                    val deviceLabel = "${deviceProfile ?: deviceType.logTag} (v$version)"
+                    requireView().findViewById<TextView>(R.id.hardware_info).text = deviceLabel
+
                     // "Export to GATT" from the browser: upload the chosen amiibo directly
                     // (slot picker only), without asking to re-select it.
                     pendingUploadData?.let { data ->

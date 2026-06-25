@@ -14,6 +14,7 @@ import com.hiddenramblings.tagmo.nfctech.TagArray.toHex
 import com.hiddenramblings.tagmo.nfctech.TagArray.toHexByteArray
 import java.io.File
 import java.text.DecimalFormat
+import kotlin.experimental.xor
 import kotlin.random.Random
 
 object Foomiibo {
@@ -28,8 +29,8 @@ object Foomiibo {
     fun generateRandomUID(): ByteArray {
         val uid = getRandomBytes(9)
         uid[0x0] = 0x04
-        uid[0x3] = (0x88 xor uid[0].toInt() xor uid[1].toInt() xor uid[2].toInt()).toByte()
-        uid[0x8] = (uid[4].toInt() xor uid[5].toInt() xor uid[6].toInt() xor uid[7].toInt()).toByte()
+        uid[0x3] = 0x88.toByte() xor uid[0] xor uid[1] xor uid[2]
+        uid[0x8] = uid[4] xor uid[5] xor uid[6] xor uid[7]
         return uid
     }
 

@@ -1432,6 +1432,8 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
                                     uploadAmiiboData(AmiiboData(it))
                             }
                         } catch (_: Exception) { }
+                    } else if (deviceType != Nordic.DEVICE.CHAMELEON_ULTRA) {
+                        Toasty(requireActivity()).Long(R.string.fail_no_device)
                     } else {
                         // Not connected yet (e.g. "Export to GATT" from the browser): remember the amiibo
                         // and open device selection; the upload will start after connection

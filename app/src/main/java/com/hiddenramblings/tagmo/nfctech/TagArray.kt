@@ -357,14 +357,30 @@ object TagArray {
         return getValidatedData(keyManager, TagReader.readTagFile(file))
     }
 
+    @JvmStatic
+    @Throws(Exception::class)
+    fun getValidatedFileList(keyManager: KeyManager, file: File): List<ByteArray> {
+        return TagReader.readTagFileList(file).map { getValidatedData(keyManager, it) }
+    }
+
     @Throws(Exception::class)
     fun getValidatedDocument(keyManager: KeyManager, fileUri: Uri): ByteArray {
         return getValidatedData(keyManager, TagReader.readTagDocument(fileUri))
     }
 
     @Throws(Exception::class)
+    fun getValidatedDocumentList(keyManager: KeyManager, fileUri: Uri): List<ByteArray> {
+        return TagReader.readTagDocumentList(fileUri).map { getValidatedData(keyManager, it) }
+    }
+
+    @Throws(Exception::class)
     fun getValidatedDocument(keyManager: KeyManager, file: DocumentFile): ByteArray {
         return getValidatedData(keyManager, TagReader.readTagDocument(file.uri))
+    }
+
+    @Throws(Exception::class)
+    fun getValidatedDocumentList(keyManager: KeyManager, file: DocumentFile): List<ByteArray> {
+        return getValidatedDocumentList(keyManager, file.uri)
     }
 
     @JvmStatic

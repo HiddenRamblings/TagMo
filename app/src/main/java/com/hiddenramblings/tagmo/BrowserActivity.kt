@@ -2081,26 +2081,31 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
         )
 
         CoroutineScope(Dispatchers.IO).launch {
+            var archiveExtracted = false
+            val shouldImportKeys = keyManager.isKeyMissing
             try {
                 Zip.extract(zipFile, folder.absolutePath) { progress ->
                     CoroutineScope(Dispatchers.Main).launch {
                         val nameProgress = "${zipFile.nameWithoutExtension} (${progress}%) "
                         processDialog.setMessage(getString(R.string.unzip_item, nameProgress))
                     }
-                    if (progress == 100) {
-                        zipFile.delete()
-                        CoroutineScope(Dispatchers.Main).launch {
-                            processDialog.dismiss()
-                        }
-                        CoroutineScope(Dispatchers.IO).launch {
-                            locateKeyFilesRecursive(folder, true)
-                        }
-                    }
                 }
-            } catch (iae: IllegalArgumentException) {
-                Debug.error(iae)
-                Toasty(this@BrowserActivity).Short(R.string.error_archive_format)
+                archiveExtracted = true
+                if (shouldImportKeys) locateKeyFilesRecursive(folder, true)
+            } catch (ex: Exception) {
+                when (ex) {
+                    is IllegalArgumentException, is IOException -> Debug.error(ex)
+                    else -> Debug.warn(ex)
+                }
+                withContext(Dispatchers.Main) {
+                    Toasty(this@BrowserActivity).Short(R.string.error_archive_format)
+                }
+            } finally {
                 if (zipFile.exists()) zipFile.delete()
+                withContext(Dispatchers.Main) {
+                    processDialog.dismiss()
+                    if (archiveExtracted && !keyManager.isKeyMissing) onKeysLoaded(true)
+                }
             }
         }
     }

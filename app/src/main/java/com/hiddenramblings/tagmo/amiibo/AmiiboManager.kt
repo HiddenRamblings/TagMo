@@ -325,7 +325,7 @@ object AmiiboManager {
         if (!files.isNullOrEmpty()) {
             coroutineScope { files.map { file -> async(Dispatchers.IO) {
                 try {
-                    TagArray.getValidatedFile(keyManager, file).also { data ->
+                    TagArray.getValidatedFileList(keyManager, file).forEach { data ->
                         amiiboFiles.add(AmiiboFile(file, Amiibo.dataToId(data), data))
                     }
                 } catch (e: Exception) {
@@ -357,7 +357,7 @@ object AmiiboManager {
             if (uris.isNullOrEmpty()) return this
             coroutineScope { uris.map { uri -> async(Dispatchers.IO) {
                 try {
-                    TagArray.getValidatedDocument(keyManager, uri).also { data ->
+                    TagArray.getValidatedDocumentList(keyManager, uri).forEach { data ->
                         DocumentFile.fromSingleUri(context, uri).also {
                             add(AmiiboFile(it, Amiibo.dataToId(data), data))
                         }

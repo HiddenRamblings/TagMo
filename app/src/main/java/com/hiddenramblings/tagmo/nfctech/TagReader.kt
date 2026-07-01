@@ -22,20 +22,40 @@ object TagReader {
 
     @Throws(Exception::class)
     private fun getTagData(path: String?, inputStream: InputStream): ByteArray {
+        return getTagDataList(path, inputStream).first()
+    }
+
+    @Throws(Exception::class)
+    private fun getTagDataList(path: String?, inputStream: InputStream): List<ByteArray> {
         return when (val length = inputStream.available()) {
             NfcByte.KEY_FILE_SIZE, NfcByte.KEY_RETAIL_SZ -> {
                 throw IOException(TagMo.appContext.getString(R.string.invalid_tag_key))
             }
-            NfcByte.TAG_FULL_SIZE -> {
-                val signed = ByteArray(NfcByte.TAG_FULL_SIZE)
-                DataInputStream(inputStream).readFully(signed)
-                Foomiibo.getDataSignature(signed)
-                signed.copyOfRange(0, NfcByte.TAG_DATA_SIZE)
-            }
-            NfcByte.TAG_DATA_SIZE, NfcByte.TAG_DATA_SIZE + 8 -> {
-                val tagData = ByteArray(NfcByte.TAG_DATA_SIZE)
-                DataInputStream(inputStream).readFully(tagData)
-                tagData
+            in 1..Int.MAX_VALUE -> {
+                val data = ByteArray(length)
+                DataInputStream(inputStream).readFully(data)
+                when {
+                    length % NfcByte.TAG_FULL_SIZE == 0 -> {
+                        data.toTagChunks(NfcByte.TAG_FULL_SIZE) { signed ->
+                            Foomiibo.getDataSignature(signed)
+                            signed.copyOfRange(0, NfcByte.TAG_DATA_SIZE)
+                        }
+                    }
+                    length > NfcByte.TAG_DATA_SIZE + 8
+                            && length % (NfcByte.TAG_DATA_SIZE + 8) == 0 -> {
+                        data.toTagChunks(NfcByte.TAG_DATA_SIZE + 8) {
+                            it.copyOfRange(0, NfcByte.TAG_DATA_SIZE)
+                        }
+                    }
+                    length == NfcByte.TAG_DATA_SIZE || length == NfcByte.TAG_DATA_SIZE + 8 -> {
+                        listOf(data.copyOfRange(0, NfcByte.TAG_DATA_SIZE))
+                    }
+                    else -> {
+                        throw IOException(TagMo.appContext.getString(
+                            R.string.invalid_file_size, path, length, NfcByte.TAG_DATA_SIZE
+                        ))
+                    }
+                }
             }
             else -> {
                 throw IOException(TagMo.appContext.getString(
@@ -45,9 +65,26 @@ object TagReader {
         }
     }
 
+    private fun ByteArray.toTagChunks(
+        size: Int, transform: (ByteArray) -> ByteArray
+    ): List<ByteArray> {
+        val tagData = arrayListOf<ByteArray>()
+        var offset = 0
+        while (offset < this.size) {
+            tagData.add(transform(this.copyOfRange(offset, offset + size)))
+            offset += size
+        }
+        return tagData
+    }
+
     @Throws(Exception::class)
     fun readTagFile(file: File?): ByteArray {
         FileInputStream(file).use { inputStream -> return getTagData(file?.path, inputStream) }
+    }
+
+    @Throws(Exception::class)
+    fun readTagFileList(file: File?): List<ByteArray> {
+        FileInputStream(file).use { inputStream -> return getTagDataList(file?.path, inputStream) }
     }
 
     @Throws(Exception::class)
@@ -55,6 +92,15 @@ object TagReader {
         return uri.let { stream ->
             TagMo.appContext.contentResolver.openInputStream(stream).use { inputStream ->
                 inputStream?.let { getTagData(stream.path, it) }
+            }
+        }
+    }
+
+    @Throws(Exception::class)
+    fun readTagDocumentList(uri: Uri): List<ByteArray> {
+        return uri.let { stream ->
+            TagMo.appContext.contentResolver.openInputStream(stream).use { inputStream ->
+                inputStream?.let { getTagDataList(stream.path, it) } ?: emptyList()
             }
         }
     }

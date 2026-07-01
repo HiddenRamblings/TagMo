@@ -18,18 +18,26 @@ object Zip {
         archiveFile: File,
         destDirectory: String,
         updateProgress: (progress: Int) -> Unit
-    ) {
-        File(destDirectory).run {
+    ): List<File> {
+        val destination = File(destDirectory).canonicalFile
+        destination.run {
             if (!exists()) mkdirs()
         }
+        val extractedFiles = arrayListOf<File>()
 
         ZipFile(archiveFile).use { zip ->
             var entryCount = 0
-            val totalEntries = zip.entries().toList().size // files to unzip
+            val totalEntries = zip.entries().toList().count { !it.isDirectory } // files to unzip
+            if (totalEntries == 0) updateProgress(100)
             zip.entries().asSequence()
                 .map {
-                    val outputFile = File(destDirectory + File.separator + it.name)
+                    val outputFile = File(destination, it.name).canonicalFile
                     ZipIO(it, outputFile)
+                }
+                .onEach {
+                    if (!it.output.path.startsWith(destination.path + File.separator)) {
+                        throw IOException("Zip entry escapes destination: ${it.entry.name}")
+                    }
                 }
                 .map {
                     it.output.parentFile?.run{
@@ -44,9 +52,11 @@ object Zip {
                             input.copyTo(output)
                         }
                     }
+                    extractedFiles.add(output)
                     entryCount++
                     updateProgress(((entryCount.toDouble() / totalEntries) * 100).toInt())
                 }
         }
+        return extractedFiles
     }
 }

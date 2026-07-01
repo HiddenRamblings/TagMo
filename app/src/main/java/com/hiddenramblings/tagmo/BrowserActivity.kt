@@ -2120,7 +2120,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
             val length = getUriFIleSize(uri)
             when {
                 length >= NfcByte.TAG_DATA_SIZE -> {
-                    val data = TagReader.readTagDocument(uri)
+                    val data = TagArray.getValidatedDocument(keyManager, uri)
                     updateAmiiboView(data, AmiiboFile(
                         uri.path?.let { File(it) }, Amiibo.dataToId(data), data
                     ))
@@ -2797,81 +2797,80 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
     }
 
     private fun keyNameMatcher(name: String): Boolean {
-        val isValid = binFileMatches(name)
-        return name.lowercase().endsWith("retail.bin") ||
-                isValid && (name.lowercase().startsWith("locked")
-                || name.lowercase().startsWith("unfixed"))
+        return binFileMatches(name)
+    }
+
+    private suspend fun finishKeySearch(isRoot: Boolean) {
+        if (!isRoot) return
+        if (keyManager.isKeyMissing) {
+            hideFakeSnackbar()
+            onShowSettingsFragment()
+        } else {
+            withContext(Dispatchers.Main) {
+                onKeysLoaded(true)
+            }
+        }
     }
 
     private suspend fun locateKeyDocumentsRecursive() = withContext(Dispatchers.IO) {
-        settings?.browserRootDocument?.let {
-            AmiiboDocument(this@BrowserActivity).listFiles(it, true)
-        }.also { uris ->
-            if (uris.isNullOrEmpty()) {
-                hideFakeSnackbar()
-                onShowSettingsFragment()
-            } else {
-                coroutineScope { uris.map { uri -> async(Dispatchers.IO) {
-                    try {
-                        contentResolver.openInputStream(uri)?.use { inputStream ->
-                            try {
-                                keyManager.evaluateKey(inputStream)
-                            } catch (_: Exception) {
-                                onShowSettingsFragment()
-                            }
-                            hideFakeSnackbar()
-                        }
-                    } catch (e: Exception) { Debug.warn(e) }
-                } }.awaitAll() }
-                if (keyManager.isKeyMissing) {
-                    onShowSettingsFragment()
-                    hideFakeSnackbar()
-                }
-            }
-        } ?: {
-            hideFakeSnackbar()
-            onShowSettingsFragment()
+        val rootDocument = settings?.browserRootDocument
+        if (rootDocument == null) {
+            finishKeySearch(true)
+            return@withContext
         }
-
+        val uris = AmiiboDocument(this@BrowserActivity).listFiles(rootDocument, true)
+        if (uris.isEmpty()) {
+            finishKeySearch(true)
+        } else {
+            coroutineScope {
+                uris.map { uri ->
+                    async(Dispatchers.IO) {
+                        try {
+                            contentResolver.openInputStream(uri)?.use { inputStream ->
+                                try { keyManager.evaluateKey(inputStream) } catch (_: Exception) { }
+                            }
+                        } catch (e: Exception) {
+                            Debug.warn(e)
+                        }
+                    }
+                }.awaitAll()
+            }
+            finishKeySearch(true)
+        }
     }
 
     private suspend fun locateKeyFilesRecursive(rootFolder: File?, isRoot: Boolean) {
         withContext(Dispatchers.IO) {
-            rootFolder?.listFiles { _: File?, name: String -> keyNameMatcher(name) }.also { files ->
-                if (files.isNullOrEmpty()) {
-                    rootFolder?.listFiles().also { directories ->
-                        if (directories.isNullOrEmpty()){
-                            if (isRoot) {
-                                hideFakeSnackbar()
-                                onShowSettingsFragment()
+            val folder = rootFolder
+            if (folder == null) {
+                finishKeySearch(isRoot)
+                return@withContext
+            }
+            folder.listFiles { _: File?, name: String -> keyNameMatcher(name) }?.let { files ->
+                coroutineScope {
+                    files.map { file ->
+                        async(Dispatchers.IO) {
+                            try {
+                                FileInputStream(file).use { inputStream ->
+                                    try {
+                                        keyManager.evaluateKey(inputStream)
+                                    } catch (_: Exception) { }
+                                }
+                            } catch (e: Exception) {
+                                Debug.warn(e)
                             }
-                        } else {
-                            coroutineScope { directories.map { file -> async(Dispatchers.IO) {
-                                if (file.isDirectory) locateKeyFilesRecursive(file, false)
-                            } }.awaitAll() }
                         }
-                    }
-                } else {
-                    coroutineScope { files.map { file -> async(Dispatchers.IO) {
-                        try {
-                            FileInputStream(file).use { inputStream ->
-                                try {
-                                    keyManager.evaluateKey(inputStream)
-                                } catch (_: Exception) { }
-                            }
-                        } catch (e: Exception) { Debug.warn(e) }
-                    }
-                    } }.awaitAll() }
-                if (keyManager.isKeyMissing) {
-                    onShowSettingsFragment()
-                    hideFakeSnackbar()
-                }
-            } ?: {
-                if (isRoot) {
-                    hideFakeSnackbar()
-                    onShowSettingsFragment()
+                    }.awaitAll()
                 }
             }
+            folder.listFiles()?.filter { it.isDirectory }?.let { directories ->
+                coroutineScope {
+                    directories.map { file ->
+                        async(Dispatchers.IO) { locateKeyFilesRecursive(file, false) }
+                    }.awaitAll()
+                }
+            }
+            finishKeySearch(isRoot)
         }
     }
 
@@ -2898,8 +2897,12 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                         }
                     } }.awaitAll() }
                     if (keyManager.isKeyMissing) {
-                        onShowSettingsFragment()
-                        hideFakeSnackbar()
+                        if (Version.isLollipop && prefs.isDocumentStorage)
+                            locateKeyDocumentsRecursive()
+                        else
+                            locateKeyFilesRecursive(Storage.getFile(prefs.preferEmulated()), true)
+                    } else {
+                        finishKeySearch(true)
                     }
                 }
             }

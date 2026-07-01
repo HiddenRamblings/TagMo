@@ -7,6 +7,7 @@ import com.hiddenramblings.tagmo.eightbit.io.Debug
 import com.hiddenramblings.tagmo.nfctech.NfcByte
 import com.hiddenramblings.tagmo.nfctech.TagArray.toHex
 import java.io.DataInputStream
+import java.io.ByteArrayOutputStream
 import java.io.IOException
 import java.io.InputStream
 import java.security.MessageDigest
@@ -53,43 +54,91 @@ class KeyManager(var context: Context) {
         return loadKeyFromStorage(file)
     }
 
+    @Throws(NoSuchAlgorithmException::class)
+    private fun getKeyFile(data: ByteArray, offset: Int = 0): String? {
+        val md5 = MessageDigest.getInstance("MD5")
+        md5.update(data, offset, NfcByte.KEY_FILE_SIZE)
+        return when (md5.digest().toHex().uppercase()) {
+            FIXED_KEY_MD5 -> FIXED_KEY_MD5
+            UNFIXED_KEY_MD5 -> UNFIXED_KEY_MD5
+            else -> null
+        }
+    }
+
     @Throws(IOException::class, NoSuchAlgorithmException::class)
     private fun readKey(data: ByteArray) {
-        val md5 = MessageDigest.getInstance("MD5")
-        val hex = md5.digest(data).toHex().uppercase()
-        if (FIXED_KEY_MD5 == hex) {
-            fixedKey = saveKeyFile(FIXED_KEY_MD5, data)
-        } else if (UNFIXED_KEY_MD5 == hex) {
-            unfixedKey = saveKeyFile(UNFIXED_KEY_MD5, data)
-        } else {
-            throw IOException(context.getString(R.string.key_signature_error))
+        when (getKeyFile(data)) {
+            FIXED_KEY_MD5 -> {
+                fixedKey = saveKeyFile(FIXED_KEY_MD5, data)
+            }
+            UNFIXED_KEY_MD5 -> {
+                unfixedKey = saveKeyFile(UNFIXED_KEY_MD5, data)
+            }
+            else -> throw IOException(context.getString(R.string.key_signature_error))
+        }
+    }
+
+    @Throws(IOException::class, NoSuchAlgorithmException::class)
+    fun importEmbeddedKeys(data: ByteArray): Boolean {
+        hasFixedKey()
+        hasUnFixedKey()
+        var imported = false
+        var offset = 0
+        while (offset <= data.size - NfcByte.KEY_FILE_SIZE) {
+            getKeyFile(data, offset)?.let { file ->
+                val key = data.copyOfRange(offset, offset + NfcByte.KEY_FILE_SIZE)
+                if (file == FIXED_KEY_MD5 && fixedKey == null) {
+                    fixedKey = saveKeyFile(file, key)
+                    imported = true
+                } else if (file == UNFIXED_KEY_MD5 && unfixedKey == null) {
+                    unfixedKey = saveKeyFile(file, key)
+                    imported = true
+                }
+                if (fixedKey != null && unfixedKey != null) return imported
+            }
+            offset++
+        }
+        return imported
+    }
+
+    @Throws(NoSuchAlgorithmException::class)
+    fun removeEmbeddedKeys(data: ByteArray): ByteArray {
+        val output = ByteArrayOutputStream(data.size)
+        var offset = 0
+        while (offset < data.size) {
+            if (offset <= data.size - NfcByte.KEY_FILE_SIZE && getKeyFile(data, offset) != null) {
+                offset += NfcByte.KEY_FILE_SIZE
+            } else {
+                output.write(data[offset].toInt())
+                offset++
+            }
+        }
+        return output.toByteArray()
+    }
+
+    @Throws(IOException::class, NoSuchAlgorithmException::class)
+    fun evaluateKey(data: ByteArray) {
+        when {
+            data.isEmpty() -> {
+                throw IOException(context.getString(R.string.invalid_key_error))
+            }
+            data.size == NfcByte.KEY_RETAIL_SZ -> {
+                readKey(data.copyOfRange(NfcByte.KEY_FILE_SIZE, data.size))
+                readKey(data.copyOfRange(0, NfcByte.KEY_FILE_SIZE))
+            }
+            data.size == NfcByte.KEY_FILE_SIZE -> {
+                readKey(data)
+            }
+            importEmbeddedKeys(data) -> {}
+            else -> {
+                throw IOException(context.getString(R.string.key_size_error))
+            }
         }
     }
 
     @Throws(IOException::class, NoSuchAlgorithmException::class)
     fun evaluateKey(strm: InputStream) {
-        val length = strm.available()
-        when {
-            length <= 0 -> {
-                throw IOException(context.getString(R.string.invalid_key_error))
-            }
-            length == NfcByte.KEY_RETAIL_SZ -> {
-                val data = ByteArray(NfcByte.KEY_RETAIL_SZ).also {
-                    DataInputStream(strm).readFully(it)
-                }
-                readKey(data.copyOfRange(NfcByte.KEY_FILE_SIZE, data.size))
-                readKey(data.copyOfRange(0, NfcByte.KEY_FILE_SIZE))
-            }
-            length == NfcByte.KEY_FILE_SIZE -> {
-                val data = ByteArray(NfcByte.KEY_FILE_SIZE).also {
-                    DataInputStream(strm).readFully(it)
-                }
-                readKey(data)
-            }
-            else -> {
-                throw IOException(context.getString(R.string.key_size_error))
-            }
-        }
+        evaluateKey(DataInputStream(strm).readBytes())
     }
 
     @Throws(Exception::class)

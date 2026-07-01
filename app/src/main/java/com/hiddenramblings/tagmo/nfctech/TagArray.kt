@@ -354,28 +354,38 @@ object TagArray {
     @JvmStatic
     @Throws(Exception::class)
     fun getValidatedFile(keyManager: KeyManager, file: File): ByteArray {
-        return getValidatedData(keyManager, TagReader.readTagFile(file))
+        return getValidatedFileList(keyManager, file).first()
     }
 
     @JvmStatic
     @Throws(Exception::class)
     fun getValidatedFileList(keyManager: KeyManager, file: File): List<ByteArray> {
-        return TagReader.readTagFileList(file).map { getValidatedData(keyManager, it) }
+        val data = file.readBytes()
+        try { keyManager.evaluateKey(data) } catch (_: Exception) { }
+        val tagData = try { keyManager.removeEmbeddedKeys(data) } catch (_: Exception) { data }
+        return TagReader.readTagDataList(file.path, tagData).map { getValidatedData(keyManager, it) }
     }
 
     @Throws(Exception::class)
     fun getValidatedDocument(keyManager: KeyManager, fileUri: Uri): ByteArray {
-        return getValidatedData(keyManager, TagReader.readTagDocument(fileUri))
+        return getValidatedDocumentList(keyManager, fileUri).first()
     }
 
     @Throws(Exception::class)
     fun getValidatedDocumentList(keyManager: KeyManager, fileUri: Uri): List<ByteArray> {
-        return TagReader.readTagDocumentList(fileUri).map { getValidatedData(keyManager, it) }
+        val data = TagMo.appContext.contentResolver.openInputStream(fileUri).use {
+            it?.readBytes() ?: byteArrayOf()
+        }
+        try { keyManager.evaluateKey(data) } catch (_: Exception) { }
+        val tagData = try { keyManager.removeEmbeddedKeys(data) } catch (_: Exception) { data }
+        return TagReader.readTagDataList(fileUri.path, tagData).map {
+            getValidatedData(keyManager, it)
+        }
     }
 
     @Throws(Exception::class)
     fun getValidatedDocument(keyManager: KeyManager, file: DocumentFile): ByteArray {
-        return getValidatedData(keyManager, TagReader.readTagDocument(file.uri))
+        return getValidatedDocumentList(keyManager, file).first()
     }
 
     @Throws(Exception::class)

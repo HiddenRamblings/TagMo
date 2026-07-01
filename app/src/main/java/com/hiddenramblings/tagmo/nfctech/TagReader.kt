@@ -27,13 +27,17 @@ object TagReader {
 
     @Throws(Exception::class)
     private fun getTagDataList(path: String?, inputStream: InputStream): List<ByteArray> {
-        return when (val length = inputStream.available()) {
+        val data = DataInputStream(inputStream).readBytes()
+        return readTagDataList(path, data)
+    }
+
+    @Throws(Exception::class)
+    fun readTagDataList(path: String?, data: ByteArray): List<ByteArray> {
+        return when (val length = data.size) {
             NfcByte.KEY_FILE_SIZE, NfcByte.KEY_RETAIL_SZ -> {
                 throw IOException(TagMo.appContext.getString(R.string.invalid_tag_key))
             }
             in 1..Int.MAX_VALUE -> {
-                val data = ByteArray(length)
-                DataInputStream(inputStream).readFully(data)
                 when {
                     length % NfcByte.TAG_FULL_SIZE == 0 -> {
                         data.toTagChunks(NfcByte.TAG_FULL_SIZE) { signed ->

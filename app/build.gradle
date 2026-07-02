@@ -2,7 +2,7 @@ plugins {
     id 'com.android.application'
     id 'kotlin-android'
     id 'kotlin-kapt'
-    id 'com.google.devtools.ksp' version '2.2.20-2.0.2'
+    id 'com.google.devtools.ksp' version '2.3.2'
     // id 'com.google.firebase.crashlytics'
 }
 
@@ -16,7 +16,7 @@ android {
         compileSdk 35
         minSdk 21
         targetSdk 35
-        versionName "4.4.8"
+        versionName "4.4.9"
         versionCode = versionName.replace(".","").toInteger() * 10
 
         vectorDrawables {

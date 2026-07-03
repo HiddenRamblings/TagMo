@@ -546,10 +546,28 @@ class NfcActivity : AppCompatActivity() {
                                 val unlockBar = IconifiedSnackbar(
                                         this@NfcActivity, findViewById(R.id.coordinator)
                                 ).buildTickerBar(R.string.progress_unlock)
+                                val unlockFailed = java.util.concurrent.atomic.AtomicBoolean(false)
                                 unlockBar.setAction(R.string.proceed) {
-                                    mifare.amiiboUnlock()
+                                    val unlocked = try {
+                                        mifare.amiiboUnlock()
+                                    } catch (e: Exception) {
+                                        Debug.warn(e)
+                                        false
+                                    }
+                                    if (unlocked) {
+                                        setResult(RESULT_OK)
+                                    } else {
+                                        unlockFailed.set(true)
+                                        setResult(RESULT_CANCELED)
+                                        closeTagSilently(mifare)
+                                        showMessage(R.string.speed_scan)
+                                        unlockBar.dismiss()
+                                    }
                                 }.show()
-                                while (unlockBar.isShown) setResult(RESULT_OK)
+                                while (unlockBar.isShown) {
+                                    if (!unlockFailed.get()) setResult(RESULT_OK)
+                                }
+                                if (unlockFailed.get()) setResult(RESULT_CANCELED)
                             } else {
                                 throw Exception(getString(R.string.fail_unlock))
                             }

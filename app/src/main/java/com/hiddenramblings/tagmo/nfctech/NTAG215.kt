@@ -67,6 +67,9 @@ class NTAG215 : TagTechnology {
         } catch (e: IOException) {
             Debug.warn(e)
             null
+        } catch (e: SecurityException) {
+            Debug.warn(e)
+            null
         }
     }
 
@@ -290,8 +293,8 @@ class NTAG215 : TagTechnology {
         return transceive(byteArrayOf(NfcByte.N2_UNLOCK_1.toByte()))
     }
 
-    fun amiiboUnlock() {
-        transceive(byteArrayOf(NfcByte.N2_UNLOCK_2.toByte()))
+    fun amiiboUnlock(): Boolean {
+        return null != transceive(byteArrayOf(NfcByte.N2_UNLOCK_2.toByte()))
     }
 
     companion object {

@@ -566,6 +566,11 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
             if (viewPager.currentItem != 1) viewPager.setCurrentItem(1, false)
         }
 
+        findViewById<CardView>(R.id.menu_report).setOnClickListener {
+            closePrefsDrawer()
+            onReportProblemClick()
+        }
+
         settingsPage = findViewById(R.id.preferences)
         findViewById<CardView>(R.id.menu_settings).setOnClickListener {
             settingsPage?.let { it.isVisible = it.isGone }
@@ -1632,9 +1637,6 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
             R.id.send_donation -> {
                 showDonationPanel()
             }
-            R.id.report_problem -> {
-                onReportProblemClick()
-            }
             R.id.filter_character -> {
                 return onFilterCharacterClick()
             }
@@ -1721,8 +1723,6 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
         menu.add(0, R.id.recursive, 0, R.string.recursive_folders)
         menu.add(0, R.id.clean_duplicates, 0, R.string.clean_duplicates)
             .setIcon(R.drawable.ic_file_copy_off_24dp)
-        menu.add(0, R.id.report_problem, 0, R.string.report_problem)
-            .setIcon(R.drawable.ic_report_required_24dp)
         menu.add(0, R.id.send_donation, 0, R.string.send_donation)
             .setIcon(R.drawable.ic_github_sponsor_24dp)
     }

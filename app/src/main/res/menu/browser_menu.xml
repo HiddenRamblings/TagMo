@@ -130,11 +130,6 @@
         android:title="@string/clean_duplicates"
         app:showAsAction="never"/>
     <item
-        android:id="@+id/report_problem"
-        android:icon="@drawable/ic_report_required_24dp"
-        android:title="@string/report_problem"
-        app:showAsAction="never"/>
-    <item
         android:id="@+id/send_donation"
         android:icon="@drawable/ic_github_sponsor_24dp"
         android:title="@string/send_donation"

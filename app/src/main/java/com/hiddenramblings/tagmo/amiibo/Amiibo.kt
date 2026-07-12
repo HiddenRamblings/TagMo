@@ -8,6 +8,7 @@ import com.hiddenramblings.tagmo.amiibo.tagdata.AmiiboData
 import com.hiddenramblings.tagmo.eightbit.io.Debug
 import com.hiddenramblings.tagmo.eightbit.os.Version
 import com.hiddenramblings.tagmo.nfctech.TagArray.toByteArray
+import com.hiddenramblings.tagmo.nfctech.TagArray.toHex
 import java.io.IOException
 
 open class Amiibo : Comparable<Amiibo>, Parcelable {
@@ -15,19 +16,23 @@ open class Amiibo : Comparable<Amiibo>, Parcelable {
     val id: Long
     val name: String?
     val releaseDates: AmiiboReleaseDates?
+    val variant: String?
 
     constructor(
-        manager: AmiiboManager?, id: Long, name: String?, releaseDates: AmiiboReleaseDates?
+        manager: AmiiboManager?, id: Long, name: String?, releaseDates: AmiiboReleaseDates?,
+        variant: String? = null
     ) {
         this.manager = manager
         this.id = id
         this.name = name
         this.releaseDates = releaseDates
+        this.variant = normalizeVariant(variant)
     }
 
     constructor(
-        manager: AmiiboManager?, id: String, name: String?, releaseDates: AmiiboReleaseDates?
-    ) : this(manager, hexToId(id), name, releaseDates)
+        manager: AmiiboManager?, id: String, name: String?, releaseDates: AmiiboReleaseDates?,
+        variant: String? = null
+    ) : this(manager, hexToId(id), name, releaseDates, variant)
 
     val head: Int
         get() = (id and HEAD_MASK shr HEAD_BITSHIFT).toInt()
@@ -56,10 +61,7 @@ open class Amiibo : Comparable<Amiibo>, Parcelable {
     val unknownId: Long
         get() = id and UNKNOWN_MASK
     val imageUrl: String
-        get() = String.format(
-            if (Preferences(TagMo.appContext).databaseSource() == 0) RENDER_IMAGE else AMIIBO_IMAGE,
-            head, tail
-        )
+        get() = getImageUrl(id, usePreferredSource = true)
     open val bluupTail: String
         get() = idToHex(id).let {
             try {
@@ -144,6 +146,7 @@ open class Amiibo : Comparable<Amiibo>, Parcelable {
         dest.writeSerializable(name)
         dest.writeLong(id)
         dest.writeSerializable(releaseDates)
+        dest.writeString(variant)
     }
 
     protected constructor(parcel: Parcel) {
@@ -153,11 +156,15 @@ open class Amiibo : Comparable<Amiibo>, Parcelable {
             parcel.readSerializable(null, AmiiboReleaseDates::class.java)
         else
             @Suppress("deprecation") parcel.readSerializable() as AmiiboReleaseDates?
+        variant = parcel.readString()
     }
 
     companion object {
         private const val AMIIBO_IMAGE = "${AmiiboManager.AMIIBO_RAW}/images/icon_%08x-%08x.png"
         private const val RENDER_IMAGE = "${AmiiboManager.RENDER_RAW}/images/icon_%08x-%08x.png"
+        private const val VARIANT_PAGE = 23
+        private const val VARIANT_PAGE_SIZE = 4
+        private const val VARIANT_MAX_HEX_LENGTH = (VARIANT_PAGE + 1) * VARIANT_PAGE_SIZE * 2
         const val HEAD_MASK = -0x100000000L
         const val TAIL_MASK = 0x00000000FFFFFFFFL
         const val HEAD_BITSHIFT = 4 * 8
@@ -179,10 +186,49 @@ open class Amiibo : Comparable<Amiibo>, Parcelable {
             return AmiiboData(data!!).amiiboID
         }
 
-        fun getImageUrl(amiiboId: Long): String {
+        fun getImageUrl(amiiboId: Long, variant: String? = null, usePreferredSource: Boolean = false): String {
             val head = (amiiboId and HEAD_MASK shr HEAD_BITSHIFT).toInt()
             val tail = (amiiboId and TAIL_MASK shr TAIL_BITSHIFT).toInt()
-            return String.format(AMIIBO_IMAGE, head, tail)
+            val imageUrl = String.format(
+                if (usePreferredSource && Preferences(TagMo.appContext).databaseSource() == 0)
+                    RENDER_IMAGE
+                else
+                    AMIIBO_IMAGE,
+                head, tail
+            )
+            return appendVariant(imageUrl, variant)
+        }
+
+        private fun appendVariant(imageUrl: String, variant: String?): String {
+            val cleanVariant = normalizeVariant(variant) ?: return imageUrl
+            val extensionIndex = imageUrl.lastIndexOf('.')
+            return if (extensionIndex < 0) {
+                "${imageUrl}_$cleanVariant"
+            } else {
+                imageUrl.substring(0, extensionIndex) + "_$cleanVariant" + imageUrl.substring(extensionIndex)
+            }
+        }
+
+        fun normalizeVariant(variant: String?): String? {
+            val cleanVariant = variant
+                ?.trim()
+                ?.removePrefix("0x")
+                ?.removePrefix("0X")
+                ?.filter { !it.isWhitespace() }
+            if (cleanVariant.isNullOrEmpty()) return null
+            if (cleanVariant.length > VARIANT_MAX_HEX_LENGTH) return null
+            return if (cleanVariant.all { it in '0'..'9' || it in 'a'..'f' || it in 'A'..'F' })
+                cleanVariant
+            else
+                null
+        }
+
+        fun getMatchedVariant(amiibo: Amiibo?, tagData: ByteArray?): String? {
+            val cleanVariant = amiibo?.variant ?: return null
+            if (tagData == null) return null
+            val maxBytes = (VARIANT_PAGE + 1) * VARIANT_PAGE_SIZE
+            val variantData = tagData.copyOfRange(0, minOf(tagData.size, maxBytes)).toHex()
+            return if (variantData.startsWith(cleanVariant.uppercase())) cleanVariant else null
         }
 
         fun matchesCharacterFilter(character: Character?, characterFilter: String): Boolean {

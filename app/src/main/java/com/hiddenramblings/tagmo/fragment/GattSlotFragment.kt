@@ -67,6 +67,7 @@ import com.hiddenramblings.tagmo.amiibo.AmiiboManager
 import com.hiddenramblings.tagmo.amiibo.AmiiboManager.getAmiiboManager
 import com.hiddenramblings.tagmo.amiibo.AmiiboManager.hasSpoofData
 import com.hiddenramblings.tagmo.amiibo.BluupTag
+import com.hiddenramblings.tagmo.amiibo.EliteTag
 import com.hiddenramblings.tagmo.amiibo.KeyManager
 import com.hiddenramblings.tagmo.amiibo.tagdata.AmiiboData
 import com.hiddenramblings.tagmo.bluetooth.BluetoothHandler
@@ -589,7 +590,10 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
                 if (amiiboView === amiiboCard) txtUsageLabel.isInvisible = false
                 amiiboHexId = Amiibo.idToHex(active.id)
                 amiiboName = active.name
-                amiiboImageUrl = active.imageUrl
+                amiiboImageUrl = Amiibo.getImageUrl(
+                    active.id, Amiibo.getMatchedVariant(active, (active as? EliteTag)?.data),
+                    usePreferredSource = true
+                )
                 active.amiiboSeries?.let { amiiboSeries = it.name }
                 active.amiiboType?.let { amiiboType = it.name }
                 active.gameSeries?.let { gameSeries = it.name }
@@ -623,6 +627,9 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
                         startActivity(Intent(requireContext(), ImageActivity::class.java)
                             .putExtras(Bundle().apply {
                                 putLong(NFCIntent.EXTRA_AMIIBO_ID, active!!.id)
+                                Amiibo.getMatchedVariant(active, (active as? EliteTag)?.data)?.let {
+                                    putString(NFCIntent.EXTRA_AMIIBO_VARIANT, it)
+                                }
                             })
                         )
                     }
@@ -1375,7 +1382,14 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
     private fun handleImageClicked(amiiboFile: AmiiboFile?) {
         amiiboFile?.let {
             this.startActivity(Intent(requireContext(), ImageActivity::class.java).apply {
-                putExtras(Bundle().apply { putLong(NFCIntent.EXTRA_AMIIBO_ID, it.id) })
+                putExtras(Bundle().apply {
+                    putLong(NFCIntent.EXTRA_AMIIBO_ID, it.id)
+                    settings.amiiboManager?.amiibos?.get(it.id)?.let { amiibo ->
+                        Amiibo.getMatchedVariant(amiibo, it.data)?.let { variant ->
+                            putString(NFCIntent.EXTRA_AMIIBO_VARIANT, variant)
+                        }
+                    }
+                })
             })
         }
     }

@@ -774,7 +774,9 @@ class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
         amiibo?.let {
             amiiboView.isVisible = true
             amiiboHexId = Amiibo.idToHex(it.id)
-            amiiboImageUrl = it.imageUrl
+            amiiboImageUrl = Amiibo.getImageUrl(
+                it.id, Amiibo.getMatchedVariant(it, tagData), usePreferredSource = true
+            )
             it.name?.let { name -> amiiboName = name }
             it.amiiboSeries?.let { series -> amiiboSeries = series.name }
             it.amiiboType?.let { type -> amiiboType = type.name }
@@ -818,7 +820,14 @@ class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
                 it.setOnClickListener {
                     if (amiiboLongId == -1L) return@setOnClickListener
                     startActivity(Intent(requireContext(), ImageActivity::class.java)
-                        .putExtras(Bundle().apply { putLong(NFCIntent.EXTRA_AMIIBO_ID, amiiboLongId) })
+                        .putExtras(Bundle().apply {
+                            putLong(NFCIntent.EXTRA_AMIIBO_ID, amiiboLongId)
+                            amiibo?.let { item ->
+                                Amiibo.getMatchedVariant(item, tagData)?.let { variant ->
+                                    putString(NFCIntent.EXTRA_AMIIBO_VARIANT, variant)
+                                }
+                            }
+                        })
                     )
                 }
             }
@@ -972,6 +981,11 @@ class EliteBankFragment : Fragment(), EliteBankAdapter.OnAmiiboClickListener {
             this.startActivity(Intent(requireContext(), ImageActivity::class.java)
                 .putExtras(Bundle().apply {
                     putLong(NFCIntent.EXTRA_AMIIBO_ID, it.id)
+                    settings.amiiboManager?.amiibos?.get(it.id)?.let { amiibo ->
+                        Amiibo.getMatchedVariant(amiibo, it.data)?.let { variant ->
+                            putString(NFCIntent.EXTRA_AMIIBO_VARIANT, variant)
+                        }
+                    }
                 })
             )
         }

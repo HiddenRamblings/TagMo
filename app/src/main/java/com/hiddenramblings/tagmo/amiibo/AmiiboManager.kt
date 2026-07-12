@@ -54,6 +54,7 @@ object AmiiboManager {
                 amiibo.releaseDates?.australia?.let { iso8601.format(it) }
             )
             amiiboJSON.put("release", releaseJSON)
+            amiibo.variant?.let { amiiboJSON.put("variant", it) }
             amiibosJSON.put(String.format("0x%016X", amiibo.id), amiiboJSON)
         }
         outputJSON.put("amiibos", amiibosJSON)
@@ -121,7 +122,8 @@ object AmiiboManager {
                     releaseDatesJSON.getString("au")
                 )
                 val releaseDates = AmiiboReleaseDates(naDate, jpDate, euDate, auDate)
-                val amiibo = Amiibo(this, key, name, releaseDates)
+                val variant = amiiboJSON.optString("variant", null)
+                val amiibo = Amiibo(this, key, name, releaseDates, variant)
                 amiibos[amiibo.id] = amiibo
             }
         }
@@ -204,7 +206,8 @@ object AmiiboManager {
                 releaseDatesJSON.getString("au")
             )
             val releaseDates = AmiiboReleaseDates(naDate, jpDate, euDate, auDate)
-            val amiibo = Amiibo(this, key, name, releaseDates)
+            val variant = amiiboJSON.optString("variant", null)
+            val amiibo = Amiibo(this, key, name, releaseDates, variant)
             amiibos[amiibo.id] = amiibo
             val characterId = amiibo.characterId
             if (!characters.containsKey(characterId)) {

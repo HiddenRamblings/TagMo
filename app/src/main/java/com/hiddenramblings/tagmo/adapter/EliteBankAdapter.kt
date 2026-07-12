@@ -134,7 +134,9 @@ class EliteBankAdapter(
             if (isAmiibo) {
                 amiiboItem?.index = absoluteAdapterPosition
                 amiiboHexId = Amiibo.idToHex(amiibo!!.id)
-                amiiboImageUrl = amiibo.imageUrl
+                amiiboImageUrl = Amiibo.getImageUrl(
+                    amiibo.id, Amiibo.getMatchedVariant(amiibo, amiibo.data), usePreferredSource = true
+                )
                 amiibo.name?.let { name -> amiiboName = name }
                 amiibo.amiiboSeries?.let { series -> amiiboSeries = series.name }
                 amiibo.amiiboType?.let { type -> amiiboType = type.name }

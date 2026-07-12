@@ -299,7 +299,9 @@ class BrowserAdapter(
             }
             amiibo?.let {
                 amiiboHexId = Amiibo.idToHex(it.id)
-                amiiboImageUrl = it.imageUrl
+                amiiboImageUrl = Amiibo.getImageUrl(
+                    it.id, Amiibo.getMatchedVariant(it, item?.data), usePreferredSource = true
+                )
                 it.name?.let { name -> amiiboName = name }
                 it.amiiboSeries?.let { series -> amiiboSeries = series.name }
                 it.amiiboType?.let { type -> amiiboType = type.name }

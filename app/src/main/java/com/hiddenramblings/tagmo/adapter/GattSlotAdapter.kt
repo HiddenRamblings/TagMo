@@ -20,6 +20,7 @@ import com.hiddenramblings.tagmo.adapter.GattSlotAdapter.BluupViewHolder
 import com.hiddenramblings.tagmo.amiibo.Amiibo
 import com.hiddenramblings.tagmo.amiibo.AmiiboManager.hasSpoofData
 import com.hiddenramblings.tagmo.amiibo.BluupTag
+import com.hiddenramblings.tagmo.amiibo.EliteTag
 import com.hiddenramblings.tagmo.eightbit.request.ImageTarget
 
 class GattSlotAdapter(
@@ -131,7 +132,12 @@ class GattSlotAdapter(
                 }
                 else -> {
                     setAmiiboInfoText(txtName, amiibo?.name)
-                    amiiboImageUrl = amiibo?.imageUrl
+                    amiiboImageUrl = amiibo?.let {
+                        Amiibo.getImageUrl(
+                            it.id, Amiibo.getMatchedVariant(it, (it as? EliteTag)?.data),
+                            usePreferredSource = true
+                        )
+                    }
                 }
             }
             imageAmiibo?.let {

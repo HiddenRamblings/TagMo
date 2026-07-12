@@ -1901,7 +1901,14 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
     override fun onAmiiboImageClicked(amiiboFile: AmiiboFile?) {
         this.startActivity(Intent(this, ImageActivity::class.java)
             .putExtras(Bundle().apply {
-                amiiboFile?.let { putLong(NFCIntent.EXTRA_AMIIBO_ID, it.id) }
+                amiiboFile?.let { file ->
+                    putLong(NFCIntent.EXTRA_AMIIBO_ID, file.id)
+                    settings?.amiiboManager?.amiibos?.get(file.id)?.let { amiibo ->
+                        Amiibo.getMatchedVariant(amiibo, file.data)?.let {
+                            putString(NFCIntent.EXTRA_AMIIBO_VARIANT, it)
+                        }
+                    }
+                }
             })
         )
     }
@@ -2531,6 +2538,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
         var gameSeries = ""
         // String character = "";
         var amiiboImageUrl: String? = null
+        var amiibo: Amiibo? = null
         if (tagData?.isNotEmpty() == true) {
             try {
                 amiiboId = Amiibo.dataToId(tagData)
@@ -2546,7 +2554,6 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                 amiiboImageUrl = null
             }
             else -> {
-                var amiibo: Amiibo? = null
                 settings?.amiiboManager?.let {
                     amiibo = it.amiibos[amiiboId]
                     if (null == amiibo)
@@ -2554,7 +2561,9 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                 }
                 amiibo?.let {
                     amiiboHexId = Amiibo.idToHex(it.id)
-                    amiiboImageUrl = it.imageUrl
+                    amiiboImageUrl = Amiibo.getImageUrl(
+                        it.id, Amiibo.getMatchedVariant(it, tagData), usePreferredSource = true
+                    )
                     it.name?.let { name -> amiiboName = name }
                     it.amiiboSeries?.let { series -> amiiboSeries = series.name }
                     it.amiiboType?.let { type -> amiiboType = type.name }
@@ -2618,6 +2627,11 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                 startActivity(Intent(this@BrowserActivity, ImageActivity::class.java)
                     .putExtras(Bundle().apply {
                         putLong(NFCIntent.EXTRA_AMIIBO_ID, amiiboTagId)
+                        amiibo?.let { item ->
+                            Amiibo.getMatchedVariant(item, tagData)?.let { variant ->
+                                putString(NFCIntent.EXTRA_AMIIBO_VARIANT, variant)
+                            }
+                        }
                     })
                 )
             }

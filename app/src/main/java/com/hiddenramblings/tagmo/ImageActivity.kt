@@ -44,6 +44,7 @@ class ImageActivity : AppCompatActivity() {
     private lateinit var bottomSheetBehavior: BottomSheetBehavior<View?>
 
     private var amiiboId: Long = 0
+    private var amiiboVariant: String? = null
     private var amiiboManager: AmiiboManager? = null
     private var amiibo: Amiibo? = null
 
@@ -67,6 +68,7 @@ class ImageActivity : AppCompatActivity() {
         txtAmiiboType = findViewById(R.id.txtAmiiboType)
         txtAmiiboSeries = findViewById(R.id.txtAmiiboSeries)
         amiiboId = intent.getLongExtra(NFCIntent.EXTRA_AMIIBO_ID, -1)
+        amiiboVariant = Amiibo.normalizeVariant(intent.getStringExtra(NFCIntent.EXTRA_AMIIBO_VARIANT))
         val toolbar = findViewById<Toolbar>(R.id.toolbar)
         toolbar.setTitle(R.string.imageview_amiibo)
         toolbar.inflateMenu(R.menu.save_menu)
@@ -116,7 +118,7 @@ class ImageActivity : AppCompatActivity() {
         }
         this@ImageActivity.amiiboManager = amiiboManager
         updateView(amiiboId)
-        Glide.with(imageView).load(Amiibo.getImageUrl(amiiboId)).into(imageView)
+        Glide.with(imageView).load(Amiibo.getImageUrl(amiiboId, amiiboVariant)).into(imageView)
         findViewById<View>(R.id.toggle).setOnClickListener {
             if (bottomSheetBehavior.state == BottomSheetBehavior.STATE_COLLAPSED) {
                 bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED)
@@ -195,7 +197,7 @@ class ImageActivity : AppCompatActivity() {
                         override fun onLoadCleared(placeholder: Drawable?) {}
                     }
                     Glide.with(this@ImageActivity).asBitmap()
-                        .load(Amiibo.getImageUrl(amiiboId))
+                        .load(Amiibo.getImageUrl(amiiboId, amiiboVariant))
                         .skipMemoryCache(true)
                         .diskCacheStrategy(DiskCacheStrategy.NONE)
                         .into(saveImageTarget)

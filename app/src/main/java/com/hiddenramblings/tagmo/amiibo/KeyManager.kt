@@ -6,7 +6,6 @@ import com.hiddenramblings.tagmo.R
 import com.hiddenramblings.tagmo.eightbit.io.Debug
 import com.hiddenramblings.tagmo.nfctech.NfcByte
 import com.hiddenramblings.tagmo.nfctech.TagArray.toHex
-import java.io.DataInputStream
 import java.io.ByteArrayOutputStream
 import java.io.IOException
 import java.io.InputStream
@@ -138,7 +137,20 @@ class KeyManager(var context: Context) {
 
     @Throws(IOException::class, NoSuchAlgorithmException::class)
     fun evaluateKey(strm: InputStream) {
-        evaluateKey(DataInputStream(strm).readBytes())
+        val buffer = ByteArray(8192)
+        val output = ByteArrayOutputStream()
+        var size = 0
+        while (true) {
+            val count = strm.read(buffer)
+            if (count < 0) break
+            if (count == 0) continue
+            if (size > NfcByte.MAX_IMPORT_FILE_SIZE - count) {
+                throw IOException(context.getString(R.string.key_size_error))
+            }
+            output.write(buffer, 0, count)
+            size += count
+        }
+        evaluateKey(output.toByteArray())
     }
 
     @Throws(Exception::class)

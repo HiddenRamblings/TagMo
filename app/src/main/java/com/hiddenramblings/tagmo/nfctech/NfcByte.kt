@@ -4,6 +4,8 @@ package com.hiddenramblings.tagmo.nfctech
 object NfcByte {
     const val KEY_FILE_SIZE = 80 // Each key read separately
     const val KEY_RETAIL_SZ = 160 // Both keys read together
+    // Keep arbitrary imports from exhausting the app heap before their format is validated.
+    const val MAX_IMPORT_FILE_SIZE = 4 * 1024 * 1024
     const val TAG_DATA_SIZE = 532 // 540, 572 with signature
     const val TAG_FULL_SIZE = 572 // 540 + 32 byte signature
     const val TAG_V3_BIN_SIZE = 2048

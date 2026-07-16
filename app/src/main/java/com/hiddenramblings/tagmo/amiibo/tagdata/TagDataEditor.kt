@@ -1164,7 +1164,7 @@ class TagDataEditor : AppCompatActivity() {
             addTextChangedListener(object : TextWatcher {
                 override fun beforeTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {}
                 override fun onTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {
-                    onHeartsUpdate(charSequence.toString().toInt())
+                    charSequence.toString().toIntOrNull()?.let(::onHeartsUpdate)
                 }
 
                 override fun afterTextChanged(editable: Editable) {}
@@ -1704,7 +1704,7 @@ class TagDataEditor : AppCompatActivity() {
     private fun onAppDataZeldaTPChecked(enabled: Boolean) {
         txtHearts1?.let {
             it.isEnabled = enabled
-            onHeartsUpdate(it.text.toString().toInt())
+            it.text.toString().toIntOrNull()?.let(::onHeartsUpdate)
         }
         txtLevelZeldaTP?.isEnabled = enabled
     }

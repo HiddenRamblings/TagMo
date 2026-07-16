@@ -31,6 +31,7 @@ import kotlinx.coroutines.coroutineScope
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
+import java.io.InputStream
 import java.nio.BufferUnderflowException
 import java.nio.ByteBuffer
 import java.util.*
@@ -357,10 +358,33 @@ object TagArray {
         return getValidatedFileList(keyManager, file).first()
     }
 
+    @Throws(IOException::class)
+    private fun InputStream.readImportBytes(path: String?): ByteArray {
+        val buffer = ByteArray(8192)
+        val output = java.io.ByteArrayOutputStream()
+        var size = 0
+        while (true) {
+            val count = read(buffer)
+            if (count < 0) break
+            if (count == 0) continue
+            if (size > NfcByte.MAX_IMPORT_FILE_SIZE - count) {
+                throw IOException(TagMo.appContext.getString(
+                    R.string.invalid_file_size,
+                    path,
+                    NfcByte.MAX_IMPORT_FILE_SIZE + 1,
+                    NfcByte.TAG_DATA_SIZE
+                ))
+            }
+            output.write(buffer, 0, count)
+            size += count
+        }
+        return output.toByteArray()
+    }
+
     @JvmStatic
     @Throws(Exception::class)
     fun getValidatedFileList(keyManager: KeyManager, file: File): List<ByteArray> {
-        val data = file.readBytes()
+        val data = file.inputStream().use { it.readImportBytes(file.path) }
         try { keyManager.evaluateKey(data) } catch (_: Exception) { }
         val tagData = try { keyManager.removeEmbeddedKeys(data) } catch (_: Exception) { data }
         return TagReader.readTagDataList(file.path, tagData).map { getValidatedData(keyManager, it) }
@@ -374,7 +398,7 @@ object TagArray {
     @Throws(Exception::class)
     fun getValidatedDocumentList(keyManager: KeyManager, fileUri: Uri): List<ByteArray> {
         val data = TagMo.appContext.contentResolver.openInputStream(fileUri).use {
-            it?.readBytes() ?: byteArrayOf()
+            it?.readImportBytes(fileUri.path) ?: byteArrayOf()
         }
         try { keyManager.evaluateKey(data) } catch (_: Exception) { }
         val tagData = try { keyManager.removeEmbeddedKeys(data) } catch (_: Exception) { data }

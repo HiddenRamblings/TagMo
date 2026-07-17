@@ -81,6 +81,7 @@
         android:focusable="true"
         android:orientation="vertical"
         app:behavior_peekHeight="@dimen/button_height_min"
+        app:gestureInsetBottomIgnored="true"
         app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
 
         <LinearLayout

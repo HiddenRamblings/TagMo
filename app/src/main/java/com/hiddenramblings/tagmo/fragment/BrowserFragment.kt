@@ -28,7 +28,6 @@ import androidx.appcompat.widget.AppCompatImageView
 import androidx.appcompat.widget.Toolbar
 import androidx.core.view.isGone
 import androidx.core.view.isVisible
-import androidx.core.view.doOnLayout
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -248,22 +247,6 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener, OnGameTitleClickLis
     }
 
     fun onConfigurationChanged() {
-        bottomSheet?.let { sheet ->
-            // BottomSheetBehavior preserves the current top offset while it is settling. During an
-            // orientation change that offset belongs to the old-sized parent, so it can leave the
-            // collapsed sheet partially expanded. Reapply a stable state after the new layout.
-            val targetState = if (sheet.state == BottomSheetBehavior.STATE_EXPANDED) {
-                BottomSheetBehavior.STATE_EXPANDED
-            } else {
-                BottomSheetBehavior.STATE_COLLAPSED
-            }
-            setBottomDrawerContentVisible(targetState == BottomSheetBehavior.STATE_EXPANDED)
-            if (targetState == BottomSheetBehavior.STATE_EXPANDED) setStorageButtons()
-            view?.doOnLayout {
-                sheet.peekHeight = resources.getDimensionPixelSize(R.dimen.button_height_min)
-                sheet.state = targetState
-            }
-        }
         if (this::settings.isInitialized && settings.amiiboView
             == BrowserSettings.VIEW.IMAGE.value
         ) {

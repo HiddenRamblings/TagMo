@@ -43,6 +43,7 @@ import com.hiddenramblings.tagmo.nfctech.TagArray.isPowerTag
 import com.hiddenramblings.tagmo.nfctech.TagArray.technology
 import com.hiddenramblings.tagmo.parcelable
 import com.hiddenramblings.tagmo.parcelableArrayList
+import com.google.android.material.card.MaterialCardView
 import com.shawnlin.numberpicker.NumberPicker
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -60,7 +61,7 @@ class NfcActivity : AppCompatActivity() {
 
     private lateinit var txtMessage: TextView
     private lateinit var txtError: TextView
-    private lateinit var errorContainer: LinearLayout
+    private lateinit var errorContainer: MaterialCardView
     private lateinit var progressLayout: LinearLayout
     private lateinit var progressBar: ProgressBar
     private lateinit var txtProgress: TextView

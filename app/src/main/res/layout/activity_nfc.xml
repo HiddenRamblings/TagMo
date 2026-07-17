@@ -55,48 +55,62 @@
 
         </LinearLayout>
 
-        <LinearLayout
+        <com.google.android.material.card.MaterialCardView
             android:id="@+id/errorContainer"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
-            android:orientation="vertical"
-            android:background="@drawable/rounded_window"
-            android:padding="16dp"
-            android:visibility="gone">
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
+            android:visibility="gone"
+            app:cardBackgroundColor="@color/ui_surface"
+            app:cardCornerRadius="@dimen/menu_card_radius"
+            app:cardElevation="8dp"
+            app:strokeColor="@color/ui_outline"
+            app:strokeWidth="1dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:gravity="center_vertical"
-                android:paddingBottom="8dp">
+                android:gravity="center_horizontal"
+                android:orientation="vertical"
+                android:paddingStart="28dp"
+                android:paddingTop="28dp"
+                android:paddingEnd="28dp"
+                android:paddingBottom="28dp">
 
                 <androidx.appcompat.widget.AppCompatImageView
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
                     app:srcCompat="@drawable/ic_report_required_24dp"
+                    app:tint="@color/colorAccent"
                     android:importantForAccessibility="no"
-                    android:layout_marginEnd="8dp" />
+                    android:contentDescription="@null" />
 
                 <TextView
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:gravity="center"
                     android:text="@string/error_title"
+                    android:textColor="?android:attr/textColorPrimary"
                     android:textStyle="bold"
-                    android:textSize="16sp" />
+                    android:textSize="18sp" />
+
+                <TextView
+                    android:id="@+id/txtError"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp"
+                    android:gravity="center"
+                    android:text="@string/middleCenterError"
+                    android:textColor="@color/ui_meta_text"
+                    android:textSize="16sp"
+                    android:lineSpacingExtra="3dp" />
 
             </LinearLayout>
 
-            <TextView
-                android:id="@+id/txtError"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/middleCenterError"
-                android:textAppearance="?android:attr/textAppearanceMedium"
-                android:textSize="14sp" />
-
-        </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
 
         <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/imgNfcCircle"

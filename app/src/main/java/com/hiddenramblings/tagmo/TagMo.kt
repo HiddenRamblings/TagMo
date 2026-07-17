@@ -2,6 +2,7 @@ package com.hiddenramblings.tagmo
 
 import android.app.Application
 import android.app.UiModeManager
+import android.content.ComponentCallbacks2
 import android.content.Context
 import android.content.Intent
 import android.content.res.Configuration
@@ -85,6 +86,13 @@ class TagMo : Application() {
         }
     }
 
+    override fun onTrimMemory(level: Int) {
+        super.onTrimMemory(level)
+        if (level == ComponentCallbacks2.TRIM_MEMORY_UI_HIDDEN) {
+            appWasBackgrounded = true
+        }
+    }
+
     init { appContext = this }
 
     companion object {
@@ -117,6 +125,14 @@ class TagMo : Application() {
             )
 
         var hasSubscription = false
+
+        var appWasBackgrounded = false
+
+        fun consumeAppBackgrounded(): Boolean {
+            if (!appWasBackgrounded) return false
+            appWasBackgrounded = false
+            return true
+        }
 
         const val isUserInputEnabled = false
     }

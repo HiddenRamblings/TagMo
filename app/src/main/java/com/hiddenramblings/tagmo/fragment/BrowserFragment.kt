@@ -28,6 +28,7 @@ import androidx.appcompat.widget.AppCompatImageView
 import androidx.appcompat.widget.Toolbar
 import androidx.core.view.isGone
 import androidx.core.view.isVisible
+import androidx.core.view.doOnLayout
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -258,7 +259,7 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener, OnGameTitleClickLis
             }
             setBottomDrawerContentVisible(targetState == BottomSheetBehavior.STATE_EXPANDED)
             if (targetState == BottomSheetBehavior.STATE_EXPANDED) setStorageButtons()
-            view?.post {
+            view?.doOnLayout {
                 sheet.peekHeight = resources.getDimensionPixelSize(R.dimen.button_height_min)
                 sheet.state = targetState
             }

@@ -460,11 +460,6 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener, OnGameTitleClickLis
         browserActivity?.let { activity ->
             val switchStorageRoot = requireView().findViewById<AppCompatButton>(R.id.switch_storage_root)
             val switchStorageType = requireView().findViewById<AppCompatButton>(R.id.switch_storage_type)
-            if (bottomSheet?.state != BottomSheetBehavior.STATE_EXPANDED) {
-                switchStorageRoot?.isGone = true
-                switchStorageType?.isGone = true
-                return
-            }
             if (prefs.isDocumentStorage) {
                 switchStorageRoot?.let { button ->
                     button.isVisible = true

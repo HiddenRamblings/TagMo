@@ -688,6 +688,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
         popup.menu.findItem(R.id.mnu_scan).isEnabled = false
         popup.menu.findItem(R.id.mnu_backup).isEnabled = false
         popup.menu.findItem(R.id.mnu_validate).isEnabled = false
+        popup.menu.findItem(R.id.mnu_scan_v3).isEnabled = false
         popup.show()
         val popupHandler: Handler = object : Handler(Looper.getMainLooper()) {
             override fun handleMessage(msg: Message) {
@@ -696,9 +697,10 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
         }
         popupHandler.postDelayed({
             val baseDelay = 75
-            popupHandler.sendEmptyMessageDelayed(R.id.mnu_validate, (baseDelay).toLong())
-            popupHandler.sendEmptyMessageDelayed(R.id.mnu_backup, (baseDelay * 2).toLong())
-            popupHandler.sendEmptyMessageDelayed(R.id.mnu_scan, (baseDelay * 3).toLong())
+            popupHandler.sendEmptyMessageDelayed(R.id.mnu_scan_v3, baseDelay.toLong())
+            popupHandler.sendEmptyMessageDelayed(R.id.mnu_validate, (baseDelay * 2).toLong())
+            popupHandler.sendEmptyMessageDelayed(R.id.mnu_backup, (baseDelay * 3).toLong())
+            popupHandler.sendEmptyMessageDelayed(R.id.mnu_scan, (baseDelay * 4).toLong())
         }, 250)
         popup.setOnMenuItemClickListener { item: MenuItem ->
             when (item.itemId) {

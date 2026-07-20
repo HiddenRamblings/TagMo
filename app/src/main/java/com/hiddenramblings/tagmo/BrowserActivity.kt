@@ -3011,10 +3011,6 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
     override fun onResume() {
         super.onResume()
         updateManager?.resumePlayUpdateIfNeeded()
-    }
-
-    override fun onRestart() {
-        super.onRestart()
         if (TagMo.consumeAppBackgrounded()) {
             updateManager?.refreshUpdateStatus()
         }

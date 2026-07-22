@@ -4,6 +4,8 @@ import android.content.Context
 import android.content.res.Configuration
 import android.os.Build
 import android.util.Log
+import android.view.View
+import android.view.ViewGroup
 import android.widget.TextView
 import androidx.annotation.StringRes
 import androidx.core.app.LocaleManagerCompat
@@ -56,11 +58,17 @@ object DynamicTranslationManager {
     fun bindResource(view: TextView, @StringRes resId: Int) {
         val fallback = view.context.getString(resId)
         val source = getEnglishString(view.context, resId)
+        view.setTag(R.id.dynamic_translation_resource, resId)
+        view.setTag(R.id.dynamic_translation_fallback, fallback)
         bind(view, fallback, source)
     }
 
     fun bind(view: TextView, fallback: CharSequence?, source: String? = fallback?.toString()) {
-        val displayText = fallback?.toString().orEmpty()
+        val displayText = (
+            view.getTag(R.id.dynamic_translation_fallback) as? String
+                ?: fallback?.toString()
+        ).orEmpty()
+        view.setTag(R.id.dynamic_translation_fallback, displayText)
         view.text = displayText
 
         val enabled = isEnabled()
@@ -93,6 +101,19 @@ object DynamicTranslationManager {
                     view.text = translated
                 }
             }
+        }
+    }
+
+    /**
+     * Applies dynamic translation to visible text whose source is not tied to
+     * a string resource. Resource-backed views are handled by bindResource().
+     */
+    fun bindTextTree(root: View) {
+        if (root is TextView && root.getTag(R.id.dynamic_translation_resource) == null) {
+            root.text?.takeIf { it.isNotBlank() }?.let { bind(root, it) }
+        }
+        if (root is ViewGroup) {
+            for (index in 0 until root.childCount) bindTextTree(root.getChildAt(index))
         }
     }
 

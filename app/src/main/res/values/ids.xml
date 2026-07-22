@@ -2,4 +2,6 @@
 <resources>
     <item name="snackbar_item" type="id" />
     <item name="dynamic_translation_source" type="id" />
+    <item name="dynamic_translation_fallback" type="id" />
+    <item name="dynamic_translation_resource" type="id" />
 </resources>

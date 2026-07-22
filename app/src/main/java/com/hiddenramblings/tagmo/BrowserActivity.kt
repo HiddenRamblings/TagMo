@@ -352,6 +352,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
         })
 
         settingsPage = findViewById(R.id.preferences)
+        val restoreSettingsPage = savedInstanceState?.getBoolean(SETTINGS_PAGE_VISIBLE) == true
         onLoadSettingsFragment()
         findViewById<TextView>(R.id.build_text)?.apply {
             movementMethod = LinkMovementMethod.getInstance()
@@ -384,6 +385,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
         if (TagMo.isWearable) {
             onCreateWearOptionsMenu()
             onCreateWearNavigation()
+            if (restoreSettingsPage) settingsPage?.isVisible = true
         } else {
             onCreateMainMenuLayout()
             prefsDrawer = findViewById(R.id.drawer_layout)
@@ -414,6 +416,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                     }
                 }
             })
+            if (restoreSettingsPage) onShowSettingsFragment()
         }
 
         val popup = if (Version.isLollipopMR)
@@ -2745,6 +2748,11 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
         }
     }
 
+    override fun onSaveInstanceState(outState: Bundle) {
+        outState.putBoolean(SETTINGS_PAGE_VISIBLE, settingsPage?.isVisible == true)
+        super.onSaveInstanceState(outState)
+    }
+
     private fun onShowSettingsFragment() {
         CoroutineScope(Dispatchers.Main).launch {
             if (TagMo.isWearable) {
@@ -3084,6 +3092,8 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
     }
 
     companion object {
+        private const val SETTINGS_PAGE_VISIBLE = "settings_page_visible"
+
         private val PERMISSIONS_STORAGE = arrayOf(
             Manifest.permission.READ_EXTERNAL_STORAGE,
             Manifest.permission.WRITE_EXTERNAL_STORAGE

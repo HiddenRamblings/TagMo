@@ -312,8 +312,12 @@ class SettingsFragment : PreferenceFragmentCompat() {
             getString(R.string.settings_translation_progress)
         )
         updateTranslationProgress()
+        view.post { DynamicTranslationManager.bindTextTree(view) }
         removeTranslationStateListener = DynamicTranslationManager.addStateListener {
-            activity?.runOnUiThread { updateTranslationProgress() }
+            activity?.runOnUiThread {
+                updateTranslationProgress()
+                view.post { DynamicTranslationManager.bindTextTree(view) }
+            }
         }
     }
 

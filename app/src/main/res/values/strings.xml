@@ -285,6 +285,12 @@
         <item quantity="other">%1$d compatible amiibo</item>
     </plurals>
     <string name="pref_advanced">Advanced</string>
+    <string name="localization">Localization</string>
+    <string name="language">Language</string>
+    <string name="system_default">System Default</string>
+    <string name="dynamic_translation">Dynamic Translation</string>
+    <string name="dynamic_translation_desc">Use ML Kit to translate UI</string>
+    <string name="translation_model_loading">Downloading translation model&#8230;</string>
     <string name="pref_tagmo_theme">TagMo System Theme</string>
     <string name="tagmo_theme_details">Change local theme independent of system theme settings</string>
     <string name="pref_disable_debug">Disable Debug Logger</string>

@@ -4,11 +4,13 @@ import android.app.Dialog
 import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.DialogInterface
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Color
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.provider.Settings
 import android.text.Spannable
 import android.text.SpannableStringBuilder
 import android.text.style.ForegroundColorSpan
@@ -17,6 +19,7 @@ import android.widget.EditText
 import android.widget.TextView
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
+import androidx.core.app.LocaleManagerCompat
 import androidx.appcompat.app.AppCompatActivity
 import androidx.preference.CheckBoxPreference
 import androidx.preference.ListPreference
@@ -42,6 +45,7 @@ import com.hiddenramblings.tagmo.eightbit.net.JSONExecutor
 import com.hiddenramblings.tagmo.eightbit.os.Version
 import com.hiddenramblings.tagmo.nfctech.TagArray.toHexByteArray
 import com.hiddenramblings.tagmo.security.SecurityHandler
+import com.hiddenramblings.tagmo.translate.DynamicTranslationManager
 import com.hiddenramblings.tagmo.widget.Toasty
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -61,6 +65,9 @@ class SettingsFragment : PreferenceFragmentCompat() {
 
     private var importKeys: Preference? = null
     var imageNetworkSetting: ListPreference? = null
+    private var languagePreference: Preference? = null
+    private var translationProgressPreference: Preference? = null
+    private var removeTranslationStateListener: (() -> Unit)? = null
 
     private val onLoadKeyDocuments = registerForActivityResult(
         ActivityResultContracts.OpenMultipleDocuments()
@@ -85,6 +92,22 @@ class SettingsFragment : PreferenceFragmentCompat() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        languagePreference = findPreference<Preference>(getString(R.string.settings_language))?.apply {
+            onPreferenceClickListener = Preference.OnPreferenceClickListener {
+                openLanguageSettings()
+                true
+            }
+        }
+        findPreference<SwitchPreferenceCompat>(
+            getString(R.string.settings_dynamic_translation)
+        )?.apply {
+            isChecked = DynamicTranslationManager.isEnabled()
+            onPreferenceChangeListener =
+                Preference.OnPreferenceChangeListener { _, newValue ->
+                    DynamicTranslationManager.setEnabled(newValue as Boolean)
+                    true
+                }
+        }
         imageNetworkSetting = findPreference(getString(R.string.image_network_settings))
         imageNetworkSetting?.apply {
             onImageNetworkChange(imageNetworkSetting, prefs.imageNetwork())
@@ -280,6 +303,56 @@ class SettingsFragment : PreferenceFragmentCompat() {
                     }
                 }
             } catch (e: Exception) { Debug.verbose(e) }
+        }
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        translationProgressPreference = findPreference(
+            getString(R.string.settings_translation_progress)
+        )
+        updateTranslationProgress()
+        removeTranslationStateListener = DynamicTranslationManager.addStateListener {
+            activity?.runOnUiThread { updateTranslationProgress() }
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        updateLanguageSummary()
+    }
+
+    override fun onDestroyView() {
+        removeTranslationStateListener?.invoke()
+        removeTranslationStateListener = null
+        translationProgressPreference = null
+        super.onDestroyView()
+    }
+
+    private fun updateLanguageSummary() {
+        val locale = LocaleManagerCompat.getApplicationLocales(requireContext()).get(0)
+        languagePreference?.summary = locale?.let {
+            it.getDisplayName(it).replaceFirstChar { character -> character.uppercase() }
+        } ?: getString(R.string.system_default)
+    }
+
+    private fun updateTranslationProgress() {
+        translationProgressPreference?.isVisible =
+            DynamicTranslationManager.isDownloadingModel.value
+    }
+
+    private fun openLanguageSettings() {
+        val action = when {
+            Version.isTiramisu -> Settings.ACTION_APP_LOCALE_SETTINGS
+            Version.isSnowCone -> Settings.ACTION_APPLICATION_DETAILS_SETTINGS
+            else -> Settings.ACTION_LOCALE_SETTINGS
+        }
+        try {
+            startActivity(Intent(action).apply {
+                data = Uri.fromParts("package", requireContext().packageName, null)
+            })
+        } catch (_: ActivityNotFoundException) {
+            startActivity(Intent(Settings.ACTION_LOCALE_SETTINGS))
         }
     }
 

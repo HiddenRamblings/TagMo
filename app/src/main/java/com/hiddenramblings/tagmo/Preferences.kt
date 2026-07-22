@@ -345,6 +345,15 @@ class Preferences(context: Context) {
         putInt(applicationTheme, value)
     }
 
+    private val dynamicTranslation = "settings_dynamic_translation"
+    fun dynamicTranslation(): Boolean {
+        return getBoolean(dynamicTranslation, true)
+    }
+
+    fun dynamicTranslation(value: Boolean) {
+        putBoolean(dynamicTranslation, value)
+    }
+
     val downloadUrl = "downloadUrl"
     fun downloadUrl(): String? {
         return getString(downloadUrl, null)

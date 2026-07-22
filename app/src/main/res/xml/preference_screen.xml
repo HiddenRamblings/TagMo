@@ -78,6 +78,21 @@
     </androidx.preference.PreferenceCategory>
 
     <androidx.preference.PreferenceCategory
+        android:title="@string/localization">
+        <com.hiddenramblings.tagmo.translate.TranslatablePreference
+            android:key="@string/settings_language"
+            android:title="@string/language" />
+        <com.hiddenramblings.tagmo.translate.TranslationProgressPreference
+            android:key="@string/settings_translation_progress"
+            android:layout="@layout/preference_translation_loading" />
+        <com.hiddenramblings.tagmo.translate.TranslatableSwitchPreference
+            android:defaultValue="true"
+            android:key="@string/settings_dynamic_translation"
+            android:summary="@string/dynamic_translation_desc"
+            android:title="@string/dynamic_translation" />
+    </androidx.preference.PreferenceCategory>
+
+    <androidx.preference.PreferenceCategory
         android:title="@string/pref_advanced">
         <androidx.preference.CheckBoxPreference
             android:defaultValue="false"

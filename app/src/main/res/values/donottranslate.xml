@@ -31,6 +31,9 @@
     <string name="settings_persist_skip_lock" translatable="false">persist_skip_lock_info</string>
     <string name="settings_disable_debug" translatable="false">settings_disable_debug</string>
     <string name="image_network_settings" translatable="false">image_network_settings</string>
+    <string name="settings_language" translatable="false">settings_language</string>
+    <string name="settings_translation_progress" translatable="false">settings_translation_progress</string>
+    <string name="settings_dynamic_translation" translatable="false">settings_dynamic_translation</string>
     <string name="disclaimer_foomiibo" translatable="false">disclaimer_foomiibo</string>
     <string name="disclaimer_tagmo" translatable="false">disclaimer_tagmo</string>
 

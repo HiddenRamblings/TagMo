@@ -2004,7 +2004,10 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
         return this
     }
 
-    private fun loadAmiiboFiles(rootFolder: File?, recursiveFiles: Boolean) {
+    private fun loadAmiiboFiles(
+        rootFolder: File?, recursiveFiles: Boolean, indicator: Boolean = false
+    ) {
+        if (indicator) showFakeSnackbar(getString(R.string.loading_amiibo_files))
         setSnackbarListener(object: SnackbarListener {
             override fun onSnackbarHidden(fakeSnackbar: AnimatedLinearLayout) {
                 nfcFab.loadSavedPosition(resources.configuration)
@@ -2026,7 +2029,10 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
     }
 
     @SuppressLint("NewApi")
-    private fun loadAmiiboDocuments(rootFolder: DocumentFile?, recursiveFiles: Boolean) {
+    private fun loadAmiiboDocuments(
+        rootFolder: DocumentFile?, recursiveFiles: Boolean, indicator: Boolean = false
+    ) {
+        if (indicator) showFakeSnackbar(getString(R.string.loading_amiibo_files))
         setSnackbarListener(object: SnackbarListener {
             override fun onSnackbarHidden(fakeSnackbar: AnimatedLinearLayout) {
                 nfcFab.loadSavedPosition(resources.configuration)
@@ -2298,13 +2304,15 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
             }
             if (!keyManager.isKeyMissing) {
                 if (indicator) showFakeSnackbar(getString(R.string.refreshing_list))
-                loadAmiiboDocuments(rootDocument, settings?.isRecursiveEnabled == true)
+                loadAmiiboDocuments(
+                    rootDocument, settings?.isRecursiveEnabled == true, indicator
+                )
             }
         } else {
             val rootFolder = settings?.browserRootFolder
             if (!keyManager.isKeyMissing) {
                 if (indicator) showFakeSnackbar(getString(R.string.refreshing_list))
-                loadAmiiboFiles(rootFolder, settings?.isRecursiveEnabled == true)
+                loadAmiiboFiles(rootFolder, settings?.isRecursiveEnabled == true, indicator)
             }
             loadFolders(rootFolder)
         }

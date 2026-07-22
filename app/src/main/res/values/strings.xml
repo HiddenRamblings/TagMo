@@ -302,6 +302,7 @@
 
     <string name="locating_keys">Locating amitool Keys&#8230;</string>
     <string name="refreshing_list">Searching for amiibo&#8230;</string>
+    <string name="loading_amiibo_files">Loading amiibo files&#8230;</string>
     <string name="device_not_found">No device or tags available!</string>
 
     <string name="files_displayed">%1$d Files: ? / ? amiibo</string>

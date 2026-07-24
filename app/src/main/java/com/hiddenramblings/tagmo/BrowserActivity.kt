@@ -1681,21 +1681,28 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
                 val drawerClass = Class.forName(
                     "androidx.wear.widget.drawer.WearableNavigationDrawerView"
                 )
-                val adapterClass = Class.forName(
-                    "androidx.wear.widget.drawer.WearableNavigationDrawerView\$WearableNavigationDrawerAdapter"
-                )
-                val listenerClass = Class.forName(
-                    "androidx.wear.widget.drawer.WearableNavigationDrawerView\$OnItemSelectedListener"
-                )
-                drawerClass.getMethod("setAdapter", adapterClass).invoke(drawer, adapter)
+                val setAdapterMethod = drawerClass.methods.first {
+                    it.name == "setAdapter" && it.parameterTypes.size == 1
+                }
+                setAdapterMethod.invoke(drawer, adapter)
+                val addListenerMethod = drawerClass.methods.first {
+                    it.name == "addOnItemSelectedListener" && it.parameterTypes.size == 1
+                }
+                val listenerClass = addListenerMethod.parameterTypes[0]
                 val listener = java.lang.reflect.Proxy.newProxyInstance(
                     listenerClass.classLoader, arrayOf(listenerClass)
-                ) { _, _, args ->
-                    onWearNavigationSelected(adapter, args?.firstOrNull() as? Int ?: 0)
-                    null
+                ) { proxy, method, args ->
+                    when (method.name) {
+                        "hashCode" -> System.identityHashCode(proxy)
+                        "equals" -> proxy === args?.firstOrNull()
+                        "toString" -> "WearableNavigationListener"
+                        else -> {
+                            onWearNavigationSelected(adapter, args?.firstOrNull() as? Int ?: 0)
+                            null
+                        }
+                    }
                 }
-                drawerClass.getMethod("addOnItemSelectedListener", listenerClass)
-                    .invoke(drawer, listener)
+                addListenerMethod.invoke(drawer, listener)
             }
             findViewById<View>(actionId)?.let { drawer ->
                 val actionDrawerClass = Class.forName("androidx.wear.widget.drawer.WearableActionDrawerView")

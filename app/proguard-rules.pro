@@ -24,3 +24,15 @@
 #-renamesourcefileattribute SourceFile
 
 -keep class com.google.android.material.R$drawable { *; }
+
+# Wear OS drawer setup is invoked from BrowserActivity through reflection because the Wear
+# dependency is only available to the wearos build type.
+-keep class com.hiddenramblings.tagmo.WearableAdapter { *; }
+-keepclassmembers class androidx.wear.widget.drawer.WearableNavigationDrawerView {
+    public void setAdapter(androidx.wear.widget.drawer.WearableNavigationDrawerView$WearableNavigationDrawerAdapter);
+    public void addOnItemSelectedListener(androidx.wear.widget.drawer.WearableNavigationDrawerView$OnItemSelectedListener);
+}
+-keepclassmembers class androidx.wear.widget.drawer.WearableActionDrawerView {
+    public android.view.Menu getMenu();
+    public void setOnMenuItemClickListener(android.view.MenuItem$OnMenuItemClickListener);
+}

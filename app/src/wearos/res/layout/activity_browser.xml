@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.wear.widget.drawer.WearableDrawerLayout
+<FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/drawer_layout"
@@ -41,13 +41,13 @@
 
             <com.hiddenramblings.tagmo.eightbit.widget.FABulous
                 android:id="@+id/nfc_fab"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
                 android:clickable="true"
                 android:focusable="true"
                 android:contentDescription="@string/fabDescription"
                 app:fabSize="mini"
-                app:useCompatPadding="true"
+                app:useCompatPadding="false"
                 app:layout_anchor="@+id/browser_pager"
                 app:layout_anchorGravity="bottom|end"
                 app:maxImageSize="40dp"
@@ -74,19 +74,50 @@
             </com.hiddenramblings.tagmo.eightbit.view.AnimatedLinearLayout>
 
         </androidx.coordinatorlayout.widget.CoordinatorLayout>
+
+        <LinearLayout
+            android:id="@+id/wear_toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="32dp"
+            android:layout_gravity="top"
+            android:background="?attr/colorSurface"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingHorizontal="4dp"
+            app:layout_boxedEdges="all">
+
+            <ImageButton
+                android:id="@+id/wear_app_button"
+                android:layout_width="28dp"
+                android:layout_height="28dp"
+                android:background="@android:color/transparent"
+                android:contentDescription="@string/wear_app_drawer"
+                android:padding="4dp"
+                android:src="@drawable/ic_menu_24"
+                android:tint="@android:color/white" />
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:maxLines="1"
+                android:text="@string/app_name"
+                android:textColor="@android:color/white"
+                android:textSize="12sp"
+                android:textStyle="bold" />
+
+            <ImageButton
+                android:id="@+id/wear_content_button"
+                android:layout_width="28dp"
+                android:layout_height="28dp"
+                android:background="@android:color/transparent"
+                android:contentDescription="@string/wear_content_menu"
+                android:padding="4dp"
+                android:src="@drawable/ic_more_horiz_24"
+                android:tint="@android:color/white" />
+
+        </LinearLayout>
     </androidx.wear.widget.BoxInsetLayout>
 
-    <androidx.wear.widget.drawer.WearableNavigationDrawerView
-        android:id="@+id/top_navigation_drawer"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        app:enableAutoPeek="true" />
-
-    <androidx.wear.widget.drawer.WearableActionDrawerView
-        android:id="@+id/bottom_action_drawer"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        app:enableAutoPeek="true"
-        app:showOverflowInPeek="true" />
-
-</androidx.wear.widget.drawer.WearableDrawerLayout>
+</FrameLayout>

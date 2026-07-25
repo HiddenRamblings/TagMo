@@ -8,5 +8,7 @@
     <string name="imageview_screen">Flask Screen</string>
     <string name="nfcIconDescription">NFC Icon</string>
     <string name="fabDescription">FAB Icon</string>
+    <string name="wear_app_drawer">Open TagMo navigation</string>
+    <string name="wear_content_menu">Open browser actions</string>
     <string name="movingBarDescription">Moving bar indicating the scanning process</string>
 </resources>

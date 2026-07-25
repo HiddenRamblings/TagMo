@@ -132,9 +132,10 @@ open class BrowserSettings : Parcelable {
         setFilter(FILTER.GAME_TITLES, prefs.filterGameTitles())
         amiiboView = prefs.browserAmiiboView()
         imageNetworkSettings = prefs.imageNetwork()
-        browserRootFolder = prefs.browserRootFolder()?.let {
-            File(Storage.getFile(prefs.preferEmulated()), it)
-        } ?: Storage.getDownloadDir(null)
+        browserRootFolder = prefs.browserRootFolder()
+            ?.takeIf { it.isNotEmpty() }
+            ?.let { File(Storage.getFile(prefs.preferEmulated()), it) }
+            ?: Storage.getDownloadDir(null).also { it.mkdirs() }
         browserRootDocument = prefs.browserRootDocument()?.let { Uri.parse(it) }
         isRecursiveEnabled = prefs.recursiveFolders()
         lastUpdatedAPI = prefs.lastUpdatedAPI()

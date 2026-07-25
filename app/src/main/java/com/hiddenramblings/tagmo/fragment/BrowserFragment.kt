@@ -237,6 +237,9 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener, OnGameTitleClickLis
                     }
                 }
             }
+            if (TagMo.isWearable) {
+                view.findViewById<View>(R.id.bottom_sheet)?.isGone = true
+            }
             setBottomDrawerContentVisible(false)
 
             view.findViewById<View>(R.id.select_zip_file).setOnClickListener {
@@ -440,7 +443,11 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener, OnGameTitleClickLis
     }
 
     fun setStorageButtons() {
-        if (TagMo.isWearable) return
+        if (TagMo.isWearable) {
+            requireView().findViewById<View>(R.id.switch_storage_root)?.isGone = true
+            requireView().findViewById<View>(R.id.switch_storage_type)?.isGone = true
+            return
+        }
         browserActivity?.let { activity ->
             val switchStorageRoot = requireView().findViewById<AppCompatButton>(R.id.switch_storage_root)
             val switchStorageType = requireView().findViewById<AppCompatButton>(R.id.switch_storage_type)

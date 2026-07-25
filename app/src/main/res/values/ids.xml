@@ -4,4 +4,13 @@
     <item name="dynamic_translation_source" type="id" />
     <item name="dynamic_translation_fallback" type="id" />
     <item name="dynamic_translation_resource" type="id" />
+    <item name="wear_nav_amiibo" type="id" />
+    <item name="wear_nav_games" type="id" />
+    <item name="wear_nav_foomiibo" type="id" />
+    <item name="wear_nav_guides" type="id" />
+    <item name="wear_nav_elite" type="id" />
+    <item name="wear_nav_gatt" type="id" />
+    <item name="wear_nav_settings" type="id" />
+    <item name="wear_app_button" type="id" />
+    <item name="wear_content_button" type="id" />
 </resources>

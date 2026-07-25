@@ -18,6 +18,7 @@ import android.content.pm.ActivityInfo
 import android.content.pm.PackageManager
 import android.content.res.Configuration
 import android.graphics.Rect
+import android.graphics.drawable.GradientDrawable
 import android.net.Uri
 import android.os.*
 import android.os.storage.StorageManager
@@ -385,7 +386,6 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
         if (TagMo.isWearable) {
             onCreateWearOptionsMenu()
             onCreateWearNavigation()
-            if (restoreSettingsPage) settingsPage?.isVisible = true
         } else {
             onCreateMainMenuLayout()
             prefsDrawer = findViewById(R.id.drawer_layout)
@@ -589,7 +589,10 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
     private fun requestStoragePermission() {
         when {
             TagMo.isWearable -> {
-                onRequestStorage.launch(PERMISSIONS_STORAGE)
+                // Wear OS does not reliably grant the legacy shared-storage permissions.
+                // Start with the public Download folder instead of falling through to the
+                // document-tree setup prompt.
+                onStorageEnabled()
             }
             Version.isRedVelvet -> {
                 when {
@@ -1496,6 +1499,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
 
     @Throws(ActivityNotFoundException::class)
     fun onDocumentRequested() {
+        if (TagMo.isWearable) return
         if (Version.isLollipop) {
             val docTreeIntent = getDocumentTreeIntent().apply {
                 putExtra("android.content.extra.SHOW_ADVANCED", true)
@@ -1564,6 +1568,13 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
             R.id.refresh -> {
                 onRefresh(true)
             }
+            R.id.wear_nav_amiibo -> onWearNavigationAction(0)
+            R.id.wear_nav_games -> onWearNavigationAction(1)
+            R.id.wear_nav_foomiibo -> onWearNavigationAction(2)
+            R.id.wear_nav_guides -> onWearNavigationAction(3)
+            R.id.wear_nav_elite -> onWearNavigationAction(4)
+            R.id.wear_nav_gatt -> onWearNavigationAction(5)
+            R.id.wear_nav_settings -> onWearNavigationAction(6)
             R.id.sort_id -> {
                 settings?.let {
                     it.sort = SORT.ID.value
@@ -1670,82 +1681,95 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
     }
 
     private fun onCreateWearNavigation() {
-        val navigationId = resources.getIdentifier("top_navigation_drawer", "id", packageName)
-        val actionId = resources.getIdentifier("bottom_action_drawer", "id", packageName)
-        if (navigationId == 0 || actionId == 0) return
-        try {
-            val adapter = Class.forName("com.hiddenramblings.tagmo.WearableAdapter")
-                .getConstructor(Context::class.java)
-                .newInstance(this)
-            findViewById<View>(navigationId)?.let { drawer ->
-                val drawerClass = Class.forName(
-                    "androidx.wear.widget.drawer.WearableNavigationDrawerView"
-                )
-                val setAdapterMethod = drawerClass.methods.first {
-                    it.name == "setAdapter" && it.parameterTypes.size == 1
-                }
-                setAdapterMethod.invoke(drawer, adapter)
-                val addListenerMethod = drawerClass.methods.first {
-                    it.name == "addOnItemSelectedListener" && it.parameterTypes.size == 1
-                }
-                val listenerClass = addListenerMethod.parameterTypes[0]
-                val listener = java.lang.reflect.Proxy.newProxyInstance(
-                    listenerClass.classLoader, arrayOf(listenerClass)
-                ) { proxy, method, args ->
-                    when (method.name) {
-                        "hashCode" -> System.identityHashCode(proxy)
-                        "equals" -> proxy === args?.firstOrNull()
-                        "toString" -> "WearableNavigationListener"
-                        else -> {
-                            onWearNavigationSelected(adapter, args?.firstOrNull() as? Int ?: 0)
-                            null
-                        }
-                    }
-                }
-                addListenerMethod.invoke(drawer, listener)
-            }
-            findViewById<View>(actionId)?.let { drawer ->
-                val actionDrawerClass = Class.forName("androidx.wear.widget.drawer.WearableActionDrawerView")
-                val wearMenu = actionDrawerClass.getMethod("getMenu").invoke(drawer) as? Menu
-                wearMenu?.let {
-                    addWearMenuItems(it)
-                    bindBrowserMenuItems(it)
-                    onCreateWearOptionsMenu()
-                }
-                actionDrawerClass.getMethod(
-                        "setOnMenuItemClickListener",
-                        MenuItem.OnMenuItemClickListener::class.java
-                    ).invoke(drawer, MenuItem.OnMenuItemClickListener { item ->
-                        onMenuItemClicked(item)
-                    })
-            }
-        } catch (e: Exception) {
-            Debug.warn(e)
+        findViewById<View>(R.id.wear_app_button)?.setOnClickListener { anchor ->
+            showWearMenu(anchor, wearNavigationItems())
+        }
+        findViewById<View>(R.id.wear_content_button)?.setOnClickListener { anchor ->
+            showWearMenu(anchor, wearContentItems())
         }
     }
 
-    private fun addWearMenuItems(menu: Menu) {
-        menu.clear()
-        menu.add(0, R.id.refresh, 0, R.string.refresh_browser)
-            .setIcon(R.drawable.ic_refresh_24dp)
-        menu.add(0, R.id.view_compact, 0, R.string.compact)
-        menu.add(0, R.id.view_large, 0, R.string.large)
-        menu.add(0, R.id.view_image, 0, R.string.image)
-        menu.add(0, R.id.recursive, 0, R.string.recursive_folders)
-        menu.add(0, R.id.clean_duplicates, 0, R.string.clean_duplicates)
-            .setIcon(R.drawable.ic_file_copy_off_24dp)
-        menu.add(0, R.id.send_donation, 0, R.string.send_donation)
-            .setIcon(R.drawable.ic_github_sponsor_24dp)
+    private data class WearMenuEntry(val id: Int, val title: Int)
+
+    private fun wearNavigationItems() = buildList {
+        add(WearMenuEntry(R.id.wear_nav_amiibo, R.string.menu_amiibo))
+        add(WearMenuEntry(R.id.wear_nav_games, R.string.menu_games))
+        add(WearMenuEntry(R.id.wear_nav_foomiibo, R.string.menu_foomiibo))
+        add(WearMenuEntry(R.id.wear_nav_guides, R.string.menu_guides))
+        if (prefs.eliteEnabled()) add(WearMenuEntry(R.id.wear_nav_elite, R.string.menu_elite))
+        add(WearMenuEntry(R.id.wear_nav_gatt, R.string.menu_gatt))
+        add(WearMenuEntry(R.id.wear_nav_settings, R.string.menu_settings))
     }
 
-    private fun onWearNavigationSelected(adapter: Any, position: Int) {
-        val action = try {
-            adapter.javaClass.getMethod("getItemAction", Int::class.javaPrimitiveType)
-                .invoke(adapter, position) as? Int
-        } catch (e: Exception) {
-            Debug.warn(e)
-            null
+    private fun wearContentItems() = listOf(
+        WearMenuEntry(R.id.refresh, R.string.refresh_browser),
+        WearMenuEntry(R.id.view_compact, R.string.compact),
+        WearMenuEntry(R.id.view_large, R.string.large),
+        WearMenuEntry(R.id.view_image, R.string.image),
+        WearMenuEntry(R.id.recursive, R.string.recursive_folders),
+        WearMenuEntry(R.id.clean_duplicates, R.string.clean_duplicates),
+        WearMenuEntry(R.id.send_donation, R.string.send_donation)
+    )
+
+    private fun showWearMenu(anchor: View, entries: List<WearMenuEntry>) {
+        val density = resources.displayMetrics.density
+        val toolbar = findViewById<View>(R.id.wear_toolbar)
+        val rowHeight = (34 * density).toInt()
+        val padding = (4 * density).toInt()
+        val width = minOf((148 * density).toInt(), toolbar.width)
+        val maxHeight = minOf((toolbar.width * 0.92f).toInt(), rowHeight * entries.size + padding * 2)
+        val menu = MenuBuilder(this)
+        entries.forEachIndexed { index, entry -> menu.add(0, entry.id, index, entry.title) }
+        var popup: PopupWindow? = null
+
+        val list = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            setPadding(padding, padding, padding, padding)
         }
+        val textColor = android.util.TypedValue().also {
+            theme.resolveAttribute(android.R.attr.textColorPrimary, it, true)
+        }.data
+        entries.forEach { entry ->
+            TextView(this).apply {
+                text = getString(entry.title)
+                setTextColor(textColor)
+                textSize = 13f
+                gravity = Gravity.CENTER_VERTICAL
+                setPadding((12 * density).toInt(), 0, (12 * density).toInt(), 0)
+                isSingleLine = true
+                setOnClickListener {
+                    popup?.dismiss()
+                    onMenuItemClicked(menu.findItem(entry.id))
+                }
+                list.addView(this, LinearLayout.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT,
+                    rowHeight
+                ))
+            }
+        }
+
+        val scroll = ScrollView(this).apply { addView(list) }
+        scroll.background = GradientDrawable().apply {
+            setColor(ContextCompat.getColor(this@BrowserActivity, R.color.ui_surface))
+            setStroke((density).toInt(), ContextCompat.getColor(this@BrowserActivity, R.color.ui_outline))
+            cornerRadius = 12 * density
+        }
+        popup = PopupWindow(scroll, width, maxHeight, true).apply {
+            isOutsideTouchable = true
+            elevation = 8 * density
+            setBackgroundDrawable(scroll.background)
+        }
+        val location = IntArray(2)
+        toolbar.getLocationOnScreen(location)
+        val left = if (anchor.id == R.id.wear_content_button) {
+            location[0] + toolbar.width - width
+        } else {
+            location[0]
+        }
+        popup.showAtLocation(toolbar, Gravity.TOP or Gravity.START, left, location[1] + toolbar.height + padding)
+    }
+
+    private fun onWearNavigationAction(action: Int) {
         when (action) {
             0 -> showBrowserPage()
             1 -> showGameTitlesPage()
@@ -2731,6 +2755,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
 
     fun restoreMenuLayout() {
         settingsPage?.isGone = true
+        setWearBrowserFabVisible(true)
         if (reloadTabCollection) {
             reloadTabCollection = false
             onTabCollectionChanged()
@@ -2764,10 +2789,17 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
         CoroutineScope(Dispatchers.Main).launch {
             if (TagMo.isWearable) {
                 settingsPage?.isVisible = true
+                setWearBrowserFabVisible(false)
             } else {
                 prefsDrawer?.openDrawer(GravityCompat.START)
                 settingsPage?.isVisible = true
             }
+        }
+    }
+
+    private fun setWearBrowserFabVisible(visible: Boolean) {
+        if (TagMo.isWearable && ::nfcFab.isInitialized) {
+            nfcFab.isVisible = visible
         }
     }
 
@@ -2842,7 +2874,7 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
         if (!isRoot) return
         if (keyManager.isKeyMissing) {
             hideFakeSnackbar()
-            onShowSettingsFragment()
+            if (!TagMo.isWearable) onShowSettingsFragment()
         } else {
             withContext(Dispatchers.Main) {
                 onKeysLoaded(true)
@@ -3045,6 +3077,9 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
             override fun handleOnBackPressed() {
                 if (TagMo.isWearable) {
                     when {
+                        settingsPage?.isVisible == true -> {
+                            restoreMenuLayout()
+                        }
                         browserSheet?.state == BottomSheetBehavior.STATE_EXPANDED -> {
                             browserSheet?.state = BottomSheetBehavior.STATE_COLLAPSED
                         }

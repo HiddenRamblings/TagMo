@@ -5,7 +5,6 @@ import com.hiddenramblings.tagmo.AmiiTool
 import com.hiddenramblings.tagmo.R
 import com.hiddenramblings.tagmo.eightbit.io.Debug
 import com.hiddenramblings.tagmo.nfctech.NfcByte
-import com.hiddenramblings.tagmo.nfctech.TagArray.toHex
 import java.io.ByteArrayOutputStream
 import java.io.IOException
 import java.io.InputStream
@@ -55,11 +54,20 @@ class KeyManager(var context: Context) {
 
     @Throws(NoSuchAlgorithmException::class)
     private fun getKeyFile(data: ByteArray, offset: Int = 0): String? {
-        val md5 = MessageDigest.getInstance("MD5")
+        return getKeyFile(
+            data, offset, MessageDigest.getInstance("MD5"), ByteArray(MD5_DIGEST_SIZE)
+        )
+    }
+
+    private fun getKeyFile(
+        data: ByteArray, offset: Int, md5: MessageDigest, digest: ByteArray
+    ): String? {
+        md5.reset()
         md5.update(data, offset, NfcByte.KEY_FILE_SIZE)
-        return when (md5.digest().toHex().uppercase()) {
-            FIXED_KEY_MD5 -> FIXED_KEY_MD5
-            UNFIXED_KEY_MD5 -> UNFIXED_KEY_MD5
+        md5.digest(digest, 0, digest.size)
+        return when {
+            digest.contentEquals(FIXED_KEY_DIGEST) -> FIXED_KEY_MD5
+            digest.contentEquals(UNFIXED_KEY_DIGEST) -> UNFIXED_KEY_MD5
             else -> null
         }
     }
@@ -83,8 +91,10 @@ class KeyManager(var context: Context) {
         hasUnFixedKey()
         var imported = false
         var offset = 0
+        val md5 = MessageDigest.getInstance("MD5")
+        val digest = ByteArray(MD5_DIGEST_SIZE)
         while (offset <= data.size - NfcByte.KEY_FILE_SIZE) {
-            getKeyFile(data, offset)?.let { file ->
+            getKeyFile(data, offset, md5, digest)?.let { file ->
                 val key = data.copyOfRange(offset, offset + NfcByte.KEY_FILE_SIZE)
                 if (file == FIXED_KEY_MD5 && fixedKey == null) {
                     fixedKey = saveKeyFile(file, key)
@@ -104,8 +114,12 @@ class KeyManager(var context: Context) {
     fun removeEmbeddedKeys(data: ByteArray): ByteArray {
         val output = ByteArrayOutputStream(data.size)
         var offset = 0
+        val md5 = MessageDigest.getInstance("MD5")
+        val digest = ByteArray(MD5_DIGEST_SIZE)
         while (offset < data.size) {
-            if (offset <= data.size - NfcByte.KEY_FILE_SIZE && getKeyFile(data, offset) != null) {
+            if (offset <= data.size - NfcByte.KEY_FILE_SIZE
+                && getKeyFile(data, offset, md5, digest) != null
+            ) {
                 offset += NfcByte.KEY_FILE_SIZE
             } else {
                 output.write(data[offset].toInt())
@@ -193,5 +207,10 @@ class KeyManager(var context: Context) {
     companion object {
         private const val FIXED_KEY_MD5 = "0AD86557C7BA9E75C79A7B43BB466333"
         private const val UNFIXED_KEY_MD5 = "2551AFC7C8813008819836E9B619F7ED"
+        private const val MD5_DIGEST_SIZE = 16
+        private val FIXED_KEY_DIGEST = FIXED_KEY_MD5.chunked(2)
+            .map { it.toInt(16).toByte() }.toByteArray()
+        private val UNFIXED_KEY_DIGEST = UNFIXED_KEY_MD5.chunked(2)
+            .map { it.toInt(16).toByte() }.toByteArray()
     }
 }

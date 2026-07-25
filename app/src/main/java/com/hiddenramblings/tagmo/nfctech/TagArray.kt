@@ -37,6 +37,8 @@ import java.nio.ByteBuffer
 import java.util.*
 
 object TagArray {
+    private val HEX_DIGITS = "0123456789ABCDEF".toCharArray()
+
     @JvmStatic
     fun Tag?.technology(): String {
         with (TagMo.appContext) {
@@ -112,9 +114,13 @@ object TagArray {
 
     @JvmStatic
     fun ByteArray.toHex(): String {
-        val sb = StringBuilder()
-        this.forEach { sb.append(String.format("%02X", it)) }
-        return sb.toString()
+        val hex = CharArray(size * 2)
+        forEachIndexed { index, byte ->
+            val value = byte.toInt() and 0xFF
+            hex[index * 2] = HEX_DIGITS[value ushr 4]
+            hex[index * 2 + 1] = HEX_DIGITS[value and 0x0F]
+        }
+        return String(hex)
     }
 
     fun ByteArray.toLong(): Long {
@@ -381,10 +387,31 @@ object TagArray {
         return output.toByteArray()
     }
 
+    private fun isValidTagLength(length: Int): Boolean {
+        return length == NfcByte.TAG_DATA_SIZE
+                || length == NfcByte.TAG_DATA_SIZE + 8
+                || (length > NfcByte.TAG_DATA_SIZE + 8
+                && length % (NfcByte.TAG_DATA_SIZE + 8) == 0)
+                || (length > 0 && length % NfcByte.TAG_FULL_SIZE == 0)
+    }
+
+    private fun validateImportSize(data: ByteArray, path: String?) {
+        if (data.size == NfcByte.KEY_FILE_SIZE || data.size == NfcByte.KEY_RETAIL_SZ) return
+        val hasValidTagLength = isValidTagLength(data.size)
+                || isValidTagLength(data.size - NfcByte.KEY_FILE_SIZE)
+                || isValidTagLength(data.size - NfcByte.KEY_RETAIL_SZ)
+        if (!hasValidTagLength) {
+            throw IOException(TagMo.appContext.getString(
+                R.string.invalid_file_size, path, data.size, NfcByte.TAG_DATA_SIZE
+            ))
+        }
+    }
+
     @JvmStatic
     @Throws(Exception::class)
     fun getValidatedFileList(keyManager: KeyManager, file: File): List<ByteArray> {
         val data = file.inputStream().use { it.readImportBytes(file.path) }
+        validateImportSize(data, file.path)
         try { keyManager.evaluateKey(data) } catch (_: Exception) { }
         val tagData = try { keyManager.removeEmbeddedKeys(data) } catch (_: Exception) { data }
         return TagReader.readTagDataList(file.path, tagData).map { getValidatedData(keyManager, it) }
@@ -400,6 +427,7 @@ object TagArray {
         val data = TagMo.appContext.contentResolver.openInputStream(fileUri).use {
             it?.readImportBytes(fileUri.path) ?: byteArrayOf()
         }
+        validateImportSize(data, fileUri.path)
         try { keyManager.evaluateKey(data) } catch (_: Exception) { }
         val tagData = try { keyManager.removeEmbeddedKeys(data) } catch (_: Exception) { data }
         return TagReader.readTagDataList(fileUri.path, tagData).map {

@@ -11,6 +11,7 @@
     <item name="wear_nav_elite" type="id" />
     <item name="wear_nav_gatt" type="id" />
     <item name="wear_nav_settings" type="id" />
+    <item name="wear_toolbar" type="id" />
     <item name="wear_app_button" type="id" />
     <item name="wear_content_button" type="id" />
 </resources>

@@ -591,7 +591,7 @@ class NfcActivity : AppCompatActivity() {
             if (e is TagLostException) {
                 closeTagSilently(ntag215)
                 if (prefs.eliteEnabled()) {
-                    showMessage(R.string.error_tag_lost)
+                    showMessage(R.string.speed_scan)
                 } else {
                     showError(getString(R.string.error_tag_lost))
                 }

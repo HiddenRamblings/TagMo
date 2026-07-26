@@ -588,11 +588,28 @@ class NfcActivity : AppCompatActivity() {
             }
         } catch (e: Exception) {
             Debug.warn(e)
+            if (e is TagLostException) {
+                closeTagSilently(ntag215)
+                if (prefs.eliteEnabled()) {
+                    showMessage(R.string.error_tag_lost)
+                } else {
+                    showError(getString(R.string.error_tag_lost))
+                }
+                return
+            }
             Debug.getExceptionCause(e)?.let { error ->
                 when {
                     e is SecurityException && !tagExpired -> {
                         tagExpired = true
                         onMifareUltralight(intent.parcelable<Tag>(NfcAdapter.EXTRA_TAG))
+                    }
+                    e is SecurityException -> {
+                        closeTagSilently(ntag215)
+                        if (prefs.eliteEnabled()) {
+                            showMessage(R.string.error_tag_lost)
+                        } else {
+                            showError(getString(R.string.error_tag_lost))
+                        }
                     }
                     getString(R.string.error_tag_rewrite) == error -> {
                         withContext(Dispatchers.Main) {
@@ -641,11 +658,6 @@ class NfcActivity : AppCompatActivity() {
 
                     prefs.eliteEnabled() -> {
                         when {
-                            e is TagLostException -> {
-                                showMessage(R.string.speed_scan)
-                                closeTagSilently(ntag215)
-                            }
-
                             getString(R.string.invalid_tag_lock) == error -> {
                                 showMessage(R.string.tag_disconnect)
                                 closeTagSilently(ntag215)
@@ -680,7 +692,7 @@ class NfcActivity : AppCompatActivity() {
 
                     else -> {
                         when {
-                            e is TagLostException || getString(R.string.invalid_tag_lock) == error -> {
+                            getString(R.string.invalid_tag_lock) == error -> {
                                 closeTagSilently(ntag215)
                                 showError("${getString(R.string.tag_disconnect)}\n\n$error")
                             }

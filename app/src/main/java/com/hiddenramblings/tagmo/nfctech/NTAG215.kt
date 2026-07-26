@@ -73,6 +73,12 @@ class NTAG215 : TagTechnology {
         }
     }
 
+    @Throws(IOException::class)
+    fun transceiveOrThrow(data: ByteArray?): ByteArray {
+        return tagMifare?.transceive(data) ?: tagNfcA?.transceive(data)
+            ?: throw IOException()
+    }
+
     fun getVersion(isGeneric: Boolean): ByteArray? {
         val command = if (isGeneric)
             byteArrayOf(NfcByte.CMD_GET_VERSION.toByte())

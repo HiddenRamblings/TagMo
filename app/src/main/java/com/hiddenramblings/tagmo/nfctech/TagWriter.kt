@@ -1,5 +1,6 @@
 package com.hiddenramblings.tagmo.nfctech
 
+import android.nfc.TagLostException
 import com.hiddenramblings.tagmo.R
 import com.hiddenramblings.tagmo.TagMo
 import com.hiddenramblings.tagmo.amiibo.KeyManager
@@ -15,6 +16,8 @@ import java.io.IOException
 import java.io.InputStreamReader
 
 object TagWriter {
+    private const val AUTH_TIMEOUT_MS = 1000
+
     @Throws(Exception::class)
     private fun splitPages(data: ByteArray): Array<ByteArray?> {
         if (data.size < NfcByte.TAG_DATA_SIZE)
@@ -256,12 +259,18 @@ object TagWriter {
             password[2],
             password[3]
         )
-        val response = tag.transceive(auth)
-            ?: throw Exception(TagMo.appContext.getString(R.string.error_auth_null))
+        tag.timeout = AUTH_TIMEOUT_MS
+        val response = try {
+            tag.transceiveOrThrow(auth)
+        } catch (e: TagLostException) {
+            throw e
+        } catch (e: IOException) {
+            throw Exception(TagMo.appContext.getString(R.string.error_auth_io), e)
+        }
         val respStr = response.toHex()
         Debug.verbose(TagWriter::class.java, R.string.auth_response, respStr)
         if ("8080" != respStr) {
-            throw Exception(TagMo.appContext.getString(R.string.fail_auth))
+            throw Exception(TagMo.appContext.getString(R.string.error_auth_rejected))
         }
     }
 

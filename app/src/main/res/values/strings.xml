@@ -438,7 +438,10 @@
     <string name="error_elite_write">Error while writing data to N2 Elite</string>
     <string name="error_elite_auth">Error while authenticating N2 Elite</string>
     <string name="error_amiitool_init">Failed to initialize amiitool</string>
-    <string name="error_auth_null">Auth result was null</string>
+    <string name="error_auth_null">NFC communication failed during authentication.</string>
+    <string name="error_auth_io">NFC communication failed during authentication.</string>
+    <string name="error_tag_lost">The NFC tag was lost during the operation.</string>
+    <string name="error_auth_rejected">The tag rejected the authentication password.</string>
     <string name="error_archive_format">Zip encoding not supported</string>
     <string name="error_archive_invalid">Archive extraction failed!</string>
     <string name="error_uri_unknown">Invalid or empty file selected!</string>

@@ -97795,7 +97795,22 @@
 		},
 		"0x05840000037e0002": {
 			"games3DS": [],
-			"gamesWiiU": [],
+			"gamesWiiU": [
+				{
+					"gameName": "Star Fox Zero",
+					"gameID": [
+						"00050000101AFF00",
+						"00050000101B0400",
+						"00050000101B0500"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Play as a black Arwing",
+							"write": false
+						}
+					]
+				}
+			],
 			"gamesSwitch": [
 				{
 					"gameName": "Super Smash Bros. Ultimate",
@@ -102192,7 +102207,20 @@
 					]
 				}
 			],
-			"gamesSwitch2": []
+			"gamesSwitch2": [
+				{
+					"gameName": "Splatoon Raiders",
+					"gameID": [
+						"0400380020056000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive special clothing",
+							"write": false
+						}
+					]
+				}
+			]
 		},
 		"0x08000100025f0402": {
 			"games3DS": [
@@ -102448,7 +102476,20 @@
 					]
 				}
 			],
-			"gamesSwitch2": []
+			"gamesSwitch2": [
+				{
+					"gameName": "Splatoon Raiders",
+					"gameID": [
+						"0400380020056000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive special clothing",
+							"write": false
+						}
+					]
+				}
+			]
 		},
 		"0x0800010003690402": {
 			"games3DS": [
@@ -102689,7 +102730,20 @@
 					]
 				}
 			],
-			"gamesSwitch2": []
+			"gamesSwitch2": [
+				{
+					"gameName": "Splatoon Raiders",
+					"gameID": [
+						"0400380020056000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive special clothing",
+							"write": false
+						}
+					]
+				}
+			]
 		},
 		"0x0800010003820002": {
 			"games3DS": [
@@ -102906,7 +102960,20 @@
 					]
 				}
 			],
-			"gamesSwitch2": []
+			"gamesSwitch2": [
+				{
+					"gameName": "Splatoon Raiders",
+					"gameID": [
+						"0400380020056000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive special clothing",
+							"write": false
+						}
+					]
+				}
+			]
 		},
 		"0x0800010004150402": {
 			"games3DS": [
@@ -103147,7 +103214,20 @@
 					]
 				}
 			],
-			"gamesSwitch2": []
+			"gamesSwitch2": [
+				{
+					"gameName": "Splatoon Raiders",
+					"gameID": [
+						"0400380020056000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive special clothing",
+							"write": false
+						}
+					]
+				}
+			]
 		},
 		"0x08000200003f0402": {
 			"games3DS": [
@@ -103391,7 +103471,20 @@
 					]
 				}
 			],
-			"gamesSwitch2": []
+			"gamesSwitch2": [
+				{
+					"gameName": "Splatoon Raiders",
+					"gameID": [
+						"0400380020056000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive special clothing",
+							"write": false
+						}
+					]
+				}
+			]
 		},
 		"0x0800020002600402": {
 			"games3DS": [
@@ -103635,7 +103728,20 @@
 					]
 				}
 			],
-			"gamesSwitch2": []
+			"gamesSwitch2": [
+				{
+					"gameName": "Splatoon Raiders",
+					"gameID": [
+						"0400380020056000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive special clothing",
+							"write": false
+						}
+					]
+				}
+			]
 		},
 		"0x08000200036a0402": {
 			"games3DS": [
@@ -103864,7 +103970,20 @@
 					]
 				}
 			],
-			"gamesSwitch2": []
+			"gamesSwitch2": [
+				{
+					"gameName": "Splatoon Raiders",
+					"gameID": [
+						"0400380020056000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive special clothing",
+							"write": false
+						}
+					]
+				}
+			]
 		},
 		"0x0800030000400402": {
 			"games3DS": [
@@ -104108,7 +104227,20 @@
 					]
 				}
 			],
-			"gamesSwitch2": []
+			"gamesSwitch2": [
+				{
+					"gameName": "Splatoon Raiders",
+					"gameID": [
+						"0400380020056000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive special clothing",
+							"write": false
+						}
+					]
+				}
+			]
 		},
 		"0x0800030002610402": {
 			"games3DS": [
@@ -104352,7 +104484,20 @@
 					]
 				}
 			],
-			"gamesSwitch2": []
+			"gamesSwitch2": [
+				{
+					"gameName": "Splatoon Raiders",
+					"gameID": [
+						"0400380020056000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive special clothing",
+							"write": false
+						}
+					]
+				}
+			]
 		},
 		"0x08000300036b0402": {
 			"games3DS": [
@@ -104581,7 +104726,20 @@
 					]
 				}
 			],
-			"gamesSwitch2": []
+			"gamesSwitch2": [
+				{
+					"gameName": "Splatoon Raiders",
+					"gameID": [
+						"0400380020056000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive special clothing",
+							"write": false
+						}
+					]
+				}
+			]
 		},
 		"0x08010000025d0402": {
 			"games3DS": [
@@ -104802,7 +104960,20 @@
 					]
 				}
 			],
-			"gamesSwitch2": []
+			"gamesSwitch2": [
+				{
+					"gameName": "Splatoon Raiders",
+					"gameID": [
+						"0400380020056000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive special clothing",
+							"write": false
+						}
+					]
+				}
+			]
 		},
 		"0x0801000004360402": {
 			"games3DS": [
@@ -104992,7 +105163,20 @@
 					]
 				}
 			],
-			"gamesSwitch2": []
+			"gamesSwitch2": [
+				{
+					"gameName": "Splatoon Raiders",
+					"gameID": [
+						"0400380020056000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive special clothing",
+							"write": false
+						}
+					]
+				}
+			]
 		},
 		"0x08020000025e0402": {
 			"games3DS": [
@@ -105213,7 +105397,20 @@
 					]
 				}
 			],
-			"gamesSwitch2": []
+			"gamesSwitch2": [
+				{
+					"gameName": "Splatoon Raiders",
+					"gameID": [
+						"0400380020056000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive special clothing",
+							"write": false
+						}
+					]
+				}
+			]
 		},
 		"0x0802000004370402": {
 			"games3DS": [
@@ -105403,7 +105600,20 @@
 					]
 				}
 			],
-			"gamesSwitch2": []
+			"gamesSwitch2": [
+				{
+					"gameName": "Splatoon Raiders",
+					"gameID": [
+						"0400380020056000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive special clothing",
+							"write": false
+						}
+					]
+				}
+			]
 		},
 		"0x0803000003760402": {
 			"games3DS": [
@@ -105511,7 +105721,20 @@
 					]
 				}
 			],
-			"gamesSwitch2": []
+			"gamesSwitch2": [
+				{
+					"gameName": "Splatoon Raiders",
+					"gameID": [
+						"0400380020056000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive special clothing",
+							"write": false
+						}
+					]
+				}
+			]
 		},
 		"0x0803000004380402": {
 			"games3DS": [
@@ -105615,7 +105838,20 @@
 					]
 				}
 			],
-			"gamesSwitch2": []
+			"gamesSwitch2": [
+				{
+					"gameName": "Splatoon Raiders",
+					"gameID": [
+						"0400380020056000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive special clothing",
+							"write": false
+						}
+					]
+				}
+			]
 		},
 		"0x0804000003770402": {
 			"games3DS": [
@@ -105723,7 +105959,20 @@
 					]
 				}
 			],
-			"gamesSwitch2": []
+			"gamesSwitch2": [
+				{
+					"gameName": "Splatoon Raiders",
+					"gameID": [
+						"0400380020056000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive special clothing",
+							"write": false
+						}
+					]
+				}
+			]
 		},
 		"0x0804000004390402": {
 			"games3DS": [
@@ -105827,7 +106076,20 @@
 					]
 				}
 			],
-			"gamesSwitch2": []
+			"gamesSwitch2": [
+				{
+					"gameName": "Splatoon Raiders",
+					"gameID": [
+						"0400380020056000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive special clothing",
+							"write": false
+						}
+					]
+				}
+			]
 		},
 		"0x08050100038e0402": {
 			"games3DS": [
@@ -105919,7 +106181,20 @@
 					]
 				}
 			],
-			"gamesSwitch2": []
+			"gamesSwitch2": [
+				{
+					"gameName": "Splatoon Raiders",
+					"gameID": [
+						"0400380020056000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive special clothing",
+							"write": false
+						}
+					]
+				}
+			]
 		},
 		"0x08050200038f0402": {
 			"games3DS": [
@@ -106011,7 +106286,20 @@
 					]
 				}
 			],
-			"gamesSwitch2": []
+			"gamesSwitch2": [
+				{
+					"gameName": "Splatoon Raiders",
+					"gameID": [
+						"0400380020056000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive special clothing",
+							"write": false
+						}
+					]
+				}
+			]
 		},
 		"0x08050200041b0402": {
 			"games3DS": [
@@ -106091,7 +106379,20 @@
 					]
 				}
 			],
-			"gamesSwitch2": []
+			"gamesSwitch2": [
+				{
+					"gameName": "Splatoon Raiders",
+					"gameID": [
+						"0400380020056000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive special clothing",
+							"write": false
+						}
+					]
+				}
+			]
 		},
 		"0x0805030003900402": {
 			"games3DS": [
@@ -106183,7 +106484,20 @@
 					]
 				}
 			],
-			"gamesSwitch2": []
+			"gamesSwitch2": [
+				{
+					"gameName": "Splatoon Raiders",
+					"gameID": [
+						"0400380020056000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive special clothing",
+							"write": false
+						}
+					]
+				}
+			]
 		},
 		"0x08060100041c0402": {
 			"games3DS": [
@@ -106251,7 +106565,20 @@
 					]
 				}
 			],
-			"gamesSwitch2": []
+			"gamesSwitch2": [
+				{
+					"gameName": "Splatoon Raiders",
+					"gameID": [
+						"0400380020056000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive special clothing",
+							"write": false
+						}
+					]
+				}
+			]
 		},
 		"0x0807000004330402": {
 			"games3DS": [
@@ -106323,7 +106650,105 @@
 					]
 				}
 			],
-			"gamesSwitch2": []
+			"gamesSwitch2": [
+				{
+					"gameName": "Splatoon Raiders",
+					"gameID": [
+						"0400380020056000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive special clothing",
+							"write": false
+						}
+					]
+				}
+			]
+		},
+		"0x0807000004f70402": {
+			"games3DS": [
+				{
+					"gameName": "Style Savvy: Styling Star",
+					"gameID": [
+						"00040000001C2500"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Unlock a Splatoon pattern",
+							"write": false
+						}
+					]
+				}
+			],
+			"gamesWiiU": [],
+			"gamesSwitch": [
+				{
+					"gameName": "Animal Crossing: New Horizons",
+					"gameID": [
+						"01006F8002326000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Invite amiibo-exclusive villager Cece / Unlock Splatoon-themed items in shopping catalog",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Conga Master Party!",
+					"gameID": [
+						"01007EF00399C000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Unlock a special costume",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Mario Kart 8 Deluxe",
+					"gameID": [
+						"0100152000022000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Unlock a Splatoon-themed racing suit",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Splatoon 3",
+					"gameID": [
+						"0100C2500FC20000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Revisit the Grand Festival Grounds to see past Splatfest performances",
+							"write": false
+						},
+						{
+							"Usage": "Unlock exclusive gear / Save favorite weapons, gear, and control settings / Take photos with the character or saved gear",
+							"write": true
+						}
+					]
+				}
+			],
+			"gamesSwitch2": [
+				{
+					"gameName": "Splatoon Raiders",
+					"gameID": [
+						"0400380020056000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive special clothing",
+							"write": false
+						}
+					]
+				}
+			]
 		},
 		"0x0808000004340402": {
 			"games3DS": [
@@ -106395,7 +106820,105 @@
 					]
 				}
 			],
-			"gamesSwitch2": []
+			"gamesSwitch2": [
+				{
+					"gameName": "Splatoon Raiders",
+					"gameID": [
+						"0400380020056000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive special clothing",
+							"write": false
+						}
+					]
+				}
+			]
+		},
+		"0x0808000004f80402": {
+			"games3DS": [
+				{
+					"gameName": "Style Savvy: Styling Star",
+					"gameID": [
+						"00040000001C2500"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Unlock a Splatoon pattern",
+							"write": false
+						}
+					]
+				}
+			],
+			"gamesWiiU": [],
+			"gamesSwitch": [
+				{
+					"gameName": "Animal Crossing: New Horizons",
+					"gameID": [
+						"01006F8002326000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Invite amiibo-exclusive villager Viché / Unlock Splatoon-themed items in shopping catalog",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Conga Master Party!",
+					"gameID": [
+						"01007EF00399C000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Unlock a special costume",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Mario Kart 8 Deluxe",
+					"gameID": [
+						"0100152000022000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Unlock a Splatoon-themed racing suit",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Splatoon 3",
+					"gameID": [
+						"0100C2500FC20000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Revisit the Grand Festival Grounds to see past Splatfest performances",
+							"write": false
+						},
+						{
+							"Usage": "Unlock exclusive gear / Save favorite weapons, gear, and control settings / Take photos with the character or saved gear",
+							"write": true
+						}
+					]
+				}
+			],
+			"gamesSwitch2": [
+				{
+					"gameName": "Splatoon Raiders",
+					"gameID": [
+						"0400380020056000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive special clothing",
+							"write": false
+						}
+					]
+				}
+			]
 		},
 		"0x0809000004350402": {
 			"games3DS": [
@@ -106471,7 +106994,109 @@
 					]
 				}
 			],
-			"gamesSwitch2": []
+			"gamesSwitch2": [
+				{
+					"gameName": "Splatoon Raiders",
+					"gameID": [
+						"0400380020056000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive special clothing",
+							"write": false
+						}
+					]
+				}
+			]
+		},
+		"0x0809000004f90402": {
+			"games3DS": [
+				{
+					"gameName": "Style Savvy: Styling Star",
+					"gameID": [
+						"00040000001C2500"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Unlock a Splatoon pattern",
+							"write": false
+						}
+					]
+				}
+			],
+			"gamesWiiU": [],
+			"gamesSwitch": [
+				{
+					"gameName": "Animal Crossing: New Horizons",
+					"gameID": [
+						"01006F8002326000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Invite amiibo-exclusive villager Cece / Unlock Splatoon-themed items in shopping catalog",
+							"write": false
+						},
+						{
+							"Usage": "Invite amiibo-exclusive villager Viché / Unlock Splatoon-themed items in shopping catalog",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Conga Master Party!",
+					"gameID": [
+						"01007EF00399C000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Unlock a special costume",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Mario Kart 8 Deluxe",
+					"gameID": [
+						"0100152000022000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Unlock a Splatoon-themed racing suit",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Splatoon 3",
+					"gameID": [
+						"0100C2500FC20000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Revisit the Grand Festival Grounds to see past Splatfest performances",
+							"write": false
+						},
+						{
+							"Usage": "Unlock exclusive gear / Save favorite weapons, gear, and control settings / Take photos with the character or saved gear",
+							"write": true
+						}
+					]
+				}
+			],
+			"gamesSwitch2": [
+				{
+					"gameName": "Splatoon Raiders",
+					"gameID": [
+						"0400380020056000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive special clothing",
+							"write": false
+						}
+					]
+				}
+			]
 		},
 		"0x09c0010102690e02": {
 			"games3DS": [
@@ -113371,6 +113996,98 @@
 				}
 			]
 		},
+		"0x1f02000004c71e03": {
+			"games3DS": [],
+			"gamesWiiU": [],
+			"gamesSwitch": [
+				{
+					"gameName": "Kirby and the Forgotten Land",
+					"gameID": [
+						"01004D300C5AE000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive star coins and a boost item",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Kirby Star Allies",
+					"gameID": [
+						"01007E3006DDA000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive two Picture Pieces, a Maxim Tomato, and two Point Stars",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Kirby's Return to Dream Land Deluxe",
+					"gameID": [
+						"01006B601380E000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive more useful items",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Mario Kart 8 Deluxe",
+					"gameID": [
+						"0100152000022000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Unlock a Kirby-themed racing suit",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Super Kirby Clash",
+					"gameID": [
+						"01003FB00C5A8000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive 10-20 Fragments",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Super Smash Bros. Ultimate",
+					"gameID": [
+						"01006A800016E000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Battle and train up a computer-controlled Figure Player of the character",
+							"write": true
+						}
+					]
+				}
+			],
+			"gamesSwitch2": [
+				{
+					"gameName": "Kirby Air Riders",
+					"gameID": [
+						"040077201BE50000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Race and train up a computer-controlled Figure Player of the character / Change main menu cursor doll to match amiibo",
+							"write": true
+						}
+					]
+				}
+			]
+		},
 		"0x1f03000002570c02": {
 			"games3DS": [
 				{
@@ -115714,7 +116431,20 @@
 					]
 				}
 			],
-			"gamesSwitch2": []
+			"gamesSwitch2": [
+				{
+					"gameName": "Xenoblade Chronicles: Definitive Edition – Nintendo Switch 2 Edition",
+					"gameID": [
+						"0100FF500E34A000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "More easily unlock special costumes / Receive useful items and experience points",
+							"write": false
+						}
+					]
+				}
+			]
 		},
 		"0x22410000041e0002": {
 			"games3DS": [],
@@ -115745,7 +116475,20 @@
 					]
 				}
 			],
-			"gamesSwitch2": []
+			"gamesSwitch2": [
+				{
+					"gameName": "Xenoblade Chronicles: Definitive Edition – Nintendo Switch 2 Edition",
+					"gameID": [
+						"0100FF500E34A000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "More easily unlock special costumes / Receive useful items and experience points",
+							"write": false
+						}
+					]
+				}
+			]
 		},
 		"0x22420000041f0002": {
 			"games3DS": [],
@@ -115776,7 +116519,20 @@
 					]
 				}
 			],
-			"gamesSwitch2": []
+			"gamesSwitch2": [
+				{
+					"gameName": "Xenoblade Chronicles: Definitive Edition – Nintendo Switch 2 Edition",
+					"gameID": [
+						"0100FF500E34A000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "More easily unlock special costumes / Receive useful items and experience points",
+							"write": false
+						}
+					]
+				}
+			]
 		},
 		"0x22430000043d1b02": {
 			"games3DS": [],
@@ -115795,7 +116551,20 @@
 					]
 				}
 			],
-			"gamesSwitch2": []
+			"gamesSwitch2": [
+				{
+					"gameName": "Xenoblade Chronicles: Definitive Edition – Nintendo Switch 2 Edition",
+					"gameID": [
+						"0100FF500E34A000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "More easily unlock special costumes / Receive useful items and experience points",
+							"write": false
+						}
+					]
+				}
+			]
 		},
 		"0x22440000043e1b02": {
 			"games3DS": [],
@@ -115814,7 +116583,20 @@
 					]
 				}
 			],
-			"gamesSwitch2": []
+			"gamesSwitch2": [
+				{
+					"gameName": "Xenoblade Chronicles: Definitive Edition – Nintendo Switch 2 Edition",
+					"gameID": [
+						"0100FF500E34A000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "More easily unlock special costumes / Receive useful items and experience points",
+							"write": false
+						}
+					]
+				}
+			]
 		},
 		"0x22800000002c0002": {
 			"games3DS": [

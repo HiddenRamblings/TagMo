@@ -20,6 +20,7 @@
         android:layout_marginRight="4dp"
         android:layout_marginEnd="4dp"
         android:layout_gravity="center"
+        android:tint="@color/bottomSheetText"
         app:srcCompat="@drawable/ic_arrow_upward_white_24dp"/>
 
     <TextView
@@ -27,7 +28,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/parent"
-        android:textColor="@android:color/white"
+        android:textColor="@color/bottomSheetText"
         android:layout_gravity="center_vertical"
         android:textSize="16sp"/>
 </LinearLayout>

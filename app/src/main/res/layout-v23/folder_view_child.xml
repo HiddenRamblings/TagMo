@@ -18,6 +18,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:layout_marginEnd="4dp"
+        android:tint="@color/bottomSheetText"
         app:srcCompat="@drawable/ic_folder_white_24dp" />
 
     <TextView
@@ -25,6 +26,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
-        android:textColor="@android:color/white"
+        android:textColor="@color/bottomSheetText"
         android:textSize="16sp"/>
 </LinearLayout>

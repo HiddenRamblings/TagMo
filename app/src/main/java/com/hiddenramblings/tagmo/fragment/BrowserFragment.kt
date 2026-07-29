@@ -209,6 +209,7 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener, OnGameTitleClickLis
                 adapter = FoldersAdapter(settings)
                 settings.addChangeListener(adapter as? BrowserSettingsListener)
             }
+            setFolderText(settings)
 
             val toggle = view.findViewById<AppCompatImageView>(R.id.toggle)
             bottomSheet = BottomSheetBehavior.from(view.findViewById(R.id.bottom_sheet)).apply {
@@ -246,6 +247,7 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener, OnGameTitleClickLis
                 onSelectArchiveFile.launch(arrayOf(getString(R.string.mimetype_zip)))
             }
             activity.onFilterContentsLoaded()
+            managerStats
         }
     }
 
@@ -389,6 +391,7 @@ class BrowserFragment : Fragment(), OnFoomiiboClickListener, OnGameTitleClickLis
         if (isDetached || null == context) return
         browserActivity?.let { activity ->
             if (activity.viewPager.currentItem != 0) return
+            managerStats
             currentFolderView?.run {
                 val size = settings.amiiboFiles.size
                 if (size <= 0) return@run

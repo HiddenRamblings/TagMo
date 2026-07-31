@@ -418,6 +418,9 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
             })
             if (restoreSettingsPage) onShowSettingsFragment()
         }
+        if (intent?.action == Intent.ACTION_APPLICATION_PREFERENCES) {
+            onShowSettingsFragment()
+        }
 
         val popup = if (Version.isLollipopMR)
             PopupMenu(this, nfcFab, Gravity.END, 0, R.style.PopupMenu)
@@ -3060,7 +3063,11 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
 
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
-        tagScanner.onNewIntent(this@BrowserActivity, intent)
+        if (intent.action == Intent.ACTION_APPLICATION_PREFERENCES) {
+            onShowSettingsFragment()
+        } else {
+            tagScanner.onNewIntent(this@BrowserActivity, intent)
+        }
     }
 
     override fun onResume() {

@@ -1432,29 +1432,31 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
     }
 
     fun processArguments() {
-            arguments?.let { extras ->
-                if (extras.containsKey(NFCIntent.EXTRA_TAG_DATA)) {
-                    if (isServiceDiscovered) {
-                        try {
-                            extras.getByteArray(NFCIntent.EXTRA_TAG_DATA)?.let {
-                                if (deviceType == Nordic.DEVICE.CHAMELEON_ULTRA)
-                                    uploadChameleonAmiibo(it)        // direct: skip Amiibo resolution
-                                else
-                                    uploadAmiiboData(AmiiboData(it))
-                            }
-                        } catch (_: Exception) { }
-                    } else if (deviceType != Nordic.DEVICE.CHAMELEON_ULTRA) {
-                        Toasty(requireActivity()).Long(R.string.fail_no_device)
-                    } else {
-                        // Not connected yet (e.g. "Export to GATT" from the browser): remember the amiibo
-                        // and open device selection; the upload will start after connection
-                        // (see connectChameleon), without re-selection.
-                        pendingUploadData = extras.getByteArray(NFCIntent.EXTRA_TAG_DATA)
-                        selectBluetoothDevice()
-                    }
+        if (!isAdded || view == null) return
+
+        arguments?.let { extras ->
+            if (extras.containsKey(NFCIntent.EXTRA_TAG_DATA)) {
+                if (isServiceDiscovered) {
+                    try {
+                        extras.getByteArray(NFCIntent.EXTRA_TAG_DATA)?.let {
+                            if (deviceType == Nordic.DEVICE.CHAMELEON_ULTRA)
+                                uploadChameleonAmiibo(it)        // direct: skip Amiibo resolution
+                            else
+                                uploadAmiiboData(AmiiboData(it))
+                        }
+                    } catch (_: Exception) { }
+                } else if (deviceType != Nordic.DEVICE.CHAMELEON_ULTRA) {
+                    Toasty(requireActivity()).Long(R.string.fail_no_device)
+                } else {
+                    // Not connected yet (e.g. "Export to GATT" from the browser): remember the amiibo
+                    // and open device selection; the upload will start after connection
+                    // (see connectChameleon), without re-selection.
+                    pendingUploadData = extras.getByteArray(NFCIntent.EXTRA_TAG_DATA)
+                    selectBluetoothDevice()
                 }
             }
-            arguments = null
+        }
+        arguments = null
     }
 
     private fun onFragmentLoaded() {
@@ -1481,6 +1483,7 @@ open class GattSlotFragment : Fragment(), GattSlotAdapter.OnAmiiboClickListener,
         isFragmentVisible = true
         super.onResume()
         onFragmentLoaded()
+        processArguments()
     }
 
     fun onConfigurationChanged() {

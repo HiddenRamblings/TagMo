@@ -3078,6 +3078,11 @@ class BrowserActivity : AppCompatActivity(), BrowserSettingsListener,
         }
     }
 
+    override fun onRestart() {
+        super.onRestart()
+        updateManager?.refreshUpdateStatus()
+    }
+
     override fun onStart() {
         super.onStart()
         onBackPressedDispatcher.addCallback(object : OnBackPressedCallback(true) {

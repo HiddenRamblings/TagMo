@@ -285,6 +285,7 @@ class UpdateManager internal constructor(activity: BrowserActivity) {
 
     fun setUpdateListener(listener: UpdateListener?) {
         updateListener = listener
+        if (isUpdateAvailable) listener?.onUpdateFound()
     }
 
     interface UpdateListener {

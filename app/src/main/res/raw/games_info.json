@@ -537,7 +537,20 @@
 					]
 				}
 			],
-			"gamesSwitch2": []
+			"gamesSwitch2": [
+				{
+					"gameName": "Mario Tennis Fever",
+					"gameID": [
+						"0400D4201C6EA000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Use a tennis ball design based on the character (cosmetic only)",
+							"write": false
+						}
+					]
+				}
+			]
 		},
 		"0x0000000000340102": {
 			"games3DS": [
@@ -1115,7 +1128,20 @@
 					]
 				}
 			],
-			"gamesSwitch2": []
+			"gamesSwitch2": [
+				{
+					"gameName": "Mario Tennis Fever",
+					"gameID": [
+						"0400D4201C6EA000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Use a tennis ball design based on the character (cosmetic only)",
+							"write": false
+						}
+					]
+				}
+			]
 		},
 		"0x00000000003c0102": {
 			"games3DS": [
@@ -1711,7 +1737,20 @@
 					]
 				}
 			],
-			"gamesSwitch2": []
+			"gamesSwitch2": [
+				{
+					"gameName": "Mario Tennis Fever",
+					"gameID": [
+						"0400D4201C6EA000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Use a tennis ball design based on the character (cosmetic only)",
+							"write": false
+						}
+					]
+				}
+			]
 		},
 		"0x00000000003d0102": {
 			"games3DS": [
@@ -2307,7 +2346,20 @@
 					]
 				}
 			],
-			"gamesSwitch2": []
+			"gamesSwitch2": [
+				{
+					"gameName": "Mario Tennis Fever",
+					"gameID": [
+						"0400D4201C6EA000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Use a tennis ball design based on the character (cosmetic only)",
+							"write": false
+						}
+					]
+				}
+			]
 		},
 		"0x0000000002380602": {
 			"games3DS": [
@@ -2872,7 +2924,20 @@
 					]
 				}
 			],
-			"gamesSwitch2": []
+			"gamesSwitch2": [
+				{
+					"gameName": "Mario Tennis Fever",
+					"gameID": [
+						"0400D4201C6EA000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Use a tennis ball design based on the character (cosmetic only)",
+							"write": false
+						}
+					]
+				}
+			]
 		},
 		"0x0000000002390602": {
 			"games3DS": [
@@ -3437,7 +3502,20 @@
 					]
 				}
 			],
-			"gamesSwitch2": []
+			"gamesSwitch2": [
+				{
+					"gameName": "Mario Tennis Fever",
+					"gameID": [
+						"0400D4201C6EA000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Use a tennis ball design based on the character (cosmetic only)",
+							"write": false
+						}
+					]
+				}
+			]
 		},
 		"0x0000000003710102": {
 			"games3DS": [
@@ -4045,7 +4123,20 @@
 					]
 				}
 			],
-			"gamesSwitch2": []
+			"gamesSwitch2": [
+				{
+					"gameName": "Mario Tennis Fever",
+					"gameID": [
+						"0400D4201C6EA000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Use a tennis ball design based on the character (cosmetic only)",
+							"write": false
+						}
+					]
+				}
+			]
 		},
 		"0x00000003039bff02": {
 			"games3DS": [],
@@ -4188,7 +4279,20 @@
 					]
 				}
 			],
-			"gamesSwitch2": []
+			"gamesSwitch2": [
+				{
+					"gameName": "Mario Tennis Fever",
+					"gameID": [
+						"0400D4201C6EA000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Use a tennis ball design based on the character (cosmetic only)",
+							"write": false
+						}
+					]
+				}
+			]
 		},
 		"0x000000030430ff02": {
 			"games3DS": [],
@@ -4331,7 +4435,20 @@
 					]
 				}
 			],
-			"gamesSwitch2": []
+			"gamesSwitch2": [
+				{
+					"gameName": "Mario Tennis Fever",
+					"gameID": [
+						"0400D4201C6EA000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Use a tennis ball design based on the character (cosmetic only)",
+							"write": false
+						}
+					]
+				}
+			]
 		},
 		"0x00000004043f1c02": {
 			"games3DS": [
@@ -4870,7 +4987,20 @@
 					]
 				}
 			],
-			"gamesSwitch2": []
+			"gamesSwitch2": [
+				{
+					"gameName": "Mario Tennis Fever",
+					"gameID": [
+						"0400D4201C6EA000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Use a tennis ball design based on the character (cosmetic only)",
+							"write": false
+						}
+					]
+				}
+			]
 		},
 		"0x0000010000190002": {
 			"games3DS": [
@@ -5411,7 +5541,20 @@
 					]
 				}
 			],
-			"gamesSwitch2": []
+			"gamesSwitch2": [
+				{
+					"gameName": "Mario Tennis Fever",
+					"gameID": [
+						"0400D4201C6EA000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Use a tennis ball design based on the character (cosmetic only)",
+							"write": false
+						}
+					]
+				}
+			]
 		},
 		"0x0000030003a60102": {
 			"games3DS": [
@@ -5946,7 +6089,20 @@
 					]
 				}
 			],
-			"gamesSwitch2": []
+			"gamesSwitch2": [
+				{
+					"gameName": "Mario Tennis Fever",
+					"gameID": [
+						"0400D4201C6EA000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Use a tennis ball design based on the character (cosmetic only)",
+							"write": false
+						}
+					]
+				}
+			]
 		},
 		"0x0000040004c10102": {
 			"games3DS": [
@@ -6473,7 +6629,20 @@
 					]
 				}
 			],
-			"gamesSwitch2": []
+			"gamesSwitch2": [
+				{
+					"gameName": "Mario Tennis Fever",
+					"gameID": [
+						"0400D4201C6EA000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Use a tennis ball design based on the character (cosmetic only)",
+							"write": false
+						}
+					]
+				}
+			]
 		},
 		"0x0000050004e90102": {
 			"games3DS": [
@@ -7008,7 +7177,20 @@
 					]
 				}
 			],
-			"gamesSwitch2": []
+			"gamesSwitch2": [
+				{
+					"gameName": "Mario Tennis Fever",
+					"gameID": [
+						"0400D4201C6EA000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Use a tennis ball design based on the character (cosmetic only)",
+							"write": false
+						}
+					]
+				}
+			]
 		},
 		"0x00010000000c0002": {
 			"games3DS": [
@@ -7491,7 +7673,20 @@
 					]
 				}
 			],
-			"gamesSwitch2": []
+			"gamesSwitch2": [
+				{
+					"gameName": "Mario Tennis Fever",
+					"gameID": [
+						"0400D4201C6EA000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Use a tennis ball design based on the character (cosmetic only)",
+							"write": false
+						}
+					]
+				}
+			]
 		},
 		"0x0001000000350102": {
 			"games3DS": [
@@ -8013,7 +8208,20 @@
 					]
 				}
 			],
-			"gamesSwitch2": []
+			"gamesSwitch2": [
+				{
+					"gameName": "Mario Tennis Fever",
+					"gameID": [
+						"0400D4201C6EA000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Use a tennis ball design based on the character (cosmetic only)",
+							"write": false
+						}
+					]
+				}
+			]
 		},
 		"0x00010003039cff02": {
 			"games3DS": [],
@@ -8140,7 +8348,20 @@
 					]
 				}
 			],
-			"gamesSwitch2": []
+			"gamesSwitch2": [
+				{
+					"gameName": "Mario Tennis Fever",
+					"gameID": [
+						"0400D4201C6EA000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Use a tennis ball design based on the character (cosmetic only)",
+							"write": false
+						}
+					]
+				}
+			]
 		},
 		"0x0001000404401c02": {
 			"games3DS": [
@@ -8623,7 +8844,20 @@
 					]
 				}
 			],
-			"gamesSwitch2": []
+			"gamesSwitch2": [
+				{
+					"gameName": "Mario Tennis Fever",
+					"gameID": [
+						"0400D4201C6EA000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Use a tennis ball design based on the character (cosmetic only)",
+							"write": false
+						}
+					]
+				}
+			]
 		},
 		"0x0002000000010002": {
 			"games3DS": [
@@ -9114,7 +9348,20 @@
 					]
 				}
 			],
-			"gamesSwitch2": []
+			"gamesSwitch2": [
+				{
+					"gameName": "Mario Tennis Fever",
+					"gameID": [
+						"0400D4201C6EA000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Use a tennis ball design based on the character (cosmetic only)",
+							"write": false
+						}
+					]
+				}
+			]
 		},
 		"0x0002000000360102": {
 			"games3DS": [
@@ -9644,7 +9891,20 @@
 					]
 				}
 			],
-			"gamesSwitch2": []
+			"gamesSwitch2": [
+				{
+					"gameName": "Mario Tennis Fever",
+					"gameID": [
+						"0400D4201C6EA000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Use a tennis ball design based on the character (cosmetic only)",
+							"write": false
+						}
+					]
+				}
+			]
 		},
 		"0x0002000003720102": {
 			"games3DS": [
@@ -10208,7 +10468,20 @@
 					]
 				}
 			],
-			"gamesSwitch2": []
+			"gamesSwitch2": [
+				{
+					"gameName": "Mario Tennis Fever",
+					"gameID": [
+						"0400D4201C6EA000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Use a tennis ball design based on the character (cosmetic only)",
+							"write": false
+						}
+					]
+				}
+			]
 		},
 		"0x00020003039dff02": {
 			"games3DS": [],
@@ -10359,7 +10632,20 @@
 					]
 				}
 			],
-			"gamesSwitch2": []
+			"gamesSwitch2": [
+				{
+					"gameName": "Mario Tennis Fever",
+					"gameID": [
+						"0400D4201C6EA000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Use a tennis ball design based on the character (cosmetic only)",
+							"write": false
+						}
+					]
+				}
+			]
 		},
 		"0x0002000404411c02": {
 			"games3DS": [
@@ -10850,7 +11136,20 @@
 					]
 				}
 			],
-			"gamesSwitch2": []
+			"gamesSwitch2": [
+				{
+					"gameName": "Mario Tennis Fever",
+					"gameID": [
+						"0400D4201C6EA000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Use a tennis ball design based on the character (cosmetic only)",
+							"write": false
+						}
+					]
+				}
+			]
 		},
 		"0x0002010003a70102": {
 			"games3DS": [
@@ -11353,7 +11652,20 @@
 					]
 				}
 			],
-			"gamesSwitch2": []
+			"gamesSwitch2": [
+				{
+					"gameName": "Mario Tennis Fever",
+					"gameID": [
+						"0400D4201C6EA000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Use a tennis ball design based on the character (cosmetic only)",
+							"write": false
+						}
+					]
+				}
+			]
 		},
 		"0x0003000000020002": {
 			"games3DS": [
@@ -11778,7 +12090,32 @@
 					]
 				}
 			],
-			"gamesSwitch2": []
+			"gamesSwitch2": [
+				{
+					"gameName": "Mario Tennis Fever",
+					"gameID": [
+						"0400D4201C6EA000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Use a tennis ball design based on the character (cosmetic only)",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Yoshi and the Mysterious Book",
+					"gameID": [
+						"0400245021D2C000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Obtain tokens via amiibo Fortune Telling",
+							"write": false
+						}
+					]
+				}
+			]
 		},
 		"0x0003000000370102": {
 			"games3DS": [
@@ -12242,7 +12579,32 @@
 					]
 				}
 			],
-			"gamesSwitch2": []
+			"gamesSwitch2": [
+				{
+					"gameName": "Mario Tennis Fever",
+					"gameID": [
+						"0400D4201C6EA000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Use a tennis ball design based on the character (cosmetic only)",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Yoshi and the Mysterious Book",
+					"gameID": [
+						"0400245021D2C000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Obtain tokens via amiibo Fortune Telling",
+							"write": false
+						}
+					]
+				}
+			]
 		},
 		"0x00030003039fff02": {
 			"games3DS": [],
@@ -12369,7 +12731,32 @@
 					]
 				}
 			],
-			"gamesSwitch2": []
+			"gamesSwitch2": [
+				{
+					"gameName": "Mario Tennis Fever",
+					"gameID": [
+						"0400D4201C6EA000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Use a tennis ball design based on the character (cosmetic only)",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Yoshi and the Mysterious Book",
+					"gameID": [
+						"0400245021D2C000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Obtain tokens via amiibo Fortune Telling",
+							"write": false
+						}
+					]
+				}
+			]
 		},
 		"0x0003000404421c02": {
 			"games3DS": [
@@ -12794,7 +13181,32 @@
 					]
 				}
 			],
-			"gamesSwitch2": []
+			"gamesSwitch2": [
+				{
+					"gameName": "Mario Tennis Fever",
+					"gameID": [
+						"0400D4201C6EA000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Use a tennis ball design based on the character (cosmetic only)",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Yoshi and the Mysterious Book",
+					"gameID": [
+						"0400245021D2C000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Obtain tokens via amiibo Fortune Telling",
+							"write": false
+						}
+					]
+				}
+			]
 		},
 		"0x0003010200410302": {
 			"games3DS": [
@@ -13227,7 +13639,32 @@
 					]
 				}
 			],
-			"gamesSwitch2": []
+			"gamesSwitch2": [
+				{
+					"gameName": "Mario Tennis Fever",
+					"gameID": [
+						"0400D4201C6EA000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Use a tennis ball design based on the character (cosmetic only)",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Yoshi and the Mysterious Book",
+					"gameID": [
+						"0400245021D2C000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Obtain tokens via amiibo Fortune Telling",
+							"write": false
+						}
+					]
+				}
+			]
 		},
 		"0x0003010200420302": {
 			"games3DS": [
@@ -13679,7 +14116,32 @@
 					]
 				}
 			],
-			"gamesSwitch2": []
+			"gamesSwitch2": [
+				{
+					"gameName": "Mario Tennis Fever",
+					"gameID": [
+						"0400D4201C6EA000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Use a tennis ball design based on the character (cosmetic only)",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Yoshi and the Mysterious Book",
+					"gameID": [
+						"0400245021D2C000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Obtain tokens via amiibo Fortune Telling",
+							"write": false
+						}
+					]
+				}
+			]
 		},
 		"0x0003010200430302": {
 			"games3DS": [
@@ -14131,7 +14593,32 @@
 					]
 				}
 			],
-			"gamesSwitch2": []
+			"gamesSwitch2": [
+				{
+					"gameName": "Mario Tennis Fever",
+					"gameID": [
+						"0400D4201C6EA000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Use a tennis ball design based on the character (cosmetic only)",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Yoshi and the Mysterious Book",
+					"gameID": [
+						"0400245021D2C000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Obtain tokens via amiibo Fortune Telling",
+							"write": false
+						}
+					]
+				}
+			]
 		},
 		"0x00030102023e0302": {
 			"games3DS": [
@@ -14564,7 +15051,32 @@
 					]
 				}
 			],
-			"gamesSwitch2": []
+			"gamesSwitch2": [
+				{
+					"gameName": "Mario Tennis Fever",
+					"gameID": [
+						"0400D4201C6EA000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Use a tennis ball design based on the character (cosmetic only)",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Yoshi and the Mysterious Book",
+					"gameID": [
+						"0400245021D2C000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Obtain tokens via amiibo Fortune Telling",
+							"write": false
+						}
+					]
+				}
+			]
 		},
 		"0x0004000002620102": {
 			"games3DS": [
@@ -14967,7 +15479,20 @@
 					]
 				}
 			],
-			"gamesSwitch2": []
+			"gamesSwitch2": [
+				{
+					"gameName": "Mario Tennis Fever",
+					"gameID": [
+						"0400D4201C6EA000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Use a tennis ball design based on the character (cosmetic only)",
+							"write": false
+						}
+					]
+				}
+			]
 		},
 		"0x0004010000130002": {
 			"games3DS": [
@@ -15331,7 +15856,20 @@
 					]
 				}
 			],
-			"gamesSwitch2": []
+			"gamesSwitch2": [
+				{
+					"gameName": "Mario Tennis Fever",
+					"gameID": [
+						"0400D4201C6EA000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Use a tennis ball design based on the character (cosmetic only)",
+							"write": false
+						}
+					]
+				}
+			]
 		},
 		"0x0004010004ea0102": {
 			"games3DS": [
@@ -15719,7 +16257,20 @@
 					]
 				}
 			],
-			"gamesSwitch2": []
+			"gamesSwitch2": [
+				{
+					"gameName": "Mario Tennis Fever",
+					"gameID": [
+						"0400D4201C6EA000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Use a tennis ball design based on the character (cosmetic only)",
+							"write": false
+						}
+					]
+				}
+			]
 		},
 		"0x0005000000140002": {
 			"games3DS": [
@@ -16178,7 +16729,20 @@
 					]
 				}
 			],
-			"gamesSwitch2": []
+			"gamesSwitch2": [
+				{
+					"gameName": "Mario Tennis Fever",
+					"gameID": [
+						"0400D4201C6EA000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Use a tennis ball design based on the character (cosmetic only)",
+							"write": false
+						}
+					]
+				}
+			]
 		},
 		"0x0005000000390102": {
 			"games3DS": [
@@ -16676,7 +17240,20 @@
 					]
 				}
 			],
-			"gamesSwitch2": []
+			"gamesSwitch2": [
+				{
+					"gameName": "Mario Tennis Fever",
+					"gameID": [
+						"0400D4201C6EA000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Use a tennis ball design based on the character (cosmetic only)",
+							"write": false
+						}
+					]
+				}
+			]
 		},
 		"0x0005000003730102": {
 			"games3DS": [
@@ -17208,7 +17785,20 @@
 					]
 				}
 			],
-			"gamesSwitch2": []
+			"gamesSwitch2": [
+				{
+					"gameName": "Mario Tennis Fever",
+					"gameID": [
+						"0400D4201C6EA000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Use a tennis ball design based on the character (cosmetic only)",
+							"write": false
+						}
+					]
+				}
+			]
 		},
 		"0x0005ff00023a0702": {
 			"games3DS": [
@@ -17655,7 +18245,20 @@
 					]
 				}
 			],
-			"gamesSwitch2": []
+			"gamesSwitch2": [
+				{
+					"gameName": "Mario Tennis Fever",
+					"gameID": [
+						"0400D4201C6EA000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Use a tennis ball design based on the character (cosmetic only)",
+							"write": false
+						}
+					]
+				}
+			]
 		},
 		"0x0006000000150002": {
 			"games3DS": [
@@ -17979,7 +18582,32 @@
 					]
 				}
 			],
-			"gamesSwitch2": []
+			"gamesSwitch2": [
+				{
+					"gameName": "Mario Tennis Fever",
+					"gameID": [
+						"0400D4201C6EA000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Use a tennis ball design based on the character (cosmetic only)",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Yoshi and the Mysterious Book",
+					"gameID": [
+						"0400245021D2C000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Obtain tokens via amiibo Fortune Telling",
+							"write": false
+						}
+					]
+				}
+			]
 		},
 		"0x00070000001a0002": {
 			"games3DS": [
@@ -18264,7 +18892,20 @@
 					]
 				}
 			],
-			"gamesSwitch2": []
+			"gamesSwitch2": [
+				{
+					"gameName": "Mario Tennis Fever",
+					"gameID": [
+						"0400D4201C6EA000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Use a tennis ball design based on the character (cosmetic only)",
+							"write": false
+						}
+					]
+				}
+			]
 		},
 		"0x0007000002630102": {
 			"games3DS": [
@@ -18588,7 +19229,20 @@
 					]
 				}
 			],
-			"gamesSwitch2": []
+			"gamesSwitch2": [
+				{
+					"gameName": "Mario Tennis Fever",
+					"gameID": [
+						"0400D4201C6EA000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Use a tennis ball design based on the character (cosmetic only)",
+							"write": false
+						}
+					]
+				}
+			]
 		},
 		"0x0008000000030002": {
 			"games3DS": [
@@ -18950,6 +19604,18 @@
 					"amiiboUsage": [
 						{
 							"Usage": "Spawn explosive golden KONG tiles",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Mario Tennis Fever",
+					"gameID": [
+						"0400D4201C6EA000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Use a tennis ball design based on the character (cosmetic only)",
 							"write": false
 						}
 					]
@@ -19358,6 +20024,18 @@
 							"write": false
 						}
 					]
+				},
+				{
+					"gameName": "Mario Tennis Fever",
+					"gameID": [
+						"0400D4201C6EA000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Use a tennis ball design based on the character (cosmetic only)",
+							"write": false
+						}
+					]
 				}
 			]
 		},
@@ -19471,6 +20149,18 @@
 					"amiiboUsage": [
 						{
 							"Usage": "Spawn explosive golden KONG tiles",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Mario Tennis Fever",
+					"gameID": [
+						"0400D4201C6EA000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Use a tennis ball design based on the character (cosmetic only)",
 							"write": false
 						}
 					]
@@ -19840,6 +20530,18 @@
 							"write": false
 						}
 					]
+				},
+				{
+					"gameName": "Mario Tennis Fever",
+					"gameID": [
+						"0400D4201C6EA000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Use a tennis ball design based on the character (cosmetic only)",
+							"write": false
+						}
+					]
 				}
 			]
 		},
@@ -20191,6 +20893,18 @@
 					"amiiboUsage": [
 						{
 							"Usage": "Spawn explosive golden KONG tiles",
+							"write": false
+						}
+					]
+				},
+				{
+					"gameName": "Mario Tennis Fever",
+					"gameID": [
+						"0400D4201C6EA000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Use a tennis ball design based on the character (cosmetic only)",
 							"write": false
 						}
 					]
@@ -21317,7 +22031,20 @@
 					]
 				}
 			],
-			"gamesSwitch2": []
+			"gamesSwitch2": [
+				{
+					"gameName": "Mario Tennis Fever",
+					"gameID": [
+						"0400D4201C6EA000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Use a tennis ball design based on the character (cosmetic only)",
+							"write": false
+						}
+					]
+				}
+			]
 		},
 		"0x000a000303a0ff02": {
 			"games3DS": [],
@@ -21432,7 +22159,20 @@
 					]
 				}
 			],
-			"gamesSwitch2": []
+			"gamesSwitch2": [
+				{
+					"gameName": "Mario Tennis Fever",
+					"gameID": [
+						"0400D4201C6EA000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Use a tennis ball design based on the character (cosmetic only)",
+							"write": false
+						}
+					]
+				}
+			]
 		},
 		"0x000a010004c20102": {
 			"games3DS": [
@@ -21815,7 +22555,20 @@
 					]
 				}
 			],
-			"gamesSwitch2": []
+			"gamesSwitch2": [
+				{
+					"gameName": "Mario Tennis Fever",
+					"gameID": [
+						"0400D4201C6EA000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Use a tennis ball design based on the character (cosmetic only)",
+							"write": false
+						}
+					]
+				}
+			]
 		},
 		"0x0013000002660102": {
 			"games3DS": [
@@ -22038,7 +22791,20 @@
 					]
 				}
 			],
-			"gamesSwitch2": []
+			"gamesSwitch2": [
+				{
+					"gameName": "Mario Tennis Fever",
+					"gameID": [
+						"0400D4201C6EA000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Use a tennis ball design based on the character (cosmetic only)",
+							"write": false
+						}
+					]
+				}
+			]
 		},
 		"0x00130000037a0002": {
 			"games3DS": [
@@ -22222,7 +22988,20 @@
 					]
 				}
 			],
-			"gamesSwitch2": []
+			"gamesSwitch2": [
+				{
+					"gameName": "Mario Tennis Fever",
+					"gameID": [
+						"0400D4201C6EA000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Use a tennis ball design based on the character (cosmetic only)",
+							"write": false
+						}
+					]
+				}
+			]
 		},
 		"0x00130003039eff02": {
 			"games3DS": [],
@@ -22337,7 +23116,20 @@
 					]
 				}
 			],
-			"gamesSwitch2": []
+			"gamesSwitch2": [
+				{
+					"gameName": "Mario Tennis Fever",
+					"gameID": [
+						"0400D4201C6EA000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Use a tennis ball design based on the character (cosmetic only)",
+							"write": false
+						}
+					]
+				}
+			]
 		},
 		"0x0014000002670102": {
 			"games3DS": [
@@ -22537,7 +23329,20 @@
 					]
 				}
 			],
-			"gamesSwitch2": []
+			"gamesSwitch2": [
+				{
+					"gameName": "Mario Tennis Fever",
+					"gameID": [
+						"0400D4201C6EA000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Use a tennis ball design based on the character (cosmetic only)",
+							"write": false
+						}
+					]
+				}
+			]
 		},
 		"0x0015000003670102": {
 			"games3DS": [
@@ -23347,7 +24152,20 @@
 					]
 				}
 			],
-			"gamesSwitch2": []
+			"gamesSwitch2": [
+				{
+					"gameName": "Yoshi and the Mysterious Book",
+					"gameID": [
+						"0400245021D2C000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Obtain tokens via amiibo Fortune Telling",
+							"write": false
+						}
+					]
+				}
+			]
 		},
 		"0x00c00000037b0002": {
 			"games3DS": [],
@@ -23814,7 +24632,20 @@
 					]
 				}
 			],
-			"gamesSwitch2": []
+			"gamesSwitch2": [
+				{
+					"gameName": "Hyrule Warriors: Age of Imprisonment",
+					"gameID": [
+						"04003F40232DE000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive specific crafting materials or a weapon for the character",
+							"write": false
+						}
+					]
+				}
+			]
 		},
 		"0x01000000034b0902": {
 			"games3DS": [
@@ -24249,7 +25080,20 @@
 					]
 				}
 			],
-			"gamesSwitch2": []
+			"gamesSwitch2": [
+				{
+					"gameName": "Hyrule Warriors: Age of Imprisonment",
+					"gameID": [
+						"04003F40232DE000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive specific crafting materials or a weapon for the character",
+							"write": false
+						}
+					]
+				}
+			]
 		},
 		"0x01000000034c0902": {
 			"games3DS": [
@@ -24684,7 +25528,20 @@
 					]
 				}
 			],
-			"gamesSwitch2": []
+			"gamesSwitch2": [
+				{
+					"gameName": "Hyrule Warriors: Age of Imprisonment",
+					"gameID": [
+						"04003F40232DE000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive specific crafting materials or a weapon for the character",
+							"write": false
+						}
+					]
+				}
+			]
 		},
 		"0x01000000034d0902": {
 			"games3DS": [
@@ -25131,7 +25988,20 @@
 					]
 				}
 			],
-			"gamesSwitch2": []
+			"gamesSwitch2": [
+				{
+					"gameName": "Hyrule Warriors: Age of Imprisonment",
+					"gameID": [
+						"04003F40232DE000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive specific crafting materials or a weapon for the character",
+							"write": false
+						}
+					]
+				}
+			]
 		},
 		"0x01000000034e0902": {
 			"games3DS": [
@@ -25566,7 +26436,20 @@
 					]
 				}
 			],
-			"gamesSwitch2": []
+			"gamesSwitch2": [
+				{
+					"gameName": "Hyrule Warriors: Age of Imprisonment",
+					"gameID": [
+						"04003F40232DE000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive specific crafting materials or a weapon for the character",
+							"write": false
+						}
+					]
+				}
+			]
 		},
 		"0x01000000034f0902": {
 			"games3DS": [
@@ -26001,7 +26884,20 @@
 					]
 				}
 			],
-			"gamesSwitch2": []
+			"gamesSwitch2": [
+				{
+					"gameName": "Hyrule Warriors: Age of Imprisonment",
+					"gameID": [
+						"04003F40232DE000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive specific crafting materials or a weapon for the character",
+							"write": false
+						}
+					]
+				}
+			]
 		},
 		"0x0100000003530902": {
 			"games3DS": [
@@ -26436,7 +27332,20 @@
 					]
 				}
 			],
-			"gamesSwitch2": []
+			"gamesSwitch2": [
+				{
+					"gameName": "Hyrule Warriors: Age of Imprisonment",
+					"gameID": [
+						"04003F40232DE000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive specific crafting materials or a weapon for the character",
+							"write": false
+						}
+					]
+				}
+			]
 		},
 		"0x0100000003540902": {
 			"games3DS": [
@@ -26871,7 +27780,20 @@
 					]
 				}
 			],
-			"gamesSwitch2": []
+			"gamesSwitch2": [
+				{
+					"gameName": "Hyrule Warriors: Age of Imprisonment",
+					"gameID": [
+						"04003F40232DE000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive specific crafting materials or a weapon for the character",
+							"write": false
+						}
+					]
+				}
+			]
 		},
 		"0x01000000037c0002": {
 			"games3DS": [
@@ -27294,7 +28216,20 @@
 					]
 				}
 			],
-			"gamesSwitch2": []
+			"gamesSwitch2": [
+				{
+					"gameName": "Hyrule Warriors: Age of Imprisonment",
+					"gameID": [
+						"04003F40232DE000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive specific crafting materials or a weapon for the character",
+							"write": false
+						}
+					]
+				}
+			]
 		},
 		"0x0100000003990902": {
 			"games3DS": [
@@ -27741,7 +28676,20 @@
 					]
 				}
 			],
-			"gamesSwitch2": []
+			"gamesSwitch2": [
+				{
+					"gameName": "Hyrule Warriors: Age of Imprisonment",
+					"gameID": [
+						"04003F40232DE000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive specific crafting materials or a weapon for the character",
+							"write": false
+						}
+					]
+				}
+			]
 		},
 		"0x0100000004180902": {
 			"games3DS": [
@@ -28176,7 +29124,20 @@
 					]
 				}
 			],
-			"gamesSwitch2": []
+			"gamesSwitch2": [
+				{
+					"gameName": "Hyrule Warriors: Age of Imprisonment",
+					"gameID": [
+						"04003F40232DE000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive specific crafting materials or a weapon for the character",
+							"write": false
+						}
+					]
+				}
+			]
 		},
 		"0x0100010000160002": {
 			"games3DS": [
@@ -28597,7 +29558,20 @@
 					]
 				}
 			],
-			"gamesSwitch2": []
+			"gamesSwitch2": [
+				{
+					"gameName": "Hyrule Warriors: Age of Imprisonment",
+					"gameID": [
+						"04003F40232DE000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive specific crafting materials or a weapon for the character",
+							"write": false
+						}
+					]
+				}
+			]
 		},
 		"0x0100010003500902": {
 			"games3DS": [
@@ -29030,7 +30004,20 @@
 					]
 				}
 			],
-			"gamesSwitch2": []
+			"gamesSwitch2": [
+				{
+					"gameName": "Hyrule Warriors: Age of Imprisonment",
+					"gameID": [
+						"04003F40232DE000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive specific crafting materials or a weapon for the character",
+							"write": false
+						}
+					]
+				}
+			]
 		},
 		"0x01010000000e0002": {
 			"games3DS": [
@@ -29411,7 +30398,20 @@
 					]
 				}
 			],
-			"gamesSwitch2": []
+			"gamesSwitch2": [
+				{
+					"gameName": "Hyrule Warriors: Age of Imprisonment",
+					"gameID": [
+						"04003F40232DE000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive specific crafting materials or a weapon for the character",
+							"write": false
+						}
+					]
+				}
+			]
 		},
 		"0x0101000003520902": {
 			"games3DS": [
@@ -29804,7 +30804,20 @@
 					]
 				}
 			],
-			"gamesSwitch2": []
+			"gamesSwitch2": [
+				{
+					"gameName": "Hyrule Warriors: Age of Imprisonment",
+					"gameID": [
+						"04003F40232DE000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive specific crafting materials or a weapon for the character",
+							"write": false
+						}
+					]
+				}
+			]
 		},
 		"0x0101000003560902": {
 			"games3DS": [
@@ -30197,7 +31210,20 @@
 					]
 				}
 			],
-			"gamesSwitch2": []
+			"gamesSwitch2": [
+				{
+					"gameName": "Hyrule Warriors: Age of Imprisonment",
+					"gameID": [
+						"04003F40232DE000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive specific crafting materials or a weapon for the character",
+							"write": false
+						}
+					]
+				}
+			]
 		},
 		"0x0101000004190902": {
 			"games3DS": [
@@ -30590,7 +31616,20 @@
 					]
 				}
 			],
-			"gamesSwitch2": []
+			"gamesSwitch2": [
+				{
+					"gameName": "Hyrule Warriors: Age of Imprisonment",
+					"gameID": [
+						"04003F40232DE000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive specific crafting materials or a weapon for the character",
+							"write": false
+						}
+					]
+				}
+			]
 		},
 		"0x0101010000170002": {
 			"games3DS": [
@@ -30971,7 +32010,20 @@
 					]
 				}
 			],
-			"gamesSwitch2": []
+			"gamesSwitch2": [
+				{
+					"gameName": "Hyrule Warriors: Age of Imprisonment",
+					"gameID": [
+						"04003F40232DE000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive specific crafting materials or a weapon for the character",
+							"write": false
+						}
+					]
+				}
+			]
 		},
 		"0x0101030004140902": {
 			"games3DS": [
@@ -31350,7 +32402,20 @@
 					]
 				}
 			],
-			"gamesSwitch2": []
+			"gamesSwitch2": [
+				{
+					"gameName": "Hyrule Warriors: Age of Imprisonment",
+					"gameID": [
+						"04003F40232DE000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive specific crafting materials or a weapon for the character",
+							"write": false
+						}
+					]
+				}
+			]
 		},
 		"0x01020100001b0002": {
 			"games3DS": [
@@ -31704,7 +32769,20 @@
 					]
 				}
 			],
-			"gamesSwitch2": []
+			"gamesSwitch2": [
+				{
+					"gameName": "Hyrule Warriors: Age of Imprisonment",
+					"gameID": [
+						"04003F40232DE000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive specific crafting materials or a weapon for the character",
+							"write": false
+						}
+					]
+				}
+			]
 		},
 		"0x01020100041a0902": {
 			"games3DS": [
@@ -32070,7 +33148,20 @@
 					]
 				}
 			],
-			"gamesSwitch2": []
+			"gamesSwitch2": [
+				{
+					"gameName": "Hyrule Warriors: Age of Imprisonment",
+					"gameID": [
+						"04003F40232DE000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive specific crafting materials or a weapon for the character",
+							"write": false
+						}
+					]
+				}
+			]
 		},
 		"0x01030000024f0902": {
 			"games3DS": [
@@ -32344,7 +33435,20 @@
 					]
 				}
 			],
-			"gamesSwitch2": []
+			"gamesSwitch2": [
+				{
+					"gameName": "Hyrule Warriors: Age of Imprisonment",
+					"gameID": [
+						"04003F40232DE000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive specific crafting materials or a weapon for the character",
+							"write": false
+						}
+					]
+				}
+			]
 		},
 		"0x0105000003580902": {
 			"games3DS": [
@@ -32519,7 +33623,20 @@
 					]
 				}
 			],
-			"gamesSwitch2": []
+			"gamesSwitch2": [
+				{
+					"gameName": "Hyrule Warriors: Age of Imprisonment",
+					"gameID": [
+						"04003F40232DE000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive specific crafting materials or a weapon for the character",
+							"write": false
+						}
+					]
+				}
+			]
 		},
 		"0x0106000003590902": {
 			"games3DS": [
@@ -32694,7 +33811,20 @@
 					]
 				}
 			],
-			"gamesSwitch2": []
+			"gamesSwitch2": [
+				{
+					"gameName": "Hyrule Warriors: Age of Imprisonment",
+					"gameID": [
+						"04003F40232DE000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive specific crafting materials or a weapon for the character",
+							"write": false
+						}
+					]
+				}
+			]
 		},
 		"0x01070000035a0902": {
 			"games3DS": [
@@ -32869,7 +33999,20 @@
 					]
 				}
 			],
-			"gamesSwitch2": []
+			"gamesSwitch2": [
+				{
+					"gameName": "Hyrule Warriors: Age of Imprisonment",
+					"gameID": [
+						"04003F40232DE000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive specific crafting materials or a weapon for the character",
+							"write": false
+						}
+					]
+				}
+			]
 		},
 		"0x01080000035b0902": {
 			"games3DS": [
@@ -33044,7 +34187,20 @@
 					]
 				}
 			],
-			"gamesSwitch2": []
+			"gamesSwitch2": [
+				{
+					"gameName": "Hyrule Warriors: Age of Imprisonment",
+					"gameID": [
+						"04003F40232DE000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive specific crafting materials or a weapon for the character",
+							"write": false
+						}
+					]
+				}
+			]
 		},
 		"0x0109000004a30902": {
 			"games3DS": [
@@ -33132,7 +34288,20 @@
 					]
 				}
 			],
-			"gamesSwitch2": []
+			"gamesSwitch2": [
+				{
+					"gameName": "Hyrule Warriors: Age of Imprisonment",
+					"gameID": [
+						"04003F40232DE000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive specific crafting materials or a weapon for the character",
+							"write": false
+						}
+					]
+				}
+			]
 		},
 		"0x010d000004a70902": {
 			"games3DS": [],
@@ -33226,7 +34395,20 @@
 					]
 				}
 			],
-			"gamesSwitch2": []
+			"gamesSwitch2": [
+				{
+					"gameName": "Hyrule Warriors: Age of Imprisonment",
+					"gameID": [
+						"04003F40232DE000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive specific crafting materials or a weapon for the character",
+							"write": false
+						}
+					]
+				}
+			]
 		},
 		"0x010b000004a50902": {
 			"games3DS": [
@@ -33314,7 +34496,20 @@
 					]
 				}
 			],
-			"gamesSwitch2": []
+			"gamesSwitch2": [
+				{
+					"gameName": "Hyrule Warriors: Age of Imprisonment",
+					"gameID": [
+						"04003F40232DE000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive specific crafting materials or a weapon for the character",
+							"write": false
+						}
+					]
+				}
+			]
 		},
 		"0x010c000004a60902": {
 			"games3DS": [
@@ -33402,7 +34597,20 @@
 					]
 				}
 			],
-			"gamesSwitch2": []
+			"gamesSwitch2": [
+				{
+					"gameName": "Hyrule Warriors: Age of Imprisonment",
+					"gameID": [
+						"04003F40232DE000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive specific crafting materials or a weapon for the character",
+							"write": false
+						}
+					]
+				}
+			]
 		},
 		"0x0140000003550902": {
 			"games3DS": [
@@ -33592,7 +34800,20 @@
 					]
 				}
 			],
-			"gamesSwitch2": []
+			"gamesSwitch2": [
+				{
+					"gameName": "Hyrule Warriors: Age of Imprisonment",
+					"gameID": [
+						"04003F40232DE000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive specific crafting materials or a weapon for the character",
+							"write": false
+						}
+					]
+				}
+			]
 		},
 		"0x01410000035c0902": {
 			"games3DS": [
@@ -33782,7 +35003,20 @@
 					]
 				}
 			],
-			"gamesSwitch2": []
+			"gamesSwitch2": [
+				{
+					"gameName": "Hyrule Warriors: Age of Imprisonment",
+					"gameID": [
+						"04003F40232DE000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive specific crafting materials or a weapon for the character",
+							"write": false
+						}
+					]
+				}
+			]
 		},
 		"0x0180000000080002": {
 			"games3DS": [
@@ -97623,7 +98857,20 @@
 					]
 				}
 			],
-			"gamesSwitch2": []
+			"gamesSwitch2": [
+				{
+					"gameName": "Star Fox",
+					"gameID": [
+						"0400E88025B1A000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Unlock exclusive backgrounds and emblems for your player profile",
+							"write": false
+						}
+					]
+				}
+			]
 		},
 		"0x05810000001c0002": {
 			"games3DS": [
@@ -97791,7 +99038,20 @@
 					]
 				}
 			],
-			"gamesSwitch2": []
+			"gamesSwitch2": [
+				{
+					"gameName": "Star Fox",
+					"gameID": [
+						"0400E88025B1A000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Unlock exclusive backgrounds and emblems for your player profile",
+							"write": false
+						}
+					]
+				}
+			]
 		},
 		"0x05840000037e0002": {
 			"games3DS": [],
@@ -97825,7 +99085,20 @@
 					]
 				}
 			],
-			"gamesSwitch2": []
+			"gamesSwitch2": [
+				{
+					"gameName": "Star Fox",
+					"gameID": [
+						"0400E88025B1A000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Unlock exclusive backgrounds and emblems for your player profile",
+							"write": false
+						}
+					]
+				}
+			]
 		},
 		"0x05c0000000060002": {
 			"games3DS": [
@@ -120256,7 +121529,20 @@
 					]
 				}
 			],
-			"gamesSwitch2": []
+			"gamesSwitch2": [
+				{
+					"gameName": "Monster Hunter Stories 3: Twisted Reflection",
+					"gameID": [
+						"0400D1E0237CC000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive amiibo-exclusive, amiibo-specific layered armor or Rudy outfit",
+							"write": false
+						}
+					]
+				}
+			]
 		},
 		"0x350d000004fb0f02": {
 			"games3DS": [],
@@ -120275,7 +121561,20 @@
 					]
 				}
 			],
-			"gamesSwitch2": []
+			"gamesSwitch2": [
+				{
+					"gameName": "Monster Hunter Stories 3: Twisted Reflection",
+					"gameID": [
+						"0400D1E0237CC000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive amiibo-exclusive, amiibo-specific layered armor or Rudy outfit",
+							"write": false
+						}
+					]
+				}
+			]
 		},
 		"0x350e000004fc0f02": {
 			"games3DS": [],
@@ -120294,13 +121593,77 @@
 					]
 				}
 			],
-			"gamesSwitch2": []
+			"gamesSwitch2": [
+				{
+					"gameName": "Monster Hunter Stories 3: Twisted Reflection",
+					"gameID": [
+						"0400D1E0237CC000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive amiibo-exclusive, amiibo-specific layered armor or Rudy outfit",
+							"write": false
+						}
+					]
+				}
+			]
+		},
+		"0x3540000005032002": {
+			"games3DS": [],
+			"gamesWiiU": [],
+			"gamesSwitch": [],
+			"gamesSwitch2": [
+				{
+					"gameName": "Resident Evil Requiem",
+					"gameID": [
+						"0400A58024718000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Unlock cosmetic skins for your in-game weapons",
+							"write": false
+						}
+					]
+				}
+			]
+		},
+		"0x3541000005042002": {
+			"games3DS": [],
+			"gamesWiiU": [],
+			"gamesSwitch": [],
+			"gamesSwitch2": [
+				{
+					"gameName": "Resident Evil Requiem",
+					"gameID": [
+						"0400A58024718000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Unlock cosmetic skins for your in-game weapons",
+							"write": false
+						}
+					]
+				}
+			]
 		},
 		"0x3580000005062102": {
 			"games3DS": [],
 			"gamesWiiU": [],
 			"gamesSwitch": [],
-			"gamesSwitch2": []
+			"gamesSwitch2": [
+				{
+					"gameName": "Pragmata",
+					"gameID": [
+						"0400C76024710000"
+					],
+					"amiiboUsage": [
+						{
+							"Usage": "Receive weapons and supplies",
+							"write": false
+						}
+					]
+				}
+			]
 		},
 		"0x35c0000002500a02": {
 			"games3DS": [

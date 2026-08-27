@@ -19,6 +19,7 @@ class GamesManager {
     private val games3DS = HashMap<Long, Games3DS>()
     private val gamesWiiU = HashMap<Long, GamesWiiU>()
     private val gamesSwitch = HashMap<Long, GamesSwitch>()
+    private val gamesSwitch2 = HashMap<Long, GamesSwitch>()
     private val games = HashMap<String, GameTitles>()
 
     fun getGamesCompatibility(prefs: Preferences, amiiboId: Long): String {
@@ -48,6 +49,15 @@ class GamesManager {
                 TagMo.appContext.getString(R.string.games_nx),
                 TagMo.appContext.getString(R.string.no_games_nx),
                 amiiboSwitch?.stringList
+            )
+        }
+        if (prefs.showCompatSwitch2()) {
+            val amiiboSwitch2 = gamesSwitch2[amiiboId]
+            appendCompatibilitySection(
+                usage,
+                TagMo.appContext.getString(R.string.games_nx2),
+                TagMo.appContext.getString(R.string.no_games_nx2),
+                amiiboSwitch2?.stringList
             )
         }
         return usage.toString()
@@ -88,6 +98,7 @@ class GamesManager {
         if (games3DS.values.any { it.hasUsage(name) }) platforms.add(GamePlatform.THREE_DS)
         if (gamesWiiU.values.any { it.hasUsage(name) }) platforms.add(GamePlatform.WII_U)
         if (gamesSwitch.values.any { it.hasUsage(name) }) platforms.add(GamePlatform.SWITCH)
+        if (gamesSwitch2.values.any { it.hasUsage(name) }) platforms.add(GamePlatform.SWITCH_2)
         return platforms
     }
 
@@ -107,6 +118,11 @@ class GamesManager {
             }
             if (amiiboSwitch?.hasUsage(name) == true) {
                 amiiboIds.add(amiibo.id)
+                continue
+            }
+            val amiiboSwitch2 = gamesSwitch2[amiibo.id]
+            if (amiiboSwitch2?.hasUsage(name) == true) {
+                amiiboIds.add(amiibo.id)
             }
         }
         return amiiboIds
@@ -118,7 +134,9 @@ class GamesManager {
         val amiiboWiiU = gamesWiiU[amiibo.id]
         if (amiiboWiiU?.hasUsage(name) == true) return true
         val amiiboSwitch = gamesSwitch[amiibo.id]
-        return amiiboSwitch?.hasUsage(name) == true
+        if (amiiboSwitch?.hasUsage(name) == true) return true
+        val amiiboSwitch2 = gamesSwitch2[amiibo.id]
+        return amiiboSwitch2?.hasUsage(name) == true
     }
 
     companion object {
@@ -194,15 +212,17 @@ class GamesManager {
                 }
                 val gamesSwitch2JSON = amiiboJSON.optJSONArray("gamesSwitch2")
                 if (null != gamesSwitch2JSON) {
+                    val amiiboSwitch2 = ArrayList<String?>()
                     for (i in 0 until gamesSwitch2JSON.length()) {
                         val game = gamesSwitch2JSON.getJSONObject(i)
                         val name = game.getString("gameName")
-                        amiiboSwitch.add(name)
+                        amiiboSwitch2.add(name)
                         val gameTitles = GameTitles(
                             manager, name, game.getJSONArray("gameID")
                         )
                         if (!manager.games.containsKey(name)) manager.games[name] = gameTitles
                     }
+                    manager.gamesSwitch2[amiiboId] = GamesSwitch(manager, amiiboId, amiiboSwitch2)
                 }
                 val gamesSwitch = GamesSwitch(manager, amiiboId, amiiboSwitch)
                 manager.gamesSwitch[amiiboId] = gamesSwitch
@@ -239,6 +259,6 @@ class GamesManager {
     }
 
     enum class GamePlatform {
-        THREE_DS, WII_U, SWITCH
+        THREE_DS, WII_U, SWITCH, SWITCH_2
     }
 }

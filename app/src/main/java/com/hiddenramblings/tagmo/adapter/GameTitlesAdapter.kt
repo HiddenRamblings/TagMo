@@ -122,6 +122,7 @@ class GameTitlesAdapter(
         private val platform3DS: TextView = itemView.findViewById(R.id.platform3DS)
         private val platformWiiU: TextView = itemView.findViewById(R.id.platformWiiU)
         private val platformSwitch: TextView = itemView.findViewById(R.id.platformSwitch)
+        private val platformSwitch2: TextView = itemView.findViewById(R.id.platformSwitch2)
 
         fun bind(gameTitle: GameTitles?) {
             txtName.text = gameTitle?.name ?: ""
@@ -136,6 +137,7 @@ class GameTitlesAdapter(
             platform3DS.isVisible = platforms.contains(GamePlatform.THREE_DS)
             platformWiiU.isVisible = platforms.contains(GamePlatform.WII_U)
             platformSwitch.isVisible = platforms.contains(GamePlatform.SWITCH)
+            platformSwitch2.isVisible = platforms.contains(GamePlatform.SWITCH_2)
         }
     }
 

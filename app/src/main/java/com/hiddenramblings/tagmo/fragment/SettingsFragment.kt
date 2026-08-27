@@ -39,6 +39,7 @@ import com.hiddenramblings.tagmo.amiibo.AmiiboManager.parse
 import com.hiddenramblings.tagmo.amiibo.AmiiboManager.parseAmiiboAPI
 import com.hiddenramblings.tagmo.amiibo.AmiiboManager.saveDatabase
 import com.hiddenramblings.tagmo.amiibo.KeyManager
+import com.hiddenramblings.tagmo.amiibo.games.GamesManager.Companion.getGamesManager
 import com.hiddenramblings.tagmo.eightbit.io.Debug
 import com.hiddenramblings.tagmo.eightbit.material.IconifiedSnackbar
 import com.hiddenramblings.tagmo.eightbit.net.JSONExecutor
@@ -206,6 +207,13 @@ class SettingsFragment : PreferenceFragmentCompat() {
             isChecked = prefs.showCompatSwitch()
             onPreferenceClickListener = Preference.OnPreferenceClickListener {
                 prefs.showCompatSwitch(isChecked)
+                super@SettingsFragment.onPreferenceTreeClick(it)
+            }
+        }
+        findPreference<SwitchPreferenceCompat>(getString(R.string.settings_show_games_nx2))?.apply {
+            isChecked = prefs.showCompatSwitch2()
+            onPreferenceClickListener = Preference.OnPreferenceClickListener {
+                prefs.showCompatSwitch2(isChecked)
                 super@SettingsFragment.onPreferenceTreeClick(it)
             }
         }
@@ -520,11 +528,18 @@ class SettingsFragment : PreferenceFragmentCompat() {
                 }
                 return@launch
             }
+            val gamesManager = try {
+                getGamesManager(requireContext())
+            } catch (e: Exception) {
+                Debug.warn(e)
+                null
+            }
             withContext(Dispatchers.Main) {
                 browserActivity?.let { activity ->
                     buildSnackbar(activity, R.string.amiibo_info_updated, Snackbar.LENGTH_SHORT).show()
                     activity.settings?.run {
                         this.amiiboManager = amiiboManager
+                        gamesManager?.let { this.gamesManager = it }
                         notifyChanges()
                     }
                 }
@@ -577,12 +592,20 @@ class SettingsFragment : PreferenceFragmentCompat() {
                         result?.let {
                             val amiiboManager = parse(it)
                             saveDatabase(amiiboManager, TagMo.appContext)
+                            val gamesManager = try {
+                                getGamesManager(activity)
+                            } catch (e: Exception) {
+                                Debug.warn(e)
+                                null
+                            }
                             CoroutineScope(Dispatchers.Main).launch {
                                 if (syncMessage.isShown) syncMessage.dismiss()
                                 buildSnackbar(
                                     activity, R.string.sync_amiibo_complete, Snackbar.LENGTH_SHORT
                                 ).show()
                                 activity.settings?.run {
+                                    this.amiiboManager = amiiboManager
+                                    gamesManager?.let { this.gamesManager = it }
                                     lastUpdatedAPI = lastUpdated
                                     notifyChanges()
                                 }

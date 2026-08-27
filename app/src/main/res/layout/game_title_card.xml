@@ -98,6 +98,19 @@
                     android:paddingVertical="4dp"
                     android:text="@string/platform_switch"
                     android:textAppearance="@style/TextAppearance.TagMo.Meta" />
+
+                <TextView
+                    android:id="@+id/platformSwitch2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="6dp"
+                    android:layout_marginEnd="6dp"
+                    android:layout_marginBottom="4dp"
+                    android:background="@drawable/modern_chip_background"
+                    android:paddingHorizontal="9dp"
+                    android:paddingVertical="4dp"
+                    android:text="@string/platform_switch2"
+                    android:textAppearance="@style/TextAppearance.TagMo.Meta" />
             </com.google.android.flexbox.FlexboxLayout>
         </LinearLayout>
 

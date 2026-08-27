@@ -22,6 +22,7 @@
     <string name="settings_show_games_ds" translatable="false">settings_show_games_ds</string>
     <string name="settings_show_games_wii" translatable="false">settings_show_games_wii</string>
     <string name="settings_show_games_nx" translatable="false">settings_show_games_nx</string>
+    <string name="settings_show_games_nx2" translatable="false">settings_show_games_nx2</string>
     <string name="setting_database_source" translatable="false">setting_database_source</string>
     <string name="settings_import_info" translatable="false">import_info</string>
     <string name="settings_reset_info" translatable="false">reset_info</string>

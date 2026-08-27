@@ -223,7 +223,7 @@
 		},
 		"0x0807000004f70402":
 		{
-			"name": "Shiver (Splatoon Raiders)",
+			"name": "Shiver - Splatoon Raiders",
 			"release":
 			{
 				"au": "2026-07-23",
@@ -234,7 +234,7 @@
 		},
 		"0x0808000004f80402":
 		{
-			"name": "Frye (Splatoon Raiders)",
+			"name": "Frye - Splatoon Raiders",
 			"release":
 			{
 				"au": "2026-07-23",
@@ -245,7 +245,7 @@
 		},
 		"0x0809000004f90402":
 		{
-			"name": "Big Man (Splatoon Raiders)",
+			"name": "Big Man - Splatoon Raiders",
 			"release":
 			{
 				"au": "2026-07-23",
@@ -1187,6 +1187,28 @@
 				"na": "2026-04-17",
 				"eu": "2026-06-11",
 				"jp": "2026-04-24"
+			}
+		},
+		"0x3540000005032002":
+		{
+			"name": "Grace Ashcroft",
+			"release":
+			{
+				"au": "2026-07-30",
+				"na": "2026-07-30",
+				"eu": "2026-07-30",
+				"jp": "2026-07-30"
+			}
+		},
+		"0x3541000005042002":
+		{
+			"name": "Leon S. Kennedy",
+			"release":
+			{
+				"au": "2026-07-30",
+				"na": "2026-07-30",
+				"eu": "2026-07-30",
+				"jp": "2026-07-30"
 			}
 		},
 		"0x000000030430ff02":
@@ -10415,6 +10437,25 @@
 			}
 		}
 	},
+	"machine":
+	{
+		"0x1f00000004c41e03":
+		{
+			"name": "Warp Star"
+		},
+		"0x1f01000004c61e03":
+		{
+			"name": "Shadow Star"
+		},
+		"0x1f02000004c71e03":
+		{
+			"name": "Tank Star"
+		},
+		"0x1f03010004c91e03":
+		{
+			"name": "Winged Star"
+		}
+	},
 	"amiibo_series":
 	{
 		"0x0a": "Shovel Knight",
@@ -10447,6 +10488,7 @@
 		"0x1c": "My Mario Wooden Blocks",
 		"0x1d": "Street Fighter 6",
 		"0x1e": "Kirby Air Riders",
+		"0x20": "Resident Evil",
 		"0x21": "Pragmata"
 	},
 	"game_series":
@@ -10568,7 +10610,8 @@
 		"0x348": "Megaman",
 		"0x1b9": "Pokemon",
 		"0x22c": "Chibi Robo",
-		"0x358": "Pragmata"
+		"0x358": "Pragmata",
+		"0x354": "Resident Evil"
 	},
 	"types":
 	{
@@ -11261,6 +11304,8 @@
 		"0x2243": "Noah",
 		"0x2244": "Mio",
 		"0x3f00": "Sora",
-		"0x3580": "Diana"
+		"0x3580": "Diana",
+		"0x3540": "Grace Ashcroft",
+		"0x3541": "Leon S. Kennedy"
 	}
 }

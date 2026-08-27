@@ -57,6 +57,11 @@
             android:defaultValue="true"
             android:key="@string/settings_show_games_nx"
             android:title="@string/enable_nx_compat" />
+
+        <androidx.preference.SwitchPreferenceCompat
+            android:defaultValue="true"
+            android:key="@string/settings_show_games_nx2"
+            android:title="@string/enable_nx2_compat" />
     </androidx.preference.PreferenceCategory>
 
     <androidx.preference.PreferenceCategory

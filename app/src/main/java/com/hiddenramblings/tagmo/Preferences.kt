@@ -255,6 +255,15 @@ class Preferences(context: Context) {
         putBoolean(showCompatSwitch, value)
     }
 
+    private val showCompatSwitch2 = "settings_show_games_nx2"
+    fun showCompatSwitch2(): Boolean {
+        return getBoolean(showCompatSwitch2, true)
+    }
+
+    fun showCompatSwitch2(value: Boolean) {
+        putBoolean(showCompatSwitch2, value)
+    }
+
     private val persistSkipLockInfo = "persist_skip_lock_info"
     fun persistSkipLockInfo(): Boolean {
         return getBoolean(persistSkipLockInfo, false)

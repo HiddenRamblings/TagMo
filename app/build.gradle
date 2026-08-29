@@ -13,10 +13,10 @@ android {
 
     defaultConfig {
         applicationId 'com.hiddenramblings.tagmo'
-        compileSdk 35
+        compileSdk 36
         minSdk 21
-        targetSdk 35
-        versionName "4.5.1"
+        targetSdk 36
+        versionName "4.5.2"
         versionCode = versionName.replace(".","").toInteger() * 10
 
         vectorDrawables {

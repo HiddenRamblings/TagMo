@@ -24,6 +24,7 @@ import androidx.webkit.ServiceWorkerControllerCompat
 import androidx.webkit.WebViewAssetLoader
 import androidx.webkit.WebViewClientCompat
 import androidx.webkit.WebViewFeature
+import com.hiddenramblings.tagmo.BuildConfig
 import com.hiddenramblings.tagmo.R
 import com.hiddenramblings.tagmo.applySystemBarInsets
 import com.hiddenramblings.tagmo.enableEdgeToEdgeContent
@@ -132,7 +133,9 @@ class DimensionActivity : AppCompatActivity() {
                         }
                     })
             }
-            WebView.setWebContentsDebuggingEnabled(true)
+            if (BuildConfig.DEBUG) {
+                WebView.setWebContentsDebuggingEnabled(true)
+            }
         } else {
             @Suppress("deprecation")
             webViewSettings.allowFileAccessFromFileURLs = true
